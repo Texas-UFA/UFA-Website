@@ -2023,54 +2023,66 @@ style="width: 100% !important; height:320 !important; object-fit: contain !impor
       <div id="portal-user-badge" style="display:none;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:6px;padding:10px 18px;color:#fff;font-size:13px;"></div>
     </div>
 
-    <!-- LOGIN -->
+ <!-- LOGIN / SIGNUP -->
     <div id="portal-login" style="flex:1;display:flex;align-items:center;justify-content:center;padding:48px 24px;">
-      <div style="background:#fff;border:1px solid rgba(46,74,46,0.15);border-radius:12px;padding:48px;width:100%;max-width:440px;box-shadow:0 4px 24px rgba(46,74,46,0.08);">
+      
+      <!-- Login Card -->
+      <div id="login-card" style="background:#fff;border:1px solid rgba(46,74,46,0.15);border-radius:12px;padding:48px;width:100%;max-width:440px;box-shadow:0 4px 24px rgba(46,74,46,0.08);">
         <div style="text-align:center;margin-bottom:36px;">
           <div style="width:56px;height:56px;background:#EEF5EE;border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3D6B3D" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
           </div>
           <div style="font-family:'Playfair Display',Georgia,serif;font-size:24px;font-weight:500;color:#1C2B1C;margin-bottom:8px;">Member Login</div>
-          <p style="font-size:14px;color:#6B7D6B;line-height:1.6;">Sign in with your UT EID to check in to meetings and track your attendance.</p>
+          <p style="font-size:14px;color:#6B7D6B;line-height:1.6;">Sign in with your UT email to check in to meetings and track your attendance.</p>
         </div>
         <div style="margin-bottom:16px;">
           <label style="display:block;font-size:13px;font-weight:500;color:#3A4A3A;margin-bottom:6px;">UT Email</label>
           <input id="eid-input" type="email" placeholder="abc1234@utexas.edu" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;" onkeydown="if(event.key==='Enter')portalLogin()">
         </div>
-        <div style="margin-bottom:8px;">
+        <div style="margin-bottom:20px;">
           <label style="display:block;font-size:13px;font-weight:500;color:#3A4A3A;margin-bottom:6px;">Password</label>
           <input id="pw-input" type="password" placeholder="Your portal password" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;" onkeydown="if(event.key==='Enter')portalLogin()">
         </div>
         <button onclick="portalLogin()" style="width:100%;background:#3D6B3D;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:13px;border-radius:4px;border:none;cursor:pointer;letter-spacing:0.02em;">Sign in</button>
         <div id="login-error" style="display:none;margin-top:12px;padding:10px 14px;background:#fdf0ef;border:1px solid #f0b4b0;border-radius:4px;font-size:13px;color:#8b2e2e;text-align:center;"></div>
         <div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(46,74,46,0.1);text-align:center;">
-          <p style="font-size:12px;color:#6B7D6B;">New member? <a href="#" onclick="showSignup()" style="color:#3D6B3D;font-weight:500;">Create an account →</a></p>        </div>
+          <p style="font-size:12px;color:#6B7D6B;">New member? <a href="#" onclick="showSignup()" style="color:#3D6B3D;font-weight:500;">Create an account →</a></p>
+        </div>
       </div>
-    </div>
 
-<div id="portal-signup" style="display:none;background:#fff;border:1px solid rgba(46,74,46,0.15);border-radius:12px;padding:48px;width:100%;max-width:440px;box-shadow:0 4px 24px rgba(46,74,46,0.08);">
-  <div style="text-align:center;margin-bottom:28px;">
-    <div style="font-family:'Playfair Display',Georgia,serif;font-size:24px;font-weight:500;color:#1C2B1C;margin-bottom:8px;">Create Account</div>
-    <p style="font-size:14px;color:#6B7D6B;">Enter your UT email and choose a password.</p>
-  </div>
-  <div style="margin-bottom:16px;">
-    <label style="display:block;font-size:13px;font-weight:500;color:#3A4A3A;margin-bottom:6px;">Full Name</label>
-    <input id="signup-name" type="text" placeholder="Jordan Smith" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;">
-  </div>
-  <div style="margin-bottom:16px;">
-    <label style="display:block;font-size:13px;font-weight:500;color:#3A4A3A;margin-bottom:6px;">UT Email</label>
-    <input id="signup-email" type="email" placeholder="abc1234@utexas.edu" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;">
-  </div>
-  <div style="margin-bottom:20px;">
-    <label style="display:block;font-size:13px;font-weight:500;color:#3A4A3A;margin-bottom:6px;">Password</label>
-    <input id="signup-password" type="password" placeholder="Choose a password" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;">
-  </div>
-  <button onclick="portalSignup()" style="width:100%;background:#3D6B3D;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:13px;border-radius:4px;border:none;cursor:pointer;">Create account</button>
-  <div id="signup-error" style="display:none;margin-top:12px;padding:10px 14px;background:#fdf0ef;border:1px solid #f0b4b0;border-radius:4px;font-size:13px;color:#8b2e2e;text-align:center;"></div>
-  <div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(46,74,46,0.1);text-align:center;">
-    <p style="font-size:12px;color:#6B7D6B;">Already have an account? <a href="#" onclick="showLogin()" style="color:#3D6B3D;font-weight:500;">Sign in →</a></p>
-  </div>
-</div>
+      <!-- Signup Card -->
+      <div id="portal-signup" style="display:none;background:#fff;border:1px solid rgba(46,74,46,0.15);border-radius:12px;padding:48px;width:100%;max-width:440px;box-shadow:0 4px 24px rgba(46,74,46,0.08);">
+        <div style="text-align:center;margin-bottom:28px;">
+          <div style="width:56px;height:56px;background:#EEF5EE;border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3D6B3D" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div style="font-family:'Playfair Display',Georgia,serif;font-size:24px;font-weight:500;color:#1C2B1C;margin-bottom:8px;">Create Account</div>
+          <p style="font-size:14px;color:#6B7D6B;">Enter your UT email and choose a password.</p>
+        </div>
+        <div style="margin-bottom:16px;">
+          <label style="display:block;font-size:13px;font-weight:500;color:#3A4A3A;margin-bottom:6px;">Full Name</label>
+          <input id="signup-name" type="text" placeholder="Jordan Smith" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;">
+        </div>
+        <div style="margin-bottom:16px;">
+          <label style="display:block;font-size:13px;font-weight:500;color:#3A4A3A;margin-bottom:6px;">UT EID</label>
+          <input id="signup-eid" type="text" placeholder="abc1234" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;">
+        </div>
+        <div style="margin-bottom:16px;">
+          <label style="display:block;font-size:13px;font-weight:500;color:#3A4A3A;margin-bottom:6px;">UT Email</label>
+          <input id="signup-email" type="email" placeholder="abc1234@utexas.edu" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;">
+        </div>
+        <div style="margin-bottom:20px;">
+          <label style="display:block;font-size:13px;font-weight:500;color:#3A4A3A;margin-bottom:6px;">Password</label>
+          <input id="signup-password" type="password" placeholder="Choose a password" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;">
+        </div>
+        <button onclick="portalSignup()" style="width:100%;background:#3D6B3D;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:13px;border-radius:4px;border:none;cursor:pointer;">Create account</button>
+        <div id="signup-error" style="display:none;margin-top:12px;padding:10px 14px;background:#fdf0ef;border:1px solid #f0b4b0;border-radius:4px;font-size:13px;color:#8b2e2e;text-align:center;"></div>
+        <div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(46,74,46,0.1);text-align:center;">
+          <p style="font-size:12px;color:#6B7D6B;">Already have an account? <a href="#" onclick="showLogin()" style="color:#3D6B3D;font-weight:500;">Sign in →</a></p>
+        </div>
+      </div>
+
+    </div>
 
     <!-- DASHBOARD -->
     <div id="portal-dashboard" style="display:none;flex:1;padding:48px 72px;">
@@ -2419,12 +2431,12 @@ function closeMenu() {
   btn.classList.remove('open');
 }
 function showSignup() {
-  document.querySelector('#portal-login > div').style.display = 'none';
+  document.getElementById('login-card').style.display = 'none';
   document.getElementById('portal-signup').style.display = 'block';
 }
 
 function showLogin() {
-  document.querySelector('#portal-login > div').style.display = 'block';
+  document.getElementById('login-card').style.display = 'block';
   document.getElementById('portal-signup').style.display = 'none';
 }
 
@@ -2441,10 +2453,10 @@ async function portalSignup() {
   if (error) { err.style.display='block'; err.textContent=error.message; return; }
 
   // Add to members table
-  await sb.from('members').insert({ email, name, role: 'General Member', semester: 'Fall 2026' });
-
+const eid = document.getElementById('signup-eid').value.trim();
+await sb.from('members').insert({ email, name, eid, role: 'General Member', semester: 'Fall 2026' });
   currentUser = data.user;
-  currentMember = { email, name, role: 'General Member', semester: 'Fall 2026' };
+  currentMember = { email, name, eid, role: 'General Member', semester: 'Fall 2026' };
   showDashboard();
 }
 
