@@ -118,7 +118,8 @@
     padding: 13px 28px;
     border-radius: 4px;
     text-decoration: none;
-    border: 1px solid rgba(255,255,255,0.45);
+    border: 2px solid rgba(255,255,255,0.8);
+    color: var(--white);
     transition: all 0.2s;
     cursor: pointer;
   }
@@ -862,14 +863,17 @@ nav {
     height: 160px;
   }
 
-  /* Tab buttons */
+  /* Tab buttons - wrap horizontally, don't stack */
   .tabs {
-    flex-direction: column;
-    gap: 8px;
+    flex-wrap: wrap;
+    flex-direction: row;
+    gap: 4px;
+    border-bottom: 1px solid var(--border);
   }
   .tab-btn {
-    width: 100%;
-    text-align: center;
+    font-size: 13px;
+    padding: 10px 14px;
+    width: auto;
   }
 
   /* Hero pages (about, teams, publications etc.) */
@@ -918,6 +922,21 @@ nav {
   }
   .pub-card-info {
     padding: 24px;
+  }
+
+  /* Team feature cards (3-col -> 1-col) */
+  .team-features {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Offering list (2-col -> 1-col) */
+  .offering-list {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Steps grid (4-col -> 1-col) */
+  .steps-grid {
+    grid-template-columns: 1fr !important;
   }
 
   /* Hamburger button */
@@ -1241,7 +1260,7 @@ nav .nav-links.open {
     <div class="board-grid">
 
       <div class="board-card">
-        <div class="board-photo"><img style="width:100%;height:100%;object-fit:cover;object-position:center top;" style="object-position:center top;" src="https://i.imgur.com/N2JTegO.png" alt="Yashi Jain" onerror="this.style.display='none'"></div>
+        <div class="board-photo"><img style="width:100%;height:100%;object-fit:cover;object-position:center top;" style="object-position:center top;" src="https://i.imgur.com/ciltwuJ.png" alt="Yashi Jain" onerror="this.style.display='none'"></div>
         <div class="board-name">Yashi Jain</div>
         <div class="board-role">Co-President</div>
         <a href="https://www.linkedin.com/in/yashasvinijain/" target="_blank" class="board-li">
@@ -1415,7 +1434,7 @@ style="width: 100% !important; height:320 !important; object-fit: contain !impor
         </div>
       </div>
 <div style="margin-top:40px;padding:28px 32px;background:var(--green-wash);border-radius:8px;">
-   <img src="https://i.imgur.com/uyo4WIy.jpeg" style="width: 100%; height: 400px; object-fit: cover; object-position: center 20%; border-radius: 8px;">
+   <img src="https://i.imgur.com/yC6O7xX.jpeg" style="width: 100%; height: 400px; object-fit: cover; object-position: center 20%; border-radius: 8px;">
 </div>
     </div>
 
@@ -1601,7 +1620,7 @@ style="width: 100% !important; height:320 !important; object-fit: contain !impor
   </div>
 
   <div style="margin-top:40px; border-radius:12px; overflow:hidden; aspect-ratio: 21/9;">
-    <img src="https://i.imgur.com/uyo4WIy.jpeg" 
+    <img src="https://i.imgur.com/yC6O7xX.jpeg" 
          style="width: 100%; height: 400px; object-fit: cover; object-position: center 20%; border-radius: 12px;">
   </div>
 
@@ -1745,8 +1764,24 @@ style="width: 100% !important; height:320 !important; object-fit: contain !impor
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           </button>
           <div class="faq-a"><div class="faq-a-inner">Not at all. UFA is open to all UT Austin students regardless of major. We have members from CS, Economics, Liberal Arts, Engineering, and more. A genuine interest in finance is what matters.</div></div>
-        </div>">
+        </div>
+                <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            What is the time commitment?
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+          <div class="faq-a"><div class="faq-a-inner">General members attend one weekly meeting on Wednesdays from 5–6 PM. Analysts and Associates have an additional weekly program meeting each week. Board members commit additional hours for leadership responsibilities.</div></div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            When do general meetings take place?
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+          <div class="faq-a"><div class="faq-a-inner">General meetings are held every Wednesday from 5–6 PM at the McCombs School of Business. Meetings feature a market watch, a corporate speaker, and food — open to all members.</div></div>
+        </div>
       </div>
+      
 
     <div style="margin-top:40px;padding:28px 32px;background:rgba(20, 36, 20, 0.05);border-radius:8px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;">
       <div>
@@ -2387,7 +2422,7 @@ sb.auth.getSession().then(({ data: { session } }) => {
     </div>
   </div>
   <div class="footer-bottom">
-    <span class="footer-bottom-text">© 2025 University Finance Association · The University of Texas at Austin</span>
+    <span class="footer-bottom-text">© 2026 University Finance Association · The University of Texas at Austin</span>
     <div class="footer-bottom-links">
       <a href="mailto:financeassociationtx@gmail.com">financeassociationtx@gmail.com</a>
     </div>
