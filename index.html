@@ -2214,7 +2214,7 @@ async function checkIn() {
     .from('sessions')
     .select('*')
     .eq('code', code)
-    
+    .eq('active', 'true')
     .single();
 
   if (sessErr || !session) {
