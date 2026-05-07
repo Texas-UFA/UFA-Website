@@ -730,35 +730,12 @@ align-items: flex-end;
   nav {
     padding: 0 20px;
     height: 64px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    position: relative;
   }
   .nav-logo {
     font-size: 16px;
   }
-  .nav-links {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 4px;
-  padding: 8px 12px;
-  width: 100%;
-  order: 3;
-}
-
-.nav-links a {
-  font-size: 12px;
-  padding: 5px 8px;
-}
-
-nav {
-  flex-wrap: wrap;
-  height: auto;
-  padding: 12px 16px;
-}
-
-.nav-logo {
-  order: 1;
-}
 
   /* Hero */
   .hero {
@@ -939,6 +916,22 @@ nav {
     grid-template-columns: 1fr !important;
   }
 
+  /* Membership grid (2-col -> 1-col) */
+  .membership-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Two-col with inline style override */
+  .two-col {
+    grid-template-columns: 1fr !important;
+    gap: 32px !important;
+  }
+
+  /* Comp grid inline style override */
+  #comp-grid-main {
+    grid-template-columns: 1fr !important;
+  }
+
   /* Hamburger button */
   .hamburger {
     display: flex !important;
@@ -1008,6 +1001,12 @@ nav .nav-links.open {
   }
 
 }  /* ← this closes the 768px block */
+
+@media (max-width: 768px) {
+  #comp-grid-main {
+    grid-template-columns: 1fr !important;
+  }
+}
 
 .hamburger {
   display: none;
@@ -1480,7 +1479,7 @@ style="width: 100% !important; height:320 !important; object-fit: contain !impor
   <div style="width: 60px; height: 3px; background: var(--green-dark); margin: 0 auto 24px;"></div>
 </div>
 
-<div class="offering-grid-wrapper" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 80px; align-items: stretch;">  
+<div class="offering-grid-wrapper" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 80px; align-items: stretch;" id="comp-grid-main">  
   <div class="comp-card" style="background: white; border: 1px solid #eef0f2; padding: 32px; border-radius: 12px; transition: all 0.3s ease;">
     <div style="color: var(--green-dark); font-size: 24px; margin-bottom: 16px;opacity: 0.45;">01</div>
     <h4 style="font-family: serif; font-size: 20px; color: var(--text-dark); margin-bottom: 12px;">Active Fund Management</h4>
@@ -1569,7 +1568,7 @@ style="width: 100% !important; height:320 !important; object-fit: contain !impor
 
 <div id="tab-consulting" class="tab-pane">
   
-  <div class="two-col" style="margin-bottom:56px; display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center;">
+  <div class="two-col" style="margin-bottom:56px; align-items: center;">
     <div>
       <div class="section-tag">Selective · Consulting track</div>
       <h2 class="section-title">Consulting Team</h2>
