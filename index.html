@@ -1068,7 +1068,19 @@ nav .nav-links.open {
 #upcoming-meetings {
   grid-template-columns: 1fr !important;
 }
-
+.consulting-cards {
+  grid-template-columns: 1fr !important;
+}
+.membership-card {
+  width: 100%;
+  min-width: 0;
+}
+.tabs {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  flex-wrap: nowrap;
+  padding-bottom: 4px;
+}
 }  /* ← this closes the 768px block */
 
 @media (max-width: 768px) {
@@ -1655,10 +1667,10 @@ style="width: 100% !important; height:320 !important; object-fit: contain !impor
          style="width:100%; border-radius:12px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
   </div>
 
-  <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:40px; align-items:stretch;">
+<div class="consulting-cards" style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:40px; align-items:stretch;">
     <div class="feature-card reveal">
       <div class="feature-title">Case Coaching</div>
-      <p class="feature-body">Practice live case interviews with experienced upperclassmen. Sharpen your structured thinking and communication under realistic interview conditions.</p>
+      <p class="feature-body">Practice live case interviews. Sharpen your structured thinking and communication under realistic interview conditions.</p>
     </div>
     <div class="feature-card reveal">
       <div class="feature-title">Industry Deep Dives</div>
@@ -1668,7 +1680,7 @@ style="width: 100% !important; height:320 !important; object-fit: contain !impor
       <div class="feature-title">Client Simulations</div>
       <p class="feature-body">Build and present consulting deliverables to simulated clients. Develop slide decks, synthesize findings, and defend your recommendations.</p>
     </div>
-  </div>
+  </div>>
 
   <div style="margin-top:0; padding:28px 32px; background:var(--green-wash); border-radius:8px;">
     <img src="https://i.imgur.com/1qDXUl0.jpeg" style="width:100%; height:400px; object-fit:cover; object-position:center 40%; border-radius:12px; display:block;">
@@ -2591,14 +2603,25 @@ document.querySelectorAll('.board-card').forEach(card => {
   boardObserver.observe(card);
 });
 
-document.querySelectorAll('#page-home .reveal').forEach((el, i) => {
-  setTimeout(() => el.classList.add('visible'), i * 120);
+document.querySelectorAll('#page-home .reveal').forEach(el => {
+  observer.observe(el);
 });
 
 document.querySelectorAll('.tab-pane.active .reveal').forEach((el, i) => {
   setTimeout(() => el.classList.add('visible'), i * 80);
 });
 
+// Re-trigger reveals when a page is shown
+function reObserveReveals(page) {
+  page.querySelectorAll('.reveal').forEach(el => {
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight) {
+      el.classList.add('visible');
+    } else {
+      observer.observe(el);
+    }
+  });
+}
 </script>
 </body>
 </html>
