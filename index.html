@@ -67,7 +67,7 @@
   }
   .hero-img {
     position: absolute; inset: 0;
-    background: url('https://images.squarespace-cdn.com/content/v1/686dfb2501bd5e0cde0fb427/b27f66cb-8396-4e80-bc50-7b089263b20f/7X2A3762.jpg') center 55%/cover no-repeat;
+    background: url('https://images.squarespace-cdn.com/content/v1/686dfb2501bd5e0cde0fb427/b27f66cb-8396-4e80-bc50-7b089263b20f/7X2A3762.jpg') 65% 55%/cover no-repeat;
   }
   .hero-overlay {
     position: absolute; inset: 0;
@@ -285,7 +285,7 @@
     border-radius: 6px; overflow: hidden;
     aspect-ratio: 4/3;
   }
-  .mission-band-img img { width: 100%; height: 100%; object-fit: cover; }
+  .mission-band-img img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.3); }
   .mission-quote {
     font-family: var(--font-display);
     font-size: clamp(18px, 2.2vw, 26px);
@@ -406,11 +406,11 @@
     overflow: hidden;
     display: flex;
     align-items: flex-end;
-    background-position: center 85%;
+    background-position: center 95%;
 background-image: linear-gradient(rgba(26, 44, 26, 0.10), rgba(26, 44, 26, 0.10)), url("https://i.postimg.cc/sDp4xSbj/Mc-Combs1-1-(1).jpg");
 background-size: cover;
 background-repeat: no-repeat;
-background-position: center;
+background-position: center 95%;
 }
   .about-hero-overlay { position: absolute; inset: 0; background: rgba(20,36,20,0.25); }
   .about-hero-content { position: relative; z-index: 2; padding: 0 72px 56px; }
@@ -503,7 +503,7 @@ background-position: center;
   /* ── HOW TO JOIN PAGE ── */
 .join-hero {
       background-image: url('https://i.postimg.cc/ydCnNPnf/IMG-4496.jpg');
-    background-position: center 60%;
+    background-position: center 40%;
     background-size: cover;
     background-repeat: no-repeat;
 height: 60vh; 
@@ -516,7 +516,7 @@ align-items: flex-end;
   .join-hero::after { content: ''; position: absolute; inset: 0; background: rgba(20,36,20,0.25); }
   .join-hero-content { position: relative; z-index: 2; padding: 0 72px 56px; }
 
-  .membership-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 24px; }
+  .membership-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 24px; align-items: start; }
   .membership-card {
     background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 36px 32px;
   }
@@ -566,8 +566,7 @@ align-items: flex-end;
   display: flex;
   align-items: flex-end;
   justify-content: flex-start;
-   background: url("https://i.postimg.cc/FHj4RPVf/7X2A4141.jpg") center 20% / cover no-repeat;
-  
+   background: url("https://i.postimg.cc/FHj4RPVf/7X2A4141.jpg") center 15% / 115% auto no-repeat;
 }
   
   .pub-hero::after {
@@ -770,7 +769,7 @@ align-items: flex-end;
   height: 100vh;
 }
 .hero-img {
-  background-position: 25% 55%;
+  /* handled by mobile override below */
 }
   .hero-content {
     padding: 0 24px 80px;
@@ -827,13 +826,16 @@ align-items: flex-end;
     height: 260px;
     aspect-ratio: unset;
     overflow: hidden;
-    width: 100%;
+    width: calc(100% + 144px);
+    margin-left: -72px;
+    margin-right: -72px;
   }
   .mission-band-img img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
+    transform: scale(1.3);
   }
   .mission-quote {
     font-size: 1.3rem;
@@ -873,11 +875,11 @@ align-items: flex-end;
 
   /* Photo strip */
   .photo-strip {
-    grid-template-columns: repeat(2, 1fr);
-    height: auto;
+    grid-template-columns: 1fr !important;
+    height: auto !important;
   }
   .photo-strip-img {
-    height: 160px;
+    height: 260px;
   }
 
   /* Tab buttons - wrap horizontally, don't stack */
@@ -901,6 +903,11 @@ align-items: flex-end;
   }
   .page-hero-title {
     font-size: 36px;
+  }
+
+  /* About hero */
+  .about-hero {
+    background-position: 70% center !important;
   }
 
   /* About story grid */
@@ -1080,6 +1087,12 @@ nav .nav-links.open {
   flex-wrap: nowrap;
   padding-bottom: 4px;
 }
+
+/* Instagram grid: 3-col → 1-col */
+.insta-grid {
+  grid-template-columns: 1fr !important;
+}
+
 }  /* ← this closes the 768px block */
 
 @media (max-width: 768px) {
@@ -1113,6 +1126,82 @@ nav .nav-links.open {
   .join-hero-img {
   background-position: 20% 55%;
 }
+
+  /* Fix desktop-zoomed heroes on mobile */
+  .pub-hero {
+    background-size: cover !important;
+    background-position: center 15% !important;
+  }
+  .join-hero {
+    background-image: url('https://i.postimg.cc/ydCnNPnf/IMG-4496.jpg') !important;
+    background-size: cover !important;
+    background-position: center 100% !important;
+    background-repeat: no-repeat !important;
+  }
+  .team-detail-hero {
+    background-position: center 90% !important;
+  }
+
+  /* Home hero — override full shorthand on mobile */
+  .hero-img {
+    background: url('https://images.squarespace-cdn.com/content/v1/686dfb2501bd5e0cde0fb427/b27f66cb-8396-4e80-bc50-7b089263b20f/7X2A3762.jpg') 65% 20% / cover no-repeat !important;
+  }
+
+  /* Analyst 01/02/03 steps grid → 1 column on mobile */
+  .analyst-steps-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .analyst-steps-grid > div {
+    border-right: none !important;
+    border-bottom: 1px solid var(--border);
+    padding: 24px 0 !important;
+  }
+  .analyst-steps-grid > div:last-child {
+    border-bottom: none;
+  }
+
+  /* Investment dinner photo — move up on mobile */
+  #tab-investment .team-photo-tall img {
+    object-position: center 5% !important;
+  }
+
+  /* Consulting social photo — slight zoom on mobile */
+  #tab-consulting .team-photo-tall img {
+    transform: scale(1.1);
+    transform-origin: center 40%;
+  }
+
+  /* Analyst case competition photo — shift down on mobile */
+  .team-photo-tall.analyst-comp-photo img {
+    object-position: center 80% !important;
+  }
+
+  /* Tall team photos → 250px horizontal on mobile (edits 4, 5, 6) */
+  .team-photo-tall {
+    height: 250px !important;
+    padding: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+  }
+  .team-photo-tall img {
+    height: 250px !important;
+    width: 100% !important;
+    object-fit: cover !important;
+    border-radius: 0 !important;
+  }
+
+  /* PDF iframe fix for mobile (edit 7) */
+  .pub-card-embed-container iframe {
+    height: 480px !important;
+    width: 100% !important;
+  }
+  .pub-card-embed-container > div[style*="margin-top:32px"],
+  .pub-card-embed-container > div[style*="margin-top: 32px"] {
+    overflow: hidden;
+    border-radius: 8px;
+  }
 }  /* ← this closes the 768px block */
 
 
@@ -1129,6 +1218,17 @@ nav .nav-links.open {
   }
   .hero h1 {
     font-size: 30px;
+  }
+}
+
+/* ── DESKTOP OVERRIDES (min-width: 769px) ── */
+@media (min-width: 769px) {
+  .hero-img {
+    background-position: 65% 55% !important;
+  }
+  .join-hero {
+    background-size: 115% !important;
+    background-position: center 56% !important;
   }
 }
 </style>
@@ -1273,7 +1373,7 @@ nav .nav-links.open {
   </section>
 
   <!-- Photo strip -->
-    <div class="photo-strip" style="height:280px;grid-template-columns:repeat(3,1fr);">
+    <div class="photo-strip" style="height:360px;grid-template-columns:repeat(3,1fr);">
     <div class="photo-strip-img"><img src="https://i.imgur.com/8kF1RMl.jpeg"alt="UFA board dinner" style="object-position:center 40%;"></div> 
     <div class="photo-strip-img"><img src="https://i.imgur.com/15WFDA9.jpeg"alt="UFA board dinner" style="object-position:center 60%;"></div>   
     <div class="photo-strip-img"><img src="https://i.imgur.com/nn0Cd9j.jpeg"alt="UFA board dinner" style="object-position:center 5%;"></div>   
@@ -1489,7 +1589,7 @@ nav .nav-links.open {
 ══════════════════════════════════ -->
 <div id="page-teams" class="page">
 
-  <section class="team-detail-hero" style="background:url('https://images.squarespace-cdn.com/content/v1/686dfb2501bd5e0cde0fb427/606dbb4d-cb2b-4aab-88c4-44ffdbb56b30/IMG_1606.jpg') center 66%/cover no-repeat;">
+  <section class="team-detail-hero" style="background:url('https://images.squarespace-cdn.com/content/v1/686dfb2501bd5e0cde0fb427/606dbb4d-cb2b-4aab-88c4-44ffdbb56b30/IMG_1606.jpg') center 40%/cover no-repeat;">
     <div style="position:absolute;inset:0;background:rgba(20,36,20,0.35);"></div>
     <div style="position:relative;z-index:2;padding:0 72px 56px;">
       <div class="page-eyebrow">Programs</div>
@@ -1514,14 +1614,14 @@ nav .nav-links.open {
           <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:32px;">Each week, our Directors of Investment and Consulting lead sessions covering the fundamentals — accounting, valuation, financial modeling, and market analysis. It's the foundation that prepares you for everything else UFA has to offer.</p>
           <a href="https://docs.google.com/forms/d/e/1FAIpQLSednj-xoNhhCCvGKyAnP4W1m9p-CNeTw28Cag6ibZsy71G5_A/viewform" target="_blank" class="btn-primary">Apply to Analyst Program</a>
         </div>
-         <div style="border-radius:12px; overflow:hidden; height:400px;">
+         <div class="team-photo-tall analyst-comp-photo" style="border-radius:12px; overflow:hidden; height:400px;">
   <img src="https://i.imgur.com/3O0joVw.jpeg" 
     alt="UFA Analysts at case competition" 
-    style="width:100%; height:100%; object-fit:cover; object-position:center 100%; display:block;">
+    style="width:100%; height:100%; object-fit:cover; object-position:center 95%; display:block;">
 </div>
       </div>
       <div class="reveal" style="border-top:1px solid var(--border);margin-top:8px;">
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;border-bottom:1px solid var(--border);">
+        <div class="analyst-steps-grid" style="display:grid;grid-template-columns:1fr 1fr 1fr;border-bottom:1px solid var(--border);">
           <div style="padding:32px 28px 32px 0;border-right:1px solid var(--border);text-align:center;">
             <div style="font-family:var(--font-display);font-size:48px;font-weight:500;color:var(--green-light);line-height:1;margin-bottom:12px;">01</div>
             <div style="font-family:var(--font-display);font-size:18px;font-weight:500;color:var(--text-dark);margin-bottom:10px;">Explore Both Paths</div>
@@ -1539,7 +1639,7 @@ nav .nav-links.open {
           </div>
         </div>
       </div>
-<div style="margin-top:40px; border-radius:12px; overflow:hidden;">
+<div class="team-photo-tall" style="margin-top:40px; border-radius:12px; overflow:hidden;">
   <img src="https://i.imgur.com/yC6O7xX.jpeg" style="width:100%; height:600px; object-fit:cover; object-position:center 20%; display:block;">
   </div>
     </div>
@@ -1580,13 +1680,8 @@ nav .nav-links.open {
           </div>
         </div>
       </div>
-      <div style="margin-top:40px;padding:28px 32px;">
-         <img src="https://i.imgur.com/ILa8P5V.jpeg" style= "width: 100% !important; 
-         height: 600px !important; 
-         object-fit: cover !important; 
-         object-position: center 5% !important; 
-         border-radius: 12px; 
-         display: block;">
+      <div class="team-photo-tall" style="margin-top:40px;padding:28px 32px;">
+         <img src="https://i.imgur.com/ILa8P5V.jpeg" style="width:100%; height:600px; object-fit:cover; object-position:center 10%; border-radius:12px; display:block;">
       </div>
 
 <div style="margin-top: 30px; margin-bottom: 30px; text-align: center;">
@@ -1679,8 +1774,10 @@ nav .nav-links.open {
         </div>
       </div>
 
-  <div style="margin-top:0; padding:28px 32px;">
-    <img src="https://i.imgur.com/1qDXUl0.jpeg" style="width:100%; height:600px; object-fit:cover; object-position:center 40%; border-radius:12px; display:block;">
+  <div class="team-photo-tall" style="margin-top:0; padding:28px 32px;">
+    <div style="border-radius:12px; overflow:hidden; height:600px;">
+      <img src="https://i.imgur.com/1qDXUl0.jpeg" style="width:100%; height:100%; object-fit:cover; object-position:55% 40%; transform:scale(1.15); transform-origin:55% 40%; display:block;">
+    </div>
   </div>
 
 
@@ -1855,7 +1952,7 @@ nav .nav-links.open {
         </div>
       </div>
       <div style="margin-top:32px;width:100%;border-radius:12px;overflow:hidden;box-shadow:0 2px 16px rgba(0,0,0,0.10);">
-        <iframe src="fall2025report.pdf" width="100%" height="800px" style="border:none;display:block;" title="UFA Fall 2025 Research Report"></iframe>
+        <iframe src="fall2025report.pdf" width="100%" height="600px" style="border:none;display:block;" title="UFA Fall 2025 Research Report"></iframe>
       </div>
     </div>
   </section>
@@ -2620,6 +2717,49 @@ function reObserveReveals(page) {
     }
   });
 }
+
+// Mobile hero fixes
+function applyMobileHeroFixes() {
+  const isMobile = window.innerWidth <= 768;
+
+  // Teams hero (inline style on element — must use JS)
+  const teamHero = document.querySelector('.team-detail-hero');
+  if (teamHero) {
+    teamHero.style.backgroundPosition = isMobile ? 'center 90%' : 'center 40%';
+  }
+
+  // Home hero
+  const heroImg = document.querySelector('.hero-img');
+  if (heroImg) {
+    if (isMobile) {
+      heroImg.style.backgroundImage = "url('https://images.squarespace-cdn.com/content/v1/686dfb2501bd5e0cde0fb427/b27f66cb-8396-4e80-bc50-7b089263b20f/7X2A3762.jpg')";
+      heroImg.style.backgroundPosition = '65% 20%';
+      heroImg.style.backgroundSize = 'cover';
+    }
+  }
+
+  // Join hero — apply whenever visible
+  const joinHero = document.querySelector('.join-hero');
+  if (joinHero) {
+    if (isMobile) {
+      joinHero.style.backgroundPosition = 'center 40%';
+      joinHero.style.backgroundSize = 'cover';
+    } else {
+      joinHero.style.backgroundPosition = 'center 40%';
+      joinHero.style.backgroundSize = '115%';
+    }
+  }
+}
+
+applyMobileHeroFixes();
+window.addEventListener('resize', applyMobileHeroFixes);
+
+// Re-apply when join page is shown
+const _origShowPage = showPage;
+window.showPage = function(id) {
+  _origShowPage(id);
+  if (id === 'join') setTimeout(applyMobileHeroFixes, 50);
+};
 </script>
 </body>
 </html>
