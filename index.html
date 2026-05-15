@@ -67,7 +67,7 @@
   }
   .hero-img {
     position: absolute; inset: 0;
-    background: url('https://images.squarespace-cdn.com/content/v1/686dfb2501bd5e0cde0fb427/b27f66cb-8396-4e80-bc50-7b089263b20f/7X2A3762.jpg') 65% 55%/cover no-repeat;
+    background: url('https://images.squarespace-cdn.com/content/v1/686dfb2501bd5e0cde0fb427/b27f66cb-8396-4e80-bc50-7b089263b20f/7X2A3762.jpg') 52% 55%/cover no-repeat;
   }
   .hero-overlay {
     position: absolute; inset: 0;
@@ -285,7 +285,7 @@
     border-radius: 6px; overflow: hidden;
     aspect-ratio: 4/3;
   }
-  .mission-band-img img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.3); }
+  .mission-band-img img { width: 100%; height: 100%; object-fit: cover; object-position: center 60%; transform: scale(1.3); }
   .mission-quote {
     font-family: var(--font-display);
     font-size: clamp(18px, 2.2vw, 26px);
@@ -513,7 +513,7 @@ overflow: hidden;
 display: flex; 
 align-items: flex-end;
   }
-  .join-hero::after { content: ''; position: absolute; inset: 0; background: rgba(20,36,20,0.25); }
+  .join-hero::after { content: ''; position: absolute; inset: 0; background: rgba(20,36,20,0.10); }
   .join-hero-content { position: relative; z-index: 2; padding: 0 72px 56px; }
 
   .membership-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 24px; align-items: stretch; }
@@ -578,7 +578,7 @@ align-items: flex-end;
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, rgba(20,36,20,0.1) 0%, rgba(20,36,20,0.25) 50%, rgba(20,36,20,0.6) 100%);
+  background: linear-gradient(to bottom, rgba(20,36,20,0.05) 0%, rgba(20,36,20,0.10) 50%, rgba(20,36,20,0.35) 100%);
   z-index: 1;
 }
 .pub-hero-content {
@@ -664,7 +664,7 @@ align-items: flex-end;
     overflow: hidden;
     display: flex;
     align-items: flex-end;
-    background-position: center 50%;
+    background-position: center 65%;
     background-size: cover;
     background-repeat: no-repeat;
     background-image: url('https://i.postimg.cc/VLVmSrt2/A77E83A5-AF5B-464B-BC3B-68A9ECF91163-1-105-c.jpg');
@@ -772,30 +772,57 @@ align-items: flex-end;
   }
 
   /* Hero */
-.hero {
-  height: 100vh;
-}
-.hero-img {
-  /* handled by mobile override below */
-}
+  .hero {
+    height: 100vh;
+    align-items: flex-end;
+  }
+  .hero-overlay {
+    background: linear-gradient(to bottom,
+      rgba(0, 0, 0, 0.0) 0%,
+      rgba(0, 0, 0, 0.0) 30%,
+      rgba(20, 24, 20, 0.4) 50%,
+      rgba(20, 24, 20, 0.8) 75%,
+      rgba(20, 24, 20, 0.97) 100%
+    ) !important;
+  }
+  .hero-img {
+    /* handled by mobile override below */
+  }
   .hero-content {
-    padding: 0 24px 80px;
+    padding: 0 24px 24px;
     max-width: 100%;
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .hero-top {
+    padding: 0;
+    margin-bottom: 4px;
+  }
+  .hero-bottom {
+    padding: 0;
+  }
+  .hero-eyebrow {
+    font-size: 11px !important;
+    margin-bottom: 4px !important;
+    gap: 8px !important;
+  }
+  .hero-eyebrow::before {
+    width: 18px !important;
   }
   .hero h1 {
-    font-size: 36px;
+    font-size: 32px;
+    margin-bottom: 10px !important;
+    line-height: 1.05 !important;
   }
   .hero-sub {
-    font-size: 16px;
-  }
-  .hero-badge {
-    top: 20px;
-    right: 20px;
-    padding: 10px 14px;
+    font-size: 14px;
+    margin-bottom: 16px !important;
+    line-height: 1.5 !important;
   }
   .hero-btns {
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
   }
   .btn-primary, .btn-outline {
     width: 100%;
@@ -843,9 +870,14 @@ align-items: flex-end;
     object-fit: cover;
     display: block;
     transform: scale(1.3);
+    object-position: center 60%;
   }
   .mission-quote {
-    font-size: 1.3rem;
+    font-size: 0.95rem;
+    line-height: 1.5 !important;
+  }
+  .mission-band {
+    padding: 40px 20px;
   }
 
   /* Teams grid */
@@ -867,7 +899,12 @@ align-items: flex-end;
   /* Board grid */
   .board-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
+    gap: 12px;
+    max-width: 100% !important;
+    margin: 0 !important;
+  }
+  .board-photo {
+    aspect-ratio: 1 !important;
   }
 
   /* Member grid */
@@ -905,7 +942,10 @@ align-items: flex-end;
   /* Hero pages (about, teams, publications etc.) */
   .about-hero-content,
   .contact-hero-content,
-  .pub-hero-content {
+  .pub-hero-content,
+  .join-hero-content,
+  .faq-hero-content,
+  .teams-hero-content {
     padding: 0 24px 40px;
   }
   .page-hero-title {
@@ -915,6 +955,30 @@ align-items: flex-end;
   /* About hero */
   .about-hero {
     background-position: 70% center !important;
+    height: 30vh !important;
+    min-height: 180px !important;
+  }
+  .team-detail-hero {
+    height: 30vh !important;
+    min-height: 180px !important;
+  }
+  .join-hero {
+    height: 30vh !important;
+    min-height: 180px !important;
+    background-size: 220% !important;
+    background-position: center 35% !important;
+  }
+  .pub-hero {
+    height: 30vh !important;
+    min-height: 180px !important;
+  }
+  .faq-hero {
+    height: 25vh !important;
+    min-height: 150px !important;
+  }
+  .contact-hero {
+    height: 30vh !important;
+    min-height: 180px !important;
   }
 
   /* About story grid */
@@ -934,8 +998,11 @@ align-items: flex-end;
     padding: 40px 24px 24px;
   }
   .footer-top {
-    grid-template-columns: 1fr;
-    gap: 32px;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+  }
+  .footer-brand {
+    display: none;
   }
   .footer-bottom {
     flex-direction: column;
@@ -980,8 +1047,14 @@ align-items: flex-end;
   }
 
   /* Membership grid (2-col -> 1-col) */
+  #faq-grid {
+    grid-template-columns: 1fr !important;
+  }
   .membership-grid {
     grid-template-columns: 1fr !important;
+  }
+  .membership-card {
+    padding: 20px 20px !important;
   }
 
   /* Two-col with inline style override */
@@ -994,8 +1067,6 @@ align-items: flex-end;
   #comp-grid-main {
     grid-template-columns: 1fr !important;
   }
-
-  /* Hamburger button */
   .hamburger {
     display: flex !important;
     flex-direction: column;
@@ -1095,9 +1166,17 @@ nav .nav-links.open {
   padding-bottom: 4px;
 }
 
-/* Instagram grid: 3-col → 1-col */
+/* Instagram grid: 1-col smaller on mobile */
 .insta-grid {
   grid-template-columns: 1fr !important;
+  gap: 12px !important;
+}
+.insta-card img {
+  aspect-ratio: 16/5 !important;
+  object-fit: cover !important;
+}
+.insta-card {
+  border-radius: 6px !important;
 }
 
 }  /* ← this closes the 768px block */
@@ -1105,12 +1184,47 @@ nav .nav-links.open {
 @media (max-width: 768px) {
   #comp-grid-main {
     grid-template-columns: 1fr !important;
+    gap: 8px !important;
+    margin-bottom: 24px !important;
+  }
+  #comp-grid-main .comp-card {
+    padding: 14px !important;
+  }
+  #comp-grid-main .comp-card > div:first-child {
+    font-size: 14px !important;
+    margin-bottom: 6px !important;
+  }
+  #comp-grid-main .comp-card h4 {
+    font-size: 13px !important;
+    margin-bottom: 4px !important;
+  }
+  #comp-grid-main .comp-card p {
+    font-size: 12px !important;
+    line-height: 1.5 !important;
+  }
+  .invest-comp {
+    margin-top: 16px !important;
+    margin-bottom: 16px !important;
+  }
+  .invest-comp h3 {
+    font-size: 24px !important;
+    margin-bottom: 8px !important;
+  }
+  .invest-photo img {
+    height: 260px !important;
+  }
+  .invest-photo {
+    margin-top: 16px !important;
+    padding: 0 !important;
   }
   .cta-band {
     flex-direction: column;
     align-items: flex-start;
     padding: 40px 24px;
     gap: 24px;
+  }
+  .cta-band-title {
+    font-size: 22px;
   }
   .cta-band > div:last-child {
     flex-direction: column;
@@ -1141,8 +1255,8 @@ nav .nav-links.open {
   }
   .join-hero {
     background-image: url('https://i.postimg.cc/ydCnNPnf/IMG-4496.jpg') !important;
-    background-size: cover !important;
-    background-position: center 100% !important;
+    background-size: 130% !important;
+    background-position: center 55% !important;
     background-repeat: no-repeat !important;
   }
   .team-detail-hero {
@@ -1151,7 +1265,7 @@ nav .nav-links.open {
 
   /* Home hero — override full shorthand on mobile */
   .hero-img {
-    background: url('https://images.squarespace-cdn.com/content/v1/686dfb2501bd5e0cde0fb427/b27f66cb-8396-4e80-bc50-7b089263b20f/7X2A3762.jpg') 65% 20% / cover no-repeat !important;
+    background: url('https://i.postimg.cc/L5rkmFpr/7X2A3757.jpg') center 40% / cover no-repeat !important;
   }
 
   /* Analyst 01/02/03 steps grid → 1 column on mobile */
@@ -1167,7 +1281,15 @@ nav .nav-links.open {
     border-bottom: none;
   }
 
-  /* Investment dinner photo — zoom out on mobile */
+  /* Investment tab — reorder competencies above photo on mobile */
+  #tab-investment .invest-lower {
+    display: flex;
+    flex-direction: column;
+  }
+  #tab-investment .invest-bullets { order: 1; }
+  #tab-investment .invest-comp    { order: 2; }
+  #tab-investment #comp-grid-main { order: 3; }
+  #tab-investment .invest-photo   { order: 4; }
   #tab-investment .team-photo-tall {
     height: auto !important;
     padding: 0 !important;
@@ -1214,8 +1336,8 @@ nav .nav-links.open {
     margin-right: 0 !important;
   }
   .pub-card-embed-container iframe {
-    height: auto !important;
-    aspect-ratio: 1 / 1.41 !important;
+    height: 320px !important;
+    aspect-ratio: unset !important;
     width: 100% !important;
     max-width: 100% !important;
     display: block !important;
@@ -1236,7 +1358,7 @@ nav .nav-links.open {
 
 @media (max-width: 480px) {
   .board-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
   }
   .member-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -1249,11 +1371,25 @@ nav .nav-links.open {
 /* ── DESKTOP OVERRIDES (min-width: 769px) ── */
 @media (min-width: 769px) {
   .hero-img {
-    background-position: 65% 55% !important;
+    background: url('https://images.squarespace-cdn.com/content/v1/686dfb2501bd5e0cde0fb427/b27f66cb-8396-4e80-bc50-7b089263b20f/7X2A3762.jpg') 52% 55% / cover no-repeat !important;
+  }
+  .teams-hero-content {
+    padding: 0 72px 56px !important;
+  }
+  .mission-quote {
+    font-size: clamp(20px, 2.4vw, 28px) !important;
+    line-height: 1.5 !important;
   }
   .join-hero {
     background-size: 115% !important;
     background-position: center 56% !important;
+  }
+  .mission-band-img img {
+    object-position: center 60% !important;
+    transform: scale(1.3) !important;
+  }
+  .team-photo-tall.analyst-comp-photo img {
+    object-position: center 100% !important;
   }
 }
 </style>
@@ -1278,7 +1414,7 @@ nav .nav-links.open {
     <li><a href="#" onclick="showPage('teams');closeMenu()">Teams</a></li>
     <li><a href="#" onclick="showPage('join');closeMenu()">How to Join</a></li>
     <li><a href="#" onclick="showPage('publications');closeMenu()">Publications</a></li>
-<li><a href="https://utexas.campuslabs.com/engage/organization/texasufa" target="_blank" onclick="closeMenu()" class="nav-cta outline" style="background:transparent;border:1px solid rgba(255,255,255,0.5);">Apply Now</a></li>
+<li><a href="#" onclick="showPage('contact');closeMenu()" class="nav-cta outline" style="background:transparent;border:1px solid rgba(255,255,255,0.5);">Contact Us</a></li>
 <li><a href="#" onclick="showPage('portal');closeMenu()" class="nav-cta">Member Portal</a></li>
   </ul>
 </nav>
@@ -1293,12 +1429,16 @@ nav .nav-links.open {
     <div class="hero-img"></div>
     <div class="hero-overlay"></div>
     <div class="hero-content">
-      <div class="hero-eyebrow">McCombs School of Business · UT Austin</div>
-      <h1>Break into finance.<br>Build your network.<br>Launch your career.</h1>
-      <p class="hero-sub">UFA is UT Austin's premier finance organization — connecting ambitious students to Wall Street, private equity, and consulting since 1951.</p>
-      <div class="hero-btns">
-        <a href="https://utexas.campuslabs.com/engage/organization/texasufa" target="_blank" class="btn-primary">Apply for membership</a>
-        <a href="#" onclick="showPage('teams')" class="btn-outline">Explore our teams</a>
+      <div class="hero-top">
+        <div class="hero-eyebrow">McCombs School of Business · UT Austin</div>
+        <h1>Break into finance.<br>Build your network.<br>Launch your career.</h1>
+      </div>
+      <div class="hero-bottom">
+        <p class="hero-sub">UFA is UT Austin's premier finance organization — connecting ambitious students to Wall Street, private equity, and consulting since 1951.</p>
+        <div class="hero-btns">
+          <a href="https://utexas.campuslabs.com/engage/organization/texasufa" target="_blank" class="btn-primary">Apply for membership</a>
+          <a href="#" onclick="showPage('teams')" class="btn-outline">Explore our teams</a>
+        </div>
       </div>
     </div>
   </section>
@@ -1338,7 +1478,7 @@ nav .nav-links.open {
     </div>
     <div>
       <div class="section-tag" style="color:var(--green-pale)"><span style="background:var(--green-pale);display:inline-block;width:24px;height:1px;"></span> Our mission</div>
-<p class="mission-quote" style="margin-top:16px; display: flex; align-items: flex-start; color: white; font-size: 1.8rem; line-height: 1.3; position: relative;">
+<p class="mission-quote" style="margin-top:16px; display: flex; align-items: flex-start; color: white; font-size: 1.5rem; line-height: 1.45; position: relative;">
   <span style="font-size: 4rem; font-family: serif; line-height: 1; margin-top: -10px; margin-right: 10px; flex-shrink: 0;">&ldquo;</span>
   
   <span>
@@ -1399,7 +1539,7 @@ nav .nav-links.open {
 
   <!-- Photo strip -->
     <div class="photo-strip" style="height:360px;grid-template-columns:repeat(3,1fr);">
-    <div class="photo-strip-img"><img src="https://i.imgur.com/8kF1RMl.jpeg"alt="UFA board dinner" style="object-position:center 40%;"></div> 
+    <div class="photo-strip-img" style="overflow:hidden;"><img src="https://i.imgur.com/8kF1RMl.jpeg" alt="UFA board dinner" style="width:118%;height:118%;object-fit:cover;object-position:center 40%;margin:-9% 0 0 -9%;transition:transform 0.4s;"></div>
     <div class="photo-strip-img"><img src="https://i.imgur.com/15WFDA9.jpeg"alt="UFA board dinner" style="object-position:center 60%;"></div>   
     <div class="photo-strip-img"><img src="https://i.imgur.com/nn0Cd9j.jpeg"alt="UFA board dinner" style="object-position:center 5%;"></div>   
     </div>
@@ -1428,7 +1568,7 @@ nav .nav-links.open {
   <!-- CTA -->
   <div class="cta-band">
     <div>
-      <div class="cta-band-title">The door is open — come find your people.</div>
+      <div class="cta-band-title">Your next chapter starts here.</div>
       <p class="cta-band-sub">General membership is always open. Analyst and Associate recruitment cycles launch at the start of every fall and spring semester.</p>
     </div>
     <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center;">
@@ -1466,8 +1606,10 @@ nav .nav-links.open {
         </div>
       </div>
       <div>
-        <img src="https://i.postimg.cc/Ghc6ccS5/B60389D4-5F02-434C-BC14-1B40E0A680C1-1-105-c.jpg"
-  alt="UFA Board dinner" style="width:100%; max-height:450px; object-fit:cover; border-radius:8px; display:block;">
+        <div style="overflow:hidden; border-radius:8px; max-height:450px;">
+          <img src="https://i.postimg.cc/Ghc6ccS5/B60389D4-5F02-434C-BC14-1B40E0A680C1-1-105-c.jpg"
+  alt="UFA Board dinner" style="width:100%; height:100%; object-fit:cover; object-position:center 100%; display:block;">
+        </div>
       </div>
     </div>
   </section>
@@ -1616,7 +1758,7 @@ nav .nav-links.open {
 
   <section class="team-detail-hero" style="background:url('https://images.squarespace-cdn.com/content/v1/686dfb2501bd5e0cde0fb427/606dbb4d-cb2b-4aab-88c4-44ffdbb56b30/IMG_1606.jpg') center 40%/cover no-repeat;">
     <div style="position:absolute;inset:0;background:rgba(20,36,20,0.35);"></div>
-    <div style="position:relative;z-index:2;padding:0 72px 56px;">
+    <div class="teams-hero-content" style="position:relative;z-index:2;">
       <div class="page-eyebrow">Programs</div>
       <h1 class="page-hero-title">Three Teams,<br>Two Paths,<br>One Community.</h1>
     </div>
@@ -1642,7 +1784,7 @@ nav .nav-links.open {
          <div class="team-photo-tall analyst-comp-photo" style="border-radius:12px; overflow:hidden; height:400px;">
   <img src="https://i.imgur.com/3O0joVw.jpeg" 
     alt="UFA Analysts at case competition" 
-    style="width:100%; height:100%; object-fit:cover; object-position:center 40%; display:block;">
+    style="width:100%; height:100%; object-fit:cover; object-position:center 100%; display:block;">
 </div>
       </div>
       <div class="reveal" style="border-top:1px solid var(--border);margin-top:8px;">
@@ -1685,7 +1827,8 @@ nav .nav-links.open {
         <img src = "https://i.imgur.com/SZntCtT.jpeg"
         style="width: 100%; max-height: 400px; object-fit: cover; object-position: center 20%; border-radius: 12px;">
       </div>
-      <div class="reveal" style="margin-bottom:40px;border-top:1px solid var(--border);">
+      <div class="invest-lower">
+      <div class="reveal invest-bullets" style="margin-bottom:40px;border-top:1px solid var(--border);">
         <div style="display:flex;align-items:flex-start;gap:16px;padding:24px 0;border-bottom:1px solid var(--border);">
           <div style="width:8px;height:8px;border-radius:50%;background:var(--green-light);flex-shrink:0;margin-top:6px;"></div>
           <div>
@@ -1708,11 +1851,8 @@ nav .nav-links.open {
           </div>
         </div>
       </div>
-      <div class="team-photo-tall" style="margin-top:40px;padding:28px 32px;">
-         <img src="https://i.imgur.com/ILa8P5V.jpeg" style="width:100%; height:600px; object-fit:cover; object-position:center 10%; border-radius:12px; display:block; filter:brightness(1.08);">
-      </div>
 
-<div style="margin-top: 30px; margin-bottom: 30px; text-align: center;">
+<div class="invest-comp" style="margin-top: 30px; margin-bottom: 30px; text-align: center;">
   <h3 style="font-family: serif; font-size: 36px; color: var(--text-dark); margin-bottom: 16px; font-weight: 600;">Program Core Competencies</h3>
   <div style="width: 60px; height: 3px; background: var(--green-dark); margin: 0 auto 24px;"></div>
 </div>
@@ -1754,6 +1894,10 @@ nav .nav-links.open {
     <p style="font-family: sans-serif; color: var(--text-mid); font-size: 14px; line-height: 1.6; margin: 0;">Access specialized resources for technical interview prep and networking strategies for high-finance placements.</p>
   </div>
 </div>
+      <div class="team-photo-tall invest-photo" style="margin-top:40px;padding:28px 32px;">
+        <img src="https://i.imgur.com/ILa8P5V.jpeg" style="width:100%; height:600px; object-fit:cover; object-position:center 10%; border-radius:12px; display:block; filter:brightness(1.08);">
+      </div>
+    </div><!-- /invest-lower -->
     </div>
 
     <!-- CONSULTING TAB -->
@@ -1877,11 +2021,12 @@ nav .nav-links.open {
  
 
 <section class="section bg-cream">
-  <div style="max-width:760px; margin: 0 auto;">
+  <div style="width:100%;">
     <div class="section-tag">Everything you need to know</div>
     <h2 class="section-title" style="margin-bottom:40px;">Frequently Asked Questions</h2>
-
-    <div class="faq-item reveal">
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 0 32px; max-width:100%;" id="faq-grid">
+      <div>
+        <div class="faq-item reveal">
           <button class="faq-q" onclick="toggleFaq(this)">
             What is the difference between analysts and associates?
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -1891,7 +2036,6 @@ nav .nav-links.open {
             <p style="margin-top:12px;"><strong>Associates</strong> form a smaller, tight-knit group that meets more frequently to prepare for interviews and gain hands-on experience in stock pitching or pro bono consulting. Associates have access to a wide alumni network, one-on-one mentorship, and impressive placement outcomes.</p>
           </div></div>
         </div>
-
         <div class="faq-item reveal">
           <button class="faq-q" onclick="toggleFaq(this)">
             Can I attend weekly events if I am not a general member?
@@ -1899,7 +2043,6 @@ nav .nav-links.open {
           </button>
           <div class="faq-a"><div class="faq-a-inner">No — you must be a general member and pay dues in order to attend regular UFA events. General membership is open year-round with no application required.</div></div>
         </div>
-
         <div class="faq-item reveal">
           <button class="faq-q" onclick="toggleFaq(this)">
             When do associate and analyst applications open?
@@ -1907,7 +2050,6 @@ nav .nav-links.open {
           </button>
           <div class="faq-a"><div class="faq-a-inner">For associates and analysts, recruitment happens at the beginning of fall and spring semesters. Follow our Instagram <a href="https://www.instagram.com/texasufa/" target="_blank" style="color:var(--green-accent)">@texasufa</a> for updates on exact dates.</div></div>
         </div>
-
         <div class="faq-item reveal">
           <button class="faq-q" onclick="toggleFaq(this)">
             How do I get into the associate or analyst program?
@@ -1915,7 +2057,8 @@ nav .nav-links.open {
           </button>
           <div class="faq-a"><div class="faq-a-inner">Be your authentic self. Show up to info sessions, meet the team, and express your genuine interests in your application. We look for drive and curiosity — not a perfect GPA or prior finance experience.</div></div>
         </div>
-
+      </div>
+      <div>
         <div class="faq-item reveal">
           <button class="faq-q" onclick="toggleFaq(this)">
             How much are dues?
@@ -1923,7 +2066,6 @@ nav .nav-links.open {
           </button>
           <div class="faq-a"><div class="faq-a-inner">$55 per semester or $100 for the full academic year. After joining on HornsLink, pay dues via Venmo @TEXASUFA25.</div></div>
         </div>
-
         <div class="faq-item reveal">
           <button class="faq-q" onclick="toggleFaq(this)">
             Do I need to be a business or finance major?
@@ -1931,7 +2073,7 @@ nav .nav-links.open {
           </button>
           <div class="faq-a"><div class="faq-a-inner">Not at all. UFA is open to all UT Austin students regardless of major. We have members from CS, Economics, Liberal Arts, Engineering, and more. A genuine interest in finance is what matters.</div></div>
         </div>
-                <div class="faq-item reveal">
+        <div class="faq-item reveal">
           <button class="faq-q" onclick="toggleFaq(this)">
             What is the time commitment?
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -1939,6 +2081,7 @@ nav .nav-links.open {
           <div class="faq-a"><div class="faq-a-inner">General members attend one weekly meeting on Wednesdays from 5–6 PM. Analysts and Associates have additional meetings and work outside of that time.</div></div>
         </div>
       </div>
+    </div><!-- /faq-grid -->
       
 
     <div style="margin-top:40px;padding:28px 32px;background:rgba(20, 36, 20, 0.05);border-radius:8px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;">
@@ -1969,7 +2112,7 @@ nav .nav-links.open {
     <div class="section-tag">Research reports</div>
     <h2 class="section-title">Member-authored research</h2>
     <p class="section-subtitle">Our Investment Associates publish in-depth equity research and market analysis that reflects the real-world rigor we bring to every assignment.</p>
-    <p style="font-size:15px;color:var(--text-muted);max-width:640px;margin-bottom:40px;line-height:1.7;">Each report is student-authored and peer-reviewed within the team — members select companies, build financial models, develop investment theses, and compile their findings into a professional publication.</p>
+
 
     <div class="pub-card-embed-container">
       <div class="pub-card-info">
@@ -2169,15 +2312,15 @@ nav .nav-links.open {
         </div>
         <div class="form-group">
           <label class="form-label">Your name</label>
-          <input class="form-input" type="text" placeholder="First and last name">
+          <input id="contact-name" class="form-input" type="text" placeholder="First and last name">
         </div>
         <div class="form-group">
           <label class="form-label">Email address</label>
-          <input class="form-input" type="email" placeholder="you@utexas.edu">
+          <input id="contact-email" class="form-input" type="email" placeholder="you@utexas.edu">
         </div>
         <div class="form-group">
           <label class="form-label">Subject</label>
-          <select class="form-input">
+          <select id="contact-subject" class="form-input">
             <option>I'm a prospective member</option>
             <option>Corporate partnership inquiry</option>
             <option>Consulting services inquiry</option>
@@ -2187,9 +2330,10 @@ nav .nav-links.open {
         </div>
         <div class="form-group">
           <label class="form-label">Message</label>
-          <textarea class="form-input" placeholder="Tell us a bit about yourself or what you're looking for..."></textarea>
+          <textarea id="contact-message" class="form-input" placeholder="Tell us a bit about yourself or what you're looking for..."></textarea>
         </div>
-        <button class="btn-primary" style="width:100%;" onclick="alert('Thank you! This is a design prototype — please email financeassociationtx@gmail.com directly.')">Send message</button>
+        <button class="btn-primary" id="contact-submit" style="width:100%;" onclick="sendContactForm()">Send message</button>
+        <p id="contact-status" style="margin-top:12px;font-size:14px;text-align:center;display:none;"></p>
       </div>
     </div>
   </section>
@@ -2755,8 +2899,8 @@ function applyMobileHeroFixes() {
   const heroImg = document.querySelector('.hero-img');
   if (heroImg) {
     if (isMobile) {
-      heroImg.style.backgroundImage = "url('https://images.squarespace-cdn.com/content/v1/686dfb2501bd5e0cde0fb427/b27f66cb-8396-4e80-bc50-7b089263b20f/7X2A3762.jpg')";
-      heroImg.style.backgroundPosition = '65% 20%';
+      heroImg.style.backgroundImage = "url('https://i.postimg.cc/L5rkmFpr/7X2A3757.jpg')";
+      heroImg.style.backgroundPosition = 'center 70%';
       heroImg.style.backgroundSize = 'cover';
     }
   }
@@ -2765,8 +2909,8 @@ function applyMobileHeroFixes() {
   const joinHero = document.querySelector('.join-hero');
   if (joinHero) {
     if (isMobile) {
-      joinHero.style.backgroundPosition = '40% 40%';
-      joinHero.style.backgroundSize = '110%';
+      joinHero.style.backgroundPosition = 'center 55%';
+      joinHero.style.backgroundSize = '130%';
     } else {
       joinHero.style.backgroundPosition = 'center 56%';
       joinHero.style.backgroundSize = '115%';
@@ -2783,6 +2927,50 @@ window.showPage = function(id) {
   _origShowPage(id);
   if (id === 'join') setTimeout(applyMobileHeroFixes, 50);
 };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+  emailjs.init('PxUtA58RXrKxmyCGh');
+
+  function sendContactForm() {
+    const name = document.getElementById('contact-name').value.trim();
+    const email = document.getElementById('contact-email').value.trim();
+    const subject = document.getElementById('contact-subject').value;
+    const message = document.getElementById('contact-message').value.trim();
+    const status = document.getElementById('contact-status');
+    const btn = document.getElementById('contact-submit');
+
+    if (!name || !email || !message) {
+      status.style.display = 'block';
+      status.style.color = 'red';
+      status.textContent = 'Please fill in all fields.';
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+
+    emailjs.send('service_ljdm2zl', 'template_48yta8e', {
+      name: name,
+      email: email,
+      subject: subject,
+      message: message
+    }).then(() => {
+      status.style.display = 'block';
+      status.style.color = 'green';
+      status.textContent = 'Message sent! We\'ll get back to you within 48 hours.';
+      btn.textContent = 'Sent!';
+      document.getElementById('contact-name').value = '';
+      document.getElementById('contact-email').value = '';
+      document.getElementById('contact-message').value = '';
+    }).catch(() => {
+      status.style.display = 'block';
+      status.style.color = 'red';
+      status.textContent = 'Something went wrong. Please email us directly at financeassociationtx@gmail.com.';
+      btn.disabled = false;
+      btn.textContent = 'Send message';
+    });
+  }
 </script>
 </body>
 </html>
