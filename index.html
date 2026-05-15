@@ -516,12 +516,17 @@ align-items: flex-end;
   .join-hero::after { content: ''; position: absolute; inset: 0; background: rgba(20,36,20,0.25); }
   .join-hero-content { position: relative; z-index: 2; padding: 0 72px 56px; }
 
-  .membership-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 24px; align-items: start; }
+  .membership-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 24px; align-items: stretch; }
   .membership-card {
     background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 36px 32px;
+    display: flex; flex-direction: column;
+  }
+  .membership-card .btn-primary {
+    margin-top: auto;
+    align-self: flex-start;
   }
   .membership-card.featured { border-color: var(--green-accent); border-width: 2px; }
-  .membership-badge { display: inline-block; font-size: 10px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; background: var(--green-wash); color: var(--green-accent); padding: 4px 12px; border-radius: 3px; margin-bottom: 16px; }
+  .membership-badge { display: inline-block; font-size: 10px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; background: var(--green-wash); color: var(--green-accent); padding: 4px 12px; border-radius: 3px; margin-bottom: 16px; align-self: flex-start; }
   .membership-badge.open { background: #e6f4e6; color: #2e6b2e; }
   .membership-badge.closed { background: #f4e6e6; color: #8b2e2e; }
   .membership-title { font-family: var(--font-display); font-size: 22px; font-weight: 500; margin-bottom: 12px; }
@@ -573,7 +578,7 @@ align-items: flex-end;
   content: '';
   position: absolute;
   inset: 0;
-  background: rgba(20, 36, 20, 0.25);
+  background: linear-gradient(to bottom, rgba(20,36,20,0.1) 0%, rgba(20,36,20,0.25) 50%, rgba(20,36,20,0.6) 100%);
   z-index: 1;
 }
 .pub-hero-content {
@@ -653,16 +658,18 @@ align-items: flex-end;
 
   /* ── CONTACT ── */
 .contact-hero {
-    height: 44vh;
-    min-height: 280px;
+    height: 60vh;
+    min-height: 400px;
     position: relative;
     overflow: hidden;
     display: flex;
     align-items: flex-end;
-    background-position: center 60%;
-      background-image: url('https://i.postimg.cc/VLVmSrt2/A77E83A5-AF5B-464B-BC3B-68A9ECF91163-1-105-c.jpg');
+    background-position: center 50%;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    background-image: url('https://i.postimg.cc/VLVmSrt2/A77E83A5-AF5B-464B-BC3B-68A9ECF91163-1-105-c.jpg');
 }
-  .contact-hero::after { content: ''; position: absolute; inset: 0; background: rgba(20,36,20,0.7); }
+  .contact-hero::after { content: ''; position: absolute; inset: 0; background: rgba(20,36,20,0.25); }
   .contact-hero-content { position: relative; z-index: 2; padding: 0 72px 56px; }
   .contact-list { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
   .contact-item { border-bottom: 1px solid var(--border); background: var(--white); }
@@ -1160,9 +1167,17 @@ nav .nav-links.open {
     border-bottom: none;
   }
 
-  /* Investment dinner photo — move up on mobile */
+  /* Investment dinner photo — zoom out on mobile */
+  #tab-investment .team-photo-tall {
+    height: auto !important;
+    padding: 0 !important;
+  }
   #tab-investment .team-photo-tall img {
-    object-position: center 5% !important;
+    height: auto !important;
+    width: 100% !important;
+    object-fit: contain !important;
+    object-position: center center !important;
+    border-radius: 12px !important;
   }
 
   /* Consulting social photo — slight zoom on mobile */
@@ -1192,15 +1207,25 @@ nav .nav-links.open {
     border-radius: 0 !important;
   }
 
-  /* PDF iframe fix for mobile (edit 7) */
-  .pub-card-embed-container iframe {
-    height: 480px !important;
+  .pub-card-embed-container {
+    overflow: hidden !important;
     width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
   }
-  .pub-card-embed-container > div[style*="margin-top:32px"],
-  .pub-card-embed-container > div[style*="margin-top: 32px"] {
-    overflow: hidden;
-    border-radius: 8px;
+  .pub-card-embed-container iframe {
+    height: auto !important;
+    aspect-ratio: 1 / 1.41 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    display: block !important;
+  }
+  .pub-card-info {
+    padding: 24px 20px !important;
+  }
+    height: 50vh !important;
+    background-size: cover !important;
+    background-position: center 40% !important;
   }
 }  /* ← this closes the 768px block */
 
@@ -1406,9 +1431,9 @@ nav .nav-links.open {
       <div class="cta-band-title">The door is open — come find your people.</div>
       <p class="cta-band-sub">General membership is always open. Analyst and Associate recruitment cycles launch at the start of every fall and spring semester.</p>
     </div>
-    <div style="display:flex;gap:14px;flex-wrap:wrap;">
-      <a href="https://utexas.campuslabs.com/engage/organization/texasufa" target="_blank" class="btn-white">Become a general member</a>
-      <a href="#" onclick="showPage('join')" class="btn-outline" style="color:#fff">View recruitment options</a>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center;">
+      <a href="https://utexas.campuslabs.com/engage/organization/texasufa" target="_blank" class="btn-white" style="padding:16px 36px;font-size:15px;text-align:center;display:flex;align-items:center;justify-content:center;">Become a general member</a>
+      <a href="#" onclick="showPage('join')" class="btn-outline" style="color:#fff;padding:16px 36px;font-size:15px;display:flex;align-items:center;justify-content:center;">View recruitment options</a>
     </div>
   </div>
 
@@ -1437,7 +1462,7 @@ nav .nav-links.open {
         <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">Founded in 1951, UFA is the oldest McCombs-affiliated organization at UT Austin. What started as a small group of students passionate about finance has grown into a community of 300+ members with alumni at the world's top firms.</p>
         <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:32px;">Our mission remains unchanged: to provide a welcoming, high-impact environment where any student &mdash; regardless of background or experience &mdash; can explore their curiosity about finance and build the skills to act on it.</p>
         <div style="margin-top:32px;">
-          <a href="#" onclick="showPage('join')" class="btn-primary">Join UFA today</a>
+          <a href="#" onclick="showPage('join')" class="btn-primary" style="padding:16px 36px;font-size:15px;">Join UFA today</a>
         </div>
       </div>
       <div>
@@ -1617,7 +1642,7 @@ nav .nav-links.open {
          <div class="team-photo-tall analyst-comp-photo" style="border-radius:12px; overflow:hidden; height:400px;">
   <img src="https://i.imgur.com/3O0joVw.jpeg" 
     alt="UFA Analysts at case competition" 
-    style="width:100%; height:100%; object-fit:cover; object-position:center 95%; display:block;">
+    style="width:100%; height:100%; object-fit:cover; object-position:center 40%; display:block;">
 </div>
       </div>
       <div class="reveal" style="border-top:1px solid var(--border);margin-top:8px;">
@@ -1652,7 +1677,10 @@ nav .nav-links.open {
           <h2 class="section-title">Investment Team</h2>
           <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">The Investment Associate Program is where serious finance preparation meets a tight-knit community. You'll build the technical skills recruiters want — and the relationships that last long after graduation.</p>
           <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:32px;">The technical training is rigorous. But ask any Investment Associate what they remember most, and they'll tell you it's the people.</p>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;">
           <a href="https://docs.google.com/forms/d/e/1FAIpQLSfv0DWYxpYH4c7VQk0Rf-zPa3Y9Ou1uEn5SE3_vROkMRIrsqQ/viewform" target="_blank" class="btn-primary">Apply to Investment Associates</a>
+          <a href="#" onclick="showPage('contact')" class="btn-outline" style="color:var(--green-dark);border-color:var(--green-accent);">Work with us</a>
+          </div>
         </div>
         <img src = "https://i.imgur.com/SZntCtT.jpeg"
         style="width: 100%; max-height: 400px; object-fit: cover; object-position: center 20%; border-radius: 12px;">
@@ -1681,7 +1709,7 @@ nav .nav-links.open {
         </div>
       </div>
       <div class="team-photo-tall" style="margin-top:40px;padding:28px 32px;">
-         <img src="https://i.imgur.com/ILa8P5V.jpeg" style="width:100%; height:600px; object-fit:cover; object-position:center 10%; border-radius:12px; display:block;">
+         <img src="https://i.imgur.com/ILa8P5V.jpeg" style="width:100%; height:600px; object-fit:cover; object-position:center 10%; border-radius:12px; display:block; filter:brightness(1.08);">
       </div>
 
 <div style="margin-top: 30px; margin-bottom: 30px; text-align: center;">
@@ -1805,12 +1833,16 @@ nav .nav-links.open {
     <h2 class="section-title">Choose your level of involvement</h2>
     <p class="section-subtitle">All UT Austin students are welcome. No prior finance experience required.</p>
     <div class="membership-grid">
+      <div style="grid-column:1/-1;background:var(--green-wash);border:2px solid var(--green-accent);border-radius:8px;padding:20px 28px;display:flex;align-items:flex-start;gap:16px;margin-bottom:8px;flex-wrap:wrap;">
+        <span style="font-size:14px;font-weight:700;color:var(--green-accent);letter-spacing:0.08em;text-transform:uppercase;">Next Recruitment Cycle</span>
+        <span style="font-size:15px;color:var(--text-dark);">Analyst, Investment Associates, and Consulting Associates applications open <strong>Fall 2026 (September)</strong>.</span>
+      </div>
       <div class="membership-card featured reveal">
         <div class="membership-badge open">Open year-round</div>
         <div class="membership-title">General Membership</div>
         <p class="membership-desc">Attend weekly Wednesday speaker meetings, access networking events, and get access to the full UFA community. Open to all UT Austin students at any time — no application required.</p>
-        <div class="membership-price">$45 / semester</div>
-        <div class="membership-price-note">or $75 for the full academic year</div>
+        <div class="membership-price">$90 / year</div>
+        <div class="membership-price-note">or $55 per semester</div>
         <a href="https://utexas.campuslabs.com/engage/organization/texasufa" target="_blank" class="btn-primary">Join on HornsLink</a>
         <p style="font-size:12px;color:var(--text-muted);margin-top:10px;">After joining HornsLink, pay dues via Venmo @TEXASUFA25</p>
       </div>
@@ -1818,7 +1850,8 @@ nav .nav-links.open {
         <div class="membership-badge closed">Applications currently closed</div>
         <div class="membership-title">Analyst</div>
         <p class="membership-desc">An introductory program that provides curriculum, pitches, and a community of future finance professionals. Applications open each fall and spring semester.</p>
-        <p style="font-size:14px;color:var(--text-muted);margin-bottom:20px;">Follow us on Instagram for updates when recruiting opens. Interest form available below.</p>
+        <div class="membership-price">$25 / year</div>
+        <div class="membership-price-note">or $15 per semester</div>
         <a href="https://docs.google.com/forms/d/e/1FAIpQLSeGEtzK6gp8CCAIRzTwnvoZlNKANFII7CRJRO_sy9XNEUFbMQ/viewform" target="_blank" class="btn-primary" style="background:var(--green-mid);">Fill out the interest form</a>
         <a href="https://www.instagram.com/texasufa/" target="_blank" style="display:block;margin-top:10px;font-size:13px;color:var(--green-accent);text-decoration:none;">Follow @texasufa for updates →</a>
       </div>
@@ -1826,15 +1859,13 @@ nav .nav-links.open {
         <div class="membership-badge closed">Applications currently closed</div>
         <div class="membership-title">Investment Associates</div>
         <p class="membership-desc">A selective, application-based track that provides deep technical training, mentorship, and a close-knit community of future finance professionals. Applications open each fall and spring semester.</p>
-        <p style="font-size:14px;color:var(--text-muted);margin-bottom:20px;">Follow us on Instagram for updates when recruiting opens. Interest form available below.</p>
         <a href="https://docs.google.com/forms/d/e/1FAIpQLSeGEtzK6gp8CCAIRzTwnvoZlNKANFII7CRJRO_sy9XNEUFbMQ/viewform" target="_blank" class="btn-primary" style="background:var(--green-mid);">Fill out the interest form</a>
         <a href="https://www.instagram.com/texasufa/" target="_blank" style="display:block;margin-top:10px;font-size:13px;color:var(--green-accent);text-decoration:none;">Follow @texasufa for updates →</a>
       </div>
        <div class="membership-card reveal">
         <div class="membership-badge closed">Applications currently closed</div>
         <div class="membership-title">Consulting Associates</div>
-        <p class="membership-desc">An application-based track bridging the gap between theory and strategic practice through client engagements, case-study training, and a high-caliber network. Applications open each fall and spring semester.</p>
-        <p style="font-size:14px;color:var(--text-muted);margin-bottom:20px;">Follow us on Instagram for updates when recruiting opens. Interest form available below.</p>
+        <p class="membership-desc">An application-based track bridging the gap between theory and strategic practice through client engagements and case-study training. Applications open each fall and spring semester.</p>
         <a href="https://docs.google.com/forms/d/e/1FAIpQLSeGEtzK6gp8CCAIRzTwnvoZlNKANFII7CRJRO_sy9XNEUFbMQ/viewform" target="_blank" class="btn-primary" style="background:var(--green-mid);">Fill out the interest form</a>
         <a href="https://www.instagram.com/texasufa/" target="_blank" style="display:block;margin-top:10px;font-size:13px;color:var(--green-accent);text-decoration:none;">Follow @texasufa for updates →</a>
       </div>
@@ -1848,7 +1879,7 @@ nav .nav-links.open {
 <section class="section bg-cream">
   <div style="max-width:760px; margin: 0 auto;">
     <div class="section-tag">Everything you need to know</div>
-    <h2 class="section-title" style="margin-bottom:40px;">Got questions? We've got answers.</h2>
+    <h2 class="section-title" style="margin-bottom:40px;">Frequently Asked Questions</h2>
 
     <div class="faq-item reveal">
           <button class="faq-q" onclick="toggleFaq(this)">
@@ -1938,10 +1969,11 @@ nav .nav-links.open {
     <div class="section-tag">Research reports</div>
     <h2 class="section-title">Member-authored research</h2>
     <p class="section-subtitle">Our Investment Associates publish in-depth equity research and market analysis that reflects the real-world rigor we bring to every assignment.</p>
+    <p style="font-size:15px;color:var(--text-muted);max-width:640px;margin-bottom:40px;line-height:1.7;">Each report is student-authored and peer-reviewed within the team — members select companies, build financial models, develop investment theses, and compile their findings into a professional publication.</p>
 
     <div class="pub-card-embed-container">
       <div class="pub-card-info">
-        <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px;">Fall 2026</div>
+        <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px;">Fall 2025</div>
         <div class="pub-title">Fall 2025 Research Report</div>
         <p class="pub-desc">
           Our flagship inaugural Equity Research Journal—a rigorous collection of equity research and macro analysis produced by UFA Investment Associates.
@@ -1952,7 +1984,7 @@ nav .nav-links.open {
         </div>
       </div>
       <div style="margin-top:32px;width:100%;border-radius:12px;overflow:hidden;box-shadow:0 2px 16px rgba(0,0,0,0.10);">
-        <iframe src="fall2025report.pdf" width="100%" height="600px" style="border:none;display:block;" title="UFA Fall 2025 Research Report"></iframe>
+        <iframe src="fall2025report.pdf" width="100%" height="900px" style="border:none;display:block;" title="UFA Fall 2025 Research Report"></iframe>
       </div>
     </div>
   </section>
@@ -1977,7 +2009,7 @@ nav .nav-links.open {
   <section class="section bg-cream">
     <div style="max-width:760px;">
       <div class="section-tag">Everything you need to know</div>
-      <h2 class="section-title" style="margin-bottom:40px;">Got questions? We've got answers.</h2>
+      <h2 class="section-title" style="margin-bottom:40px;">Frequently Asked Questions</h2>
 
       <div class="faq-list">
 
@@ -2029,7 +2061,7 @@ nav .nav-links.open {
             How much are dues?
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           </button>
-          <div class="faq-a"><div class="faq-a-inner">$45 per semester or $75 for the full academic year. After joining on HornsLink, pay dues via Venmo @TEXASUFA25.</div></div>
+          <div class="faq-a"><div class="faq-a-inner">$55 per semester or $90 for the full academic year. After joining on HornsLink, pay dues via Venmo @TEXASUFA25.</div></div>
         </div>
 
         <div class="faq-item reveal">
@@ -2073,7 +2105,6 @@ nav .nav-links.open {
     <div class="contact-hero-content">
     <div class="section-tag" style="color:var(--green-pale)"><span style="background:var(--green-pale);display:inline-block;width:24px;height:1px;"></span> Get in touch</div>
       <h1 class="page-hero-title">Contact Us</h1>
-      <p style="font-size:16px;color:rgba(255,255,255,0.65);margin-top:14px;max-width:480px;line-height:1.65;">We'd love to hear<br>from you.</p>
     </div>
   </div>
 
@@ -2087,9 +2118,6 @@ nav .nav-links.open {
         <div class="contact-detail" style="margin-top:32px;">
 
           <div class="contact-row reveal">
-            <div class="contact-row-icon">
-              <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-            </div>
             <div>
               <div class="contact-row-label">General email</div>
               <div class="contact-row-val"><a href="mailto:financeassociationtx@gmail.com">financeassociationtx@gmail.com</a></div>
@@ -2097,9 +2125,13 @@ nav .nav-links.open {
           </div>
 
           <div class="contact-row reveal">
-            <div class="contact-row-icon">
-              <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            <div>
+              <div class="contact-row-label">Investment team</div>
+              <div class="contact-row-val"><a href="mailto:ufainvestmentteam@gmail.com">ufainvestmentteam@gmail.com</a></div>
             </div>
+          </div>
+
+          <div class="contact-row reveal">
             <div>
               <div class="contact-row-label">Consulting team</div>
               <div class="contact-row-val"><a href="mailto:ufaconsultingteam@gmail.com">ufaconsultingteam@gmail.com</a></div>
@@ -2107,9 +2139,6 @@ nav .nav-links.open {
           </div>
 
           <div class="contact-row reveal">
-            <div class="contact-row-icon">
-              <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
-            </div>
             <div>
               <div class="contact-row-label">Instagram</div>
               <div class="contact-row-val"><a href="https://www.instagram.com/texasufa/" target="_blank">@texasufa</a></div>
@@ -2117,9 +2146,6 @@ nav .nav-links.open {
           </div>
 
           <div class="contact-row reveal">
-            <div class="contact-row-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
-            </div>
             <div>
               <div class="contact-row-label">LinkedIn</div>
               <div class="contact-row-val"><a href="https://www.linkedin.com/company/university-finance-association/" target="_blank">University Finance Association</a></div>
@@ -2127,9 +2153,6 @@ nav .nav-links.open {
           </div>
 
           <div class="contact-row reveal">
-            <div class="contact-row-icon">
-              <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            </div>
             <div>
               <div class="contact-row-label">Location</div>
               <div class="contact-row-val">McCombs School of Business<br>The University of Texas at Austin</div>
@@ -2742,10 +2765,10 @@ function applyMobileHeroFixes() {
   const joinHero = document.querySelector('.join-hero');
   if (joinHero) {
     if (isMobile) {
-      joinHero.style.backgroundPosition = 'center 40%';
-      joinHero.style.backgroundSize = 'cover';
+      joinHero.style.backgroundPosition = '40% 40%';
+      joinHero.style.backgroundSize = '110%';
     } else {
-      joinHero.style.backgroundPosition = 'center 40%';
+      joinHero.style.backgroundPosition = 'center 56%';
       joinHero.style.backgroundSize = '115%';
     }
   }
