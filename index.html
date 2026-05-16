@@ -58,6 +58,35 @@
   to   { opacity: 1; }
 }
 
+@keyframes heroFadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.hero-eyebrow {
+  animation: heroFadeUp 0.4s ease forwards;
+  animation-delay: 0.05s;
+  opacity: 0;
+}
+.hero h1 {
+  animation: heroFadeUp 0.4s ease forwards;
+  animation-delay: 0.15s;
+  opacity: 0;
+}
+.hero-sub {
+  animation: heroFadeUp 0.4s ease forwards;
+  animation-delay: 0.25s;
+  opacity: 0;
+}
+.hero-btns {
+  animation: heroFadeUp 0.4s ease forwards;
+  animation-delay: 0.35s;
+  opacity: 0;
+}
+
+.stat-cell-anim {
+}
+
   /* ── HERO ── */
   .hero {
     position: relative;
@@ -67,8 +96,12 @@
   }
   .hero-img {
     position: absolute; inset: 0;
-    background: url('https://images.squarespace-cdn.com/content/v1/686dfb2501bd5e0cde0fb427/b27f66cb-8396-4e80-bc50-7b089263b20f/7X2A3762.jpg') 52% 55%/cover no-repeat;
+    background-image: url('https://images.squarespace-cdn.com/content/v1/686dfb2501bd5e0cde0fb427/b27f66cb-8396-4e80-bc50-7b089263b20f/7X2A3762.jpg');
+    background-position: 52% 55%;
+    background-size: cover;
+    background-repeat: no-repeat;
   }
+
   .hero-overlay {
     position: absolute; inset: 0;
  background: linear-gradient(to top, 
@@ -78,7 +111,7 @@
   ); z-index: 1;}
   .hero-content {
     position: relative; z-index: 2;
-    padding: 0 72px 180px;
+    padding: 0 72px 80px;
     max-width: 820px;
   }
   .hero-eyebrow {
@@ -114,8 +147,8 @@
     background: var(--green-light);
     color: var(--white);
     font-family: var(--font-body);
-    font-size: 14px; font-weight: 500;
-    padding: 13px 28px;
+    font-size: 16px; font-weight: 500;
+    padding: 16px 36px;
     border-radius: 4px;
     text-decoration: none;
     letter-spacing: 0.02em;
@@ -128,8 +161,8 @@
     background: transparent;
     color: var(--white);
     font-family: var(--font-body);
-    font-size: 14px; font-weight: 400;
-    padding: 13px 28px;
+    font-size: 16px; font-weight: 400;
+    padding: 16px 36px;
     border-radius: 4px;
     text-decoration: none;
     border: 2px solid rgba(255,255,255,0.8);
@@ -170,9 +203,9 @@
   .nav-logo span { color: var(--green-pale); }
   
   .nav-links {
-    display: flex; align-items: center; gap: 6px;
+    display: flex; align-items: center;
     list-style: none;
-    gap: 8px; 
+    gap: 16px; 
     flex-wrap: nowrap;
   }
   .nav-links a {
@@ -272,7 +305,7 @@
   }
   .pillar-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.08); transform: translateY(-2px); }
   .pillar-icon { display: none; }
-  .pillar-title { font-family: var(--font-display); font-size: 20px; font-weight: 500; margin-bottom: 12px; color: var(--text-dark); }
+  .pillar-title { font-family: var(--font-display); font-size: 24px; font-weight: 500; margin-bottom: 12px; color: var(--text-dark); }
   .pillar-body { font-size: 16px; color: var(--text-muted); line-height: 1.7; }
 
   /* ── MISSION BAND ── */
@@ -352,18 +385,29 @@
   gap: 16px;
   flex-shrink: 0; /* Prevents buttons from squishing */
 }
-/* Standardize the buttons so the border doesn't make one taller */
-.btn-white, .btn-outline {
+/* Standardize the CTA band buttons only */
+.cta-band .btn-white, .cta-band .btn-outline {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 48px; /* Fixed height is the secret to horizontal alignment */
+  height: 48px;
   padding: 0px 28px;
   border-radius: 4px;
   font-size: 14px;
   font-weight: 500;
   text-decoration: none;
-  box-sizing: border-box; /* Includes the border in the 48px height */
+  box-sizing: border-box;
+}
+/* Hero buttons match each other */
+.hero-btns .btn-primary,
+.hero-btns .btn-outline {
+  height: auto;
+  padding: 16px 36px;
+  font-size: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
 }
 
   .cta-band-sub {
@@ -393,7 +437,7 @@
     transition: box-shadow 0.2s, transform 0.2s;
   }
   .insta-card:hover { box-shadow: 0 6px 24px rgba(0,0,0,0.08); transform: translateY(-2px); }
-  .insta-card img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; }
+  .insta-card img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; }
   .insta-meta { padding: 16px 20px; display: flex; align-items: center; gap: 10px; }
   .insta-handle { font-size: 13px; color: var(--text-muted); }
   .insta-handle strong { color: var(--green-accent); font-weight: 500; }
@@ -414,7 +458,7 @@ background-position: center 95%;
 }
   .about-hero-overlay { position: absolute; inset: 0; background: rgba(20,36,20,0.25); }
   .about-hero-content { position: relative; z-index: 2; padding: 0 72px 56px; }
-  .page-eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--green-pale); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+  .page-eyebrow { font-size: 13px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--green-pale); margin-bottom: 4px; display: flex; align-items: center; gap: 10px; }
   .page-eyebrow::before { content: ''; width: 24px; height: 1px; background: var(--green-pale); display: inline-block; }
   .page-hero-title { font-family: var(--font-display); font-size: clamp(36px, 5vw, 56px); font-weight: 500; color: var(--white); line-height: 1.1; }
 
@@ -461,6 +505,43 @@ background-position: center 95%;
   box-shadow: 0 12px 24px rgba(0,0,0,0.05);
 }
 
+.comp-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+}
+
+.membership-card {
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.membership-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+}
+
+.step-card {
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.step-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.07);
+  background: var(--green-wash);
+}
+
+.board-card {
+  transition: transform 0.2s;
+}
+.board-card:hover {
+  transform: translateY(-4px);
+}
+
+.pub-card-embed-container {
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.pub-card-embed-container:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+
   .offering-list { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; }
   .offering-item {
     background: var(--green-wash); border-radius: 6px; padding: 18px 20px;
@@ -489,16 +570,20 @@ background-position: center 95%;
 
 .reveal {
   opacity: 0;
-  transform: translateY(40px);
-  transition: opacity 0.7s ease, transform 0.7s ease;
+  transform: translateY(24px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
 }
 .reveal.visible {
   opacity: 1;
   transform: translateY(0);
 }
 
+.blog-card-new.reveal {
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
 .member-card.reveal {
-  transition: opacity 1.8s ease, transform 1.8s ease;
+  transition: opacity 0.8s ease, transform 0.8s ease;
 }
   /* ── HOW TO JOIN PAGE ── */
 .join-hero {
@@ -513,7 +598,7 @@ overflow: hidden;
 display: flex; 
 align-items: flex-end;
   }
-  .join-hero::after { content: ''; position: absolute; inset: 0; background: rgba(20,36,20,0.10); }
+  .join-hero::after { content: ''; position: absolute; inset: 0; background: rgba(20,36,20,0.25); }
   .join-hero-content { position: relative; z-index: 2; padding: 0 72px 56px; }
 
   .membership-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 24px; align-items: stretch; }
@@ -547,6 +632,7 @@ align-items: flex-end;
     background: var(--green-dark); padding: 72px 72px 56px;
   }
   .blog-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 28px; }
+  .blog-grid-3col { grid-template-columns: repeat(3,1fr); }
   .blog-card {
     background: var(--white); border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
     text-decoration: none; color: inherit; display: block;
@@ -556,13 +642,104 @@ align-items: flex-end;
   .blog-card-img { aspect-ratio: 16/9; overflow: hidden; background: var(--green-wash); }
   .blog-card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
   .blog-card:hover .blog-card-img img { transform: scale(1.04); }
-  .blog-card-body { padding: 24px; }
   .blog-card-meta { font-size: 11px; color: var(--text-muted); margin-bottom: 10px; letter-spacing: 0.04em; }
-  .blog-card-title { font-family: var(--font-display); font-size: 17px; font-weight: 500; line-height: 1.3; margin-bottom: 10px; color: var(--text-dark); }
   .blog-card-desc { font-size: 13px; color: var(--text-muted); line-height: 1.65; }
   .blog-card-read { display: inline-flex; align-items: center; gap: 6px; margin-top: 14px; font-size: 13px; font-weight: 500; color: var(--green-accent); }
 
   /* ── PUBLICATIONS ── */
+/* Blog cards — clean, consistent layout */
+.blog-card-new {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+}
+.blog-card-new:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+}
+.blog-card-new > a.blog-card-thumb {
+  display: block;
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--green-wash);
+}
+.blog-card-new > a.blog-card-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+  display: block;
+}
+.blog-card-new > .blog-card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 24px;
+}
+.blog-card-new .blog-card-date {
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.blog-card-new .blog-card-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-dark);
+  line-height: 1.4;
+  height: 3em; /* Fixed 2-line height so all cards align */
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  margin-bottom: 8px;
+}
+.blog-card-new .blog-card-author {
+  font-size: 13px;
+  color: var(--text-muted);
+  height: 2em; /* Fixed 1-line height */
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.blog-card-new .blog-card-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+.blog-grid-3col .btn-primary,
+.blog-grid-3col .btn-outline {
+  font-size: 13px !important;
+  padding: 9px 20px !important;
+  height: 38px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+}
+.blog-grid-3col .btn-outline {
+  color: var(--green-dark) !important;
+  border-color: var(--green-accent) !important;
+}
+  overflow: hidden;
+  position: relative;
+}
+.blog-grid-3col > div > div:first-child iframe {
+  width: 140% !important;
+  margin-left: -20% !important;
+  border: none !important;
+  display: block !important;
+}
+
 .pub-hero {
   height: 60vh;
   min-height: 400px;
@@ -571,7 +748,9 @@ align-items: flex-end;
   display: flex;
   align-items: flex-end;
   justify-content: flex-start;
-   background: url("https://i.postimg.cc/FHj4RPVf/7X2A4141.jpg") center 15% / 115% auto no-repeat;
+  background: url("https://i.postimg.cc/FHj4RPVf/7X2A4141.jpg") center 15% / 115% auto no-repeat;
+  z-index: 2;
+  isolation: isolate;
 }
   
   .pub-hero::after {
@@ -611,6 +790,12 @@ align-items: flex-end;
   overflow: hidden;
   margin-top: 40px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
+.pub-card-embed-container iframe {
+  display: block;
+  width: 140%;
+  margin-left: -20%;
+  transform-origin: top center;
 }
 .pub-card-info {
   padding: 40px 48px;
@@ -664,12 +849,14 @@ align-items: flex-end;
     overflow: hidden;
     display: flex;
     align-items: flex-end;
+    justify-content: flex-start;
     background-position: center 65%;
+    filter: brightness(1.15);
     background-size: cover;
     background-repeat: no-repeat;
     background-image: url('https://i.postimg.cc/VLVmSrt2/A77E83A5-AF5B-464B-BC3B-68A9ECF91163-1-105-c.jpg');
 }
-  .contact-hero::after { content: ''; position: absolute; inset: 0; background: rgba(20,36,20,0.25); }
+  .contact-hero::after { content: ''; position: absolute; inset: 0; background: rgba(20,36,20,0.10); }
   .contact-hero-content { position: relative; z-index: 2; padding: 0 72px 56px; }
   .contact-list { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
   .contact-item { border-bottom: 1px solid var(--border); background: var(--white); }
@@ -773,7 +960,7 @@ align-items: flex-end;
 
   /* Hero */
   .hero {
-    height: 100vh;
+    height: 80vh;
     align-items: flex-end;
   }
   .hero-overlay {
@@ -789,7 +976,7 @@ align-items: flex-end;
     /* handled by mobile override below */
   }
   .hero-content {
-    padding: 0 24px 24px;
+    padding: 0 24px 24px !important;
     max-width: 100%;
     display: block;
     width: 100%;
@@ -827,6 +1014,18 @@ align-items: flex-end;
   .btn-primary, .btn-outline {
     width: 100%;
     text-align: center;
+    height: 44px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+    padding: 0 28px !important;
+    font-size: 15px !important;
+  }
+  .hero-btns .btn-primary,
+  .hero-btns .btn-outline {
+    height: 44px !important;
+    padding: 0 28px !important;
   }
 
   /* Stats bar */
@@ -836,15 +1035,30 @@ align-items: flex-end;
   .stat-cell {
     border-right: none;
     border-bottom: 1px solid rgba(255,255,255,0.1);
-    padding: 16px 24px;
+    padding: 8px 24px !important;
   }
   .stat-cell:last-child {
     border-bottom: none;
   }
+  .stat-num {
+    font-size: 28px !important;
+  }
+  .stat-label {
+    font-size: 12px !important;
+  }
 
   /* Section padding */
   .section {
-    padding: 48px 24px;
+    padding: 32px 24px;
+  }
+  .section-sm {
+    padding: 28px 24px;
+  }
+  .pub-section {
+    padding: 32px 24px !important;
+  }
+  .mission-band {
+    padding: 32px 20px;
   }
 
   /* Pillar cards */
@@ -875,9 +1089,6 @@ align-items: flex-end;
   .mission-quote {
     font-size: 0.95rem;
     line-height: 1.5 !important;
-  }
-  .mission-band {
-    padding: 40px 20px;
   }
 
   /* Teams grid */
@@ -932,11 +1143,23 @@ align-items: flex-end;
     flex-direction: row;
     gap: 4px;
     border-bottom: 1px solid var(--border);
+    margin-bottom: 20px !important;
   }
   .tab-btn {
     font-size: 13px;
     padding: 10px 14px;
     width: auto;
+  }
+  .tab-pane > .two-col {
+    margin-bottom: 28px !important;
+  }
+  #tab-analysts > .two-col,
+  #tab-investment > .two-col,
+  #tab-consulting > .two-col {
+    margin-bottom: 28px !important;
+  }
+  .tab-two-col {
+    margin-bottom: 28px !important;
   }
 
   /* Hero pages (about, teams, publications etc.) */
@@ -946,11 +1169,22 @@ align-items: flex-end;
   .join-hero-content,
   .faq-hero-content,
   .teams-hero-content {
-    padding: 0 24px 40px;
+    padding: 0 24px 24px !important;
   }
   .page-hero-title {
-    font-size: 36px;
+    font-size: 26px !important;
+    margin-top: 0 !important;
   }
+  .page-eyebrow {
+    margin-bottom: 2px !important;
+    line-height: 1 !important;
+  }
+
+  /* Blog grid mobile */
+  .blog-grid-2col { grid-template-columns: 1fr !important; }
+  .blog-grid-3col { grid-template-columns: 1fr !important; }
+  .blog-grid-3col iframe { height: 420px !important; }
+  .blog-grid-3col > div > div:first-child { height: 420px !important; }
 
   /* About hero */
   .about-hero {
@@ -966,7 +1200,7 @@ align-items: flex-end;
     height: 30vh !important;
     min-height: 180px !important;
     background-size: 220% !important;
-    background-position: center 35% !important;
+    background-position: center 70% !important;
   }
   .pub-hero {
     height: 30vh !important;
@@ -979,6 +1213,13 @@ align-items: flex-end;
   .contact-hero {
     height: 30vh !important;
     min-height: 180px !important;
+    justify-content: flex-start !important;
+    align-items: flex-end !important;
+  }
+  .contact-hero-content {
+    padding: 0 24px 20px !important;
+    text-align: left !important;
+    width: auto !important;
   }
 
   /* About story grid */
@@ -994,9 +1235,6 @@ align-items: flex-end;
   }
 
   /* Footer */
-  footer {
-    padding: 40px 24px 24px;
-  }
   .footer-top {
     grid-template-columns: 1fr 1fr 1fr;
     gap: 16px;
@@ -1016,10 +1254,35 @@ align-items: flex-end;
   }
   /* Publications */
   .pub-section {
-    padding: 48px 24px;
+    padding: 32px 24px !important;
   }
   .pub-card-info {
-    padding: 24px;
+    padding: 20px 24px;
+  }
+  /* FAQ section */
+  .faq-section {
+    padding: 32px 24px !important;
+  }
+  /* Join page sections */
+  .join-section {
+    padding: 32px 24px !important;
+  }
+  /* Contact page */
+  .contact-section {
+    padding: 32px 24px !important;
+  }
+  /* About page */
+  .about-section {
+    padding: 32px 24px !important;
+  }
+  /* Any section with inline padding */
+  [style*="padding: 72px"],
+  [style*="padding:72px"] {
+    padding: 32px 24px !important;
+  }
+  /* Footer tighter */
+  footer {
+    padding: 32px 24px 20px !important;
   }
 
   /* Team feature cards (3-col -> 1-col) */
@@ -1188,19 +1451,19 @@ nav .nav-links.open {
     margin-bottom: 24px !important;
   }
   #comp-grid-main .comp-card {
-    padding: 14px !important;
+    padding: 20px !important;
   }
   #comp-grid-main .comp-card > div:first-child {
-    font-size: 14px !important;
-    margin-bottom: 6px !important;
+    font-size: 18px !important;
+    margin-bottom: 8px !important;
   }
   #comp-grid-main .comp-card h4 {
-    font-size: 13px !important;
-    margin-bottom: 4px !important;
+    font-size: 16px !important;
+    margin-bottom: 8px !important;
   }
   #comp-grid-main .comp-card p {
-    font-size: 12px !important;
-    line-height: 1.5 !important;
+    font-size: 14px !important;
+    line-height: 1.6 !important;
   }
   .invest-comp {
     margin-top: 16px !important;
@@ -1220,8 +1483,8 @@ nav .nav-links.open {
   .cta-band {
     flex-direction: column;
     align-items: flex-start;
-    padding: 40px 24px;
-    gap: 24px;
+    padding: 28px 24px;
+    gap: 20px;
   }
   .cta-band-title {
     font-size: 22px;
@@ -1265,7 +1528,7 @@ nav .nav-links.open {
 
   /* Home hero — override full shorthand on mobile */
   .hero-img {
-    background: url('https://i.postimg.cc/L5rkmFpr/7X2A3757.jpg') center 40% / cover no-repeat !important;
+    background: url('https://i.postimg.cc/L5rkmFpr/7X2A3757.jpg') center 100% / cover no-repeat !important;
   }
 
   /* Analyst 01/02/03 steps grid → 1 column on mobile */
@@ -1338,12 +1601,22 @@ nav .nav-links.open {
   .pub-card-embed-container iframe {
     height: 320px !important;
     aspect-ratio: unset !important;
-    width: 100% !important;
-    max-width: 100% !important;
+    width: 75% !important;
+    margin-left: 12.5% !important;
+    max-width: 75% !important;
     display: block !important;
   }
   .pub-card-info {
     padding: 24px 20px !important;
+  }
+  /* Remove fixed heights on blog card elements on mobile so no extra gap */
+  .blog-card-new .blog-card-title {
+    height: auto !important;
+    -webkit-line-clamp: unset !important;
+  }
+  .blog-card-new .blog-card-author {
+    height: auto !important;
+    white-space: normal !important;
   }
     height: 50vh !important;
     background-size: cover !important;
@@ -1410,9 +1683,9 @@ nav .nav-links.open {
 
   <ul class="nav-links" id="nav-menu">
     <li><a href="#" onclick="showPage('home');closeMenu()">Home</a></li>
-    <li><a href="#" onclick="showPage('about');closeMenu()">About Us</a></li>
+    <li><a href="#" onclick="showPage('about');closeMenu()">About</a></li>
     <li><a href="#" onclick="showPage('teams');closeMenu()">Teams</a></li>
-    <li><a href="#" onclick="showPage('join');closeMenu()">How to Join</a></li>
+    <li><a href="#" onclick="showPage('join');closeMenu()">Join</a></li>
     <li><a href="#" onclick="showPage('publications');closeMenu()">Publications</a></li>
 <li><a href="#" onclick="showPage('contact');closeMenu()" class="nav-cta outline" style="background:transparent;border:1px solid rgba(255,255,255,0.5);">Contact Us</a></li>
 <li><a href="#" onclick="showPage('portal');closeMenu()" class="nav-cta">Member Portal</a></li>
@@ -1434,10 +1707,10 @@ nav .nav-links.open {
         <h1>Break into finance.<br>Build your network.<br>Launch your career.</h1>
       </div>
       <div class="hero-bottom">
-        <p class="hero-sub">UFA is UT Austin's premier finance organization — connecting ambitious students to Wall Street, private equity, and consulting since 1951.</p>
+        <p class="hero-sub">UT Austin's oldest and largest finance organization, connecting ambitious students to Wall Street, private equity, and consulting since 1951.</p>
         <div class="hero-btns">
-          <a href="https://utexas.campuslabs.com/engage/organization/texasufa" target="_blank" class="btn-primary">Apply for membership</a>
-          <a href="#" onclick="showPage('teams')" class="btn-outline">Explore our teams</a>
+          <a href="https://utexas.campuslabs.com/engage/organization/texasufa" target="_blank" class="btn-primary">Apply Now</a>
+          <a href="#" onclick="showPage('teams')" class="btn-outline">Explore Teams</a>
         </div>
       </div>
     </div>
@@ -1445,9 +1718,9 @@ nav .nav-links.open {
 
   <!-- Stats -->
   <div class="stats-bar">
-    <div class="stat-cell reveal"><span class="stat-num">300+</span><span class="stat-label">Active members</span></div>
-    <div class="stat-cell reveal"><span class="stat-num">50+</span><span class="stat-label">Events annually</span></div>
-    <div class="stat-cell reveal"><span class="stat-num">20+</span><span class="stat-label">Corporate partners</span></div>
+    <div class="stat-cell stat-cell-anim reveal"><span class="stat-num">300+</span><span class="stat-label">Active members</span></div>
+    <div class="stat-cell stat-cell-anim reveal"><span class="stat-num">50+</span><span class="stat-label">Events annually</span></div>
+    <div class="stat-cell stat-cell-anim reveal"><span class="stat-num">20+</span><span class="stat-label">Corporate partners</span></div>
   </div>
 
   <!-- Why Join -->
@@ -1458,15 +1731,15 @@ nav .nav-links.open {
     <div class="pillars">
       <div class="pillar-card reveal">
         <div class="pillar-title">A network that opens doors</div>
-        <p class="pillar-body">Weekly meetings featuring a market watch, corporate speaker, and food. Our partners span IB, PE, consulting, asset management, and real estate.</p>
+        <p class="pillar-body">Connect with professionals across investment banking, private equity, consulting, and asset management through weekly meetings with corporate speakers.</p>
       </div>
       <div class="pillar-card reveal">
         <div class="pillar-title">Skills you can't get in class</div>
-        <p class="pillar-body">Opportunities for stock pitches, case competitions, financial modeling sessions, mock interviews, and market watch discussions that go well beyond the classroom.</p>
+        <p class="pillar-body">Stock pitches, case competitions, financial modeling, mock interviews, and market watch discussions that go well beyond the classroom.</p>
       </div>
       <div class="pillar-card reveal">
         <div class="pillar-title">Step up and lead</div>
-        <p class="pillar-body">Give back to UFA through on executive board roles - lead our analysts, contact our speakers, market our organization, manage our budget.</p>
+        <p class="pillar-body">Take on leadership through executive board roles: run our analyst programs, book corporate speakers, manage our brand, and oversee our budget.</p>
       </div>
     </div>
   </section>
@@ -1482,7 +1755,7 @@ nav .nav-links.open {
   <span style="font-size: 4rem; font-family: serif; line-height: 1; margin-top: -10px; margin-right: 10px; flex-shrink: 0;">&ldquo;</span>
   
   <span>
-    To empower the next generation of financial leaders at UT Austin by providing unparalleled opportunities for professional development, technical education, and industry connection.
+    To develop the next generation of finance professionals at UT Austin, meeting students where they are, fostering a welcoming community, and empowering them to excel through hands-on experience, technical education, and meaningful industry relationships.
     <span style="font-size: 4rem; font-family: serif; line-height: 0; vertical-align: -0.4em; margin-left: 4px;">&rdquo;</span>
   </span>
 
@@ -1508,7 +1781,7 @@ nav .nav-links.open {
         <div class="team-card-body">
           <div class="team-card-tag">Entry level</div>
           <div class="team-card-title">Analyst Program</div>
-          <p class="team-card-desc">The perfect starting point for new members. Build foundational knowledge across both investment and consulting tracks in a collaborative, lecture-based environment with semesterly competitions to practice.</p>
+          <p class="team-card-desc">The perfect starting point for new members. Build foundational finance and consulting knowledge in a collaborative, lecture-based environment with end-of-semester competitions to put your skills to the test.</p>
           <span class="team-card-link">Explore the program →</span>
         </div>
       </a>
@@ -1550,15 +1823,15 @@ nav .nav-links.open {
     <h2 class="section-title">Latest from Instagram</h2>
     <p class="section-subtitle">Follow <a href="https://www.instagram.com/texasufa/" target="_blank" style="color:var(--green-accent)">@texasufa</a> for everything UFA.</p>
     <div class="insta-grid">
-      <a href="https://www.instagram.com/p/DXaJ42qglS5/" target="_blank" class="insta-card">
+      <a href="https://www.instagram.com/p/DXaJ42qglS5/" target="_blank" class="insta-card reveal">
         <img src="https://images.squarespace-cdn.com/content/v1/686dfb2501bd5e0cde0fb427/1776808999836-WZF62YE5A6A638861OYB/image-asset.jpeg" alt="Metric Point Capital speaker">
         <div class="insta-meta"><strong class="insta-handle" style="color:var(--green-accent)">@texasufa</strong> <span class="insta-handle">· Metric Point Capital speaker</span></div>
       </a>
-      <a href="https://www.instagram.com/p/DXIEsPzklEe/" target="_blank" class="insta-card">
+      <a href="https://www.instagram.com/p/DXIEsPzklEe/" target="_blank" class="insta-card reveal">
         <img src="https://images.squarespace-cdn.com/content/v1/686dfb2501bd5e0cde0fb427/1776200265337-MST3JX8ARPFK2IOGQT2M/image-asset.jpeg" alt="Haveli Investments speaker">
         <div class="insta-meta"><strong class="insta-handle" style="color:var(--green-accent)">@texasufa</strong> <span class="insta-handle">· Haveli Investments speaker</span></div>
       </a>
-      <a href="https://www.instagram.com/p/DXFrIVilJ6E/" target="_blank" class="insta-card">
+      <a href="https://www.instagram.com/p/DXFrIVilJ6E/" target="_blank" class="insta-card reveal">
         <img src="https://images.squarespace-cdn.com/content/v1/686dfb2501bd5e0cde0fb427/1776121705975-6QCP1AQHMSJKBKF1793F/image-asset.jpeg" alt="HBA x UFA Case Competition">
         <div class="insta-meta"><strong class="insta-handle" style="color:var(--green-accent)">@texasufa</strong> <span class="insta-handle">· HBA × UFA Case Competition</span></div>
       </a>
@@ -1598,8 +1871,8 @@ nav .nav-links.open {
     <div class="story-grid">
       <div class="story-text">
         <div class="section-tag">About UFA</div>
-        <h2 class="section-title" style="margin-bottom:24px;">The oldest McCombs-affiliated organization on campus</h2>
-        <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">Founded in 1951, UFA is the oldest McCombs-affiliated organization at UT Austin. What started as a small group of students passionate about finance has grown into a community of 300+ members with alumni at the world's top firms.</p>
+        <h2 class="section-title" style="margin-bottom:24px;">The oldest McCombs-affiliated finance organization on campus</h2>
+        <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">Founded in 1951, what started as a small group of students passionate about finance has grown into a community of 300+ members with alumni at the world's top firms.</p>
         <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:32px;">Our mission remains unchanged: to provide a welcoming, high-impact environment where any student &mdash; regardless of background or experience &mdash; can explore their curiosity about finance and build the skills to act on it.</p>
         <div style="margin-top:32px;">
           <a href="#" onclick="showPage('join')" class="btn-primary" style="padding:16px 36px;font-size:15px;">Join UFA today</a>
@@ -1668,7 +1941,7 @@ nav .nav-links.open {
       <div class="board-card">
         <div class="board-photo"><img style="width:100%;height:100%;object-fit:cover;object-position:center top;" style="object-position:center top;" src="https://i.imgur.com/gQIamoa.jpeg" alt="Caden Warner" onerror="this.style.display='none'"></div>
         <div class="board-name">Caden Warner</div>
-        <div class="board-role">Director of Investment</div>
+        <div class="board-role">Director of Investments</div>
         <a href="https://linkedin.com/in/caden-warner" target="_blank" class="board-li">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
           LinkedIn
@@ -1678,7 +1951,7 @@ nav .nav-links.open {
       <div class="board-card">
         <div class="board-photo"><img style="width:100%;height:100%;object-fit:cover;object-position:center top;" style="object-position:center top;" src="https://i.imgur.com/C6HkIyI.png" alt="Nathan Li" onerror="this.style.display='none'"></div>
         <div class="board-name">Nathan Li</div>
-        <div class="board-role">Director of Investment</div>
+        <div class="board-role">Director of Investments</div>
         <a href="https://linkedin.com/in/nathanyuxianli" target="_blank" class="board-li">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
           LinkedIn
@@ -1757,7 +2030,7 @@ nav .nav-links.open {
 <div id="page-teams" class="page">
 
   <section class="team-detail-hero" style="background:url('https://images.squarespace-cdn.com/content/v1/686dfb2501bd5e0cde0fb427/606dbb4d-cb2b-4aab-88c4-44ffdbb56b30/IMG_1606.jpg') center 40%/cover no-repeat;">
-    <div style="position:absolute;inset:0;background:rgba(20,36,20,0.35);"></div>
+    <div class="teams-hero-overlay" style="position:absolute;inset:0;background:rgba(20,36,20,0.35);"></div>
     <div class="teams-hero-content" style="position:relative;z-index:2;">
       <div class="page-eyebrow">Programs</div>
       <h1 class="page-hero-title">Three Teams,<br>Two Paths,<br>One Community.</h1>
@@ -1773,13 +2046,13 @@ nav .nav-links.open {
 
     <!-- ANALYSTS TAB -->
     <div id="tab-analysts" class="tab-pane active">
-      <div class="two-col" style="margin-bottom:56px;">
+      <div class="two-col tab-two-col" style="margin-bottom:56px;">
         <div>
-          <div class="section-tag">Entry-level · One round of applications</div>
+          <div class="section-tag">No Experience Required · One Round of Applications</div>
           <h2 class="section-title">Analyst Program</h2>
-          <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:20px;">The Analyst Program serves as the foundation for your journey in UFA. Designed for underclassmen and new members, the program offers an additional weekly meeting beyond the general member meeting — giving you more opportunities to get involved and meet new people.</p>
-          <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:32px;">Each week, our Directors of Investment and Consulting lead sessions covering the fundamentals — accounting, valuation, financial modeling, and market analysis. It's the foundation that prepares you for everything else UFA has to offer.</p>
-          <a href="https://docs.google.com/forms/d/e/1FAIpQLSednj-xoNhhCCvGKyAnP4W1m9p-CNeTw28Cag6ibZsy71G5_A/viewform" target="_blank" class="btn-primary">Apply to Analyst Program</a>
+          <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:20px;">The Analyst Program is designed for underclassmen and new members with no prior finance experience. In addition to the general member meeting, analysts meet weekly for dedicated training sessions to build the skills needed to succeed in UFA and beyond.</p>
+          <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:32px;">Each week, our Directors of Investments and Consulting lead sessions covering accounting, valuation, financial modeling, and market analysis. Everything you need to hit the ground running in UFA and in recruiting.</p>
+          <a href="https://docs.google.com/forms/d/e/1FAIpQLSednj-xoNhhCCvGKyAnP4W1m9p-CNeTw28Cag6ibZsy71G5_A/viewform" target="_blank" class="btn-primary reveal">Apply to Analyst Program</a>
         </div>
          <div class="team-photo-tall analyst-comp-photo" style="border-radius:12px; overflow:hidden; height:400px;">
   <img src="https://i.imgur.com/3O0joVw.jpeg" 
@@ -1813,14 +2086,14 @@ nav .nav-links.open {
 
     <!-- INVESTMENT TAB -->
     <div id="tab-investment" class="tab-pane">
-      <div class="two-col" style="margin-bottom:56px;">
+      <div class="two-col tab-two-col" style="margin-bottom:56px;">
         <div>
-          <div class="section-tag">Selective · Investment track</div>
+          <div class="section-tag">Experience Required · Application + Interview</div>
           <h2 class="section-title">Investment Team</h2>
-          <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">The Investment Associate Program is where serious finance preparation meets a tight-knit community. You'll build the technical skills recruiters want — and the relationships that last long after graduation.</p>
+          <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">The Investment Associate Program is where serious finance preparation meets a tight-knit community. You'll build the technical skills recruiters want and the relationships that last long after graduation.</p>
           <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:32px;">The technical training is rigorous. But ask any Investment Associate what they remember most, and they'll tell you it's the people.</p>
           <div style="display:flex;gap:12px;flex-wrap:wrap;">
-          <a href="https://docs.google.com/forms/d/e/1FAIpQLSfv0DWYxpYH4c7VQk0Rf-zPa3Y9Ou1uEn5SE3_vROkMRIrsqQ/viewform" target="_blank" class="btn-primary">Apply to Investment Associates</a>
+          <a href="https://docs.google.com/forms/d/e/1FAIpQLSfv0DWYxpYH4c7VQk0Rf-zPa3Y9Ou1uEn5SE3_vROkMRIrsqQ/viewform" target="_blank" class="btn-primary reveal">Apply to Investment Associates</a>
           <a href="#" onclick="showPage('contact')" class="btn-outline" style="color:var(--green-dark);border-color:var(--green-accent);">Work with us</a>
           </div>
         </div>
@@ -1833,27 +2106,27 @@ nav .nav-links.open {
           <div style="width:8px;height:8px;border-radius:50%;background:var(--green-light);flex-shrink:0;margin-top:6px;"></div>
           <div>
             <div style="font-family:var(--font-display);font-size:17px;font-weight:500;color:var(--text-dark);margin-bottom:6px;">Mentorship</div>
-            <p style="font-size:15px;color:var(--text-muted);line-height:1.7;margin:0;">Get paired with UFA upperclassmen who mentor you throughout the year — guiding and teaching you what they wished they knew when they were in your shoes.</p>
+            <p style="font-size:15px;color:var(--text-muted);line-height:1.7;margin:0;">Get paired with UFA upperclassmen who guide you through recruiting, technical prep, and everything they wish they knew when they started.</p>
           </div>
         </div>
         <div style="display:flex;align-items:flex-start;gap:16px;padding:24px 0;border-bottom:1px solid var(--border);">
           <div style="width:8px;height:8px;border-radius:50%;background:var(--green-light);flex-shrink:0;margin-top:6px;"></div>
           <div>
             <div style="font-family:var(--font-display);font-size:17px;font-weight:500;color:var(--text-dark);margin-bottom:6px;">Market Watch</div>
-            <p style="font-size:15px;color:var(--text-muted);line-height:1.7;margin:0;">Dive deep into technicals, track economic trends, and discuss major news weekly. These sessions sharpen your ability to think critically about financial developments.</p>
+            <p style="font-size:15px;color:var(--text-muted);line-height:1.7;margin:0;">Weekly sessions covering market-moving news, macro trends, and sector developments. The fastest way to build the market intuition recruiters test for.</p>
           </div>
         </div>
         <div style="display:flex;align-items:flex-start;gap:16px;padding:24px 0;border-bottom:1px solid var(--border);">
           <div style="width:8px;height:8px;border-radius:50%;background:var(--green-light);flex-shrink:0;margin-top:6px;"></div>
           <div>
-            <div style="font-family:var(--font-display);font-size:17px;font-weight:500;color:var(--text-dark);margin-bottom:6px;">Stock Pitch</div>
-            <p style="font-size:15px;color:var(--text-muted);line-height:1.7;margin:0;">Build and present stock pitches by industry. Research the company in-depth, develop thesis points, model cash flows, analyze risk, and compile research into our published journal.</p>
+            <div style="font-family:var(--font-display);font-size:17px;font-weight:500;color:var(--text-dark);margin-bottom:6px;">Stock Pitches</div>
+            <p style="font-size:15px;color:var(--text-muted);line-height:1.7;margin:0;">Build and present stock pitches by industry. Research a company in-depth, develop thesis points, model cash flows, analyze risk, and pitch your findings to the team.</p>
           </div>
         </div>
       </div>
 
 <div class="invest-comp" style="margin-top: 30px; margin-bottom: 30px; text-align: center;">
-  <h3 style="font-family: serif; font-size: 36px; color: var(--text-dark); margin-bottom: 16px; font-weight: 600;">Program Core Competencies</h3>
+  <h3 style="font-family: serif; font-size: 36px; color: var(--text-dark); margin-bottom: 16px; font-weight: 600;">What You'll Learn</h3>
   <div style="width: 60px; height: 3px; background: var(--green-dark); margin: 0 auto 24px;"></div>
 </div>
 
@@ -1861,37 +2134,37 @@ nav .nav-links.open {
   <div class="comp-card reveal" style="background: var(--cream-dark); border: 1px solid rgba(46,74,46,0.08); padding: 32px; border-radius: 12px; transition: all 0.3s ease;">
     <div style="color: var(--green-accent); font-size: 24px; margin-bottom: 16px;opacity: 1.0;">01</div>
     <h4 style="font-family: serif; font-size: 20px; color: var(--text-dark); margin-bottom: 12px;">Active Fund Management</h4>
-    <p style="font-family: sans-serif; color: var(--text-mid); font-size: 14px; line-height: 1.6; margin: 0;">Experience real-world portfolio management by analyzing market trends and pitching actionable investment strategies.</p>
+    <p style="font-family: sans-serif; color: var(--text-mid); font-size: 14px; line-height: 1.6; margin: 0;">Manage a real portfolio, analyze market trends, and pitch investment ideas backed by your own research.</p>
   </div>
 
   <div class="comp-card reveal" style="background: var(--cream-dark); border: 1px solid rgba(46,74,46,0.08); padding: 32px; border-radius: 12px; transition: all 0.3s ease;">
     <div style="color: var(--green-accent); font-size: 24px; margin-bottom: 16px;opacity: 1.0;">02</div>
-    <h4 style="font-family: serif; font-size: 20px; color: var(--text-dark); margin-bottom: 12px;">Modeling Practice</h4>
+    <h4 style="font-family: serif; font-size: 20px; color: var(--text-dark); margin-bottom: 12px;">Financial Modeling</h4>
     <p style="font-family: sans-serif; color: var(--text-mid); font-size: 14px; line-height: 1.6; margin: 0;">Master Excel-based financial modeling, including DCF analysis, comparable company analysis, and LBO modeling.</p>
   </div>
 
   <div class="comp-card reveal" style="background: var(--cream-dark); border: 1px solid rgba(46,74,46,0.08); padding: 32px; border-radius: 12px; transition: all 0.3s ease;">
     <div style="color: var(--green-accent); font-size: 24px; margin-bottom: 16px;opacity: 1.0;">03</div>
     <h4 style="font-family: serif; font-size: 20px; color: var(--text-dark); margin-bottom: 12px;">Equity Research</h4>
-    <p style="font-family: sans-serif; color: var(--text-mid); font-size: 14px; line-height: 1.6; margin: 0;">Contribute to our flagship publication. Analysts perform deep-dives into public companies for our semesterly report.</p>
+    <p style="font-family: sans-serif; color: var(--text-mid); font-size: 14px; line-height: 1.6; margin: 0;">Perform in-depth analysis of public companies and contribute your findings to our annual equity research journal.</p>
   </div>
 
   <div class="comp-card reveal" style="background: var(--cream-dark); border: 1px solid rgba(46,74,46,0.08); padding: 32px; border-radius: 12px; transition: all 0.3s ease;">
     <div style="color: var(--green-accent); font-size: 24px; margin-bottom: 16px;opacity: 1.0;">04</div>
-    <h4 style="font-family: serif; font-size: 20px; color: var(--text-dark); margin-bottom: 12px;">Applied Learning</h4>
-    <p style="font-family: sans-serif; color: var(--text-mid); font-size: 14px; line-height: 1.6; margin: 0;">Bridge the gap between the classroom and the industry with case studies designed to simulate real finance roles.</p>
+    <h4 style="font-family: serif; font-size: 20px; color: var(--text-dark); margin-bottom: 12px;">Case Studies</h4>
+    <p style="font-family: sans-serif; color: var(--text-mid); font-size: 14px; line-height: 1.6; margin: 0;">Work through real-world case studies that simulate the analysis and decision-making expected in finance interviews and on the job.</p>
   </div>
 
   <div class="comp-card reveal" style="background: var(--cream-dark); border: 1px solid rgba(46,74,46,0.08); padding: 32px; border-radius: 12px; transition: all 0.3s ease;">
     <div style="color: var(--green-accent); font-size: 24px; margin-bottom: 16px;opacity: 1.0;">05</div>
     <h4 style="font-family: serif; font-size: 20px; color: var(--text-dark); margin-bottom: 12px;">Leadership Roles</h4>
-    <p style="font-family: sans-serif; color: var(--text-mid); font-size: 14px; line-height: 1.6; margin: 0;">Take on responsibility early. Our members lead project teams and manage external firm relations.</p>
+    <p style="font-family: sans-serif; color: var(--text-mid); font-size: 14px; line-height: 1.6; margin: 0;">Step into leadership within the team. Members take on roles as industry heads, fund managers, and social leads.</p>
   </div>
 
   <div class="comp-card reveal" style="background: var(--cream-dark); border: 1px solid rgba(46,74,46,0.08); padding: 32px; border-radius: 12px; transition: all 0.3s ease;">
     <div style="color: var(--green-accent); font-size: 24px; margin-bottom: 16px;opacity: 1.0;">06</div>
     <h4 style="font-family: serif; font-size: 20px; color: var(--text-dark); margin-bottom: 12px;">Recruiting Support</h4>
-    <p style="font-family: sans-serif; color: var(--text-mid); font-size: 14px; line-height: 1.6; margin: 0;">Access specialized resources for technical interview prep and networking strategies for high-finance placements.</p>
+    <p style="font-family: sans-serif; color: var(--text-mid); font-size: 14px; line-height: 1.6; margin: 0;">Access resources for technical interview prep, resume reviews, and networking strategies to land roles in investment banking, private equity, and asset management.</p>
   </div>
 </div>
       <div class="team-photo-tall invest-photo" style="margin-top:40px;padding:28px 32px;">
@@ -1902,9 +2175,9 @@ nav .nav-links.open {
 
     <!-- CONSULTING TAB -->
     <div id="tab-consulting" class="tab-pane">
-      <div class="two-col" style="margin-bottom:56px;">
+      <div class="two-col tab-two-col" style="margin-bottom:56px;">
         <div>
-          <div class="section-tag">Selective · Consulting track</div>
+          <div class="section-tag">Experience Required · Application + Interview</div>
       <h2 class="section-title">Consulting Team</h2>
       <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">
         UFA's Consulting Associates tackle real business problems, build client-ready deliverables, and develop the structured thinking that top firms look for.
@@ -1913,7 +2186,7 @@ nav .nav-links.open {
         Outside the casework, you'll find a group that genuinely enjoys spending time together, from team socials and dinners to friendships that last long after graduation.
       </p>
       <div style="display:flex;gap:12px;flex-wrap:wrap;">
-        <a href="https://docs.google.com/forms/d/e/1FAIpQLSedfQrjZSVGodbKUNOcViYNfYHsjWsRYBn-cCZ1YmUbU_1faw/viewform" target="_blank" class="btn-primary">Apply to Consulting Associates</a>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSedfQrjZSVGodbKUNOcViYNfYHsjWsRYBn-cCZ1YmUbU_1faw/viewform" target="_blank" class="btn-primary reveal">Apply to Consulting Associates</a>
         <a href="#" onclick="showPage('contact')" class="btn-outline" style="color:var(--green-dark);border-color:var(--green-accent);">Work with us</a>
       </div>
     </div>
@@ -1977,7 +2250,7 @@ nav .nav-links.open {
     <h2 class="section-title">Choose your level of involvement</h2>
     <p class="section-subtitle">All UT Austin students are welcome. No prior finance experience required.</p>
     <div class="membership-grid">
-      <div style="grid-column:1/-1;background:var(--green-wash);border:2px solid var(--green-accent);border-radius:8px;padding:20px 28px;display:flex;align-items:flex-start;gap:16px;margin-bottom:8px;flex-wrap:wrap;">
+      <div class="reveal" style="grid-column:1/-1;background:var(--green-wash);border:2px solid var(--green-accent);border-radius:8px;padding:20px 28px;display:flex;align-items:flex-start;gap:16px;margin-bottom:8px;flex-wrap:wrap;">
         <span style="font-size:14px;font-weight:700;color:var(--green-accent);letter-spacing:0.08em;text-transform:uppercase;">Next Recruitment Cycle</span>
         <span style="font-size:15px;color:var(--text-dark);">Analyst, Investment Associates, and Consulting Associates applications open <strong>Fall 2026 (September)</strong>.</span>
       </div>
@@ -1993,24 +2266,24 @@ nav .nav-links.open {
       <div class="membership-card reveal">
         <div class="membership-badge closed">Applications currently closed</div>
         <div class="membership-title">Analyst</div>
-        <p class="membership-desc">An introductory program that provides curriculum, pitches, and a community of future finance professionals. Applications open each fall and spring semester.</p>
+        <p class="membership-desc">An introductory program covering finance fundamentals, stock pitches, and market discussions. Open to all UT Austin students with no experience required. Applications open each fall and spring semester.</p>
         <div class="membership-price">$25 / year</div>
         <div class="membership-price-note">or $15 per semester</div>
-        <a href="https://docs.google.com/forms/d/e/1FAIpQLSeGEtzK6gp8CCAIRzTwnvoZlNKANFII7CRJRO_sy9XNEUFbMQ/viewform" target="_blank" class="btn-primary" style="background:var(--green-mid);">Fill out the interest form</a>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSeGEtzK6gp8CCAIRzTwnvoZlNKANFII7CRJRO_sy9XNEUFbMQ/viewform" target="_blank" class="btn-primary" style="background:var(--green-mid);">Express Interest</a>
         <a href="https://www.instagram.com/texasufa/" target="_blank" style="display:block;margin-top:10px;font-size:13px;color:var(--green-accent);text-decoration:none;">Follow @texasufa for updates →</a>
       </div>
       <div class="membership-card reveal">
         <div class="membership-badge closed">Applications currently closed</div>
         <div class="membership-title">Investment Associates</div>
-        <p class="membership-desc">A selective, application-based track that provides deep technical training, mentorship, and a close-knit community of future finance professionals. Applications open each fall and spring semester.</p>
-        <a href="https://docs.google.com/forms/d/e/1FAIpQLSeGEtzK6gp8CCAIRzTwnvoZlNKANFII7CRJRO_sy9XNEUFbMQ/viewform" target="_blank" class="btn-primary" style="background:var(--green-mid);">Fill out the interest form</a>
+        <p class="membership-desc">A selective, application-based track with deep technical training, one-on-one mentorship, and strong recruiting outcomes. Applications open each fall and spring semester.</p>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSeGEtzK6gp8CCAIRzTwnvoZlNKANFII7CRJRO_sy9XNEUFbMQ/viewform" target="_blank" class="btn-primary" style="background:var(--green-mid);">Express Interest</a>
         <a href="https://www.instagram.com/texasufa/" target="_blank" style="display:block;margin-top:10px;font-size:13px;color:var(--green-accent);text-decoration:none;">Follow @texasufa for updates →</a>
       </div>
        <div class="membership-card reveal">
         <div class="membership-badge closed">Applications currently closed</div>
         <div class="membership-title">Consulting Associates</div>
-        <p class="membership-desc">An application-based track bridging the gap between theory and strategic practice through client engagements and case-study training. Applications open each fall and spring semester.</p>
-        <a href="https://docs.google.com/forms/d/e/1FAIpQLSeGEtzK6gp8CCAIRzTwnvoZlNKANFII7CRJRO_sy9XNEUFbMQ/viewform" target="_blank" class="btn-primary" style="background:var(--green-mid);">Fill out the interest form</a>
+        <p class="membership-desc">A selective, application-based track focused on real client engagements, case-study training, and developing the structured thinking top consulting firms look for. Applications open each fall and spring semester.</p>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSeGEtzK6gp8CCAIRzTwnvoZlNKANFII7CRJRO_sy9XNEUFbMQ/viewform" target="_blank" class="btn-primary" style="background:var(--green-mid);">Express Interest</a>
         <a href="https://www.instagram.com/texasufa/" target="_blank" style="display:block;margin-top:10px;font-size:13px;color:var(--green-accent);text-decoration:none;">Follow @texasufa for updates →</a>
       </div>
     </div>
@@ -2032,8 +2305,8 @@ nav .nav-links.open {
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           </button>
           <div class="faq-a"><div class="faq-a-inner">
-            <p><strong>Analysts</strong> meet weekly to build technical skills, explore different career paths, and connect with peers in a collaborative environment. Members write news stories, present to the class, and may be published on our weekly blog.</p>
-            <p style="margin-top:12px;"><strong>Associates</strong> form a smaller, tight-knit group that meets more frequently to prepare for interviews and gain hands-on experience in stock pitching or pro bono consulting. Associates have access to a wide alumni network, one-on-one mentorship, and impressive placement outcomes.</p>
+            <p><strong>Analysts</strong> meet weekly to build technical skills, explore different career paths, and connect with peers in a collaborative environment.</p>
+            <p style="margin-top:12px;"><strong>Associates</strong> form a smaller, selective group focused on technical interview prep, stock pitching or pro bono consulting, one-on-one mentorship, and strong recruiting outcomes.</p>
           </div></div>
         </div>
         <div class="faq-item reveal">
@@ -2041,37 +2314,32 @@ nav .nav-links.open {
             Can I attend weekly events if I am not a general member?
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           </button>
-          <div class="faq-a"><div class="faq-a-inner">No — you must be a general member and pay dues in order to attend regular UFA events. General membership is open year-round with no application required.</div></div>
+          <div class="faq-a"><div class="faq-a-inner">No, you must be a general member and pay dues to attend regular UFA events. General membership is open year-round with no application required.</div></div>
         </div>
-        <div class="faq-item reveal">
-          <button class="faq-q" onclick="toggleFaq(this)">
-            When do associate and analyst applications open?
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>
-          <div class="faq-a"><div class="faq-a-inner">For associates and analysts, recruitment happens at the beginning of fall and spring semesters. Follow our Instagram <a href="https://www.instagram.com/texasufa/" target="_blank" style="color:var(--green-accent)">@texasufa</a> for updates on exact dates.</div></div>
-        </div>
+        
         <div class="faq-item reveal">
           <button class="faq-q" onclick="toggleFaq(this)">
             How do I get into the associate or analyst program?
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           </button>
-          <div class="faq-a"><div class="faq-a-inner">Be your authentic self. Show up to info sessions, meet the team, and express your genuine interests in your application. We look for drive and curiosity — not a perfect GPA or prior finance experience.</div></div>
+          <div class="faq-a"><div class="faq-a-inner">Show up to info sessions, meet the team, and be genuine in your application. We look for drive and curiosity, not a perfect GPA or prior finance experience.</div></div>
         </div>
       </div>
       <div>
-        <div class="faq-item reveal">
-          <button class="faq-q" onclick="toggleFaq(this)">
-            How much are dues?
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>
-          <div class="faq-a"><div class="faq-a-inner">$55 per semester or $100 for the full academic year. After joining on HornsLink, pay dues via Venmo @TEXASUFA25.</div></div>
-        </div>
+        
         <div class="faq-item reveal">
           <button class="faq-q" onclick="toggleFaq(this)">
             Do I need to be a business or finance major?
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           </button>
           <div class="faq-a"><div class="faq-a-inner">Not at all. UFA is open to all UT Austin students regardless of major. We have members from CS, Economics, Liberal Arts, Engineering, and more. A genuine interest in finance is what matters.</div></div>
+        </div>
+        <div class="faq-item reveal">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            Do you host social events?
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+          <div class="faq-a"><div class="faq-a-inner">Yes, we offer socials for both the Analyst and Associate programs throughout the year. General members are invited to select events as well.</div></div>
         </div>
         <div class="faq-item reveal">
           <button class="faq-q" onclick="toggleFaq(this)">
@@ -2084,7 +2352,7 @@ nav .nav-links.open {
     </div><!-- /faq-grid -->
       
 
-    <div style="margin-top:40px;padding:28px 32px;background:rgba(20, 36, 20, 0.05);border-radius:8px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;">
+    <div class="reveal" style="margin-top:40px;padding:28px 32px;background:rgba(20, 36, 20, 0.05);border-radius:8px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;">
       <div>
         <div style="font-family:var(--font-display);font-size:18px;font-weight:500;margin-bottom:6px;">Still have questions?</div>
         <p style="font-size:14px;color:var(--text-muted);">Reach out directly — we're happy to chat.</p>
@@ -2111,7 +2379,7 @@ nav .nav-links.open {
   <section class="pub-section bg-cream">
     <div class="section-tag">Research reports</div>
     <h2 class="section-title">Member-authored research</h2>
-    <p class="section-subtitle">Our Investment Associates publish in-depth equity research and market analysis that reflects the real-world rigor we bring to every assignment.</p>
+    <p class="section-subtitle">In-depth equity research and market analysis written by our Investment Associates, covering public companies across industries.</p>
 
 
     <div class="pub-card-embed-container">
@@ -2119,7 +2387,7 @@ nav .nav-links.open {
         <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px;">Fall 2025</div>
         <div class="pub-title">Fall 2025 Research Report</div>
         <p class="pub-desc">
-          Our flagship inaugural Equity Research Journal—a rigorous collection of equity research and macro analysis produced by UFA Investment Associates.
+          Our inaugural Equity Research Journal, a collection of equity research and macro analysis produced by UFA Investment Associates.
           This edition covers TMT, Healthcare, Energy, Financials, Consumer, and Industrials, featuring deep-dives into companies of all sizes.
         </p>
         <div style="margin-top:24px;display:flex;gap:12px;flex-wrap:wrap;">
@@ -2127,126 +2395,196 @@ nav .nav-links.open {
         </div>
       </div>
       <div style="margin-top:32px;width:100%;border-radius:12px;overflow:hidden;box-shadow:0 2px 16px rgba(0,0,0,0.10);">
-        <iframe src="https://drive.google.com/file/d/1M3_uEOvIkb5qdzMZXesy35_vrDBJ8AEW/preview" width="100%" height="900px" style="border:none;display:block;" title="UFA Fall 2025 Research Report" allow="autoplay"></iframe>
+        <iframe src="https://drive.google.com/file/d/1M3_uEOvIkb5qdzMZXesy35_vrDBJ8AEW/preview" width="100%" height="500px" style="border:none;display:block;" title="UFA Fall 2025 Research Report" allow="autoplay"></iframe>
       </div>
     </div>
   </section>
 
   <hr class="divider">
-</div>
 
+  <section class="pub-section bg-cream">
+    <div class="section-tag">Weekly Blog</div>
+    <h2 class="section-title">Member-authored commentary</h2>
+    <p class="section-subtitle">Weekly market analysis and financial commentary written by UFA Investment Associates across all industry groups.</p>
 
-<!-- ══════════════════════════════════
-     FAQS
-══════════════════════════════════ -->
-<div id="page-faqs" class="page">
+        <div class="blog-grid-3col" style="display:grid;gap:24px;margin-top:40px;">
 
-  <div class="faq-hero">
-    <div class="faq-hero-content">
-    <div class="section-tag" style="color:var(--green-pale)"><span style="background:var(--green-pale);display:inline-block;width:24px;height:1px;"></span> Common questions</div>
-      <h1 class="page-hero-title">Frequently asked questions.</h1>
-      <p style="font-size:16px;color:rgba(255,255,255,0.65);margin-top:14px;max-width:480px;line-height:1.65;">Another option is to DM the instagram account and we will get back to you ASAP.</p>
-    </div>
-  </div>
-
-  <section class="section bg-cream">
-    <div style="max-width:760px;">
-      <div class="section-tag">Everything you need to know</div>
-      <h2 class="section-title" style="margin-bottom:40px;">Frequently Asked Questions</h2>
-
-      <div class="faq-list">
-
-        <div class="faq-item reveal">
-          <button class="faq-q" onclick="toggleFaq(this)">
-            What is the difference between analysts and associates?
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>
-          <div class="faq-a"><div class="faq-a-inner">
-            <p><strong>Analysts</strong> meet weekly to build technical skills, explore different career paths, and connect with peers in a collaborative environment. Members write news stories, present to the class, and may be published on our weekly blog.</p>
-            <p style="margin-top:12px;"><strong>Associates</strong> form a smaller, tight-knit group that meets more frequently to prepare for interviews and gain hands-on experience in stock pitching or pro bono consulting. Associates have access to a wide alumni network, one-on-one mentorship, and impressive placement outcomes.</p>
-          </div></div>
+      <div class="reveal blog-card-new">
+        <a href="https://drive.google.com/file/d/10exWdvRU1oTF6wOv9Ut7lmGiOjRGlHVw/view" target="_blank" class="blog-card-thumb" style="background:var(--green-wash);">
+          <img src="https://drive.google.com/thumbnail?id=10exWdvRU1oTF6wOv9Ut7lmGiOjRGlHVw&sz=w800" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block;"  alt="The Looming Maturity Wall">
+        </a>
+        <div class="blog-card-body">
+          <div class="blog-card-date">03/30/2026 · Weekly Blog</div>
+          <div class="blog-card-title">The Looming Maturity Wall</div>
+          <p class="blog-card-author">Darya Chernyatin — Financial Institutions Group</p>
+          <div class="blog-card-actions">
+            <a href="https://drive.google.com/file/d/10exWdvRU1oTF6wOv9Ut7lmGiOjRGlHVw/view" target="_blank" class="btn-primary">Read</a>
+            <a href="https://drive.google.com/uc?export=download&id=10exWdvRU1oTF6wOv9Ut7lmGiOjRGlHVw" target="_blank" class="btn-outline">Download</a>
+          </div>
         </div>
-
-        <div class="faq-item reveal">
-          <button class="faq-q" onclick="toggleFaq(this)">
-            Can I attend weekly events if I am not a general member?
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>
-          <div class="faq-a"><div class="faq-a-inner">No — you must be a general member and pay dues in order to attend regular UFA events. General membership is open year-round with no application required.</div></div>
-        </div>
-
-        <div class="faq-item reveal">
-          <button class="faq-q" onclick="toggleFaq(this)">
-            When are general meetings held?
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>
-          <div class="faq-a"><div class="faq-a-inner">Every Wednesday from 5–6 PM in the McCombs building. Follow our Instagram for the exact room number each week.</div></div>
-        </div>
-
-        <div class="faq-item reveal">
-          <button class="faq-q" onclick="toggleFaq(this)">
-            When do associate and analyst applications open?
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>
-          <div class="faq-a"><div class="faq-a-inner">You can become a general member at any time. For associates and analysts, recruitment happens at the beginning of fall and spring semesters. Follow our Instagram <a href="https://www.instagram.com/texasufa/" target="_blank" style="color:var(--green-accent)">@texasufa</a> for updates on exact dates.</div></div>
-        </div>
-
-        <div class="faq-item reveal">
-          <button class="faq-q" onclick="toggleFaq(this)">
-            How do I get into the associate or analyst program?
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>
-          <div class="faq-a"><div class="faq-a-inner">Be your authentic self. Show up to info sessions, meet the team, and express your genuine interests in your application. We look for drive and curiosity — not a perfect GPA or prior finance experience.</div></div>
-        </div>
-
-        <div class="faq-item reveal">
-          <button class="faq-q" onclick="toggleFaq(this)">
-            How much are dues?
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>
-          <div class="faq-a"><div class="faq-a-inner">$55 per semester or $90 for the full academic year. After joining on HornsLink, pay dues via Venmo @TEXASUFA25.</div></div>
-        </div>
-
-        <div class="faq-item reveal">
-          <button class="faq-q" onclick="toggleFaq(this)">
-            Do you host social events?
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>
-          <div class="faq-a"><div class="faq-a-inner">Yes — we host over 50 events annually, ranging from pickleball tournaments to lake barges. Socials are a fantastic way to network and meet people across all teams. They're also a lot of fun.</div></div>
-        </div>
-
-        <div class="faq-item reveal">
-          <button class="faq-q" onclick="toggleFaq(this)">
-            Do I need to be a business or finance major?
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>
-          <div class="faq-a"><div class="faq-a-inner">Not at all. UFA is open to all UT Austin students regardless of major. We have members from CS, Economics, Liberal Arts, Engineering, and more. A genuine interest in finance is what matters.</div></div>
-        </div>
-
       </div>
 
-      <div style="margin-top:40px;padding:28px 32px;background:var(--green-wash);border-radius:8px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;">
-        <div>
-          <div style="font-family:var(--font-display);font-size:18px;font-weight:500;margin-bottom:6px;">Still have questions?</div>
-          <p style="font-size:14px;color:var(--text-muted);">Reach out directly — we're happy to chat.</p>
+      <div class="reveal blog-card-new">
+        <a href="https://drive.google.com/file/d/1jcZI0aLiHr6F61tjTfs8HKjdMIpk8Ixv/view" target="_blank" class="blog-card-thumb" style="background:var(--green-wash);">
+          <img src="https://drive.google.com/thumbnail?id=1jcZI0aLiHr6F61tjTfs8HKjdMIpk8Ixv&sz=w800" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block;"  alt="From Best to Worst">
+        </a>
+        <div class="blog-card-body">
+          <div class="blog-card-date">03/09/2026 · Weekly Blog</div>
+          <div class="blog-card-title">From Best to Worst: The Narrative for Technology</div>
+          <p class="blog-card-author">Arnav Goel — Investment Team, TMT Industry</p>
+          <div class="blog-card-actions">
+            <a href="https://drive.google.com/file/d/1jcZI0aLiHr6F61tjTfs8HKjdMIpk8Ixv/view" target="_blank" class="btn-primary">Read</a>
+            <a href="https://drive.google.com/uc?export=download&id=1jcZI0aLiHr6F61tjTfs8HKjdMIpk8Ixv" target="_blank" class="btn-outline">Download</a>
+          </div>
         </div>
-        <a href="#" onclick="showPage('contact')" class="btn-primary">Contact us</a>
       </div>
+
+      <div class="reveal blog-card-new">
+        <a href="https://drive.google.com/file/d/1vb40r6FEqYKDYe8wIw_fWteyM5i5lSwd/view" target="_blank" class="blog-card-thumb" style="background:var(--green-wash);">
+          <img src="https://drive.google.com/thumbnail?id=1vb40r6FEqYKDYe8wIw_fWteyM5i5lSwd&sz=w800" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block;"  alt="Panic at the Disco">
+        </a>
+        <div class="blog-card-body">
+          <div class="blog-card-date">03/02/2026 · Weekly Blog</div>
+          <div class="blog-card-title">Panic at the Disco!</div>
+          <p class="blog-card-author">Vivaan Shah — Co-Head of Energy Industry</p>
+          <div class="blog-card-actions">
+            <a href="https://drive.google.com/file/d/1vb40r6FEqYKDYe8wIw_fWteyM5i5lSwd/view" target="_blank" class="btn-primary">Read</a>
+            <a href="https://drive.google.com/uc?export=download&id=1vb40r6FEqYKDYe8wIw_fWteyM5i5lSwd" target="_blank" class="btn-outline">Download</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="reveal blog-card-new">
+        <a href="https://drive.google.com/file/d/1P4_u8vYzvvqVU-p-ziOr0max5_-q-W8B/view" target="_blank" class="blog-card-thumb" style="background:var(--green-wash);">
+          <img src="https://drive.google.com/thumbnail?id=1P4_u8vYzvvqVU-p-ziOr0max5_-q-W8B&sz=w800" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block;"  alt="Is American Exceptionalism Fading">
+        </a>
+        <div class="blog-card-body">
+          <div class="blog-card-date">02/19/2026 · Weekly Blog</div>
+          <div class="blog-card-title">Is American Exceptionalism Fading?</div>
+          <p class="blog-card-author">Felipe Motta — Investment Team, Healthcare Industry</p>
+          <div class="blog-card-actions">
+            <a href="https://drive.google.com/file/d/1P4_u8vYzvvqVU-p-ziOr0max5_-q-W8B/view" target="_blank" class="btn-primary">Read</a>
+            <a href="https://drive.google.com/uc?export=download&id=1P4_u8vYzvvqVU-p-ziOr0max5_-q-W8B" target="_blank" class="btn-outline">Download</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="reveal blog-card-new">
+        <a href="https://drive.google.com/file/d/1PDV-3I0M8TM8p_iEhnt2eSWFrKWdeeVr/view" target="_blank" class="blog-card-thumb" style="background:var(--green-wash);">
+          <img src="https://drive.google.com/thumbnail?id=1PDV-3I0M8TM8p_iEhnt2eSWFrKWdeeVr&sz=w800" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block;"  alt="The Illusion of Stability">
+        </a>
+        <div class="blog-card-body">
+          <div class="blog-card-date">02/18/2026 · Weekly Blog</div>
+          <div class="blog-card-title">The Illusion of Stability</div>
+          <p class="blog-card-author">Neil Kaushik — Investment Team, Energy Industry</p>
+          <div class="blog-card-actions">
+            <a href="https://drive.google.com/file/d/1PDV-3I0M8TM8p_iEhnt2eSWFrKWdeeVr/view" target="_blank" class="btn-primary">Read</a>
+            <a href="https://drive.google.com/uc?export=download&id=1PDV-3I0M8TM8p_iEhnt2eSWFrKWdeeVr" target="_blank" class="btn-outline">Download</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="reveal blog-card-new">
+        <a href="https://drive.google.com/file/d/1fBm3bNq7IcNGXoXtQFxCyM_TIjbwrZJV/view" target="_blank" class="blog-card-thumb" style="background:var(--green-wash);">
+          <img src="https://drive.google.com/thumbnail?id=1fBm3bNq7IcNGXoXtQFxCyM_TIjbwrZJV&sz=w800" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block;"  alt="The Private Credit Takeover">
+        </a>
+        <div class="blog-card-body">
+          <div class="blog-card-date">11/24/2025 · Weekly Blog</div>
+          <div class="blog-card-title">The Private Credit Takeover</div>
+          <p class="blog-card-author">Joya Trivedi — Head of Industrials Industry Group</p>
+          <div class="blog-card-actions">
+            <a href="https://drive.google.com/file/d/1fBm3bNq7IcNGXoXtQFxCyM_TIjbwrZJV/view" target="_blank" class="btn-primary">Read</a>
+            <a href="https://drive.google.com/uc?export=download&id=1fBm3bNq7IcNGXoXtQFxCyM_TIjbwrZJV" target="_blank" class="btn-outline">Download</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="reveal blog-card-new">
+        <a href="https://drive.google.com/file/d/1x9ZDjMDJzaWFO1DKPZcqT6xgf-coDCZf/view" target="_blank" class="blog-card-thumb" style="background:var(--green-wash);">
+          <img src="https://drive.google.com/thumbnail?id=1x9ZDjMDJzaWFO1DKPZcqT6xgf-coDCZf&sz=w800" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block;"  alt="Why AI Will Cause One of the Worst Crashes">
+        </a>
+        <div class="blog-card-body">
+          <div class="blog-card-date">11/17/2025 · Weekly Blog</div>
+          <div class="blog-card-title">Why AI Will Cause One of the Worst Crashes in Market History</div>
+          <p class="blog-card-author">Farzad Hussain — Investment Associate</p>
+          <div class="blog-card-actions">
+            <a href="https://drive.google.com/file/d/1x9ZDjMDJzaWFO1DKPZcqT6xgf-coDCZf/view" target="_blank" class="btn-primary">Read</a>
+            <a href="https://drive.google.com/uc?export=download&id=1x9ZDjMDJzaWFO1DKPZcqT6xgf-coDCZf" target="_blank" class="btn-outline">Download</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="reveal blog-card-new">
+        <a href="https://drive.google.com/file/d/13MHlsWXPnN934olg7zos26FT7hDWISHT/view" target="_blank" class="blog-card-thumb" style="background:var(--green-wash);">
+          <img src="https://drive.google.com/thumbnail?id=13MHlsWXPnN934olg7zos26FT7hDWISHT&sz=w800" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block;"  alt="The Lone Star Takes on Wall Street">
+        </a>
+        <div class="blog-card-body">
+          <div class="blog-card-date">11/10/2025 · Weekly Blog</div>
+          <div class="blog-card-title">The Lone Star Takes on Wall Street</div>
+          <p class="blog-card-author">Caden Warner — Director of Investments</p>
+          <div class="blog-card-actions">
+            <a href="https://drive.google.com/file/d/13MHlsWXPnN934olg7zos26FT7hDWISHT/view" target="_blank" class="btn-primary">Read</a>
+            <a href="https://drive.google.com/uc?export=download&id=13MHlsWXPnN934olg7zos26FT7hDWISHT" target="_blank" class="btn-outline">Download</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="reveal blog-card-new">
+        <a href="https://drive.google.com/file/d/1zN0JbTc6cR6drrZnFRR2N7M2Eto3bwO7/view" target="_blank" class="blog-card-thumb" style="background:var(--green-wash);">
+          <img src="https://drive.google.com/thumbnail?id=1zN0JbTc6cR6drrZnFRR2N7M2Eto3bwO7&sz=w800" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block;"  alt="The SPAC is Back">
+        </a>
+        <div class="blog-card-body">
+          <div class="blog-card-date">10/27/2025 · Weekly Blog</div>
+          <div class="blog-card-title">The SPAC is Back</div>
+          <p class="blog-card-author">Nathan Li — Director of Investments</p>
+          <div class="blog-card-actions">
+            <a href="https://drive.google.com/file/d/1zN0JbTc6cR6drrZnFRR2N7M2Eto3bwO7/view" target="_blank" class="btn-primary">Read</a>
+            <a href="https://drive.google.com/uc?export=download&id=1zN0JbTc6cR6drrZnFRR2N7M2Eto3bwO7" target="_blank" class="btn-outline">Download</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="reveal blog-card-new">
+        <a href="https://drive.google.com/file/d/1g1sUtSdg5kwIj7JGgoYMuviBTSNFIvKd/view" target="_blank" class="blog-card-thumb" style="background:var(--green-wash);">
+          <img src="https://drive.google.com/thumbnail?id=1g1sUtSdg5kwIj7JGgoYMuviBTSNFIvKd&sz=w800" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block;"  alt="UBS Under Siege">
+        </a>
+        <div class="blog-card-body">
+          <div class="blog-card-date">10/03/2025 · Weekly Blog</div>
+          <div class="blog-card-title">UBS Under Siege</div>
+          <p class="blog-card-author">Derek Flores — Head of Financial Industry Group</p>
+          <div class="blog-card-actions">
+            <a href="https://drive.google.com/file/d/1g1sUtSdg5kwIj7JGgoYMuviBTSNFIvKd/view" target="_blank" class="btn-primary">Read</a>
+            <a href="https://drive.google.com/uc?export=download&id=1g1sUtSdg5kwIj7JGgoYMuviBTSNFIvKd" target="_blank" class="btn-outline">Download</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="reveal blog-card-new">
+        <a href="https://drive.google.com/file/d/1X0eSKyFIf9v7jQKVHihddA1wh_uT5Vkl/view" target="_blank" class="blog-card-thumb" style="background:var(--green-wash);">
+          <img src="https://drive.google.com/thumbnail?id=1X0eSKyFIf9v7jQKVHihddA1wh_uT5Vkl&sz=w800" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block;"  alt="The Brain Drain Campaign">
+        </a>
+        <div class="blog-card-body">
+          <div class="blog-card-date">09/26/2025 · Weekly Blog</div>
+          <div class="blog-card-title">The Brain Drain Campaign</div>
+          <p class="blog-card-author">Adam Ageeb — Investment Associate</p>
+          <div class="blog-card-actions">
+            <a href="https://drive.google.com/file/d/1X0eSKyFIf9v7jQKVHihddA1wh_uT5Vkl/view" target="_blank" class="btn-primary">Read</a>
+            <a href="https://drive.google.com/uc?export=download&id=1X0eSKyFIf9v7jQKVHihddA1wh_uT5Vkl" target="_blank" class="btn-outline">Download</a>
+          </div>
+        </div>
+      </div>
+
     </div>
   </section>
 
-</div><!-- /faqs -->
-
-
-<!-- ══════════════════════════════════
-     CONTACT
-══════════════════════════════════ -->
+  <hr class="divider">
+</div>
 <div id="page-contact" class="page">
 
   
     <div class="contact-hero">
     <div class="contact-hero-content">
-    <div class="section-tag" style="color:var(--green-pale)"><span style="background:var(--green-pale);display:inline-block;width:24px;height:1px;"></span> Get in touch</div>
+      <div class="page-eyebrow">Get in touch</div>
       <h1 class="page-hero-title">Contact Us</h1>
     </div>
   </div>
@@ -2257,7 +2595,7 @@ nav .nav-links.open {
       <div class="contact-info">
         <div class="section-tag">Contact details</div>
         <h2 class="section-title" style="margin-bottom:24px;">Reach out any time</h2>
-        <p>Whether you're a prospective member, a company looking to recruit our students, or a business interested in working with our consulting team — we want to hear from you.</p>
+        <p>Whether you're a prospective member, a company looking to recruit our students, or a business interested in working with our consulting team, we want to hear from you.</p>
         <div class="contact-detail" style="margin-top:32px;">
 
           <div class="contact-row reveal">
@@ -2316,7 +2654,7 @@ nav .nav-links.open {
         </div>
         <div class="form-group">
           <label class="form-label">Email address</label>
-          <input id="contact-email" class="form-input" type="email" placeholder="you@utexas.edu">
+          <input id="contact-email" class="form-input" type="email" placeholder="your@email.com">
         </div>
         <div class="form-group">
           <label class="form-label">Subject</label>
@@ -2677,7 +3015,7 @@ sb.auth.getSession().then(({ data: { session } }) => {
   <div class="footer-top">
     <div class="footer-brand">
       <div class="footer-logo-text">University Finance Association</div>
-      <p class="footer-tagline">The oldest McCombs-affiliated organization at UT Austin, building finance leaders since 1951.</p>
+      <p class="footer-tagline">The oldest McCombs-affiliated finance organization at UT Austin, building finance leaders since 1951.</p>
       <div class="social-links" style="margin-top:20px;">
         <a href="https://www.instagram.com/texasufa/" target="_blank" class="social-link" style="background:transparent;border-color:rgba(255,255,255,0.15);color:rgba(255,255,255,0.55);">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
@@ -2693,9 +3031,9 @@ sb.auth.getSession().then(({ data: { session } }) => {
       <div class="footer-col-title">Navigation</div>
       <ul class="footer-links">
         <li><a href="#" onclick="showPage('home')">Home</a></li>
-        <li><a href="#" onclick="showPage('about')">About Us</a></li>
+        <li><a href="#" onclick="showPage('about')">About</a></li>
         <li><a href="#" onclick="showPage('teams')">Teams</a></li>
-        <li><a href="#" onclick="showPage('join')">How to Join</a></li>
+        <li><a href="#" onclick="showPage('join')">Join</a></li>
       </ul>
     </div>
     <div>
@@ -2728,12 +3066,16 @@ sb.auth.getSession().then(({ data: { session } }) => {
 
 <script>
   function triggerReveals(container) {
-    container.querySelectorAll('.reveal').forEach((el, i) => {
-      setTimeout(() => el.classList.add('visible'), i * 60);
+    container.querySelectorAll('.reveal').forEach(el => {
+      el.classList.remove('visible');
+      observer.observe(el);
     });
   }
 
   function showPage(id) {
+  observerLocked = true;
+  document.querySelectorAll('.reveal').forEach(el => observer.unobserve(el));
+
   document.querySelectorAll('.page').forEach(p => {
     p.classList.remove('active');
     p.style.display = 'none';
@@ -2743,13 +3085,81 @@ sb.auth.getSession().then(({ data: { session } }) => {
   target.style.display = 'block';
   requestAnimationFrame(() => {
     target.classList.add('active');
-    target.querySelectorAll('.reveal').forEach((el, i) => {
-      const delay = el.closest('.board-card') ? i * 100 : i * 120;
-setTimeout(() => el.classList.add('visible'), delay);
+    // Reset hero animations so they replay on every page visit
+    const heroEls = [
+      ...target.querySelectorAll('.hero-eyebrow, .hero h1, .hero-sub, .hero-btns'),
+    ];
+    heroEls.forEach(el => {
+      el.style.animation = 'none';
+      el.style.opacity = '0';
     });
+    setTimeout(() => {
+      heroEls.forEach(el => {
+        el.style.animation = '';
+        el.style.opacity = '';
+      });
+    }, 20);
   });
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  setTimeout(() => {
+    observerLocked = false;
+    const revealEls = [
+      ...target.querySelectorAll('.tab-pane.active .reveal, :not(.tab-pane) > .reveal, .reveal:not([class*="tab-pane"] *)'),
+      ...document.querySelectorAll('.stats-bar .reveal')
+    ];
+    // Flatten to unique elements only in active tab or outside tabs entirely
+    const activeTabReveal = target.querySelector('.tab-pane.active');
+    const allReveal = new Set([
+      ...(activeTabReveal ? activeTabReveal.querySelectorAll('.reveal') : []),
+      ...Array.from(target.querySelectorAll('.reveal')).filter(el => !el.closest('.tab-pane')),
+      ...document.querySelectorAll('.stats-bar .reveal')
+    ]);
+    let idx = 0;
+    // Re-observe blog cards for publications page
+    if (id === 'publications') {
+      target.querySelectorAll('.blog-card-new').forEach(card => {
+        card.classList.remove('visible');
+        blogObserver.unobserve(card);
+        blogObserver.observe(card);
+      });
+    }
+    // On teams page, fire hero text immediately before anything else
+    if (id === 'teams') {
+      target.querySelectorAll('.page-eyebrow, .page-hero-title').forEach((el, i) => {
+        el.classList.remove('visible');
+        setTimeout(() => el.classList.add('visible'), i * 80);
+        idx++;
+      });
+    }
+    allReveal.forEach((el) => {
+      if (el.closest('.board-card') || el.closest('.blog-card-new')) return;
+      el.classList.remove('visible');
+      observer.unobserve(el);
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight && rect.bottom > 0) {
+        setTimeout(() => el.classList.add('visible'), idx * (window.innerWidth <= 768 ? 50 : 80));
+        idx++;
+      } else {
+        observer.observe(el);
+      }
+    });
+  }, 50);
   document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+
+  // Start observing board cards only when about page is shown
+  if (id === 'about') {
+    // Reset board cards first
+    document.querySelectorAll('.board-card').forEach(card => {
+      card.classList.remove('visible');
+      boardObserver.unobserve(card);
+    });
+    // Wait for scroll to top, then start observing
+    setTimeout(() => {
+      document.querySelectorAll('.board-card').forEach(card => {
+        boardObserver.observe(card);
+      });
+    }, 50);
+  }
 }
 
   function switchTab(id) {
@@ -2763,11 +3173,20 @@ setTimeout(() => el.classList.add('visible'), delay);
   const target = document.getElementById('tab-' + id);
   target.style.display = 'block';
   requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      target.classList.add('active');
-      target.querySelectorAll('.reveal').forEach((el, i) => {
-        setTimeout(() => el.classList.add('visible'), i * 120);
-      });
+    target.classList.add('active');
+    const stagger = window.innerWidth <= 768 ? 50 : 80;
+    let visibleCount = 0;
+    target.querySelectorAll('.reveal').forEach((el) => {
+      el.classList.remove('visible');
+      observer.unobserve(el);
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight && rect.bottom > 0) {
+        const delay = visibleCount < 6 ? visibleCount * stagger : visibleCount * 20;
+        setTimeout(() => el.classList.add('visible'), delay);
+        visibleCount++;
+      } else {
+        observer.observe(el);
+      }
     });
   });
   event.target.classList.add('active');
@@ -2823,24 +3242,47 @@ await sb.from('members').insert({ email, name, eid, role: 'General Member', seme
   showDashboard();
 }
 
+let observerLocked = false;
+
 const observer = new IntersectionObserver((entries) => {
+  if (observerLocked) return;
   entries.forEach(entry => {
     if (entry.isIntersecting) {
       entry.target.classList.add('visible');
+      observer.unobserve(entry.target);
     }
   });
-}, { threshold: 0.1 });
+}, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
 
-document.querySelectorAll('.page').forEach(page => {
+document.querySelectorAll('.page, .stats-bar').forEach(page => {
   page.querySelectorAll(
-    'h1, h2, h3, h4, .section-tag, .section-subtitle, p, .stat-cell, ' +
+    'h1, h2, h3, h4, h5, h6, ' +
+    '.section-tag, .section-subtitle, .section-title, p, ' +
     '.pillar-card, .team-card, .feature-card, .membership-card, ' +
     '.step-card, .service-card, .member-card, .comp-card, ' +
-    '.faq-item, .contact-row, .pub-card-embed-container, img'
+    '.faq-item, .contact-row, .pub-card-embed-container, .insta-card, ' +
+    '.photo-strip-img, .page-eyebrow, img, .btn-primary, .btn-outline, .reveal'
   ).forEach(el => {
-    if (!el.closest('.board-card')) {
-      el.classList.add('reveal');
-      observer.observe(el);
+    if (
+      el.closest('.board-card') ||
+      el.closest('.blog-card-new') ||
+      el.closest('.hero') ||
+      el.closest('footer') ||
+      el.closest('nav')
+    ) return;
+    el.classList.add('reveal');
+    const activePage = el.closest('.page');
+    // Don't observe on init — showPage handles the initial reveal after 50ms
+    if (activePage && !activePage.classList.contains('active')) {
+      // hidden page — will be observed when shown
+    } else if (!activePage) {
+      // outside a page (e.g. stats-bar) — showPage handles it
+    } else {
+      // active page — observe for scroll-triggered reveals below the fold only
+      const rect = el.getBoundingClientRect();
+      if (rect.top >= window.innerHeight) {
+        observer.observe(el);
+      }
     }
   });
 });
@@ -2852,26 +3294,46 @@ const boardObserver = new IntersectionObserver((entries) => {
       const index = allCards.indexOf(entry.target);
       const row = Math.floor(index / 4);
       const cardsInRow = allCards.filter((_, i) => Math.floor(i / 4) === row);
-      cardsInRow.forEach(card => {
-        setTimeout(() => card.classList.add('visible'), row * 300);
+      cardsInRow.forEach((card, i) => {
+        setTimeout(() => card.classList.add('visible'), i * (window.innerWidth <= 768 ? 50 : 80));
       });
       boardObserver.unobserve(entry.target);
     }
   });
-}, { threshold: 0.1 });
+}, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
 
 document.querySelectorAll('.board-card').forEach(card => {
   card.classList.add('reveal');
-  boardObserver.observe(card);
+  // Don't observe yet — will be triggered when About page is shown
 });
 
-document.querySelectorAll('#page-home .reveal').forEach(el => {
-  observer.observe(el);
+// Blog cards: animate in by row (3 columns)
+const blogObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const allCards = Array.from(document.querySelectorAll('.blog-card-new'));
+      const index = allCards.indexOf(entry.target);
+      const cols = window.innerWidth <= 768 ? 1 : 3;
+      const row = Math.floor(index / cols);
+      const cardsInRow = allCards.filter((_, i) => Math.floor(i / cols) === row);
+      cardsInRow.forEach((card, i) => {
+        setTimeout(() => card.classList.add('visible'), i * (window.innerWidth <= 768 ? 50 : 80));
+      });
+      blogObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.blog-card-new').forEach(card => {
+  card.classList.add('reveal');
+  blogObserver.observe(card);
 });
 
-document.querySelectorAll('.tab-pane.active .reveal').forEach((el, i) => {
-  setTimeout(() => el.classList.add('visible'), i * 80);
-});
+// Remove the immediate home page reveal — let IntersectionObserver handle it
+// document.querySelectorAll('#page-home .reveal') removed intentionally
+
+// Remove immediate tab reveal — let scroll handle it
+// document.querySelectorAll('.tab-pane.active .reveal') removed intentionally
 
 // Re-trigger reveals when a page is shown
 function reObserveReveals(page) {
@@ -2895,22 +3357,14 @@ function applyMobileHeroFixes() {
     teamHero.style.backgroundPosition = isMobile ? 'center 90%' : 'center 40%';
   }
 
-  // Home hero
-  const heroImg = document.querySelector('.hero-img');
-  if (heroImg) {
-    if (isMobile) {
-      heroImg.style.backgroundImage = "url('https://i.postimg.cc/L5rkmFpr/7X2A3757.jpg')";
-      heroImg.style.backgroundPosition = 'center 70%';
-      heroImg.style.backgroundSize = 'cover';
-    }
-  }
+  // Home hero — handled by CSS media query
 
   // Join hero — apply whenever visible
   const joinHero = document.querySelector('.join-hero');
   if (joinHero) {
     if (isMobile) {
-      joinHero.style.backgroundPosition = 'center 55%';
-      joinHero.style.backgroundSize = '130%';
+      joinHero.style.backgroundPosition = 'center 70%';
+      joinHero.style.backgroundSize = '110%';
     } else {
       joinHero.style.backgroundPosition = 'center 56%';
       joinHero.style.backgroundSize = '115%';
@@ -2927,6 +3381,28 @@ window.showPage = function(id) {
   _origShowPage(id);
   if (id === 'join') setTimeout(applyMobileHeroFixes, 50);
 };
+
+// Trigger initial reveals for home page on load
+setTimeout(() => {
+  observerLocked = false;
+  const homePage = document.querySelector('.page.active');
+  const allReveal = new Set([
+    ...(homePage ? Array.from(homePage.querySelectorAll('.reveal')).filter(el => !el.closest('.tab-pane') || el.closest('.tab-pane.active')) : []),
+  ]);
+  let idx = 0;
+  allReveal.forEach(el => {
+    if (el.closest('.board-card') || el.closest('.blog-card-new') || el.closest('.hero')) return;
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight && rect.bottom > 0) {
+      setTimeout(() => el.classList.add('visible'), idx * (window.innerWidth <= 768 ? 50 : 80));
+      idx++;
+    }
+  });
+  // Stats via reveal system
+  document.querySelectorAll('.stats-bar .reveal').forEach((el, i) => {
+    setTimeout(() => el.classList.add('visible'), 300 + i * (window.innerWidth <= 768 ? 50 : 80));
+  });
+}, 50);
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>
@@ -2958,7 +3434,7 @@ window.showPage = function(id) {
     }).then(() => {
       status.style.display = 'block';
       status.style.color = 'green';
-      status.textContent = 'Message sent! We\'ll get back to you within 48 hours.';
+      status.textContent = 'Message sent! We\'ll get back to you as soon as possible.';
       btn.textContent = 'Sent!';
       document.getElementById('contact-name').value = '';
       document.getElementById('contact-email').value = '';
