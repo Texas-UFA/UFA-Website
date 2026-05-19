@@ -12,6 +12,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     
 <style>
+  /* ============================================================
+     CSS CUSTOM PROPERTIES (DESIGN TOKENS)
+     All colors, fonts, and spacing variables used throughout the site.
+     Change values here to update the entire site's appearance.
+     ============================================================ */
   :root {
     --green-dark:   #1C2B1C;
     --green-mid:    #2E4A2E;
@@ -45,9 +50,16 @@
     line-height: 1.7;
     overflow-x: hidden;
     max-width: 100vw;
+    padding-top: 80px;
   }
 
-  /* ── PAGES ── */
+  /* ── PAGES ──
+     Controls which page is visible. Only .active pages are shown.
+     All other pages are hidden with display:none. */
+  /* .page
+     Base class for every page section. All pages are in the HTML
+     simultaneously but hidden by default (display: none).
+     Only the page with the "active" class is visible. */
   .page { display: none; opacity: 0; }
 .page.active {
   display: block;
@@ -88,7 +100,9 @@
 .stat-cell-anim {
 }
 
-  /* ── HERO ── */
+  /* ── HERO ──
+     Full-width banner at the top of each page with background image,
+     gradient overlay, and title text positioned at the bottom. */
   .hero {
     position: relative;
     height: 135vh; min-height: 600px;
@@ -143,6 +157,9 @@
     line-height: 1.65;
   }
    .hero-btns { display: flex; gap: 14px; flex-wrap: wrap; }
+  /* .btn-primary
+     Solid dark green button. Used for primary actions.
+     Example: "Apply Now", "Learn More" */
   .btn-primary {
     display: inline-block;
     background: var(--green-light);
@@ -184,9 +201,12 @@
   }
 
   
-    /* ── NAV ── */
+    /* ── NAV ──
+     Fixed top navigation bar. Stays visible while scrolling.
+     Includes logo, nav links, and CTA buttons.
+     On mobile, collapses into a hamburger menu. */
   nav {
-    position: sticky; top: 0; z-index: 100;
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
     background: var(--green-dark);
     display: flex; align-items: center; justify-content: space-between;
     padding: 0 48px;
@@ -221,6 +241,9 @@
   }
   .nav-links a:hover { color: #fff; background: rgba(255,255,255,0.08); }
   .nav-links a.active { color: #fff; }
+  /* .nav-cta
+     Green button in the top navigation bar.
+     Used for "Member Portal" and "Contact Us" links. */
   .nav-cta {
     background: var(--green-light);
     color: var(--white) !important;
@@ -246,7 +269,8 @@
   display: none;
 }
  
-/* ── STATS BAR ── */
+/* ── STATS BAR ──
+   Dark green band showing key UFA stats (members, rankings, etc.). */
   .stats-bar {
     background: var(--green-dark);
     display: grid; grid-template-columns: repeat(3,1fr);
@@ -264,9 +288,21 @@
   }
   .stat-label { font-size: 15px; color: rgba(255,255,255,0.6); letter-spacing: 0.06em; text-transform: uppercase; margin-top: 2px; }
 
-  /* ── SECTION UTILITIES ── */
+  /* ── SECTION UTILITIES ──
+     Reusable layout classes for page sections.
+     .section = standard padded content block
+     .section-tag = small green uppercase eyebrow label
+     .section-title = large serif heading
+     .bg-cream / .bg-white = background color variants */
+  /* .section
+     Standard padded content block used on most pages.
+     Provides consistent horizontal and vertical spacing.
+     Pair with .bg-cream or .bg-white for background color. */
   .section { padding: 60px 72px; }
   .section-sm { padding: 56px 72px; }
+  /* .section-tag
+     Small green uppercase label that appears above section headings.
+     Example: "WHERE OUR MEMBERS GO" above "Our Recent Placements" */
   .section-tag {
     font-size: 14px; font-weight: 500;
     letter-spacing: 0.2em; text-transform: uppercase;
@@ -279,12 +315,16 @@
     background: var(--green-logo);
     display: inline-block;
   }
+  /* .section-title
+     Large serif (Playfair Display) heading for each section. */
   .section-title {
     font-family: var(--font-display);
     font-size: clamp(28px, 3.5vw, 42px);
     font-weight: 500; color: var(--text-dark);
     line-height: 1.2; margin-bottom: 16px;
   }
+  /* .section-subtitle
+     Body text paragraph that appears below the section title. */
   .section-subtitle {
     font-size: 16px; color: var(--text-muted);
     max-width: 560px; margin-bottom: 48px;
@@ -296,7 +336,39 @@
   .bg-green-dark { background: var(--green-dark); }
   .bg-green-wash { background: var(--green-wash); }
 
-  /* ── PILLARS ── */
+  /* ============================================================
+     LOGO COLLAGE (WHY UFA — PLACEMENTS SECTION)
+     The placement logos grid on the Why UFA page.
+     Logos start hidden (opacity: 0) and animate in row by row
+     using the initLogoAnimation() function in the JS section.
+     ============================================================ */
+  /* ── LOGO COLLAGE (Why UFA placements) ── */
+  /* .placement-logo-img
+     Individual company logo image in the Why UFA placements grid.
+     Starts at opacity 0 and hidden below its final position.
+     Gets the "logo-visible" class added by initLogoAnimation()
+     which triggers the fade-in transition. */
+  .placement-logo-img {
+    height: 80px;
+    width: 100%;
+    max-width: 240px;
+    object-fit: contain;
+    opacity: 0 !important;
+    transform: translateY(16px) !important;
+    transition: opacity 0.8s ease, transform 0.8s ease !important;
+  }
+  .placement-logo-img.logo-visible {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+  }
+  .placement-logo-img.logo-visible:hover { opacity: 0.6 !important; }
+  @media (max-width: 768px) {
+    .placement-logo-img { height: 48px; max-width: 130px; }
+  }
+
+  /* ── PILLARS ──
+     Feature cards used on various pages to highlight key points.
+     Now replaced on Why UFA by the editorial two-column layout. */
   .pillars { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
   .pillar-card {
     background: var(--cream-dark);
@@ -309,7 +381,9 @@
   .pillar-title { font-family: var(--font-display); font-size: 24px; font-weight: 500; margin-bottom: 12px; color: var(--text-dark); }
   .pillar-body { font-size: 16px; color: var(--text-muted); line-height: 1.7; }
 
-  /* ── MISSION BAND ── */
+  /* ── MISSION BAND ──
+     Full-width dark green band used for mission statements
+     and key quotes. */
   .mission-band {
     background: var(--green-dark);
     padding: 72px;
@@ -329,7 +403,9 @@
   .mission-quote::before { content: '\201C'; color: var(--green-pale); font-size: 1.4em; line-height: 0; vertical-align: -0.4em; margin-right: 4px; }
   .mission-attr { margin-top: 24px; font-size: 13px; color: var(--green-pale); letter-spacing: 0.06em; text-transform: uppercase; }
 
-/* ── TEAMS ── */
+/* ── TEAMS ──
+   Team member cards on the Teams page.
+   Each card shows photo, name, role, and social links. */
 .teams-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
 .team-card {
   border-radius: 8px; overflow: hidden;
@@ -363,7 +439,8 @@
 .team-card-desc { font-size: 15px; color: var(--text-muted); line-height: 1.65; }
 .team-card-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 16px; font-size: 16px; font-weight: 500; color: var(--green-accent); text-decoration: none; }
 .team-card-link:hover { color: var(--green-dark); }
-  /* ── HOW TO JOIN ── */
+  /* ── HOW TO JOIN ──
+     Step-by-step cards on the Join page explaining the application process. */
   .steps-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 0; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
   .step-card { padding: 32px 28px; border-right: 1px solid var(--border); background: var(--white); }
   .step-card:last-child { border-right: none; }
@@ -372,7 +449,18 @@
   .step-body { font-size: 13px; color: var(--text-muted); line-height: 1.7; }
 
 
-  /* ── CTA BAND ── */
+  /* ============================================================
+     CTA BAND
+     The dark green call-to-action strip used at the bottom of pages.
+     Contains a title, subtitle, and action buttons.
+     ============================================================ */
+  /* ── CTA BAND ──
+     Dark green call-to-action strip at the bottom of pages.
+     Contains a heading, subtext, and action buttons. */
+  /* .cta-band
+     Dark green call-to-action strip used at the bottom of pages.
+     Contains .cta-band-title, .cta-band-sub, and .cta-actions.
+     Example: "Ready to join?" with Join and Contact buttons. */
   .cta-band {
     background: var(--green-mid);
     padding: 72px 72px;
@@ -424,10 +512,14 @@
 }
   .cta-band-title { font-family: var(--font-display); font-size: 30px; font-weight: 500; color: var(--white); margin-bottom: 8px; }
   .cta-band-sub { font-size: 18px; color: rgba(255,255,255,0.7); }
+  /* .btn-white
+     White filled button. Used on dark green backgrounds
+     where .btn-primary would not have enough contrast. */
   .btn-white { background: var(--white); color: var(--green-dark); font-family: var(--font-); font-size: 14px; font-weight: 500; padding: 13px 28px; border-radius: 4px; text-decoration: none; display: inline-block; transition: opacity 0.2s; border: none; cursor: pointer; }
   .btn-white:hover { opacity: 0.9; }
 
-  /* ── INSTAGRAM ── */
+  /* ── INSTAGRAM ──
+     Photo grid used to display Instagram-style image strips. */
   .insta-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
   .insta-card {
     border-radius: 6px; overflow: hidden;
@@ -443,7 +535,8 @@
   .insta-handle { font-size: 13px; color: var(--text-muted); }
   .insta-handle strong { color: var(--green-accent); font-weight: 500; }
 
-  /* ── ABOUT PAGE ── */
+  /* ── ABOUT PAGE ──
+     Styles specific to the About page layout and content. */
   .about-hero {
     height: 60vh;
     min-height: 280px;
@@ -459,14 +552,37 @@ background-position: center 95%;
 }
   .about-hero-overlay { position: absolute; inset: 0; background: rgba(20,36,20,0.25); }
   .about-hero-content { position: relative; z-index: 2; padding: 0 72px 56px; }
+
+  .why-hero {
+    height: 60vh;
+    min-height: 280px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+    background-image: linear-gradient(rgba(26,44,26,0.10), rgba(26,44,26,0.10)), url('https://i.postimg.cc/ydCnNPnf/IMG-4496.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center 55%;
+  }
+  .why-hero-overlay { position: absolute; inset: 0; background: rgba(20,36,20,0.35); }
+  .why-hero-content { position: relative; z-index: 2; padding: 0 72px 56px; }
+  /* .page-eyebrow
+     Small uppercase label shown in the hero section of each page.
+     Appears above the main page title.
+     Example: "UT Austin's Largest Finance Org" on Why UFA */
   .page-eyebrow { font-size: 13px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--green-pale); margin-bottom: 4px; display: flex; align-items: center; gap: 10px; }
   .page-eyebrow::before { content: ''; width: 24px; height: 1px; background: var(--green-pale); display: inline-block; }
+  /* .page-hero-title
+     Large white serif heading displayed over the hero image
+     at the top of each interior page. */
   .page-hero-title { font-family: var(--font-display); font-size: clamp(36px, 5vw, 56px); font-weight: 500; color: var(--white); line-height: 1.1; }
 
   .story-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; }
   .story-text p { font-size: 16px; color: var(--text-mid); line-height: 1.8; margin-bottom: 20px; }
 
-  /* ── TEAM GRID ── */
+  /* ── TEAM GRID ──
+     Grid layout for displaying executive board members. */
   .board-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 24px;max-width: 1100px;margin: 0 auto; }
   .board-card { text-align: center; }
   .board-photo { width: 100%; aspect-ratio: 1; border-radius: 8px; overflow: hidden; margin-bottom: 14px; background: var(--green-wash); }
@@ -488,7 +604,8 @@ background-position: center 95%;
   filter: grayscale(0%) contrast(100%);
 }
   
-  /* ── TEAMS PAGE ── */
+  /* ── TEAMS PAGE ──
+     Styles for the full Teams page including filters and member cards. */
   .team-detail-hero {
     height: 60vh; min-height: 380px; position: relative; overflow: hidden;
     display: flex; align-items: flex-end;
@@ -586,7 +703,8 @@ background-position: center 95%;
 .member-card.reveal {
   transition: opacity 0.8s ease, transform 0.8s ease;
 }
-  /* ── HOW TO JOIN PAGE ── */
+  /* ── HOW TO JOIN PAGE ──
+     Layout for the multi-step join process on the Join page. */
 .join-hero {
       background-image: url('https://i.postimg.cc/ydCnNPnf/IMG-4496.jpg');
     background-position: center 40%;
@@ -628,7 +746,8 @@ align-items: flex-end;
   .timeline-event { font-family: var(--font-display); font-size: 16px; font-weight: 500; margin-bottom: 6px; color: var(--text-dark); }
   .timeline-detail { font-size: 13px; color: var(--text-muted); line-height: 1.65; }
 
-  /* ── BLOG ── */
+  /* ── BLOG ──
+     Card styles for research publications and blog posts. */
   .blog-hero {
     background: var(--green-dark); padding: 72px 72px 56px;
   }
@@ -647,7 +766,8 @@ align-items: flex-end;
   .blog-card-desc { font-size: 13px; color: var(--text-muted); line-height: 1.65; }
   .blog-card-read { display: inline-flex; align-items: center; gap: 6px; margin-top: 14px; font-size: 13px; font-weight: 500; color: var(--green-accent); }
 
-  /* ── PUBLICATIONS ── */
+  /* ── PUBLICATIONS ──
+     Full publications page layout including filters and cards. */
 /* Blog cards — clean, consistent layout */
 .blog-card-new {
   background: var(--white);
@@ -819,7 +939,8 @@ align-items: flex-end;
   border-top: 1px solid var(--border);
 }
 
-/* ── FAQS ── */
+/* ── FAQS ──
+   Accordion-style FAQ component. Click a question to expand the answer. */
 .faq-hero {
     height: 44vh;
     min-height: 280px;
@@ -842,7 +963,8 @@ align-items: flex-end;
   .faq-a-inner { padding: 0 28px 24px; font-size: 14px; color: var(--text-muted); line-height: 1.75; }
   .faq-a-inner strong { color: var(--text-dark); font-weight: 500; }
 
-  /* ── CONTACT ── */
+  /* ── CONTACT ──
+     Contact form and contact info layout on the Contact page. */
 .contact-hero {
     height: 60vh;
     min-height: 400px;
@@ -891,7 +1013,8 @@ align-items: flex-end;
   .social-link:hover { border-color: var(--green-accent); color: var(--green-accent); }
   .social-link svg { width: 15px; height: 15px; }
 
-  /* ── FOOTER ── */
+  /* ── FOOTER ──
+     Site-wide footer with navigation links, social icons, and copyright. */
   footer {
     background: var(--green-dark);
     padding: 56px 72px 32px;
@@ -910,13 +1033,15 @@ align-items: flex-end;
   .footer-bottom-links a { font-size: 12px; color: rgba(255,255,255,0.4); text-decoration: none; }
   .footer-bottom-links a:hover { color: rgba(255,255,255,0.6); }
 
-  /* ── PHOTO STRIP ── */
+  /* ── PHOTO STRIP ──
+     Horizontal scrolling photo strip used on the home and about pages. */
   .photo-strip { display: grid; grid-template-columns: repeat(4,1fr); gap: 0; height: 220px; }
   .photo-strip-img { overflow: hidden; }
   .photo-strip-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
   .photo-strip-img:hover img { transform: scale(1.06); }
 
-  /* ── MISC ── */
+  /* ── MISC ──
+     Miscellaneous utility styles and overrides used across the site. */
   .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; }
   .text-center { text-align: center; }
   .mx-auto { margin-left: auto; margin-right: auto; }
@@ -945,15 +1070,35 @@ align-items: flex-end;
 
   /* scroll reveal — controlled by JS via .visible class */
   
-  /* ── MOBILE RESPONSIVENESS ── */
+  /* ── MOBILE RESPONSIVENESS ──
+     Media queries for screens under 768px (phones and small tablets).
+     Stacks grid layouts, adjusts font sizes, and shows the hamburger menu. */
 @media (max-width: 768px) {
+
+  body { padding-top: 64px; }
+
+  /* Placements section — remove side padding, go full width */
+  #placements-section {
+    padding: 40px 16px !important;
+  }
+  #placements-section .section-title,
+  #placements-section .section-tag,
+  #placements-section .section-subtitle {
+    padding: 0 !important;
+  }
+  #placements-section > div[style*="grid-template-columns"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 32px 8px !important;
+    padding: 24px 0 !important;
+    width: 100% !important;
+  }
 
   /* Nav */
   nav {
     padding: 0 20px;
     height: 64px;
     flex-wrap: nowrap;
-    position: relative;
+    position: fixed;
   }
   .nav-logo {
     font-size: 16px;
@@ -1167,6 +1312,7 @@ align-items: flex-end;
 
   /* Hero pages (about, teams, publications etc.) */
   .about-hero-content,
+  .why-hero-content,
   .contact-hero-content,
   .pub-hero-content,
   .join-hero-content,
@@ -1192,6 +1338,11 @@ align-items: flex-end;
   /* About hero */
   .about-hero {
     background-position: 70% center !important;
+    height: 30vh !important;
+    min-height: 180px !important;
+  }
+  .why-hero {
+    background-position: center 55% !important;
     height: 30vh !important;
     min-height: 180px !important;
   }
@@ -1444,6 +1595,22 @@ nav .nav-links.open {
 .insta-card {
   border-radius: 6px !important;
 }
+/* Why UFA mobile */
+#page-why-ufa .section > div[style*="grid-template-columns:1fr 1fr"] {
+  grid-template-columns: 1fr !important;
+}
+#page-why-ufa .section > div[style*="grid-template-columns:1fr 1fr"] > div {
+  padding: 32px 0 !important;
+  border-left: none !important;
+  border-right: none !important;
+}
+#page-why-ufa div[style*="grid-template-columns:repeat(4"] {
+  grid-template-columns: repeat(2, minmax(0,1fr)) !important;
+  gap: 24px 12px !important;
+}
+#page-why-ufa .section > div[style*="grid-template-columns:repeat(2"] {
+  grid-template-columns: 1fr !important;
+}
 
 }  /* ← this closes the 768px block */
 
@@ -1625,6 +1792,12 @@ nav .nav-links.open {
     background-size: cover !important;
     background-position: center 40% !important;
   }
+  /* Why UFA logo grid → 2 cols on mobile */
+  #page-why-ufa .logo-cell:nth-child(4n) { border-right: 1px solid var(--border) !important; }
+  #page-why-ufa .logo-cell:nth-child(2n) { border-right: none !important; }
+  #page-why-ufa div[style*="grid-template-columns:repeat(4,1fr)"] {
+    grid-template-columns: repeat(2,1fr) !important;
+  }
 }  /* ← this closes the 768px block */
 
 
@@ -1644,7 +1817,9 @@ nav .nav-links.open {
   }
 }
 
-/* ── DESKTOP OVERRIDES (min-width: 769px) ── */
+/* ── DESKTOP OVERRIDES (min-width: 769px) ──
+   Styles that only apply on wider screens.
+   Used to ensure desktop layouts aren't broken by mobile-first rules. */
 @media (min-width: 769px) {
   .hero-img {
     background: url('https://images.squarespace-cdn.com/content/v1/686dfb2501bd5e0cde0fb427/b27f66cb-8396-4e80-bc50-7b089263b20f/7X2A3762.jpg') 52% 55% / cover no-repeat !important;
@@ -1686,6 +1861,7 @@ nav .nav-links.open {
 
   <ul class="nav-links" id="nav-menu">
     <li><a href="#" onclick="showPage('home');closeMenu()">Home</a></li>
+    <li><a href="#" onclick="showPage('why-ufa');closeMenu()">Why UFA</a></li>
     <li><a href="#" onclick="showPage('about');closeMenu()">About</a></li>
     <li><a href="#" onclick="showPage('teams');closeMenu()">Teams</a></li>
     <li><a href="#" onclick="showPage('join');closeMenu()">Join</a></li>
@@ -1697,6 +1873,9 @@ nav .nav-links.open {
 
 <!-- ══════════════════════════════════
      HOME PAGE
+     The landing page. Contains the hero banner, mission band,
+     stats strip, photo carousel, and Instagram feed.
+     Shown by default when the site loads.
 ══════════════════════════════════ -->
 <div id="page-home" class="page active">
 
@@ -1858,6 +2037,8 @@ nav .nav-links.open {
 
 <!-- ══════════════════════════════════
      ABOUT PAGE
+     Overview of UFA's history, mission, and values.
+     Includes the executive board photo and team highlights.
 ══════════════════════════════════ -->
 <div id="page-about" class="page">
 
@@ -2029,6 +2210,8 @@ nav .nav-links.open {
 
 <!-- ══════════════════════════════════
      TEAMS PAGE
+     Displays all UFA teams (IB, PE, AM, etc.) with member cards.
+     Includes filter buttons to view by team.
 ══════════════════════════════════ -->
 <div id="page-teams" class="page">
 
@@ -2681,6 +2864,105 @@ nav .nav-links.open {
 
 </div><!-- /contact -->
 
+<!-- ══════════════════════════════════
+     WHY UFA PAGE
+     Recruitment-focused page explaining UFA's value proposition.
+     Includes the 4 pillars section and the placement logos grid.
+     Logo animation is handled by initLogoAnimation() in the JS.
+══════════════════════════════════ -->
+<div id="page-why-ufa" class="page">
+
+  <!-- Hero -->
+  <div class="why-hero">
+    <div class="why-hero-overlay"></div>
+    <div class="why-hero-content">
+      <div class="page-eyebrow">UT Austin's Largest Finance Org</div>
+      <h1 class="page-hero-title">Why UFA?</h1>
+    </div>
+  </div>
+
+  <!-- Four pillars — OPTION 2: Editorial two-column -->
+  <section class="section bg-cream">
+    <div class="section-tag">What sets us apart</div>
+    <h2 class="section-title">More than a finance club</h2>
+    <p class="section-subtitle">UFA is built around you. We offer the breadth, access, and community to explore finance on your own terms, without locking you into a single path.</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid var(--border);margin-top:8px;">
+
+      <div class="reveal" style="padding:48px 48px 48px 0;border-bottom:1px solid var(--border);">
+        <div style="font-size:11px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-muted);margin-bottom:16px;">01</div>
+        <h3 style="font-family:var(--font-display);font-size:28px;font-weight:400;color:var(--text-dark);line-height:1.2;margin:0 0 16px;">Food at every meeting</h3>
+        <p style="font-size:15px;color:var(--text-muted);line-height:1.75;margin:0;">Every Wednesday we feed you. Showing up is easy when there is a meal waiting, and it is part of what makes UFA feel like a community rather than just another club.</p>
+      </div>
+
+      <div class="reveal" style="padding:48px 0 48px 48px;border-left:1px solid var(--border);border-bottom:1px solid var(--border);">
+        <div style="font-size:11px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-muted);margin-bottom:16px;">02</div>
+        <h3 style="font-family:var(--font-display);font-size:28px;font-weight:400;color:var(--text-dark);line-height:1.2;margin:0 0 16px;">We bring the industry to you</h3>
+        <p style="font-size:15px;color:var(--text-muted);line-height:1.75;margin:0;">From bulge-bracket bankers to PE professionals, we bring real practitioners into the room so you never have to cold-email your way into a conversation.</p>
+      </div>
+
+      <div class="reveal" style="padding:48px 48px 48px 0;">
+        <div style="font-size:11px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-muted);margin-bottom:16px;">03</div>
+        <h3 style="font-family:var(--font-display);font-size:28px;font-weight:400;color:var(--text-dark);line-height:1.2;margin:0 0 16px;">Involvement at every level</h3>
+        <p style="font-size:15px;color:var(--text-muted);line-height:1.75;margin:0;">Never read a balance sheet? Two internships in? Either way, there is a place for you. General Member, Analyst, or Associate, you choose how deep you go.</p>
+      </div>
+
+      <div class="reveal" style="padding:48px 0 48px 48px;border-left:1px solid var(--border);">
+        <div style="font-size:11px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-muted);margin-bottom:16px;">04</div>
+        <h3 style="font-family:var(--font-display);font-size:28px;font-weight:400;color:var(--text-dark);line-height:1.2;margin:0 0 16px;">Explore what you want to explore</h3>
+        <p style="font-size:15px;color:var(--text-muted);line-height:1.75;margin:0;">IB, PE, asset management, consulting, corporate finance, tech. We cover it all. UFA offers the widest curriculum of any finance organization on campus.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Placements collage -->
+  <section class="bg-white" style="padding:60px 72px;" id="placements-section">
+    <div class="section-tag">Where our members go</div>
+    <h2 class="section-title">Our Recent Placements</h2>
+    <p class="section-subtitle">UFA members have landed internships and full-time roles at the most respected firms in finance, from Wall Street banks to Texas-based institutions.</p>
+
+    <!-- Logo collage — 4 col forced -->
+    <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));align-items:center;justify-items:center;gap:56px 8px;padding:48px 0;background:#ffffff;border-radius:10px;width:100%;box-sizing:border-box;">
+
+      <img src="https://i.postimg.cc/SxFMGfBz/alliance-bernstein.png" alt="Alliance Bernstein" class="placement-logo-img">
+      <img src="https://i.postimg.cc/RVntfDDM/bain-capital.png" alt="Bain Capital" class="placement-logo-img">
+      <img src="https://i.postimg.cc/d0vvnhQt/Screenshot-2026-05-19-at-12-22-01-AM.png" alt="Barclays" class="placement-logo-img">
+      <img src="https://i.postimg.cc/DybGsMMh/bmo.png" alt="BMO" class="placement-logo-img">
+      <img src="https://i.postimg.cc/kg3byv0G/cantor-fitzgerald.png" alt="Cantor Fitzgerald" class="placement-logo-img">
+      <img src="https://i.postimg.cc/4x6h2hGh/capital-one.png" alt="Capital One" class="placement-logo-img">
+      <img src="https://i.postimg.cc/6pJvhfkK/dell.png" alt="Dell" class="placement-logo-img">
+      <img src="https://i.postimg.cc/g2FZKHC0/evercore.png" alt="Evercore" class="placement-logo-img">
+      <img src="https://i.postimg.cc/y84ZTyM7/ey.png" alt="EY" class="placement-logo-img">
+      <img src="https://i.postimg.cc/W1Lk7wQQ/goldman-sachs.png" alt="Goldman Sachs" class="placement-logo-img">
+      <img src="https://i.postimg.cc/FHyJCJvp/houlihan-lokey.png" alt="Houlihan Lokey" class="placement-logo-img">
+      <img src="https://i.postimg.cc/T3MDcJzY/ibm.png" alt="IBM" class="placement-logo-img">
+      <img src="https://i.postimg.cc/K8SM5D62/jpmorgan.png" alt="JPMorgan" class="placement-logo-img">
+      <img src="https://i.postimg.cc/DwkXcP9S/moelis.png" alt="Moelis" class="placement-logo-img">
+      <img src="https://i.postimg.cc/8cfb7P6W/morgan-stanley-cropped.png" alt="Morgan Stanley" class="placement-logo-img">
+      <img src="https://i.postimg.cc/pLfncnvf/oliver-wyman.png" alt="Oliver Wyman" class="placement-logo-img">
+      <img src="https://i.postimg.cc/vTxv4HVr/orion-cropped.png" alt="Orion Group" class="placement-logo-img">
+      <img src="https://i.postimg.cc/L8tZQZSv/pgim.png" alt="PGIM" class="placement-logo-img">
+      <img src="https://i.postimg.cc/3xXDfDhm/point72.png" alt="Point72" class="placement-logo-img">
+      <img src="https://i.postimg.cc/BQ1FDVV0/raine.png" alt="Raine Group" class="placement-logo-img">
+      <img src="https://i.postimg.cc/0yRwC0Ty/raymond-james.png" alt="Raymond James" class="placement-logo-img">
+      <img src="https://i.postimg.cc/vmfW5Sqv/rbc-cropped.png" alt="RBC" class="placement-logo-img">
+      <img src="https://i.postimg.cc/T3MDcJzw/scotiabank.png" alt="Scotiabank" class="placement-logo-img">
+      <img src="https://i.postimg.cc/NjqHxk3w/solomon.png" alt="Solomon Partners" class="placement-logo-img">
+      <img src="https://i.postimg.cc/Pr8DZRRd/stellex.png" alt="Stellex Capital" class="placement-logo-img">
+      <img src="https://i.postimg.cc/4x6h2hGb/td-securities.png" alt="TD Securities" class="placement-logo-img">
+      <img src="https://i.postimg.cc/wjXs4szm/tpg.png" alt="TPG" class="placement-logo-img">
+      <img src="https://i.postimg.cc/wjw9B6cF/Wells-Fargo-Emblem.png" alt="Wells Fargo" class="placement-logo-img">
+
+    </div>
+
+    
+  </section>
+
+
+
+</div><!-- /why-ufa -->
+
 
 <!-- ══════════════════════════════════
      MEMBER PORTAL PAGE
@@ -2885,6 +3167,14 @@ let currentUser = null;
 let currentMember = null;
 
 // ── Login ──
+/**
+ * portalLogin()  [async]
+ * -----------------------
+ * Handles email/password login for the Member Portal.
+ * Reads credentials from #login-email and #login-password inputs.
+ * On success, calls showDashboard() to display the member area.
+ * On failure, shows an error message.
+ */
 async function portalLogin() {
   const email = document.getElementById('eid-input').value.trim().toLowerCase();
   const pw    = document.getElementById('pw-input').value;
@@ -2922,6 +3212,13 @@ async function portalLogin() {
   showDashboard();
 }
 
+/**
+ * showDashboard()  [async]
+ * -------------------------
+ * Fetches the logged-in member's data from Supabase and renders
+ * the member dashboard. Hides all auth forms and shows the
+ * dashboard panel with the member's name, check-in history, etc.
+ */
 async function showDashboard() {
   document.getElementById('portal-login').style.display = 'none';
   document.getElementById('portal-dashboard').style.display = 'block';
@@ -2943,6 +3240,12 @@ async function showDashboard() {
 }
 
 // ── Logout ──
+/**
+ * portalLogout()  [async]
+ * ------------------------
+ * Signs the current member out via Supabase auth.
+ * Hides the dashboard and returns to the login form.
+ */
 async function portalLogout() {
   await sb.auth.signOut();
   currentUser = null;
@@ -2958,6 +3261,13 @@ async function portalLogout() {
 }
 
 // ── Check-in ──
+/**
+ * checkIn()  [async]
+ * -------------------
+ * Records a meeting attendance check-in for the logged-in member.
+ * Writes a new record to the Supabase "checkins" table.
+ * Updates the displayed check-in history after success.
+ */
 async function checkIn() {
   const code = document.getElementById('session-code').value.trim().toUpperCase();
   const err  = document.getElementById('checkin-error');
@@ -3038,6 +3348,15 @@ async function checkIn() {
 }
 
 // ── Render attendance history ──
+/**
+ * renderHistory(records)
+ * -----------------------
+ * Takes an array of check-in records from Supabase and renders
+ * them as a list in the member dashboard.
+ * Displays date and meeting name for each record.
+ *
+ * @param {Array} records - Array of check-in objects from Supabase
+ */
 function renderHistory(records) {
   const list = document.getElementById('attendance-list');
   if (!records.length) {
@@ -3120,6 +3439,17 @@ sb.auth.getSession().then(({ data: { session } }) => {
 </footer>
 
 <script>
+  /**
+   * triggerReveals(container)
+   * --------------------------
+   * Sets up the IntersectionObserver that watches for elements with
+   * the "reveal" class entering the viewport. When they do, it adds
+   * the "visible" class which triggers the CSS fade-in animation.
+   * Called every time a new page is shown so newly visible elements
+   * are observed.
+   *
+   * @param {HTMLElement} container - The page element to observe
+   */
   function triggerReveals(container) {
     container.querySelectorAll('.reveal').forEach(el => {
       el.classList.remove('visible');
@@ -3127,6 +3457,26 @@ sb.auth.getSession().then(({ data: { session } }) => {
     });
   }
 
+  /* ============================================================
+     CORE PAGE NAVIGATION
+     showPage(id) hides all pages and shows the one matching the id.
+     Every nav link calls this function with the page id as argument.
+     e.g. showPage('about') shows the About page.
+     ============================================================ */
+  /**
+   * showPage(id)
+   * -------------
+   * The core navigation function for this single-page app.
+   * Hides every page div (elements with class "page"), then shows
+   * only the one whose id matches "page-{id}".
+   * Also scrolls back to the top and re-triggers scroll animations.
+   *
+   * @param {string} id - The page to show. Valid values:
+   *   'home' | 'about' | 'teams' | 'join' | 'publications' |
+   *   'why-ufa' | 'contact' | 'portal'
+   *
+   * Example: showPage('about') → shows the About page
+   */
   function showPage(id) {
   observerLocked = true;
   document.querySelectorAll('.reveal').forEach(el => observer.unobserve(el));
@@ -3217,6 +3567,16 @@ sb.auth.getSession().then(({ data: { session } }) => {
   }
 }
 
+  /**
+   * switchTab(id)
+   * --------------
+   * Switches between tabs within a page (e.g. team filters on the
+   * Teams page, or membership tiers on the Join page).
+   * Removes "active" from all tab buttons and content panels,
+   * then activates the one matching the given id.
+   *
+   * @param {string} id - The tab id to activate
+   */
   function switchTab(id) {
   document.querySelectorAll('.tab-pane').forEach(p => {
     p.classList.remove('active');
@@ -3247,6 +3607,16 @@ sb.auth.getSession().then(({ data: { session } }) => {
   event.target.classList.add('active');
 }
 
+  /**
+   * toggleFaq(btn)
+   * ---------------
+   * Opens or closes an FAQ accordion item.
+   * Toggles the "open" class on the clicked button's parent element.
+   * Only one FAQ can be open at a time — clicking a new one
+   * closes any previously open item.
+   *
+   * @param {HTMLElement} btn - The FAQ question button that was clicked
+   */
   function toggleFaq(btn) {
     const item = btn.closest('.faq-item');
     const isOpen = item.classList.contains('open');
@@ -3254,6 +3624,13 @@ sb.auth.getSession().then(({ data: { session } }) => {
     if (!isOpen) item.classList.add('open');
   }
 
+/**
+ * toggleMenu()
+ * -------------
+ * Opens or closes the mobile hamburger navigation menu.
+ * Toggles the "open" class on the nav-links element.
+ * Called when the hamburger icon is tapped on mobile.
+ */
 function toggleMenu() {
   const menu = document.getElementById('nav-menu');
   const btn = document.getElementById('hamburger-btn');
@@ -3261,12 +3638,25 @@ function toggleMenu() {
   btn.classList.toggle('open');
 }
 
+/**
+ * closeMenu()
+ * ------------
+ * Closes the mobile navigation menu.
+ * Called automatically when a nav link is tapped so the menu
+ * disappears after navigation.
+ */
 function closeMenu() {
   const menu = document.getElementById('nav-menu');
   const btn = document.getElementById('hamburger-btn');
   menu.classList.remove('open');
   btn.classList.remove('open');
 }
+/**
+ * showLogin()
+ * ------------
+ * Shows the email/password login form in the Member Portal.
+ * Hides all other auth forms (signup, magic link, forgot password).
+ */
 function showLogin() {
   document.getElementById('login-card').style.display = 'block';
   document.getElementById('portal-signup').style.display = 'none';
@@ -3274,6 +3664,12 @@ function showLogin() {
   document.getElementById('portal-forgot').style.display = 'none';
 }
 
+/**
+ * showSignup()
+ * -------------
+ * Shows the account creation form in the Member Portal.
+ * Hides all other auth forms.
+ */
 function showSignup() {
   document.getElementById('login-card').style.display = 'none';
   document.getElementById('portal-signup').style.display = 'block';
@@ -3281,6 +3677,12 @@ function showSignup() {
   document.getElementById('portal-forgot').style.display = 'none';
 }
 
+/**
+ * showMagicLink()
+ * ----------------
+ * Shows the magic link (passwordless) login form.
+ * User enters their email and receives a one-click login link.
+ */
 function showMagicLink() {
   document.getElementById('login-card').style.display = 'none';
   document.getElementById('portal-signup').style.display = 'none';
@@ -3288,6 +3690,12 @@ function showMagicLink() {
   document.getElementById('portal-forgot').style.display = 'none';
 }
 
+/**
+ * showForgotPassword()
+ * ---------------------
+ * Shows the password reset form in the Member Portal.
+ * User enters their email and receives a reset link.
+ */
 function showForgotPassword() {
   document.getElementById('login-card').style.display = 'none';
   document.getElementById('portal-signup').style.display = 'none';
@@ -3295,6 +3703,13 @@ function showForgotPassword() {
   document.getElementById('portal-forgot').style.display = 'flex';
 }
 
+/**
+ * sendMagicLink()  [async]
+ * -------------------------
+ * Sends a passwordless login email via Supabase.
+ * Reads the email from #magic-email input.
+ * Shows a success or error message based on the result.
+ */
 async function sendMagicLink() {
   const email = document.getElementById('magic-email').value.trim().toLowerCase();
   const msg = document.getElementById('magic-msg');
@@ -3307,6 +3722,95 @@ async function sendMagicLink() {
   msg.textContent = 'Magic link sent! Check your email and click the link to sign in.';
 }
 
+// Logo row-by-row animation
+/* ============================================================
+     LOGO REVEAL ANIMATION (WHY UFA PAGE)
+     Animates placement logos in row by row as the user scrolls.
+     Each logo in a row fades in with a 200ms stagger.
+     Resets and replays every time the Why UFA page is visited.
+     ============================================================ */
+/**
+ * initLogoAnimation()
+ * --------------------
+ * Animates the placement company logos on the Why UFA page.
+ * Resets all logos to invisible, then uses IntersectionObserver
+ * to watch the first logo in each row. When a row enters the
+ * viewport, each logo fades in with a 200ms stagger left to right.
+ * Called on DOMContentLoaded and every time Why UFA page is visited.
+ */
+function initLogoAnimation() {
+  const allLogos = Array.from(document.querySelectorAll('.placement-logo-img'));
+  if (!allLogos.length) return;
+
+  allLogos.forEach(logo => logo.classList.remove('logo-visible'));
+
+  const cols = () => window.innerWidth <= 768 ? 2 : 4;
+  let triggeredRows = new Set();
+
+  const logoObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const c = cols();
+        const index = allLogos.indexOf(entry.target);
+        const row = Math.floor(index / c);
+        if (triggeredRows.has(row)) return;
+        triggeredRows.add(row);
+
+        const rowLogos = allLogos.filter((_, i) => Math.floor(i / c) === row);
+        rowLogos.forEach((logo, i) => {
+          setTimeout(() => logo.classList.add('logo-visible'), i * 200);
+        });
+        logoObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px 0px 0px' });
+
+  const c = cols();
+  allLogos.forEach((logo, i) => {
+    if (i % c === 0) logoObserver.observe(logo);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', initLogoAnimation);
+
+// On load, restore page from hash — runs immediately
+(function() {
+  const hash = window.location.hash.replace('#', '');
+  const validPages = ['home','about','teams','join','publications','why-ufa','contact','portal'];
+  if (hash && validPages.includes(hash)) {
+    // Hide home, show the correct page before any rendering
+    const homeEl = document.getElementById('page-home');
+    if (homeEl) { homeEl.classList.remove('active'); homeEl.style.display = 'none'; }
+    const target = document.getElementById('page-' + hash);
+    if (target) { target.style.display = 'block'; target.classList.add('active'); }
+  }
+})();
+
+/* ============================================================
+     HASH-BASED PAGE PERSISTENCE
+     Updates the URL hash (e.g. #about) when navigating between pages.
+     On refresh, reads the hash and restores the correct page so the
+     user doesn't get sent back to the home page.
+     ============================================================ */
+// Hash-based page persistence
+const _origShowPage2 = window.showPage;
+window.showPage = function(id) {
+  _origShowPage2(id);
+  history.replaceState(null, '', '#' + id);
+};
+
+/* ============================================================
+     AUTHENTICATION HELPERS
+     Functions for member portal login, signup, and password reset.
+     These use Supabase (sb) as the backend auth provider.
+     ============================================================ */
+/**
+ * sendPasswordReset()  [async]
+ * -----------------------------
+ * Sends a password reset email via Supabase auth.
+ * Reads the email from #forgot-email input.
+ * The reset link redirects back to the live GitHub Pages site.
+ */
 async function sendPasswordReset() {
   const email = document.getElementById('forgot-email').value.trim().toLowerCase();
   const msg = document.getElementById('forgot-msg');
@@ -3319,6 +3823,14 @@ async function sendPasswordReset() {
   msg.textContent = 'Reset link sent! Check your email to set a new password.';
 }
 
+/**
+ * portalSignup()  [async]
+ * ------------------------
+ * Creates a new member account using Supabase auth.
+ * Reads name, email, and password from the signup form.
+ * On success, shows the member dashboard.
+ * Validates that the email ends in @utexas.edu.
+ */
 async function portalSignup() {
   const name  = document.getElementById('signup-name').value.trim();
   const email = document.getElementById('signup-email').value.trim().toLowerCase();
@@ -3358,7 +3870,7 @@ document.querySelectorAll('.page, .stats-bar').forEach(page => {
     '.pillar-card, .team-card, .feature-card, .membership-card, ' +
     '.step-card, .service-card, .member-card, .comp-card, ' +
     '.faq-item, .contact-row, .pub-card-embed-container, .insta-card, ' +
-    '.photo-strip-img, .page-eyebrow, img, .btn-primary, .btn-outline, .reveal'
+    '.photo-strip-img, .page-eyebrow, img:not(.placement-logo-img), .btn-primary, .btn-outline, .reveal'
   ).forEach(el => {
     if (
       el.closest('.board-card') ||
@@ -3433,6 +3945,15 @@ document.querySelectorAll('.blog-card-new').forEach(card => {
 // document.querySelectorAll('.tab-pane.active .reveal') removed intentionally
 
 // Re-trigger reveals when a page is shown
+/**
+ * reObserveReveals(page)
+ * -----------------------
+ * Re-attaches the scroll reveal IntersectionObserver to a page
+ * after it becomes visible. Needed because newly shown pages
+ * weren't being observed when hidden.
+ *
+ * @param {HTMLElement} page - The page element to re-observe
+ */
 function reObserveReveals(page) {
   page.querySelectorAll('.reveal').forEach(el => {
     const rect = el.getBoundingClientRect();
@@ -3445,6 +3966,14 @@ function reObserveReveals(page) {
 }
 
 // Mobile hero fixes
+/**
+ * applyMobileHeroFixes()
+ * -----------------------
+ * Applies dynamic height and layout corrections to hero sections
+ * on mobile devices where CSS alone doesn't handle viewport height
+ * correctly (e.g. iOS Safari's variable toolbar height).
+ * Called when the Join page is shown and on window resize.
+ */
 function applyMobileHeroFixes() {
   const isMobile = window.innerWidth <= 768;
 
@@ -3477,6 +4006,7 @@ const _origShowPage = showPage;
 window.showPage = function(id) {
   _origShowPage(id);
   if (id === 'join') setTimeout(applyMobileHeroFixes, 50);
+  if (id === 'why-ufa') setTimeout(initLogoAnimation, 100);
 };
 
 // Trigger initial reveals for home page on load
@@ -3505,6 +4035,14 @@ setTimeout(() => {
 <script>
   emailjs.init('PxUtA58RXrKxmyCGh');
 
+  /**
+   * sendContactForm()
+   * ------------------
+   * Handles submission of the contact form on the Contact page.
+   * Reads name, email, and message from the form inputs.
+   * Sends the data to the configured email endpoint.
+   * Shows a success or error message after submission.
+   */
   function sendContactForm() {
     const name = document.getElementById('contact-name').value.trim();
     const email = document.getElementById('contact-email').value.trim();
