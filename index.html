@@ -1612,6 +1612,50 @@ nav .nav-links.open {
   grid-template-columns: 1fr !important;
 }
 
+  /* Competition cards — 2-col → 1-col on mobile */
+  #tab-analysts div[style*="grid-template-columns:1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* White inner blocks — remove negative margins on mobile */
+  div[style*="margin:0 -72px"] {
+    margin: 0 -24px !important;
+    padding: 40px 24px !important;
+  }
+
+  /* 75% callout on Why UFA — stack on mobile */
+  #page-why-ufa div[style*="display:flex;align-items:center;gap:40px"] {
+    flex-direction: column !important;
+    gap: 16px !important;
+    padding: 28px 24px !important;
+    text-align: center !important;
+  }
+  #page-why-ufa div[style*="font-size:56px"] {
+    font-size: 40px !important;
+  }
+
+  /* Competition cards on mobile — full padding */
+  #tab-analysts div[style*="background:var(--green-dark)"],
+  #tab-analysts div[style*="background:var(--green-mid)"] {
+    padding: 28px 24px !important;
+  }
+
+  /* Why UFA subtitle margin */
+  #page-why-ufa .section-subtitle {
+    margin-bottom: 0 !important;
+  }
+
+  /* Join page green-wash bar — stack on mobile */
+  div[style*="background:var(--green-wash)"][style*="justify-content:space-between"] {
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+
+  /* Membership grid — 1-col on mobile */
+  .membership-grid {
+    grid-template-columns: 1fr !important;
+  }
+
 }  /* ← this closes the 768px block */
 
 @media (max-width: 768px) {
@@ -1862,7 +1906,7 @@ nav .nav-links.open {
   <ul class="nav-links" id="nav-menu">
     <li><a href="#" onclick="showPage('home');closeMenu()">Home</a></li>
     <li><a href="#" onclick="showPage('why-ufa');closeMenu()">Why UFA</a></li>
-    <li><a href="#" onclick="showPage('about');closeMenu()">About</a></li>
+    <li><a href="#" onclick="showPage('about');closeMenu()">Board</a></li>
     <li><a href="#" onclick="showPage('teams');closeMenu()">Teams</a></li>
     <li><a href="#" onclick="showPage('join');closeMenu()">Join</a></li>
     <li><a href="#" onclick="showPage('publications');closeMenu()">Publications</a></li>
@@ -1901,8 +1945,8 @@ nav .nav-links.open {
   <!-- Stats -->
   <div class="stats-bar">
     <div class="stat-cell stat-cell-anim reveal"><span class="stat-num">300+</span><span class="stat-label">Active members</span></div>
-    <div class="stat-cell stat-cell-anim reveal"><span class="stat-num">50+</span><span class="stat-label">Events annually</span></div>
-    <div class="stat-cell stat-cell-anim reveal"><span class="stat-num">20+</span><span class="stat-label">Corporate partners</span></div>
+    <div class="stat-cell stat-cell-anim reveal"><span class="stat-num">50+</span><span class="stat-label">Placement firms</span></div>
+    <div class="stat-cell stat-cell-anim reveal"><span class="stat-num">12+</span><span class="stat-label">Industry speakers per semester</span></div>
   </div>
 
   <!-- Why Join -->
@@ -2071,13 +2115,10 @@ nav .nav-links.open {
     </div>
   </section>
 
-
-
-
   <hr class="divider">
 
   <!-- Leadership -->
-<section class="section" style="background: var(--white);">
+<section class="section" style="background: var(--white);padding-top:48px;">
 <div class="section-tag">Leadership</div>
     <h2 class="section-title">Executive Board</h2>
     <div class="board-grid">
@@ -2223,7 +2264,7 @@ nav .nav-links.open {
     </div>
   </section>
 
-  <section class="section bg-cream">
+  <section class="section bg-cream" style="padding-bottom:0;">
     <div class="tabs">
       <button class="tab-btn active" onclick="switchTab('analysts')">Analyst Program</button>
       <button class="tab-btn" onclick="switchTab('investment')">Investment Associates</button>
@@ -2265,10 +2306,73 @@ nav .nav-links.open {
           </div>
         </div>
       </div>
-<div class="team-photo-tall" style="margin-top:40px; border-radius:12px; overflow:hidden;">
-  <img src="https://i.imgur.com/yC6O7xX.jpeg" style="width:100%; height:600px; object-fit:cover; object-position:center 20%; display:block;">
-  </div>
-    </div>
+
+    <!-- Competitions + photo on white background -->
+    <div style="background:var(--white);margin:0 -72px;padding:64px 72px 72px;">
+
+      <div class="section-tag">End-of-Semester · $1,000 Prize Pool</div>
+      <h2 class="section-title" style="margin-bottom:12px;">Analyst Competitions</h2>
+      <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:48px;">Every analyst competes twice — once in the fall, once in the spring. Both competitions run multiple rounds and are judged by people who have done the real thing.</p>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:48px;">
+
+        <div class="reveal" style="background:var(--green-dark);border-radius:8px;padding:40px 36px;">
+          <div style="font-size:11px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:var(--green-pale);opacity:0.7;margin-bottom:16px;">Fall Semester</div>
+          <h3 style="font-family:var(--font-display);font-size:26px;font-weight:500;color:var(--white);margin-bottom:16px;">Stock Pitch Competition</h3>
+          <p style="font-size:15px;color:rgba(255,255,255,0.65);line-height:1.75;margin-bottom:28px;">Analyst teams select any publicly traded stock on a U.S. exchange, build their investment thesis, and defend it in front of a room. Top teams advance to a final round judged by UFA upperclassmen and alumni working in finance.</p>
+          <div style="display:flex;flex-direction:column;gap:14px;">
+            <div style="display:flex;align-items:flex-start;gap:12px;">
+              <div style="width:6px;height:6px;border-radius:50%;background:var(--green-pale);flex-shrink:0;margin-top:8px;"></div>
+              <div style="font-size:14px;color:rgba(255,255,255,0.75);line-height:1.65;"><span style="font-weight:500;color:var(--white);">Format —</span> Round 1 open to all analyst teams. Top 6 advance to finals.</div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:12px;">
+              <div style="width:6px;height:6px;border-radius:50%;background:var(--green-pale);flex-shrink:0;margin-top:8px;"></div>
+              <div style="font-size:14px;color:rgba(255,255,255,0.75);line-height:1.65;"><span style="font-weight:500;color:var(--white);">Universe —</span> Any stock listed on a U.S. exchange. Team selects the company.</div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:12px;">
+              <div style="width:6px;height:6px;border-radius:50%;background:var(--green-pale);flex-shrink:0;margin-top:8px;"></div>
+              <div style="font-size:14px;color:rgba(255,255,255,0.75);line-height:1.65;"><span style="font-weight:500;color:var(--white);">Judges —</span> UFA upperclassmen and finance alumni.</div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:12px;">
+              <div style="width:6px;height:6px;border-radius:50%;background:var(--green-pale);flex-shrink:0;margin-top:8px;"></div>
+              <div style="font-size:14px;color:rgba(255,255,255,0.75);line-height:1.65;"><span style="font-weight:500;color:var(--white);">Prize pool —</span> $1,000 split across 1st, 2nd, and 3rd place.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="reveal" style="background:var(--green-mid);border-radius:8px;padding:40px 36px;">
+          <div style="font-size:11px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:var(--green-pale);opacity:0.7;margin-bottom:16px;">Spring Semester</div>
+          <h3 style="font-family:var(--font-display);font-size:26px;font-weight:500;color:var(--white);margin-bottom:16px;">Case Competition</h3>
+          <p style="font-size:15px;color:rgba(255,255,255,0.65);line-height:1.75;margin-bottom:28px;">Analyst teams are assigned a real corporate case and given approximately one week to develop and present their recommendation. Finalists present to a panel of active industry professionals who judge on rigor, creativity, and execution.</p>
+          <div style="display:flex;flex-direction:column;gap:14px;">
+            <div style="display:flex;align-items:flex-start;gap:12px;">
+              <div style="width:6px;height:6px;border-radius:50%;background:var(--green-pale);flex-shrink:0;margin-top:8px;"></div>
+              <div style="font-size:14px;color:rgba(255,255,255,0.75);line-height:1.65;"><span style="font-weight:500;color:var(--white);">Format —</span> Round 1 open to all analyst teams. Top 6 advance to finals.</div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:12px;">
+              <div style="width:6px;height:6px;border-radius:50%;background:var(--green-pale);flex-shrink:0;margin-top:8px;"></div>
+              <div style="font-size:14px;color:rgba(255,255,255,0.75);line-height:1.65;"><span style="font-weight:500;color:var(--white);">Client —</span> A real corporation. Case details released one week before presentations.</div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:12px;">
+              <div style="width:6px;height:6px;border-radius:50%;background:var(--green-pale);flex-shrink:0;margin-top:8px;"></div>
+              <div style="font-size:14px;color:rgba(255,255,255,0.75);line-height:1.65;"><span style="font-weight:500;color:var(--white);">Judges —</span> Active industry professionals from the finance and business community.</div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:12px;">
+              <div style="width:6px;height:6px;border-radius:50%;background:var(--green-pale);flex-shrink:0;margin-top:8px;"></div>
+              <div style="font-size:14px;color:rgba(255,255,255,0.75);line-height:1.65;"><span style="font-weight:500;color:var(--white);">Prize pool —</span> $1,000 split across 1st, 2nd, and 3rd place.</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="team-photo-tall" style="border-radius:12px; overflow:hidden;">
+        <img src="https://i.imgur.com/yC6O7xX.jpeg" style="width:100%; height:600px; object-fit:cover; object-position:center 20%; display:block;">
+      </div>
+
+    </div><!-- /white competitions+photo block -->
+
+    </div><!-- /tab-analysts -->
 
     <!-- INVESTMENT TAB -->
     <div id="tab-investment" class="tab-pane">
@@ -2311,53 +2415,54 @@ nav .nav-links.open {
         </div>
       </div>
 
-<div class="invest-comp" style="margin-top: 30px; margin-bottom: 30px; text-align: center;">
+    </div><!-- /invest-lower-bullets -->
+
+    <!-- What You'll Learn + photo on white background -->
+    <div style="background:var(--white);margin:0 -72px;padding:64px 72px 72px;">
+
+<div class="invest-comp" style="margin-top: 0; margin-bottom: 30px; text-align: center;">
   <h3 style="font-family: serif; font-size: 36px; color: var(--text-dark); margin-bottom: 16px; font-weight: 600;">What You'll Learn</h3>
   <div style="width: 60px; height: 3px; background: var(--green-dark); margin: 0 auto 24px;"></div>
 </div>
 
 <div class="offering-grid-wrapper" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 80px; align-items: stretch;" id="comp-grid-main">  
-  <div class="comp-card reveal" style="background: var(--cream-dark); border: 1px solid rgba(46,74,46,0.08); padding: 32px; border-radius: 12px; transition: all 0.3s ease;">
+  <div class="comp-card reveal" style="background: var(--white); border: 1px solid var(--border); padding: 32px; border-radius: 12px; transition: all 0.3s ease;">
     <div style="color: var(--green-accent); font-size: 24px; margin-bottom: 16px;opacity: 1.0;">01</div>
     <h4 style="font-family: serif; font-size: 20px; color: var(--text-dark); margin-bottom: 12px;">Active Fund Management</h4>
     <p style="font-family: sans-serif; color: var(--text-mid); font-size: 14px; line-height: 1.6; margin: 0;">Manage a real portfolio, analyze market trends, and pitch investment ideas backed by your own research.</p>
   </div>
-
-  <div class="comp-card reveal" style="background: var(--cream-dark); border: 1px solid rgba(46,74,46,0.08); padding: 32px; border-radius: 12px; transition: all 0.3s ease;">
+  <div class="comp-card reveal" style="background: var(--white); border: 1px solid var(--border); padding: 32px; border-radius: 12px; transition: all 0.3s ease;">
     <div style="color: var(--green-accent); font-size: 24px; margin-bottom: 16px;opacity: 1.0;">02</div>
     <h4 style="font-family: serif; font-size: 20px; color: var(--text-dark); margin-bottom: 12px;">Financial Modeling</h4>
     <p style="font-family: sans-serif; color: var(--text-mid); font-size: 14px; line-height: 1.6; margin: 0;">Master Excel-based financial modeling, including DCF analysis, comparable company analysis, and LBO modeling.</p>
   </div>
-
-  <div class="comp-card reveal" style="background: var(--cream-dark); border: 1px solid rgba(46,74,46,0.08); padding: 32px; border-radius: 12px; transition: all 0.3s ease;">
+  <div class="comp-card reveal" style="background: var(--white); border: 1px solid var(--border); padding: 32px; border-radius: 12px; transition: all 0.3s ease;">
     <div style="color: var(--green-accent); font-size: 24px; margin-bottom: 16px;opacity: 1.0;">03</div>
     <h4 style="font-family: serif; font-size: 20px; color: var(--text-dark); margin-bottom: 12px;">Equity Research</h4>
     <p style="font-family: sans-serif; color: var(--text-mid); font-size: 14px; line-height: 1.6; margin: 0;">Perform in-depth analysis of public companies and contribute your findings to our annual equity research journal.</p>
   </div>
-
-  <div class="comp-card reveal" style="background: var(--cream-dark); border: 1px solid rgba(46,74,46,0.08); padding: 32px; border-radius: 12px; transition: all 0.3s ease;">
+  <div class="comp-card reveal" style="background: var(--white); border: 1px solid var(--border); padding: 32px; border-radius: 12px; transition: all 0.3s ease;">
     <div style="color: var(--green-accent); font-size: 24px; margin-bottom: 16px;opacity: 1.0;">04</div>
     <h4 style="font-family: serif; font-size: 20px; color: var(--text-dark); margin-bottom: 12px;">Case Studies</h4>
     <p style="font-family: sans-serif; color: var(--text-mid); font-size: 14px; line-height: 1.6; margin: 0;">Work through real-world case studies that simulate the analysis and decision-making expected in finance interviews and on the job.</p>
   </div>
-
-  <div class="comp-card reveal" style="background: var(--cream-dark); border: 1px solid rgba(46,74,46,0.08); padding: 32px; border-radius: 12px; transition: all 0.3s ease;">
+  <div class="comp-card reveal" style="background: var(--white); border: 1px solid var(--border); padding: 32px; border-radius: 12px; transition: all 0.3s ease;">
     <div style="color: var(--green-accent); font-size: 24px; margin-bottom: 16px;opacity: 1.0;">05</div>
     <h4 style="font-family: serif; font-size: 20px; color: var(--text-dark); margin-bottom: 12px;">Leadership Roles</h4>
     <p style="font-family: sans-serif; color: var(--text-mid); font-size: 14px; line-height: 1.6; margin: 0;">Step into leadership within the team. Members take on roles as industry heads, fund managers, and social leads.</p>
   </div>
-
-  <div class="comp-card reveal" style="background: var(--cream-dark); border: 1px solid rgba(46,74,46,0.08); padding: 32px; border-radius: 12px; transition: all 0.3s ease;">
+  <div class="comp-card reveal" style="background: var(--white); border: 1px solid var(--border); padding: 32px; border-radius: 12px; transition: all 0.3s ease;">
     <div style="color: var(--green-accent); font-size: 24px; margin-bottom: 16px;opacity: 1.0;">06</div>
     <h4 style="font-family: serif; font-size: 20px; color: var(--text-dark); margin-bottom: 12px;">Recruiting Support</h4>
-    <p style="font-family: sans-serif; color: var(--text-mid); font-size: 14px; line-height: 1.6; margin: 0;">Access resources for technical interview prep, resume reviews, and networking strategies to land roles in investment banking, private equity, and asset management.</p>
+    <p style="font-family: sans-serif; color: var(--text-mid); font-size: 14px; line-height: 1.6; margin: 0;">Access resources for technical interview prep, resume reviews, and networking strategies to land roles in IB, PE, and AM.</p>
   </div>
 </div>
-      <div class="team-photo-tall invest-photo" style="margin-top:40px;padding:28px 32px;">
+      <div class="team-photo-tall invest-photo" style="margin-top:0;padding:0;">
         <img src="https://i.imgur.com/ILa8P5V.jpeg" style="width:100%; height:600px; object-fit:cover; object-position:center 10%; border-radius:12px; display:block; filter:brightness(1.08);">
       </div>
+
+    </div><!-- /white what-you'll-learn block -->
     </div><!-- /invest-lower -->
-    </div>
 
     <!-- CONSULTING TAB -->
     <div id="tab-consulting" class="tab-pane">
@@ -2453,8 +2558,8 @@ nav .nav-links.open {
         <div class="membership-badge closed">Applications currently closed</div>
         <div class="membership-title">Analyst</div>
         <p class="membership-desc">An introductory program covering finance fundamentals, stock pitches, and market discussions. Open to all UT Austin students with no experience required. Applications open each fall and spring semester.</p>
-        <div class="membership-price">$25 / year</div>
-        <div class="membership-price-note">or $15 per semester</div>
+        <div class="membership-price">$25 / year (addition to GM)</div>
+        <div class="membership-price-note">or $15 per semester (addition to GM)</div>
         <a href="https://docs.google.com/forms/d/e/1FAIpQLSeGEtzK6gp8CCAIRzTwnvoZlNKANFII7CRJRO_sy9XNEUFbMQ/viewform" target="_blank" class="btn-primary" style="background:var(--green-mid);">Express Interest</a>
         <a href="https://www.instagram.com/texasufa/" target="_blank" style="display:block;margin-top:10px;font-size:13px;color:var(--green-accent);text-decoration:none;">Follow @texasufa for updates →</a>
       </div>
@@ -2468,7 +2573,7 @@ nav .nav-links.open {
        <div class="membership-card reveal">
         <div class="membership-badge closed">Applications currently closed</div>
         <div class="membership-title">Consulting Associates</div>
-        <p class="membership-desc">A selective, application-based track focused on real client engagements, case-study training, and developing the structured thinking top consulting firms look for. Applications open each fall and spring semester.</p>
+        <p class="membership-desc">A selective, application-based track focused on real client engagements, case-study training, and developing the structured thinking top firms look for. Applications open each fall and spring semester.</p>
         <a href="https://docs.google.com/forms/d/e/1FAIpQLSeGEtzK6gp8CCAIRzTwnvoZlNKANFII7CRJRO_sy9XNEUFbMQ/viewform" target="_blank" class="btn-primary" style="background:var(--green-mid);">Express Interest</a>
         <a href="https://www.instagram.com/texasufa/" target="_blank" style="display:block;margin-top:10px;font-size:13px;color:var(--green-accent);text-decoration:none;">Follow @texasufa for updates →</a>
       </div>
@@ -2477,9 +2582,7 @@ nav .nav-links.open {
 
   <hr class="divider">
 
- 
-
-<section class="section bg-cream">
+<section class="section" style="background:var(--white);">
   <div style="width:100%;">
     <div class="section-tag">Everything you need to know</div>
     <h2 class="section-title" style="margin-bottom:40px;">Frequently Asked Questions</h2>
@@ -2538,7 +2641,7 @@ nav .nav-links.open {
     </div><!-- /faq-grid -->
       
 
-    <div class="reveal" style="margin-top:40px;padding:28px 32px;background:rgba(20, 36, 20, 0.05);border-radius:8px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;">
+    <div class="reveal" style="margin-top:40px;padding:28px 32px;background:var(--green-wash);border-radius:8px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;">
       <div>
         <div style="font-family:var(--font-display);font-size:18px;font-weight:500;margin-bottom:6px;">Still have questions?</div>
         <p style="font-size:14px;color:var(--text-muted);">Reach out directly — we're happy to chat.</p>
@@ -2591,7 +2694,7 @@ nav .nav-links.open {
   <section class="pub-section bg-cream">
     <div class="section-tag">Weekly Blog</div>
     <h2 class="section-title">Member-authored commentary</h2>
-    <p class="section-subtitle">Weekly market analysis and financial commentary written by UFA Investment Associates across all industry groups.</p>
+    <p class="section-subtitle">Every week, UFA Investment Associates write and publish original market commentary on the companies, deals, and macro trends they're actively following.</p>
 
         <div class="blog-grid-3col" style="display:grid;gap:24px;margin-top:40px;">
 
@@ -2776,12 +2879,12 @@ nav .nav-links.open {
   </div>
 
 
-  <section class="section bg-cream">
+  <section class="section" style="background:var(--white);">
     <div class="contact-grid">
       <div class="contact-info">
         <div class="section-tag">Contact details</div>
         <h2 class="section-title" style="margin-bottom:24px;">Reach out any time</h2>
-        <p>Whether you're a prospective member, a company looking to recruit our students, or a business interested in working with our consulting team, we want to hear from you.</p>
+        <p>Whether you're a prospective member, a company looking to recruit our students, or a business interested in working with our team, we want to hear from you.</p>
         <div class="contact-detail" style="margin-top:32px;">
 
           <div class="contact-row reveal">
@@ -2882,10 +2985,10 @@ nav .nav-links.open {
   </div>
 
   <!-- Four pillars — OPTION 2: Editorial two-column -->
-  <section class="section bg-cream">
+  <section class="section bg-cream" style="padding-bottom:40px;">
     <div class="section-tag">What sets us apart</div>
-    <h2 class="section-title">More than a finance club</h2>
-    <p class="section-subtitle">UFA is built around you. We offer the breadth, access, and community to explore finance on your own terms, without locking you into a single path.</p>
+    <h2 class="section-title">Serious about finance. Serious about you.</h2>
+    <p class="section-subtitle">UFA is built around you. We offer the breadth, access, and community to explore every corner of finance on your own terms, without locking you into a single path before you're ready.</p>
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid var(--border);margin-top:8px;">
 
@@ -2898,7 +3001,7 @@ nav .nav-links.open {
       <div class="reveal" style="padding:48px 0 48px 48px;border-left:1px solid var(--border);border-bottom:1px solid var(--border);">
         <div style="font-size:11px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-muted);margin-bottom:16px;">02</div>
         <h3 style="font-family:var(--font-display);font-size:28px;font-weight:400;color:var(--text-dark);line-height:1.2;margin:0 0 16px;">We bring the industry to you</h3>
-        <p style="font-size:15px;color:var(--text-muted);line-height:1.75;margin:0;">From bulge-bracket bankers to PE professionals, we bring real practitioners into the room so you never have to cold-email your way into a conversation.</p>
+        <p style="font-size:15px;color:var(--text-muted);line-height:1.75;margin:0;">From bulge-bracket bankers to PE professionals, we bring real practitioners into the room so you do not have to cold-email your way into a conversation.</p>
       </div>
 
       <div class="reveal" style="padding:48px 48px 48px 0;">
@@ -2909,15 +3012,25 @@ nav .nav-links.open {
 
       <div class="reveal" style="padding:48px 0 48px 48px;border-left:1px solid var(--border);">
         <div style="font-size:11px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-muted);margin-bottom:16px;">04</div>
-        <h3 style="font-family:var(--font-display);font-size:28px;font-weight:400;color:var(--text-dark);line-height:1.2;margin:0 0 16px;">Explore what you want to explore</h3>
-        <p style="font-size:15px;color:var(--text-muted);line-height:1.75;margin:0;">IB, PE, asset management, consulting, corporate finance, tech. We cover it all. UFA offers the widest curriculum of any finance organization on campus.</p>
+        <h3 style="font-family:var(--font-display);font-size:28px;font-weight:400;color:var(--text-dark);line-height:1.2;margin:0 0 16px;">The widest curriculum on campus</h3>
+        <p style="font-size:15px;color:var(--text-muted);line-height:1.75;margin:0;">IB, PE, asset management, consulting, corporate finance, tech. UFA is the only finance organization at UT that covers all of it under one roof, so you can explore before you commit.</p>
       </div>
 
     </div>
+
+    <!-- 75% internal mobility callout -->
+    <div class="reveal" style="margin-top:48px;background:var(--green-dark);border-radius:8px;padding:36px 48px;display:flex;align-items:center;gap:40px;">
+      <div style="font-family:var(--font-display);font-size:56px;font-weight:500;color:var(--green-pale);flex-shrink:0;line-height:1;">75%</div>
+      <div>
+        <h3 style="font-family:var(--font-display);font-size:20px;font-weight:500;color:var(--white);margin-bottom:8px;">A clear path upward</h3>
+        <p style="font-size:15px;color:rgba(255,255,255,0.7);line-height:1.75;margin:0;">Three in four Investment and Consulting Associates began in the Analyst Program. UFA rewards commitment, and the analyst program is the proven pipeline into our most selective teams.</p>
+      </div>
+    </div>
+
   </section>
 
   <!-- Placements collage -->
-  <section class="bg-white" style="padding:60px 72px;" id="placements-section">
+  <section class="bg-white" style="padding:40px 72px 60px;" id="placements-section">
     <div class="section-tag">Where our members go</div>
     <h2 class="section-title">Our Recent Placements</h2>
     <p class="section-subtitle">UFA members have landed internships and full-time roles at the most respected firms in finance, from Wall Street banks to Texas-based institutions.</p>
@@ -2931,7 +3044,7 @@ nav .nav-links.open {
       <img src="https://i.postimg.cc/DybGsMMh/bmo.png" alt="BMO" class="placement-logo-img">
       <img src="https://i.postimg.cc/kg3byv0G/cantor-fitzgerald.png" alt="Cantor Fitzgerald" class="placement-logo-img">
       <img src="https://i.postimg.cc/4x6h2hGh/capital-one.png" alt="Capital One" class="placement-logo-img">
-      <img src="https://i.postimg.cc/6pJvhfkK/dell.png" alt="Dell" class="placement-logo-img">
+      <img src="https://i.postimg.cc/XvShN3fq/Dell-Logo.png" alt="Dell" class="placement-logo-img">
       <img src="https://i.postimg.cc/g2FZKHC0/evercore.png" alt="Evercore" class="placement-logo-img">
       <img src="https://i.postimg.cc/y84ZTyM7/ey.png" alt="EY" class="placement-logo-img">
       <img src="https://i.postimg.cc/W1Lk7wQQ/goldman-sachs.png" alt="Goldman Sachs" class="placement-logo-img">
@@ -3091,6 +3204,30 @@ nav .nav-links.open {
         </div>
       </div>
 
+      <!-- Set New Password Card (shown after clicking reset link in email) -->
+      <div id="portal-reset" style="display:none;flex:1;align-items:center;justify-content:center;padding:48px 24px;">
+        <div style="background:#fff;border:1px solid rgba(46,74,46,0.15);border-radius:12px;padding:48px;width:100%;max-width:440px;box-shadow:0 4px 24px rgba(46,74,46,0.08);">
+          <div style="text-align:center;margin-bottom:28px;">
+            <div style="width:56px;height:56px;background:#EEF5EE;border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3D6B3D" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <div style="font-family:'Playfair Display',Georgia,serif;font-size:24px;font-weight:500;color:#1C2B1C;margin-bottom:8px;">Set New Password</div>
+            <p style="font-size:14px;color:#6B7D6B;line-height:1.6;">Choose a new password for your account.</p>
+          </div>
+          <div style="margin-bottom:16px;">
+            <label style="display:block;font-size:13px;font-weight:500;color:#3A4A3A;margin-bottom:6px;">New Password</label>
+            <input id="reset-password" type="password" placeholder="New password (min 6 characters)" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;">
+          </div>
+          <div style="margin-bottom:20px;">
+            <label style="display:block;font-size:13px;font-weight:500;color:#3A4A3A;margin-bottom:6px;">Confirm Password</label>
+            <input id="reset-password-confirm" type="password" placeholder="Re-enter new password" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;" onkeydown="if(event.key==='Enter')submitNewPassword()">
+          </div>
+          <button onclick="submitNewPassword()" style="width:100%;background:#3D6B3D;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:13px;border-radius:4px;border:none;cursor:pointer;">Set New Password</button>
+          <div id="reset-msg" style="display:none;margin-top:12px;padding:10px 14px;background:#eef5ee;border:1px solid #b4d4b4;border-radius:4px;font-size:13px;color:#2e5e2e;text-align:center;"></div>
+          <div id="reset-error" style="display:none;margin-top:12px;padding:10px 14px;background:#fdf0ef;border:1px solid #f0b4b0;border-radius:4px;font-size:13px;color:#8b2e2e;text-align:center;"></div>
+        </div>
+      </div>
+
     <!-- DASHBOARD -->
     <div id="portal-dashboard" style="display:none;flex:1;padding:48px 72px;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:36px;flex-wrap:wrap;gap:16px;">
@@ -3105,7 +3242,7 @@ nav .nav-links.open {
       <!-- Stats -->
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px;">
         <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:20px;">
-          <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:8px;">Meetings Attended</div>
+          <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:8px;">Total Points</div>
           <div style="font-family:'Playfair Display',Georgia,serif;font-size:34px;font-weight:500;color:#3D6B3D;" id="stat-attended">0</div>
         </div>
         <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:20px;">
@@ -3125,8 +3262,8 @@ nav .nav-links.open {
       <!-- Check-in + History -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px;">
         <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:32px;">
-          <div style="font-family:'Playfair Display',Georgia,serif;font-size:20px;font-weight:500;color:#1C2B1C;margin-bottom:8px;">Meeting Check-In</div>
-          <p style="font-size:14px;color:#6B7D6B;line-height:1.65;margin-bottom:24px;">Enter the session code shown at the start of tonight's meeting to mark your attendance.</p>
+          <div style="font-family:'Playfair Display',Georgia,serif;font-size:20px;font-weight:500;color:#1C2B1C;margin-bottom:8px;">Event Check-In</div>
+          <p style="font-size:14px;color:#6B7D6B;line-height:1.65;margin-bottom:24px;">Enter the session code shown at tonight's event to log your attendance and earn points.</p>
           <div id="checkin-success" style="display:none;margin-bottom:20px;padding:14px 18px;background:#e6f4e6;border:1px solid #a8d5a8;border-radius:6px;">
             <div style="font-size:14px;font-weight:500;color:#1a4d1a;">✓ Successfully checked in!</div>
             <div style="font-size:12px;color:#2e6b2e;margin-top:3px;" id="checkin-detail"></div>
@@ -3134,21 +3271,21 @@ nav .nav-links.open {
           <div id="checkin-form">
             <label style="display:block;font-size:13px;font-weight:500;color:#3A4A3A;margin-bottom:6px;">Session code</label>
             <input id="session-code" type="text" placeholder="UFA-W01" maxlength="10" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:15px;letter-spacing:0.1em;text-transform:uppercase;background:#F7F4EE;color:#1C2B1C;box-sizing:border-box;margin-bottom:16px;" onkeydown="if(event.key==='Enter')checkIn()"> 
-            <button id="checkin-btn" onclick="checkIn()" style="width:100%;background:#1C2B1C;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:13px;border-radius:4px;border:none;cursor:pointer;">Check in to tonight's meeting</button>
+            <button id="checkin-btn" onclick="checkIn()" style="width:100%;background:#1C2B1C;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:13px;border-radius:4px;border:none;cursor:pointer;">Check in to tonight's event</button>
             <div id="checkin-error" style="display:none;margin-top:10px;padding:10px 14px;background:#fdf0ef;border:1px solid #f0b4b0;border-radius:4px;font-size:13px;color:#8b2e2e;"></div>
           </div>
         </div>
         <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:32px;">
-          <div style="font-family:'Playfair Display',Georgia,serif;font-size:20px;font-weight:500;color:#1C2B1C;margin-bottom:20px;">Your Attendance</div>
+          <div style="font-family:'Playfair Display',Georgia,serif;font-size:20px;font-weight:500;color:#1C2B1C;margin-bottom:20px;">Your Event History</div>
           <div id="attendance-list" style="display:flex;flex-direction:column;gap:0;border:1px solid rgba(46,74,46,0.1);border-radius:6px;overflow:hidden;">
-            <div style="padding:20px;background:#EEF5EE;font-size:13px;color:#6B7D6B;text-align:center;">No meetings checked in yet.<br>Use the session code to get started.</div>
+            <div style="padding:20px;background:#EEF5EE;font-size:13px;color:#6B7D6B;text-align:center;">No events checked in yet.<br>Use the session code to get started.</div>
           </div>
         </div>
       </div>
 
       <!-- Upcoming meetings -->
       <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:32px;">
-        <div style="font-family:'Playfair Display',Georgia,serif;font-size:20px;font-weight:500;color:#1C2B1C;margin-bottom:20px;">Upcoming Meetings — Fall 2026</div>
+        <div style="font-family:'Playfair Display',Georgia,serif;font-size:20px;font-weight:500;color:#1C2B1C;margin-bottom:20px;">Upcoming Events — Fall 2026</div>
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;" id="upcoming-meetings"></div>
       </div>
 
@@ -3161,7 +3298,7 @@ nav .nav-links.open {
 // ── Supabase config ──
 const SUPABASE_URL = 'https://pilbazpbicpuuupwalvh.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBpbGJhenBiaWNwdXV1cHdhbHZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwMzc0OTcsImV4cCI6MjA5MzYxMzQ5N30.47M2ToH3O8hsuiMc1OgcM3XA4K97KukAqEeF9BW0QYE';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { flowType: "pkce" } });
 
 let currentUser = null;
 let currentMember = null;
@@ -3232,9 +3369,10 @@ async function showDashboard() {
   document.getElementById('portal-welcome-name').textContent = name;
   document.getElementById('portal-welcome-team').textContent = role + ' · ' + semester;
 
-  // Load attendance count
+  // Load attendance and compute total points
   const { data: records } = await sb.from('attendance').select('*').eq('email', currentUser.email);
-  document.getElementById('stat-attended').textContent = records ? records.length : 0;
+  const totalPoints = records ? records.reduce((sum, r) => sum + (r.points || 1), 0) : 0;
+  document.getElementById('stat-attended').textContent = totalPoints;
 
   renderHistory(records || []);
 }
@@ -3290,7 +3428,7 @@ async function checkIn() {
   if (sessErr || !session) {
     err.style.display = 'block';
     err.textContent = 'Invalid or inactive code. Ask the board for tonight\'s code.';
-    btn.textContent = 'Check in to tonight\'s meeting';
+    btn.textContent = 'Check in to tonight\'s event';
     btn.disabled = false;
     return;
   }
@@ -3305,8 +3443,8 @@ async function checkIn() {
 
   if (existing) {
     err.style.display = 'block';
-    err.textContent = 'You\'ve already checked in to this meeting.';
-    btn.textContent = 'Check in to tonight\'s meeting';
+    err.textContent = 'You\'ve already checked in to this event.';
+    btn.textContent = 'Check in to tonight\'s event';
     btn.disabled = false;
     return;
   }
@@ -3316,28 +3454,31 @@ async function checkIn() {
     email: currentUser.email,
     meeting_name: session.meeting_name,
     meeting_date: session.meeting_date,
+    event_type: session.event_type || 'Meeting',
+    points: session.points || 1,
     code_used: code
   });
 
   if (insertErr) {
     err.style.display = 'block';
     err.textContent = 'Error recording attendance. Try again.';
-    btn.textContent = 'Check in to tonight\'s meeting';
+    btn.textContent = 'Check in to tonight\'s event';
     btn.disabled = false;
     return;
   }
 
   err.style.display = 'none';
-  document.getElementById('checkin-detail').textContent = session.meeting_date + ' — ' + session.meeting_name;
+  document.getElementById('checkin-detail').textContent = session.meeting_date + ' — ' + session.meeting_name + ' (+' + (session.points || 1) + ' pt' + ((session.points || 1) !== 1 ? 's' : '') + ')';
   succ.style.display = 'block';
   document.getElementById('checkin-form').style.display = 'none';
 
-  // Refresh attendance count and history
+  // Refresh points total and history
   const { data: records } = await sb.from('attendance').select('*').eq('email', currentUser.email);
-  document.getElementById('stat-attended').textContent = records ? records.length : 0;
+  const totalPoints = records ? records.reduce((sum, r) => sum + (r.points || 1), 0) : 0;
+  document.getElementById('stat-attended').textContent = totalPoints;
   renderHistory(records || []);
 
-  btn.textContent = 'Check in to tonight\'s meeting';
+  btn.textContent = 'Check in to tonight\'s event';
   btn.disabled = false;
 
   setTimeout(() => {
@@ -3360,15 +3501,34 @@ async function checkIn() {
 function renderHistory(records) {
   const list = document.getElementById('attendance-list');
   if (!records.length) {
-    list.innerHTML = '<div style="padding:20px;background:#EEF5EE;font-size:13px;color:#6B7D6B;text-align:center;">No meetings checked in yet.<br>Use the session code to get started.</div>';
+    list.innerHTML = '<div style="padding:20px;background:#EEF5EE;font-size:13px;color:#6B7D6B;text-align:center;">No events checked in yet.<br>Use the session code to get started.</div>';
     return;
   }
-  list.innerHTML = records.map(r =>
-    '<div style="padding:14px 16px;border-bottom:1px solid rgba(46,74,46,0.08);display:flex;justify-content:space-between;align-items:center;">' +
-    '<div><div style="font-size:13px;font-weight:500;color:#1C2B1C;">' + r.meeting_name + '</div>' +
-    '<div style="font-size:11px;color:#6B7D6B;margin-top:2px;">' + r.meeting_date + '</div></div>' +
-    '<span style="font-size:11px;font-weight:500;color:#2e6b2e;background:#e6f4e6;padding:3px 10px;border-radius:3px;">✓ Present</span></div>'
-  ).join('');
+
+  // Event type badge colors
+  const typeColors = {
+    'Meeting':         { bg: '#e6f4e6', color: '#2e6b2e' },
+    'Social':          { bg: '#e6eef9', color: '#1e4a8a' },
+    'Community Service': { bg: '#fdf0e6', color: '#8a4a1e' },
+    'Workshop':        { bg: '#f4e6f4', color: '#6b2e6b' },
+    'Speaker':         { bg: '#f4f0e6', color: '#6b5a1e' },
+  };
+
+  list.innerHTML = records.map(r => {
+    const type = r.event_type || 'Meeting';
+    const pts  = r.points || 1;
+    const clr  = typeColors[type] || typeColors['Meeting'];
+    return '<div style="padding:14px 16px;border-bottom:1px solid rgba(46,74,46,0.08);display:flex;justify-content:space-between;align-items:center;gap:8px;">' +
+      '<div>' +
+        '<div style="font-size:13px;font-weight:500;color:#1C2B1C;">' + r.meeting_name + '</div>' +
+        '<div style="display:flex;align-items:center;gap:6px;margin-top:3px;">' +
+          '<span style="font-size:10px;color:#6B7D6B;">' + r.meeting_date + '</span>' +
+          '<span style="font-size:10px;font-weight:500;background:' + clr.bg + ';color:' + clr.color + ';padding:2px 7px;border-radius:3px;">' + type + '</span>' +
+        '</div>' +
+      '</div>' +
+      '<span style="font-size:12px;font-weight:600;color:#2e6b2e;background:#e6f4e6;padding:4px 10px;border-radius:3px;white-space:nowrap;">+' + pts + ' pt' + (pts !== 1 ? 's' : '') + '</span>' +
+    '</div>';
+  }).join('');
 }
 
 // ── Restore session on page load ──
@@ -3405,7 +3565,7 @@ sb.auth.getSession().then(({ data: { session } }) => {
       <div class="footer-col-title">Navigation</div>
       <ul class="footer-links">
         <li><a href="#" onclick="showPage('home')">Home</a></li>
-        <li><a href="#" onclick="showPage('about')">About</a></li>
+        <li><a href="#" onclick="showPage('about')">Board</a></li>
         <li><a href="#" onclick="showPage('teams')">Teams</a></li>
         <li><a href="#" onclick="showPage('join')">Join</a></li>
       </ul>
@@ -3662,6 +3822,7 @@ function showLogin() {
   document.getElementById('portal-signup').style.display = 'none';
   document.getElementById('portal-magic').style.display = 'none';
   document.getElementById('portal-forgot').style.display = 'none';
+  document.getElementById('portal-reset').style.display = 'none';
 }
 
 /**
@@ -3675,6 +3836,7 @@ function showSignup() {
   document.getElementById('portal-signup').style.display = 'block';
   document.getElementById('portal-magic').style.display = 'none';
   document.getElementById('portal-forgot').style.display = 'none';
+  document.getElementById('portal-reset').style.display = 'none';
 }
 
 /**
@@ -3688,6 +3850,7 @@ function showMagicLink() {
   document.getElementById('portal-signup').style.display = 'none';
   document.getElementById('portal-magic').style.display = 'flex';
   document.getElementById('portal-forgot').style.display = 'none';
+  document.getElementById('portal-reset').style.display = 'none';
 }
 
 /**
@@ -3701,6 +3864,23 @@ function showForgotPassword() {
   document.getElementById('portal-signup').style.display = 'none';
   document.getElementById('portal-magic').style.display = 'none';
   document.getElementById('portal-forgot').style.display = 'flex';
+  document.getElementById('portal-reset').style.display = 'none';
+}
+
+/**
+ * showResetPanel()
+ * -----------------
+ * Shows the "Set New Password" form. Called automatically when
+ * the user arrives via a password reset email link.
+ */
+function showResetPanel() {
+  showPage('portal');
+  document.getElementById('login-card').style.display = 'none';
+  document.getElementById('portal-signup').style.display = 'none';
+  document.getElementById('portal-magic').style.display = 'none';
+  document.getElementById('portal-forgot').style.display = 'none';
+  document.getElementById('portal-reset').style.display = 'flex';
+  document.getElementById('portal-dashboard').style.display = 'none';
 }
 
 /**
@@ -3773,6 +3953,33 @@ function initLogoAnimation() {
 
 document.addEventListener('DOMContentLoaded', initLogoAnimation);
 
+
+// ── PKCE Password Reset Handler ──
+// When Supabase redirects back after a password reset email click,
+// it appends ?code=XXX to the URL (PKCE flow). We detect this,
+// exchange the code for a session, then show the Set New Password form.
+(async function handlePKCERedirect() {
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get("code");
+  const type = params.get("type");
+  if (code) {
+    try {
+      const { error } = await sb.auth.exchangeCodeForSession(code);
+      if (!error) {
+        // Clean the URL so the code is not reused
+        history.replaceState(null, "", window.location.pathname);
+        // Show the portal page and the Set New Password form
+        const homeEl = document.getElementById("page-home");
+        if (homeEl) { homeEl.classList.remove("active"); homeEl.style.display = "none"; }
+        const portalEl = document.getElementById("page-portal");
+        if (portalEl) { portalEl.style.display = "block"; portalEl.classList.add("active"); }
+        // Wait for DOM then show reset panel
+        setTimeout(() => { if (typeof showResetPanel === "function") showResetPanel(); }, 100);
+      }
+    } catch(e) { console.error("PKCE exchange error", e); }
+  }
+})();
+
 // On load, restore page from hash — runs immediately
 (function() {
   const hash = window.location.hash.replace('#', '');
@@ -3817,11 +4024,58 @@ async function sendPasswordReset() {
   const err = document.getElementById('forgot-error');
   msg.style.display = 'none'; err.style.display = 'none';
   if (!email) { err.style.display='block'; err.textContent='Please enter your UT email.'; return; }
-  const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: 'https://cadenwarner.github.io/UFA-Website/' });
+  const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: 'https://cadenwarner.github.io/UFA-Website/?type=recovery' });
   if (error) { err.style.display='block'; err.textContent=error.message; return; }
   msg.style.display = 'block';
   msg.textContent = 'Reset link sent! Check your email to set a new password.';
 }
+
+/**
+ * submitNewPassword()  [async]
+ * -----------------------------
+ * Updates the user's password after they arrive via a reset link.
+ * Called from the Set New Password form (#portal-reset).
+ */
+async function submitNewPassword() {
+  const pw  = document.getElementById('reset-password').value;
+  const pw2 = document.getElementById('reset-password-confirm').value;
+  const msg = document.getElementById('reset-msg');
+  const err = document.getElementById('reset-error');
+  msg.style.display = 'none'; err.style.display = 'none';
+
+  if (!pw || !pw2) { err.style.display='block'; err.textContent='Please fill in both fields.'; return; }
+  if (pw.length < 6) { err.style.display='block'; err.textContent='Password must be at least 6 characters.'; return; }
+  if (pw !== pw2) { err.style.display='block'; err.textContent='Passwords do not match.'; return; }
+
+  const { error } = await sb.auth.updateUser({ password: pw });
+  if (error) { err.style.display='block'; err.textContent=error.message; return; }
+
+  msg.style.display = 'block';
+  msg.textContent = 'Password updated! Signing you in…';
+
+  // After a short delay, go to dashboard
+  setTimeout(async () => {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) {
+      currentUser = session.user;
+      const { data } = await sb.from('members').select('*').eq('email', currentUser.email).single();
+      currentMember = data;
+      document.getElementById('portal-reset').style.display = 'none';
+      showDashboard();
+    } else {
+      showLogin();
+    }
+  }, 1500);
+}
+
+// Listen for PASSWORD_RECOVERY event from Supabase (triggered when user
+// arrives via a reset-password email link). Shows the Set New Password form
+// instead of logging them straight in.
+sb.auth.onAuthStateChange((event, session) => {
+  if (event === 'PASSWORD_RECOVERY') {
+    showResetPanel();
+  }
+});
 
 /**
  * portalSignup()  [async]
