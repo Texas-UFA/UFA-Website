@@ -1138,12 +1138,7 @@ align-items: flex-end;
     padding: 0;
   }
   .hero-eyebrow {
-    font-size: 11px !important;
-    margin-bottom: 4px !important;
-    gap: 8px !important;
-  }
-  .hero-eyebrow::before {
-    width: 18px !important;
+    display: none !important;
   }
   .hero h1 {
     font-size: 32px;
@@ -1546,25 +1541,11 @@ nav .nav-links.open {
     border-bottom: none;
     padding: 12px 20px !important;
   }
-  /* Portal dashboard padding */
-#portal-dashboard {
-  padding: 24px 20px !important;
-}
 
-/* Stats bar: 4-col → 2-col */
-#portal-dashboard > div:nth-child(2) {
-  grid-template-columns: repeat(2, 1fr) !important;
-}
-
-/* Check-in + Attendance: 2-col → 1-col */
-#portal-dashboard > div:nth-child(3) {
-  grid-template-columns: 1fr !important;
-}
-
-/* Upcoming meetings: 3-col → 1-col */
-#upcoming-meetings {
-  grid-template-columns: 1fr !important;
-}
+  /* Upcoming meetings: 1-col on mobile */
+  #upcoming-meetings {
+    grid-template-columns: 1fr !important;
+  }
 .consulting-cards {
   grid-template-columns: 1fr !important;
 }
@@ -1766,6 +1747,7 @@ nav .nav-links.open {
   #tab-investment .team-photo-tall {
     height: auto !important;
     padding: 0 !important;
+    margin-bottom: 40px !important;
   }
   #tab-investment .team-photo-tall img {
     height: auto !important;
@@ -1884,6 +1866,202 @@ nav .nav-links.open {
     object-position: center 100% !important;
   }
 }
+
+/* ── PORTAL TABS (global — applies all screen sizes) ── */
+#portal-dashboard {
+  padding: 0 !important;
+}
+
+#portal-tab-nav {
+  display: inline-flex !important;
+  gap: 4px;
+  background: rgba(46,74,46,0.09);
+  border-radius: 10px;
+  padding: 4px;
+  margin-bottom: 4px;
+  flex-wrap: wrap;
+}
+.portal-tab {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 7px !important;
+  padding: 9px 22px !important;
+  font-family: 'DM Sans', sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: #6B7D6B !important;
+  cursor: pointer !important;
+  transition: background 0.18s, color 0.18s, box-shadow 0.18s !important;
+  white-space: nowrap !important;
+  letter-spacing: 0.01em !important;
+  box-shadow: none !important;
+  line-height: 1 !important;
+}
+.portal-tab:hover {
+  background: rgba(46,74,46,0.1) !important;
+  color: #1C2B1C !important;
+}
+.portal-tab.active {
+  background: #1C2B1C !important;
+  color: #fff !important;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.18) !important;
+}
+
+.admin-tab-nav {
+  display: inline-flex !important;
+  gap: 4px;
+  background: rgba(46,74,46,0.09);
+  border-radius: 10px;
+  padding: 4px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+.admin-tab {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 7px !important;
+  padding: 8px 18px !important;
+  font-family: 'DM Sans', sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: #6B7D6B !important;
+  cursor: pointer !important;
+  transition: background 0.18s, color 0.18s, box-shadow 0.18s !important;
+  white-space: nowrap !important;
+  box-shadow: none !important;
+  line-height: 1 !important;
+}
+.admin-tab:hover {
+  background: rgba(46,74,46,0.1) !important;
+  color: #1C2B1C !important;
+}
+.admin-tab.active {
+  background: #1C2B1C !important;
+  color: #fff !important;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.18) !important;
+}
+
+/* Portal mobile overrides */
+@media (max-width: 768px) {
+
+  /* Hide the dark hero bar — nav already exists */
+  #portal-hero-bar { display: none !important; }
+
+  /* Header area */
+  #portal-dashboard > div:nth-child(2) {
+    padding: 20px 16px 0 !important;
+  }
+  #portal-dashboard > div:nth-child(3) {
+    padding: 16px 16px 40px !important;
+  }
+
+  /* Tab nav — scrollable single row */
+  #portal-tab-nav {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    gap: 4px !important;
+    padding: 4px !important;
+    border-radius: 10px !important;
+    background: rgba(46,74,46,0.09) !important;
+    scrollbar-width: none !important;
+  }
+  #portal-tab-nav::-webkit-scrollbar { display: none; }
+  .portal-tab {
+    padding: 8px 14px !important;
+    font-size: 12px !important;
+    flex-shrink: 0 !important;
+    flex-grow: 0 !important;
+    white-space: nowrap !important;
+  }
+
+  /* Admin sub-tabs — scrollable row */
+  .admin-tab-nav {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    gap: 4px !important;
+    padding: 4px !important;
+    border-radius: 10px !important;
+    scrollbar-width: none !important;
+  }
+  .admin-tab-nav::-webkit-scrollbar { display: none; }
+  .admin-tab {
+    padding: 8px 12px !important;
+    font-size: 12px !important;
+    flex-shrink: 0 !important;
+    flex-grow: 0 !important;
+    white-space: nowrap !important;
+  }
+
+  /* Stat cards: 2-col so all 3 fit better */
+  #ptab-content-overview > div:first-child {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+  }
+
+  /* Points breakdown wraps */
+  #points-breakdown { flex-wrap: wrap !important; }
+
+  /* Badges: smaller on mobile */
+  #badges-row { gap: 8px !important; }
+  #badges-row > div {
+    min-width: 72px !important;
+    padding: 10px 8px !important;
+    font-size: 10px !important;
+  }
+  #badges-row > div span:first-child { font-size: 20px !important; }
+
+  /* Check-in + history: stack */
+  #ptab-content-overview > div:nth-child(4) {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Leaderboard: stack */
+  #ptab-content-leaderboard > div:first-child {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Profile: full width */
+  #ptab-content-profile { max-width: 100% !important; }
+
+  /* Session codes form: 1-col */
+  #atab-content-sessions div[style*="grid-template-columns:1fr 1fr"],
+  #atab-content-sessions div[style*="grid-template-columns: 1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Session codes list: horizontal scroll, hide cramped columns */
+  #sessions-list { overflow-x: auto !important; }
+  #sessions-list > div[style*="grid-template-columns:120px"] {
+    min-width: 600px !important;
+  }
+  #sessions-list > div:not(:first-child)[style*="grid-template-columns:120px"] {
+    min-width: 600px !important;
+  }
+
+  /* Analytics: 2-col stats, 1-col charts */
+  #atab-content-analytics > div:first-child {
+    grid-template-columns: 1fr 1fr !important;
+  }
+  #atab-content-analytics > div:last-child {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Roster: horizontal scroll */
+  #roster-table { overflow-x: auto !important; }
+  #roster-table table { min-width: 600px !important; }
+
+  /* Announcement banner */
+  #announcement-banner { padding: 12px 16px !important; }
+}
+
 </style>
 </head>
 <body>
@@ -1941,9 +2119,9 @@ nav .nav-links.open {
 
   <!-- Stats -->
   <div class="stats-bar">
-    <div class="stat-cell stat-cell-anim reveal"><span class="stat-num">300+</span><span class="stat-label">Active members</span></div>
-    <div class="stat-cell stat-cell-anim reveal"><span class="stat-num">50+</span><span class="stat-label">Placement firms</span></div>
-    <div class="stat-cell stat-cell-anim reveal"><span class="stat-num">12+</span><span class="stat-label">Industry speakers per semester</span></div>
+    <div class="stat-cell stat-cell-anim reveal"><span class="stat-num" data-target="300" data-suffix="+">300+</span><span class="stat-label">Active members</span></div>
+    <div class="stat-cell stat-cell-anim reveal"><span class="stat-num" data-target="50" data-suffix="+">50+</span><span class="stat-label">Placement firms</span></div>
+    <div class="stat-cell stat-cell-anim reveal"><span class="stat-num" data-target="12" data-suffix="+">12+</span><span class="stat-label">Industry speakers per semester</span></div>
   </div>
 
   <!-- Why Join -->
@@ -2507,9 +2685,11 @@ nav .nav-links.open {
         </div>
       </div>
 
-  <div class="team-photo-tall" style="margin-top:0; padding:28px 32px;">
-    <div style="border-radius:12px; overflow:hidden; height:600px;">
-      <img src="https://i.imgur.com/1qDXUl0.jpeg" style="width:100%; height:100%; object-fit:cover; object-position:55% 40%; transform:scale(1.15); transform-origin:55% 40%; display:block;">
+  <div style="background:var(--white);margin:0 -72px;padding:0 72px 72px;">
+    <div class="team-photo-tall" style="margin-top:0; padding:0;">
+      <div style="border-radius:12px; overflow:hidden; height:600px;">
+        <img src="https://i.imgur.com/1qDXUl0.jpeg" style="width:100%; height:100%; object-fit:cover; object-position:55% 40%; transform:scale(1.15); transform-origin:55% 40%; display:block;">
+      </div>
     </div>
   </div>
 
@@ -3080,7 +3260,7 @@ nav .nav-links.open {
 <div id="page-portal" class="page">
   <div style="min-height:100vh;background:#f7f4ee;display:flex;flex-direction:column;">
 
-    <div style="background:#1C2B1C;padding:32px 72px;display:flex;align-items:center;justify-content:space-between;">
+    <div style="background:#1C2B1C;padding:32px 72px;display:flex;align-items:center;justify-content:space-between;" id="portal-hero-bar">
       <div>
         <div style="font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:#D6E8D6;margin-bottom:6px;">Member Portal</div>
         <div style="font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:500;color:#fff;">University Finance Association</div>
@@ -3141,6 +3321,17 @@ nav .nav-links.open {
         <div style="margin-bottom:16px;">
           <label style="display:block;font-size:13px;font-weight:500;color:#3A4A3A;margin-bottom:6px;">UT Email</label>
           <input id="signup-email" type="email" placeholder="abc1234@utexas.edu" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;">
+        </div>
+        <div style="margin-bottom:16px;">
+          <label style="display:block;font-size:13px;font-weight:500;color:#3A4A3A;margin-bottom:6px;">Role</label>
+          <select id="signup-role" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;appearance:none;-webkit-appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236B7D6B' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 14px center;">
+            <option value="" disabled selected>Select your role…</option>
+            <option value="General Member">General Member</option>
+            <option value="Analyst">Analyst</option>
+            <option value="Investment Associate">Investment Associate</option>
+            <option value="Consulting Associate">Consulting Associate</option>
+            <option value="Board">Board</option>
+          </select>
         </div>
         <div style="margin-bottom:20px;">
           <label style="display:block;font-size:13px;font-weight:500;color:#3A4A3A;margin-bottom:6px;">Password</label>
@@ -3226,165 +3417,524 @@ nav .nav-links.open {
       </div>
 
     <!-- DASHBOARD -->
-    <div id="portal-dashboard" style="display:none;flex:1;padding:48px 72px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:36px;flex-wrap:wrap;gap:16px;">
-        <div>
-          <div style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#3D6B3D;margin-bottom:6px;">Welcome back</div>
-          <div style="font-family:'Playfair Display',Georgia,serif;font-size:28px;font-weight:500;color:#1C2B1C;" id="portal-welcome-name">Member</div>
-          <div style="font-size:13px;color:#6B7D6B;margin-top:4px;" id="portal-welcome-team"></div>
-        </div>
-        <button onclick="portalLogout()" style="background:#fff;border:1px solid rgba(46,74,46,0.2);color:#3A4A3A;font-family:'DM Sans',sans-serif;font-size:13px;padding:9px 18px;border-radius:4px;cursor:pointer;">Sign out</button>
+    <div id="portal-dashboard" style="display:none;flex:1;padding:0 0 60px;">
+
+      <!-- Announcement banner -->
+      <div id="announcement-banner" style="display:none;background:#2E4A2E;padding:12px 72px;display:flex;align-items:center;gap:12px;">
+        <span style="font-size:13px;color:#D6E8D6;font-weight:500;">📢</span>
+        <span id="announcement-text" style="font-size:13px;color:#D6E8D6;line-height:1.5;"></span>
       </div>
 
-      <!-- Stats -->
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px;">
-        <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:20px;">
-          <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:8px;">Total Points</div>
-          <div style="font-family:'Playfair Display',Georgia,serif;font-size:34px;font-weight:500;color:#3D6B3D;" id="stat-attended">0</div>
-        </div>
-        <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:20px;">
-          <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:8px;">Current Semester</div>
-          <div style="font-size:15px;font-weight:500;color:#1C2B1C;margin-top:6px;">Fall 2026</div>
-        </div>
-        <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:20px;">
-          <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:8px;">Member Status</div>
-          <div style="font-size:14px;font-weight:500;color:#2e6b2e;margin-top:6px;" id="stat-status">✓ Active</div>
-        </div>
-        <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:20px;">
-          <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:8px;">Next Meeting</div>
-          <div style="font-size:14px;font-weight:500;color:#1C2B1C;margin-top:6px;">Wed · 5–6 PM · McCombs</div>
-        </div>
-      </div>
-
-      <!-- Check-in + History -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px;">
-        <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:32px;">
-          <div style="font-family:'Playfair Display',Georgia,serif;font-size:20px;font-weight:500;color:#1C2B1C;margin-bottom:8px;">Event Check-In</div>
-          <p style="font-size:14px;color:#6B7D6B;line-height:1.65;margin-bottom:24px;">Enter the session code shown at tonight's event to log your attendance and earn points.</p>
-          <div id="checkin-success" style="display:none;margin-bottom:20px;padding:14px 18px;background:#e6f4e6;border:1px solid #a8d5a8;border-radius:6px;">
-            <div style="font-size:14px;font-weight:500;color:#1a4d1a;">✓ Successfully checked in!</div>
-            <div style="font-size:12px;color:#2e6b2e;margin-top:3px;" id="checkin-detail"></div>
+      <!-- Header + tabs -->
+      <div style="padding:32px 72px 0;border-bottom:1px solid rgba(46,74,46,0.12);background:#fff;">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:16px;">
+          <div>
+            <div style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#3D6B3D;margin-bottom:6px;">Welcome back</div>
+            <div style="font-family:'Playfair Display',Georgia,serif;font-size:28px;font-weight:500;color:#1C2B1C;" id="portal-welcome-name">Member</div>
+            <div style="font-size:13px;color:#6B7D6B;margin-top:4px;" id="portal-welcome-team"></div>
           </div>
-          <div id="checkin-form">
-            <label style="display:block;font-size:13px;font-weight:500;color:#3A4A3A;margin-bottom:6px;">Session code</label>
-            <input id="session-code" type="text" placeholder="UFA-W01" maxlength="10" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:15px;letter-spacing:0.1em;text-transform:uppercase;background:#F7F4EE;color:#1C2B1C;box-sizing:border-box;margin-bottom:16px;" onkeydown="if(event.key==='Enter')checkIn()"> 
-            <button id="checkin-btn" onclick="checkIn()" style="width:100%;background:#1C2B1C;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:13px;border-radius:4px;border:none;cursor:pointer;">Check in to tonight's event</button>
-            <div id="checkin-error" style="display:none;margin-top:10px;padding:10px 14px;background:#fdf0ef;border:1px solid #f0b4b0;border-radius:4px;font-size:13px;color:#8b2e2e;"></div>
-          </div>
+          <button onclick="portalLogout()" style="background:#fff;border:1px solid rgba(46,74,46,0.2);color:#3A4A3A;font-family:'DM Sans',sans-serif;font-size:13px;padding:9px 18px;border-radius:4px;cursor:pointer;">Sign out</button>
         </div>
-        <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:32px;">
-          <div style="font-family:'Playfair Display',Georgia,serif;font-size:20px;font-weight:500;color:#1C2B1C;margin-bottom:20px;">Your Event History</div>
-          <div id="attendance-list" style="display:flex;flex-direction:column;gap:0;border:1px solid rgba(46,74,46,0.1);border-radius:6px;overflow:hidden;">
-            <div style="padding:20px;background:#EEF5EE;font-size:13px;color:#6B7D6B;text-align:center;">No events checked in yet.<br>Use the session code to get started.</div>
-          </div>
+        <!-- Tab nav -->
+        <div id="portal-tab-nav">
+          <button onclick="switchPortalTab('overview')" class="portal-tab active" id="ptab-overview">Overview</button>
+          <button onclick="switchPortalTab('leaderboard')" class="portal-tab" id="ptab-leaderboard">Leaderboard</button>
+          <button onclick="switchPortalTab('events')" class="portal-tab" id="ptab-events">Events</button>
+          <button onclick="switchPortalTab('profile')" class="portal-tab" id="ptab-profile">Profile</button>
+          <button onclick="switchPortalTab('admin')" class="portal-tab" id="ptab-admin" style="display:none;">Admin</button>
         </div>
       </div>
 
-      <!-- Upcoming meetings -->
-      <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:32px;">
-        <div style="font-family:'Playfair Display',Georgia,serif;font-size:20px;font-weight:500;color:#1C2B1C;margin-bottom:20px;">Upcoming Events — Fall 2026</div>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;" id="upcoming-meetings"></div>
-      </div>
+      <div style="padding:32px 72px;">
 
-    </div>
+        <!-- ── OVERVIEW TAB ── -->
+        <div id="ptab-content-overview">
+
+          <!-- Stat cards -->
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;">
+            <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:24px;">
+              <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:10px;">Total Points</div>
+              <div style="font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:500;color:#3D6B3D;line-height:1;" id="stat-total-points">0</div>
+            </div>
+            <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:24px;">
+              <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:10px;">Meetings Attended</div>
+              <div style="font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:500;color:#1C2B1C;line-height:1;" id="stat-meetings-attended">0</div>
+            </div>
+            <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:24px;">
+              <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:10px;">Non-Meeting Events</div>
+              <div style="font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:500;color:#1C2B1C;line-height:1;" id="stat-events-attended">0</div>
+            </div>
+          </div>
+
+          <!-- Points breakdown -->
+          <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:20px 24px;margin-bottom:24px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <span style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-right:8px;">Points by type</span>
+            <div id="points-breakdown" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
+          </div>
+
+          <!-- Check-in + History -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+            <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:32px;">
+              <div style="font-family:'Playfair Display',Georgia,serif;font-size:20px;font-weight:500;color:#1C2B1C;margin-bottom:8px;">Event Check-In</div>
+              <p style="font-size:14px;color:#6B7D6B;line-height:1.65;margin-bottom:24px;">Enter the session code shown at tonight's event to log your attendance and earn points.</p>
+              <div id="checkin-success" style="display:none;margin-bottom:20px;padding:14px 18px;background:#e6f4e6;border:1px solid #a8d5a8;border-radius:6px;">
+                <div style="font-size:14px;font-weight:500;color:#1a4d1a;">✓ Successfully checked in!</div>
+                <div style="font-size:12px;color:#2e6b2e;margin-top:3px;" id="checkin-detail"></div>
+              </div>
+              <div id="checkin-form">
+                <label style="display:block;font-size:13px;font-weight:500;color:#3A4A3A;margin-bottom:6px;">Session code</label>
+                <input id="session-code" type="text" placeholder="UFA-W01" maxlength="12" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:15px;letter-spacing:0.1em;text-transform:uppercase;background:#F7F4EE;color:#1C2B1C;box-sizing:border-box;margin-bottom:16px;" onkeydown="if(event.key==='Enter')checkIn()">
+                <button id="checkin-btn" onclick="checkIn()" style="width:100%;background:#1C2B1C;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:13px;border-radius:4px;border:none;cursor:pointer;">Check in to tonight's event</button>
+                <div id="checkin-error" style="display:none;margin-top:10px;padding:10px 14px;background:#fdf0ef;border:1px solid #f0b4b0;border-radius:4px;font-size:13px;color:#8b2e2e;"></div>
+              </div>
+            </div>
+            <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:32px;display:flex;flex-direction:column;">
+              <div style="font-family:'Playfair Display',Georgia,serif;font-size:20px;font-weight:500;color:#1C2B1C;margin-bottom:20px;">Your Event History</div>
+              <div id="attendance-list" style="flex:1;display:flex;flex-direction:column;border:1px solid rgba(46,74,46,0.1);border-radius:6px;overflow:hidden;max-height:320px;overflow-y:auto;">
+                <div style="padding:20px;background:#EEF5EE;font-size:13px;color:#6B7D6B;text-align:center;">No events checked in yet.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── LEADERBOARD TAB ── -->
+        <div id="ptab-content-leaderboard" style="display:none;">
+          <div style="font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:500;color:#1C2B1C;margin-bottom:4px;">Leaderboard</div>
+          <div style="font-size:13px;color:#6B7D6B;margin-bottom:24px;">Top members by points this semester</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px;">
+            <div>
+              <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:12px;">All Members</div>
+              <div id="leaderboard-all" style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;overflow:hidden;"></div>
+            </div>
+            <div>
+              <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:12px;">Your Tier (<span id="leaderboard-tier-label">—</span>)</div>
+              <div id="leaderboard-tier" style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;overflow:hidden;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── EVENTS TAB ── -->
+        <div id="ptab-content-events" style="display:none;">
+          <div style="font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:500;color:#1C2B1C;margin-bottom:4px;">Upcoming Events</div>
+          <div style="font-size:13px;color:#6B7D6B;margin-bottom:24px;">All scheduled UFA events this semester</div>
+          <div id="upcoming-events-list" style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;overflow:hidden;">
+            <div style="padding:20px;background:#EEF5EE;font-size:13px;color:#6B7D6B;text-align:center;">Loading events…</div>
+          </div>
+        </div>
+
+        <!-- ── PROFILE TAB ── -->
+        <div id="ptab-content-profile" style="display:none;max-width:520px;">
+          <div style="font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:500;color:#1C2B1C;margin-bottom:24px;">Your Profile</div>
+          <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:32px;margin-bottom:24px;">
+            <div style="display:grid;gap:16px;">
+              <div>
+                <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:4px;">Full Name</div>
+                <input id="profile-name" type="text" style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;">
+              </div>
+              <div>
+                <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:4px;">UT EID</div>
+                <input id="profile-eid" type="text" style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;">
+              </div>
+              <div>
+                <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:4px;">Email</div>
+                <input id="profile-email" type="email" style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;">
+                <div style="font-size:11px;color:#6B7D6B;margin-top:4px;">Changing your email will require you to sign in again.</div>
+              </div>
+              <div>
+                <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:4px;">Role</div>
+                <select id="profile-role" style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;appearance:none;-webkit-appearance:none;background-image:url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2712%27 height=%278%27 viewBox=%270 0 12 8%27%3E%3Cpath d=%27M1 1l5 5 5-5%27 stroke=%27%236B7D6B%27 stroke-width=%271.5%27 fill=%27none%27 stroke-linecap=%27round%27/%3E%3C/svg%3E');background-repeat:no-repeat;background-position:right 14px center;">
+                  <option value="General Member">General Member</option>
+                  <option value="Analyst">Analyst</option>
+                  <option value="Investment Associate">Investment Associate</option>
+                  <option value="Consulting Associate">Consulting Associate</option>
+                  <option value="Board">Board</option>
+                  <option value="President">President</option>
+                </select>
+              </div>
+              <button onclick="saveProfile()" style="background:#3D6B3D;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:12px;border-radius:4px;border:none;cursor:pointer;">Save changes</button>
+              <div id="profile-msg" style="display:none;font-size:13px;color:#2e6b2e;text-align:center;"></div>
+            </div>
+          </div>
+          <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:32px;">
+            <div style="font-size:15px;font-weight:500;color:#1C2B1C;margin-bottom:16px;">Change Password</div>
+            <div style="display:grid;gap:12px;">
+              <input id="profile-new-pw" type="password" placeholder="New password" style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;">
+              <input id="profile-confirm-pw" type="password" placeholder="Confirm new password" style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;">
+              <button onclick="changePassword()" style="background:#1C2B1C;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:12px;border-radius:4px;border:none;cursor:pointer;">Update password</button>
+              <div id="pw-change-msg" style="display:none;font-size:13px;text-align:center;"></div>
+            </div>
+          </div>
+
+          <!-- Milestones -->
+          <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:28px;margin-top:24px;">
+            <div style="font-family:'Playfair Display',Georgia,serif;font-size:18px;font-weight:500;color:#1C2B1C;margin-bottom:6px;">Milestones</div>
+            <div style="font-size:13px;color:#6B7D6B;margin-bottom:20px;">Badges earned through your involvement with UFA.</div>
+            <div id="badges-row" style="display:flex;gap:10px;flex-wrap:wrap;"></div>
+          </div>
+        </div>
+
+        <!-- ── ADMIN TAB ── -->
+        <div id="ptab-content-admin" style="display:none;">
+          <div style="margin-bottom:24px;">
+            <div style="font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:500;color:#1C2B1C;margin-bottom:4px;">Admin Panel</div>
+            <div style="font-size:13px;color:#6B7D6B;">Board access only</div>
+          </div>
+
+          <!-- Admin sub-tabs -->
+          <div class="admin-tab-nav">
+            <button onclick="switchAdminTab('sessions')" class="admin-tab active" id="atab-sessions">Sessions</button>
+            <button onclick="switchAdminTab('roster')" class="admin-tab" id="atab-roster">Roster</button>
+            <button onclick="switchAdminTab('analytics')" class="admin-tab" id="atab-analytics">Analytics</button>
+            <button onclick="switchAdminTab('announce')" class="admin-tab" id="atab-announce">Announcements</button>
+          </div>
+
+          <!-- Session Codes -->
+          <div id="atab-content-sessions">
+            <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:28px;margin-bottom:20px;">
+              <div style="font-size:15px;font-weight:500;color:#1C2B1C;margin-bottom:16px;">Create Session Code</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+                <div>
+                  <label style="font-size:12px;font-weight:500;color:#3A4A3A;display:block;margin-bottom:4px;">Code</label>
+                  <input id="new-code" type="text" placeholder="UFA-W05" style="width:100%;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;background:#F7F4EE;box-sizing:border-box;text-transform:uppercase;">
+                </div>
+                <div>
+                  <label style="font-size:12px;font-weight:500;color:#3A4A3A;display:block;margin-bottom:4px;">Event Name</label>
+                  <input id="new-name" type="text" placeholder="Week 5 Meeting" style="width:100%;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;background:#F7F4EE;box-sizing:border-box;">
+                </div>
+                <div>
+                  <label style="font-size:12px;font-weight:500;color:#3A4A3A;display:block;margin-bottom:4px;">Date</label>
+                  <input id="new-date" type="text" placeholder="Sep 10" style="width:100%;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;background:#F7F4EE;box-sizing:border-box;">
+                </div>
+                <div>
+                  <label style="font-size:12px;font-weight:500;color:#3A4A3A;display:block;margin-bottom:4px;">Event Type</label>
+                  <select id="new-type" style="width:100%;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;background:#F7F4EE;box-sizing:border-box;">
+                    <option value="Meeting">Meeting</option>
+                    <option value="Social">Social</option>
+                    <option value="Speaker">Speaker</option>
+                    <option value="Workshop">Workshop</option>
+                    <option value="Community Service">Community Service</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size:12px;font-weight:500;color:#3A4A3A;display:block;margin-bottom:4px;">Points</label>
+                  <input id="new-points" type="number" value="1" min="1" max="10" style="width:100%;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;background:#F7F4EE;box-sizing:border-box;">
+                </div>
+                <div>
+                  <label style="font-size:12px;font-weight:500;color:#3A4A3A;display:block;margin-bottom:4px;">Active</label>
+                  <select id="new-active" style="width:100%;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;background:#F7F4EE;box-sizing:border-box;">
+                    <option value="true">Yes — live now</option>
+                    <option value="false">No — scheduled</option>
+                  </select>
+                </div>
+              </div>
+              <button onclick="createSession()" style="background:#3D6B3D;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;padding:10px 24px;border-radius:4px;border:none;cursor:pointer;">Create code</button>
+              <div id="session-create-msg" style="display:none;margin-top:10px;font-size:13px;color:#2e6b2e;"></div>
+            </div>
+            <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:10px;">All Session Codes</div>
+            <div id="sessions-list" style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;overflow-x:auto;overflow-y:visible;-webkit-overflow-scrolling:touch;">
+              <div style="padding:20px;font-size:13px;color:#6B7D6B;text-align:center;">Loading…</div>
+            </div>
+          </div>
+
+          <!-- Member Roster -->
+          <div id="atab-content-roster" style="display:none;">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+              <input id="roster-search" type="text" placeholder="Search by name or email…" oninput="filterRoster()" style="padding:9px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:13px;background:#fff;width:260px;">
+              <select id="roster-role-filter" onchange="filterRoster()" style="padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:13px;background:#fff;">
+                <option value="">All roles</option>
+                <option value="General Member">General Member</option>
+                <option value="Analyst">Analyst</option>
+                <option value="Analyst-Pending">Analyst-Pending</option>
+                <option value="Investment Associate">Investment Associate</option>
+                <option value="Investment Associate-Pending">Investment Associate-Pending</option>
+                <option value="Consulting Associate">Consulting Associate</option>
+                <option value="Consulting Associate-Pending">Consulting Associate-Pending</option>
+                <option value="Board">Board</option>
+                <option value="Board-Pending">Board-Pending</option>
+                <option value="President">President</option>
+              </select>
+              <button onclick="exportRoster()" style="background:#fff;border:1px solid rgba(46,74,46,0.2);color:#3A4A3A;font-family:'DM Sans',sans-serif;font-size:13px;padding:9px 16px;border-radius:4px;cursor:pointer;margin-left:auto;">Export CSV</button>
+            </div>
+            <div id="roster-table" style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;overflow:hidden;overflow-x:auto;">
+              <div style="padding:20px;font-size:13px;color:#6B7D6B;text-align:center;">Loading…</div>
+            </div>
+          </div>
+
+          <!-- Event Analytics -->
+          <div id="atab-content-analytics" style="display:none;">
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;">
+              <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:20px;">
+                <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:8px;">Total Members</div>
+                <div style="font-family:'Playfair Display',Georgia,serif;font-size:32px;font-weight:500;color:#1C2B1C;" id="analytics-total-members">—</div>
+              </div>
+              <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:20px;">
+                <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:8px;">Total Check-ins</div>
+                <div style="font-family:'Playfair Display',Georgia,serif;font-size:32px;font-weight:500;color:#1C2B1C;" id="analytics-total-checkins">—</div>
+              </div>
+              <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:20px;">
+                <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:8px;">Avg Points / Member</div>
+                <div style="font-family:'Playfair Display',Georgia,serif;font-size:32px;font-weight:500;color:#3D6B3D;" id="analytics-avg-points">—</div>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+              <div>
+                <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:10px;">Attendance by Event</div>
+                <div id="analytics-by-event" style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;overflow:hidden;"></div>
+              </div>
+              <div>
+                <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:10px;">Points by Role</div>
+                <div id="analytics-by-role" style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;overflow:hidden;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Announcements -->
+          <div id="atab-content-announce" style="display:none;max-width:600px;">
+            <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:28px;margin-bottom:20px;">
+              <div style="font-size:15px;font-weight:500;color:#1C2B1C;margin-bottom:16px;">Post Announcement</div>
+              <textarea id="announce-text" rows="3" placeholder="Write a message for all members…" style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;resize:vertical;"></textarea>
+              <div style="display:flex;gap:10px;margin-top:12px;">
+                <button onclick="postAnnouncement()" style="background:#3D6B3D;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;padding:10px 24px;border-radius:4px;border:none;cursor:pointer;">Post</button>
+                <button onclick="clearAnnouncement()" style="background:#fff;border:1px solid rgba(46,74,46,0.2);color:#6B7D6B;font-family:'DM Sans',sans-serif;font-size:13px;padding:10px 24px;border-radius:4px;cursor:pointer;">Clear banner</button>
+              </div>
+              <div id="announce-msg" style="display:none;margin-top:10px;font-size:13px;color:#2e6b2e;"></div>
+            </div>
+            <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:10px;">Current Announcement</div>
+            <div id="current-announce" style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:20px;font-size:14px;color:#3A4A3A;">None</div>
+          </div>
+
+        </div><!-- /admin -->
+
+      </div><!-- /tab content padding -->
+    </div><!-- /dashboard -->
   </div>
 </div><!-- /portal -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-// ── Supabase config ──
 const SUPABASE_URL = 'https://pilbazpbicpuuupwalvh.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBpbGJhenBiaWNwdXV1cHdhbHZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwMzc0OTcsImV4cCI6MjA5MzYxMzQ5N30.47M2ToH3O8hsuiMc1OgcM3XA4K97KukAqEeF9BW0QYE';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { flowType: "pkce" } });
 
-let currentUser = null;
+let currentUser   = null;
 let currentMember = null;
+let allRosterData = [];
+
+const TYPE_COLORS = {
+  'Meeting':           { bg: '#e6f4e6', color: '#2e6b2e' },
+  'Social':            { bg: '#e6eef9', color: '#1e4a8a' },
+  'Community Service': { bg: '#fdf0e6', color: '#8a4a1e' },
+  'Workshop':          { bg: '#f4e6f4', color: '#6b2e6b' },
+  'Speaker':           { bg: '#f4f0e6', color: '#6b5a1e' },
+};
+
+// ── Tab switching ──
+function switchPortalTab(tab) {
+  ['overview','leaderboard','events','profile','admin'].forEach(t => {
+    const btn = document.getElementById('ptab-' + t);
+    const content = document.getElementById('ptab-content-' + t);
+    if (btn) btn.classList.toggle('active', t === tab);
+    if (content) content.style.display = (t === tab) ? '' : 'none';
+  });
+  if (tab === 'leaderboard') renderLeaderboard();
+  if (tab === 'events') renderUpcoming();
+  if (tab === 'profile') { renderProfile(); loadProfileBadges(); }
+  if (tab === 'admin') { switchAdminTab('sessions'); loadAdminSessions(); }
+}
+
+function switchAdminTab(tab) {
+  ['sessions','roster','analytics','announce'].forEach(t => {
+    const btn = document.getElementById('atab-' + t);
+    const content = document.getElementById('atab-content-' + t);
+    if (btn) btn.classList.toggle('active', t === tab);
+    if (content) content.style.display = (t === tab) ? '' : 'none';
+  });
+  if (tab === 'roster') loadRoster();
+  if (tab === 'analytics') loadAnalytics();
+  if (tab === 'announce') loadCurrentAnnouncement();
+}
 
 // ── Login ──
-/**
- * portalLogin()  [async]
- * -----------------------
- * Handles email/password login for the Member Portal.
- * Reads credentials from #login-email and #login-password inputs.
- * On success, calls showDashboard() to display the member area.
- * On failure, shows an error message.
- */
 async function portalLogin() {
   const email = document.getElementById('eid-input').value.trim().toLowerCase();
   const pw    = document.getElementById('pw-input').value;
   const err   = document.getElementById('login-error');
   const btn   = document.querySelector('#portal-login button');
-
-  if (!email || !pw) {
-    err.style.display = 'block';
-    err.textContent = 'Please enter your UT email and password.';
-    return;
-  }
-
-  btn.textContent = 'Signing in…';
-  btn.disabled = true;
-
+  if (!email || !pw) { err.style.display='block'; err.textContent='Please enter your UT email and password.'; return; }
+  btn.textContent = 'Signing in...'; btn.disabled = true;
   const { data, error } = await sb.auth.signInWithPassword({ email, password: pw });
-
-  if (error) {
-    err.style.display = 'block';
-    err.textContent = 'Login failed: ' + error.message;
-    btn.textContent = 'Sign in';
-    btn.disabled = false;
-    return;
-  }
-
+  if (error) { err.style.display='block'; err.textContent='Login failed: '+error.message; btn.textContent='Sign in'; btn.disabled=false; return; }
   currentUser = data.user;
-  err.style.display = 'none';
-  btn.textContent = 'Sign in';
-  btn.disabled = false;
-
-  // Fetch member profile
+  err.style.display = 'none'; btn.textContent = 'Sign in'; btn.disabled = false;
   const { data: member } = await sb.from('members').select('*').eq('email', currentUser.email).single();
   currentMember = member;
-
   showDashboard();
 }
 
-/**
- * showDashboard()  [async]
- * -------------------------
- * Fetches the logged-in member's data from Supabase and renders
- * the member dashboard. Hides all auth forms and shows the
- * dashboard panel with the member's name, check-in history, etc.
- */
+// ── Show Dashboard ──
 async function showDashboard() {
   document.getElementById('portal-login').style.display = 'none';
-  document.getElementById('portal-dashboard').style.display = 'block';
+  document.getElementById('portal-dashboard').style.display = 'flex';
+  document.getElementById('portal-dashboard').style.flexDirection = 'column';
   document.getElementById('portal-user-badge').style.display = 'block';
 
-  const name = currentMember ? currentMember.name : currentUser.email;
-  const role = currentMember ? currentMember.role : 'Member';
-  const semester = currentMember ? currentMember.semester : '—';
+  const name     = (currentMember && currentMember.name)     ? currentMember.name     : currentUser.email;
+  const role     = (currentMember && currentMember.role)     ? currentMember.role     : 'Member';
+  const semester = (currentMember && currentMember.semester) ? currentMember.semester : '---';
 
-  document.getElementById('portal-user-badge').textContent = name + ' · ' + role;
+  document.getElementById('portal-user-badge').textContent   = name + ' - ' + role;
   document.getElementById('portal-welcome-name').textContent = name;
-  document.getElementById('portal-welcome-team').textContent = role + ' · ' + semester;
+  document.getElementById('portal-welcome-team').textContent = role + ' - ' + semester;
 
-  // Load attendance and compute total points
+  const BOARD_ROLES = ['Board', 'President'];
+  const isBoard = BOARD_ROLES.includes(role);
+  document.getElementById('ptab-admin').style.display = isBoard ? '' : 'none';
+
+  loadAnnouncement();
+
   const { data: records } = await sb.from('attendance').select('*').eq('email', currentUser.email);
-  const totalPoints = records ? records.reduce((sum, r) => sum + (r.points || 1), 0) : 0;
-  document.getElementById('stat-attended').textContent = totalPoints;
+  const attended = records || [];
+  updateStats(attended);
+  renderBreakdown(attended);
+  renderBadges(attended);
+  renderHistory(attended);
+}
 
-  renderHistory(records || []);
+function updateStats(attended) {
+  const totalPoints     = attended.reduce(function(s,r){ return s + (r.points||1); }, 0);
+  const totalMeetings   = attended.filter(function(r){ return (r.event_type||'Meeting') === 'Meeting'; }).length;
+  const totalNonMeeting = attended.filter(function(r){ return (r.event_type||'Meeting') !== 'Meeting'; }).length;
+  document.getElementById('stat-total-points').textContent      = totalPoints;
+  document.getElementById('stat-meetings-attended').textContent = totalMeetings;
+  document.getElementById('stat-events-attended').textContent   = totalNonMeeting;
+}
+
+// ── Breakdown pills ──
+function renderBreakdown(attended) {
+  var breakdown = {};
+  attended.forEach(function(r) { var t = r.event_type||'Meeting'; breakdown[t] = (breakdown[t]||0) + (r.points||1); });
+  var el = document.getElementById('points-breakdown');
+  var keys = Object.keys(breakdown);
+  if (!keys.length) { el.innerHTML = '<span style="font-size:12px;color:#6B7D6B;">No events attended yet</span>'; return; }
+  el.innerHTML = keys.map(function(type) {
+    var pts = breakdown[type];
+    var c = TYPE_COLORS[type] || { bg:'#eee', color:'#444' };
+    return '<span style="display:inline-flex;align-items:center;gap:5px;background:'+c.bg+';color:'+c.color+';font-size:12px;font-weight:500;padding:4px 12px;border-radius:20px;">'+type+' <strong>'+pts+' pt'+(pts!==1?'s':'')+'</strong></span>';
+  }).join('');
+}
+
+// ── Badges ──
+var BADGES = [
+  { id:'first',  label:'First Check-In',   icon:'🎯', desc:'Attended your first event',  test: function(a){ return a.length >= 1; } },
+  { id:'m5',     label:'5 Meetings',        icon:'📅', desc:'Attended 5 meetings',        test: function(a){ return a.filter(function(r){ return (r.event_type||'Meeting')==='Meeting'; }).length >= 5; } },
+  { id:'m10',    label:'10 Meetings',       icon:'🏆', desc:'Attended 10 meetings',       test: function(a){ return a.filter(function(r){ return (r.event_type||'Meeting')==='Meeting'; }).length >= 10; } },
+  { id:'social', label:'Social Butterfly',  icon:'🎉', desc:'Attended a social event',    test: function(a){ return a.some(function(r){ return r.event_type==='Social'; }); } },
+  { id:'pt10',   label:'10 Points',         icon:'⭐', desc:'Earned 10 total points',     test: function(a){ return a.reduce(function(s,r){ return s+(r.points||1); },0) >= 10; } },
+  { id:'pt25',   label:'25 Points',         icon:'🌟', desc:'Earned 25 total points',     test: function(a){ return a.reduce(function(s,r){ return s+(r.points||1); },0) >= 25; } },
+  { id:'streak', label:'Well-Rounded',      icon:'🔥', desc:'Attended 3+ event types',   test: function(a){ var s=new Set(a.map(function(r){ return r.event_type||'Meeting'; })); return s.size >= 3; } },
+];
+
+function renderBadges(attended) {
+  var el = document.getElementById('badges-row');
+  el.innerHTML = BADGES.map(function(b) {
+    var earned = b.test(attended);
+    return '<div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 16px;border-radius:8px;border:1px solid '+(earned?'rgba(46,74,46,0.2)':'rgba(0,0,0,0.06)')+';background:'+(earned?'#EEF5EE':'#f9f9f9')+';opacity:'+(earned?'1':'0.4')+';min-width:90px;text-align:center;">'
+      + '<span style="font-size:24px;">'+b.icon+'</span>'
+      + '<span style="font-size:11px;font-weight:600;color:'+(earned?'#1C2B1C':'#999')+';line-height:1.2;">'+b.label+'</span>'
+      + '<span style="font-size:10px;color:#6B7D6B;line-height:1.3;">'+b.desc+'</span>'
+      + '</div>';
+  }).join('');
+}
+
+// ── Leaderboard ──
+async function renderLeaderboard() {
+  var role = (currentMember && currentMember.role) ? currentMember.role : '';
+  document.getElementById('leaderboard-tier-label').textContent = role || 'Your Tier';
+
+  var r1 = await sb.from('attendance').select('email, points');
+  var r2 = await sb.from('members').select('email, name, role');
+  var allAttendance = r1.data || [];
+  var allMembers    = r2.data || [];
+
+  var pointsMap = {};
+  allAttendance.forEach(function(r) { pointsMap[r.email] = (pointsMap[r.email]||0) + (r.points||1); });
+
+  var ranked = allMembers.map(function(m) {
+    return Object.assign({}, m, { points: pointsMap[m.email] || 0 });
+  }).sort(function(a,b){ return b.points - a.points; });
+
+  var myEmail = currentUser.email;
+
+  function buildRow(m, i, isMe) {
+    var medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':'<span style="font-size:13px;color:#6B7D6B;font-weight:600;">'+(i+1)+'</span>';
+    return '<div style="padding:12px 16px;border-bottom:1px solid rgba(46,74,46,0.08);display:flex;align-items:center;gap:12px;'+(isMe?'background:#EEF5EE;':'')+'">'
+      +'<div style="width:28px;text-align:center;font-size:16px;">'+medal+'</div>'
+      +'<div style="flex:1;">'
+        +'<div style="font-size:13px;font-weight:'+(isMe?'600':'500')+';color:#1C2B1C;">'+(m.name||m.email)+(isMe?' (you)':'')+'</div>'
+        +'<div style="font-size:11px;color:#6B7D6B;">'+(m.role||'Member')+'</div>'
+      +'</div>'
+      +'<div style="font-size:14px;font-weight:600;color:#3D6B3D;">'+m.points+' pt'+(m.points!==1?'s':'')+'</div>'
+    +'</div>';
+  }
+
+  function renderList(members, containerId) {
+    var el = document.getElementById(containerId);
+    if (!members.length) { el.innerHTML='<div style="padding:20px;font-size:13px;color:#6B7D6B;text-align:center;">No members yet</div>'; return; }
+
+    var myRank      = members.findIndex(function(m){ return m.email === myEmail; });
+    var inTop10     = myRank !== -1 && myRank < 10;
+    var top10       = members.slice(0, 10);
+    var showing     = 10;
+
+    function render(count) {
+      var rows = members.slice(0, count).map(function(m, i){ return buildRow(m, i, m.email===myEmail); }).join('');
+
+      // "You" card when outside the visible range
+      var youCard = '';
+      if (myRank !== -1 && myRank >= count) {
+        var me = members[myRank];
+        youCard = '<div style="border-top:2px dashed rgba(46,74,46,0.2);margin-top:0;">'
+          + buildRow(me, myRank, true)
+          + '</div>';
+      }
+
+      // Show more / show less buttons
+      var moreBtn = '';
+      if (members.length > count) {
+        moreBtn = '<button onclick="expandList(\''+containerId+'\','+members.length+')" style="width:100%;padding:11px;background:none;border:none;border-top:1px solid rgba(46,74,46,0.08);font-family:\'DM Sans\',sans-serif;font-size:13px;font-weight:500;color:#3D6B3D;cursor:pointer;">Show all '+members.length+' members ↓</button>';
+      } else if (count > 10) {
+        moreBtn = '<button onclick="collapseList(\''+containerId+'\')" style="width:100%;padding:11px;background:none;border:none;border-top:1px solid rgba(46,74,46,0.08);font-family:\'DM Sans\',sans-serif;font-size:13px;font-weight:500;color:#6B7D6B;cursor:pointer;">Show less ↑</button>';
+      }
+
+      el.innerHTML = rows + youCard + moreBtn;
+    }
+
+    // Store full list on element for expand/collapse
+    el._members  = members;
+    el._myEmail  = myEmail;
+    render(10);
+
+    el._render = render;
+  }
+
+  window.expandList = function(containerId, total) {
+    var el = document.getElementById(containerId);
+    if (el && el._render) el._render(total);
+  };
+  window.collapseList = function(containerId) {
+    var el = document.getElementById(containerId);
+    if (el && el._render) el._render(10);
+  };
+
+  renderList(ranked, 'leaderboard-all');
+  var tierMembers = ranked.filter(function(m){ return m.role === role; });
+  renderList(tierMembers, 'leaderboard-tier');
 }
 
 // ── Logout ──
-/**
- * portalLogout()  [async]
- * ------------------------
- * Signs the current member out via Supabase auth.
- * Hides the dashboard and returns to the login form.
- */
 async function portalLogout() {
   await sb.auth.signOut();
-  currentUser = null;
-  currentMember = null;
+  currentUser = null; currentMember = null;
   document.getElementById('portal-login').style.display = 'flex';
   document.getElementById('portal-dashboard').style.display = 'none';
   document.getElementById('portal-user-badge').style.display = 'none';
@@ -3393,151 +3943,492 @@ async function portalLogout() {
   document.getElementById('checkin-success').style.display = 'none';
   document.getElementById('checkin-form').style.display = 'block';
   document.getElementById('checkin-error').style.display = 'none';
+  document.getElementById('announcement-banner').style.display = 'none';
+  // Reset to overview tab
+  switchPortalTab('overview');
 }
 
 // ── Check-in ──
-/**
- * checkIn()  [async]
- * -------------------
- * Records a meeting attendance check-in for the logged-in member.
- * Writes a new record to the Supabase "checkins" table.
- * Updates the displayed check-in history after success.
- */
 async function checkIn() {
-  const code = document.getElementById('session-code').value.trim().toUpperCase();
-  const err  = document.getElementById('checkin-error');
-  const succ = document.getElementById('checkin-success');
-  const btn  = document.getElementById('checkin-btn');
-
+  var code = document.getElementById('session-code').value.trim().toUpperCase();
+  var err  = document.getElementById('checkin-error');
+  var succ = document.getElementById('checkin-success');
+  var btn  = document.getElementById('checkin-btn');
   if (!code) { err.style.display='block'; err.textContent='Enter the session code.'; return; }
+  btn.textContent='Checking in...'; btn.disabled=true;
 
-  btn.textContent = 'Checking in…';
-  btn.disabled = true;
+  var sessRes = await sb.from('sessions').select('*').eq('code',code).eq('active','true').single();
+  var session = sessRes.data;
+  if (sessRes.error || !session) { err.style.display='block'; err.textContent="Invalid or inactive code. Ask the board for tonight's code."; btn.textContent="Check in to tonight's event"; btn.disabled=false; return; }
 
-  // Check if session code exists and is active
-  const { data: session, error: sessErr } = await sb
-    .from('sessions')
-    .select('*')
-    .eq('code', code)
-    .eq('active', 'true')
-    .single();
+  var existRes = await sb.from('attendance').select('*').eq('email',currentUser.email).eq('code_used',code).single();
+  if (existRes.data) { err.style.display='block'; err.textContent="You've already checked in to this event."; btn.textContent="Check in to tonight's event"; btn.disabled=false; return; }
 
-  if (sessErr || !session) {
-    err.style.display = 'block';
-    err.textContent = 'Invalid or inactive code. Ask the board for tonight\'s code.';
-    btn.textContent = 'Check in to tonight\'s event';
-    btn.disabled = false;
-    return;
-  }
+  var ins = await sb.from('attendance').insert({ email: currentUser.email, meeting_name: session.meeting_name, meeting_date: session.meeting_date, event_type: session.event_type||'Meeting', points: session.points||1, code_used: code });
+  if (ins.error) { err.style.display='block'; err.textContent='Error recording attendance. Try again.'; btn.textContent="Check in to tonight's event"; btn.disabled=false; return; }
 
-  // Check if already checked in
-  const { data: existing } = await sb
-    .from('attendance')
-    .select('*')
-    .eq('email', currentUser.email)
-    .eq('code_used', code)
-    .single();
+  err.style.display='none';
+  var pts = session.points||1;
+  document.getElementById('checkin-detail').textContent = session.meeting_date+' - '+session.meeting_name+' (+'+pts+' pt'+(pts!==1?'s':'')+')';
+  succ.style.display='block';
+  document.getElementById('checkin-form').style.display='none';
 
-  if (existing) {
-    err.style.display = 'block';
-    err.textContent = 'You\'ve already checked in to this event.';
-    btn.textContent = 'Check in to tonight\'s event';
-    btn.disabled = false;
-    return;
-  }
+  var recRes = await sb.from('attendance').select('*').eq('email',currentUser.email);
+  var attended = recRes.data || [];
+  updateStats(attended);
+  renderBreakdown(attended);
+  renderBadges(attended);
+  renderHistory(attended);
 
-  // Record attendance
-  const { error: insertErr } = await sb.from('attendance').insert({
-    email: currentUser.email,
-    meeting_name: session.meeting_name,
-    meeting_date: session.meeting_date,
-    event_type: session.event_type || 'Meeting',
-    points: session.points || 1,
-    code_used: code
-  });
-
-  if (insertErr) {
-    err.style.display = 'block';
-    err.textContent = 'Error recording attendance. Try again.';
-    btn.textContent = 'Check in to tonight\'s event';
-    btn.disabled = false;
-    return;
-  }
-
-  err.style.display = 'none';
-  document.getElementById('checkin-detail').textContent = session.meeting_date + ' — ' + session.meeting_name + ' (+' + (session.points || 1) + ' pt' + ((session.points || 1) !== 1 ? 's' : '') + ')';
-  succ.style.display = 'block';
-  document.getElementById('checkin-form').style.display = 'none';
-
-  // Refresh points total and history
-  const { data: records } = await sb.from('attendance').select('*').eq('email', currentUser.email);
-  const totalPoints = records ? records.reduce((sum, r) => sum + (r.points || 1), 0) : 0;
-  document.getElementById('stat-attended').textContent = totalPoints;
-  renderHistory(records || []);
-
-  btn.textContent = 'Check in to tonight\'s event';
-  btn.disabled = false;
-
-  setTimeout(() => {
-    succ.style.display = 'none';
-    document.getElementById('checkin-form').style.display = 'block';
-    document.getElementById('session-code').value = '';
+  btn.textContent="Check in to tonight's event"; btn.disabled=false;
+  setTimeout(function() {
+    succ.style.display='none';
+    document.getElementById('checkin-form').style.display='block';
+    document.getElementById('session-code').value='';
   }, 5000);
 }
 
-// ── Render attendance history ──
-/**
- * renderHistory(records)
- * -----------------------
- * Takes an array of check-in records from Supabase and renders
- * them as a list in the member dashboard.
- * Displays date and meeting name for each record.
- *
- * @param {Array} records - Array of check-in objects from Supabase
- */
-function renderHistory(records) {
-  const list = document.getElementById('attendance-list');
-  if (!records.length) {
-    list.innerHTML = '<div style="padding:20px;background:#EEF5EE;font-size:13px;color:#6B7D6B;text-align:center;">No events checked in yet.<br>Use the session code to get started.</div>';
-    return;
-  }
-
-  // Event type badge colors
-  const typeColors = {
-    'Meeting':         { bg: '#e6f4e6', color: '#2e6b2e' },
-    'Social':          { bg: '#e6eef9', color: '#1e4a8a' },
-    'Community Service': { bg: '#fdf0e6', color: '#8a4a1e' },
-    'Workshop':        { bg: '#f4e6f4', color: '#6b2e6b' },
-    'Speaker':         { bg: '#f4f0e6', color: '#6b5a1e' },
-  };
-
-  list.innerHTML = records.map(r => {
-    const type = r.event_type || 'Meeting';
-    const pts  = r.points || 1;
-    const clr  = typeColors[type] || typeColors['Meeting'];
-    return '<div style="padding:14px 16px;border-bottom:1px solid rgba(46,74,46,0.08);display:flex;justify-content:space-between;align-items:center;gap:8px;">' +
-      '<div>' +
-        '<div style="font-size:13px;font-weight:500;color:#1C2B1C;">' + r.meeting_name + '</div>' +
-        '<div style="display:flex;align-items:center;gap:6px;margin-top:3px;">' +
-          '<span style="font-size:10px;color:#6B7D6B;">' + r.meeting_date + '</span>' +
-          '<span style="font-size:10px;font-weight:500;background:' + clr.bg + ';color:' + clr.color + ';padding:2px 7px;border-radius:3px;">' + type + '</span>' +
-        '</div>' +
-      '</div>' +
-      '<span style="font-size:12px;font-weight:600;color:#2e6b2e;background:#e6f4e6;padding:4px 10px;border-radius:3px;white-space:nowrap;">+' + pts + ' pt' + (pts !== 1 ? 's' : '') + '</span>' +
-    '</div>';
+// ── Upcoming Events ──
+async function renderUpcoming() {
+  var container = document.getElementById('upcoming-events-list');
+  var res = await sb.from('sessions').select('*').order('meeting_date',{ascending:true});
+  var sessions = res.data || [];
+  if (!sessions.length) { container.innerHTML='<div style="padding:20px;background:#EEF5EE;font-size:13px;color:#6B7D6B;text-align:center;">No upcoming events scheduled yet.</div>'; return; }
+  var attRes = await sb.from('attendance').select('code_used').eq('email',currentUser.email);
+  var checkedCodes = new Set((attRes.data||[]).map(function(r){ return r.code_used; }));
+  container.innerHTML = sessions.map(function(s) {
+    var type=s.event_type||'Meeting', pts=s.points||1;
+    var clr=TYPE_COLORS[type]||TYPE_COLORS['Meeting'];
+    var active=s.active==='true'||s.active===true;
+    var done=checkedCodes.has(s.code);
+    var parts=(s.meeting_date||'').split(' ');
+    return '<div style="padding:16px 20px;border-bottom:1px solid rgba(46,74,46,0.08);display:flex;align-items:center;justify-content:space-between;gap:12px;'+(done?'background:#f7fbf7;':'')+'">'
+      +'<div style="display:flex;align-items:center;gap:14px;">'
+        +'<div style="width:40px;text-align:center;flex-shrink:0;">'
+          +'<div style="font-size:18px;font-weight:600;color:#1C2B1C;line-height:1;">'+(parts[1]||s.meeting_date||'--')+'</div>'
+          +'<div style="font-size:10px;color:#6B7D6B;text-transform:uppercase;letter-spacing:0.06em;">'+(parts[0]||'')+'</div>'
+        +'</div>'
+        +'<div style="width:1px;height:32px;background:rgba(46,74,46,0.12);flex-shrink:0;"></div>'
+        +'<div>'
+          +'<div style="font-size:14px;font-weight:500;color:#1C2B1C;">'+(s.meeting_name||'Event')+'</div>'
+          +'<div style="display:flex;align-items:center;gap:6px;margin-top:3px;">'
+            +'<span style="font-size:11px;font-weight:500;background:'+clr.bg+';color:'+clr.color+';padding:2px 8px;border-radius:3px;">'+type+'</span>'
+            +(active?'<span style="font-size:11px;color:#2e6b2e;font-weight:500;">Live now</span>':'')
+          +'</div>'
+        +'</div>'
+      +'</div>'
+      +'<div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">'
+        +'<span style="font-size:12px;font-weight:600;color:#3D6B3D;background:#EEF5EE;padding:4px 10px;border-radius:3px;">+'+pts+' pt'+(pts!==1?'s':'')+'</span>'
+        +(done?'<span style="font-size:11px;color:#2e6b2e;font-weight:500;">Attended</span>':'')
+      +'</div>'
+    +'</div>';
   }).join('');
 }
 
+// ── Event History ──
+function renderHistory(records) {
+  var list = document.getElementById('attendance-list');
+  if (!records.length) { list.innerHTML='<div style="padding:20px;background:#EEF5EE;font-size:13px;color:#6B7D6B;text-align:center;">No events checked in yet.<br>Use the session code to get started.</div>'; return; }
+  var sorted = records.slice().sort(function(a,b){ return new Date(b.meeting_date)-new Date(a.meeting_date); });
+  list.innerHTML = sorted.map(function(r) {
+    var type=r.event_type||'Meeting', pts=r.points||1;
+    var clr=TYPE_COLORS[type]||TYPE_COLORS['Meeting'];
+    return '<div style="padding:14px 16px;border-bottom:1px solid rgba(46,74,46,0.08);display:flex;justify-content:space-between;align-items:center;gap:8px;">'
+      +'<div>'
+        +'<div style="font-size:13px;font-weight:500;color:#1C2B1C;">'+r.meeting_name+'</div>'
+        +'<div style="display:flex;align-items:center;gap:6px;margin-top:3px;">'
+          +'<span style="font-size:10px;color:#6B7D6B;">'+r.meeting_date+'</span>'
+          +'<span style="font-size:10px;font-weight:500;background:'+clr.bg+';color:'+clr.color+';padding:2px 7px;border-radius:3px;">'+type+'</span>'
+        +'</div>'
+      +'</div>'
+      +'<span style="font-size:12px;font-weight:600;color:#2e6b2e;background:#e6f4e6;padding:4px 10px;border-radius:3px;white-space:nowrap;">+'+pts+' pt'+(pts!==1?'s':'')+'</span>'
+    +'</div>';
+  }).join('');
+}
+
+// ── Profile ──
+async function loadProfileBadges() {
+  var res = await sb.from('attendance').select('*').eq('email', currentUser.email);
+  renderBadges(res.data || []);
+}
+
+function renderProfile() {
+  if (!currentMember) return;
+  document.getElementById('profile-name').value  = currentMember.name  || '';
+  document.getElementById('profile-eid').value   = currentMember.eid   || '';
+  document.getElementById('profile-email').value = currentMember.email || '';
+  // Set dropdown to current role (fall back to General Member if not found)
+  var roleSelect = document.getElementById('profile-role');
+  var role = currentMember.role || 'General Member';
+  var found = Array.from(roleSelect.options).some(function(o){ return o.value === role; });
+  roleSelect.value = found ? role : 'General Member';
+}
+
+async function requestRoleChange() {
+  var select  = document.getElementById('profile-role-request');
+  var newRole = select ? select.value : '';
+  var msg     = document.getElementById('role-request-msg');
+  if (!newRole) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Please select a role.'; return; }
+
+  var res = await sb.from('members').update({ role: newRole }).eq('email', currentUser.email);
+  if (res.error) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Error submitting request.'; return; }
+
+  currentMember.role = newRole;
+  document.getElementById('profile-role').value = newRole;
+  document.getElementById('portal-welcome-team').textContent = newRole + ' - ' + (currentMember.semester||'');
+  document.getElementById('portal-user-badge').textContent   = (currentMember.name||'') + ' - ' + newRole;
+
+  // Replace section with pending message
+  document.getElementById('role-request-section').innerHTML =
+    '<div style="font-size:13px;color:#856404;font-weight:500;">⏳ Role change pending board approval</div>'
+    +'<div style="font-size:11px;color:#6B7D6B;margin-top:4px;">A board member will review your request shortly.</div>';
+}
+
+async function saveProfile() {
+  var name  = document.getElementById('profile-name').value.trim();
+  var eid   = document.getElementById('profile-eid').value.trim();
+  var email = document.getElementById('profile-email').value.trim().toLowerCase();
+  var selectedRole = document.getElementById('profile-role').value;
+  var msg   = document.getElementById('profile-msg');
+  if (!name) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Name cannot be empty.'; return; }
+  if (!email) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Email cannot be empty.'; return; }
+
+  var emailChanged  = email !== currentMember.email;
+  var currentRole   = currentMember.role || 'General Member';
+  var baseCurrentRole = currentRole.replace('-Pending','');
+
+  // If changing role, save as pending (except General Member which needs no approval)
+  var roleToSave;
+  if (selectedRole === currentRole || selectedRole === baseCurrentRole) {
+    roleToSave = currentRole; // no change
+  } else if (selectedRole === 'General Member') {
+    roleToSave = 'General Member'; // downgrade, no approval needed
+  } else {
+    roleToSave = selectedRole + '-Pending'; // needs board approval
+  }
+
+  var res = await sb.from('members').update({ name: name, eid: eid, email: email, role: roleToSave }).eq('email', currentUser.email);
+  if (res.error) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Error saving. Try again.'; return; }
+
+  if (emailChanged) {
+    var authRes = await sb.auth.updateUser({ email: email });
+    if (authRes.error) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Profile saved but email update failed: '+authRes.error.message; return; }
+  }
+
+  currentMember.name = name; currentMember.eid = eid; currentMember.email = email; currentMember.role = roleToSave;
+  document.getElementById('portal-welcome-name').textContent = name;
+  document.getElementById('portal-welcome-team').textContent = roleToSave + ' - ' + (currentMember.semester||'');
+  document.getElementById('portal-user-badge').textContent   = name + ' - ' + roleToSave;
+
+  var BOARD_ROLES = ['Board', 'President'];
+  document.getElementById('ptab-admin').style.display = BOARD_ROLES.includes(roleToSave) ? '' : 'none';
+
+  if (roleToSave.indexOf('-Pending') !== -1) {
+    msg.style.display='block'; msg.style.color='#856404';
+    msg.textContent = '⏳ Role change requested — pending board approval.';
+    // Update dropdown to show their pending state
+    document.getElementById('profile-role').value = selectedRole;
+  } else if (emailChanged) {
+    msg.style.display='block'; msg.style.color='#2e6b2e';
+    msg.textContent = 'Profile saved! Check your new email for a confirmation link.';
+  } else {
+    msg.style.display='block'; msg.style.color='#2e6b2e'; msg.textContent='Profile saved!';
+  }
+
+  setTimeout(function(){ msg.style.display='none'; }, 5000);
+}
+
+async function changePassword() {
+  var pw  = document.getElementById('profile-new-pw').value;
+  var pw2 = document.getElementById('profile-confirm-pw').value;
+  var msg = document.getElementById('pw-change-msg');
+  if (!pw || pw.length < 6) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Password must be at least 6 characters.'; return; }
+  if (pw !== pw2) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Passwords do not match.'; return; }
+  var res = await sb.auth.updateUser({ password: pw });
+  if (res.error) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Error: '+res.error.message; return; }
+  msg.style.display='block'; msg.style.color='#2e6b2e'; msg.textContent='Password updated!';
+  document.getElementById('profile-new-pw').value='';
+  document.getElementById('profile-confirm-pw').value='';
+  setTimeout(function(){ msg.style.display='none'; }, 3000);
+}
+
+// ── Announcements ──
+async function loadAnnouncement() {
+  try {
+    var res = await sb.from('announcements').select('*').eq('active', true).order('created_at',{ascending:false}).limit(1).single();
+    var banner = document.getElementById('announcement-banner');
+    if (res.data && res.data.message) {
+      document.getElementById('announcement-text').textContent = res.data.message;
+      banner.style.display = 'flex';
+    } else {
+      banner.style.display = 'none';
+    }
+  } catch(e) { document.getElementById('announcement-banner').style.display='none'; }
+}
+
+async function loadCurrentAnnouncement() {
+  try {
+    var res = await sb.from('announcements').select('*').eq('active',true).order('created_at',{ascending:false}).limit(1).single();
+    document.getElementById('current-announce').textContent = (res.data && res.data.message) ? res.data.message : 'None active';
+  } catch(e) { document.getElementById('current-announce').textContent = 'None active'; }
+}
+
+async function postAnnouncement() {
+  var msg = document.getElementById('announce-text').value.trim();
+  var statusEl = document.getElementById('announce-msg');
+  if (!msg) return;
+  await sb.from('announcements').update({ active: false }).eq('active', true);
+  var res = await sb.from('announcements').insert({ message: msg, active: true });
+  if (res.error) { statusEl.style.display='block'; statusEl.style.color='#8b2e2e'; statusEl.textContent='Error posting.'; return; }
+  statusEl.style.display='block'; statusEl.style.color='#2e6b2e'; statusEl.textContent='Announcement posted!';
+  loadCurrentAnnouncement(); loadAnnouncement();
+  setTimeout(function(){ statusEl.style.display='none'; }, 3000);
+}
+
+async function clearAnnouncement() {
+  await sb.from('announcements').update({ active: false }).eq('active', true);
+  document.getElementById('current-announce').textContent = 'None active';
+  document.getElementById('announcement-banner').style.display = 'none';
+  var el = document.getElementById('announce-msg');
+  el.style.display='block'; el.style.color='#2e6b2e'; el.textContent='Banner cleared.';
+  setTimeout(function(){ el.style.display='none'; }, 3000);
+}
+
+// ── Admin: Sessions ──
+async function loadAdminSessions() {
+  var el = document.getElementById('sessions-list');
+  var res = await sb.from('sessions').select('*').order('meeting_date',{ascending:false});
+  var sessions = res.data || [];
+  if (!sessions.length) { el.innerHTML='<div style="padding:20px;font-size:13px;color:#6B7D6B;text-align:center;">No sessions yet.</div>'; return; }
+
+  var isMobile = window.innerWidth <= 768;
+
+  if (isMobile) {
+    // Card layout on mobile
+    el.innerHTML = sessions.map(function(s) {
+      var active = s.active==='true'||s.active===true;
+      var type = s.event_type||'Meeting';
+      var typeColors = { 'Meeting':'#e6f4e6|#2e6b2e', 'Social':'#e6eef9|#1e4a8a', 'Speaker':'#f4f0e6|#6b5a1e', 'Workshop':'#f4e6f4|#6b2e6b', 'Community Service':'#fdf0e6|#8a4a1e' };
+      var tc = (typeColors[type]||'#EEF5EE|#2e6b2e').split('|');
+      return '<div style="padding:16px;border-bottom:1px solid rgba(46,74,46,0.08);">'
+        +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
+          +'<div>'
+            +'<div style="font-size:14px;font-weight:600;color:#1C2B1C;font-family:monospace;">'+s.code+'</div>'
+            +'<div style="font-size:13px;color:#3A4A3A;margin-top:2px;">'+(s.meeting_name||'')+'</div>'
+          +'</div>'
+          +'<span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:3px;background:'+(active?'#e6f4e6':'#f5f5f5')+';color:'+(active?'#2e6b2e':'#999')+'">'+(active?'● Live':'Off')+'</span>'
+        +'</div>'
+        +'<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">'
+          +'<span style="font-size:11px;color:#6B7D6B;">'+(s.meeting_date||'—')+'</span>'
+          +'<span style="font-size:11px;font-weight:500;background:'+tc[0]+';color:'+tc[1]+';padding:2px 8px;border-radius:3px;">'+type+'</span>'
+          +'<span style="font-size:11px;font-weight:600;color:#3D6B3D;background:#EEF5EE;padding:2px 8px;border-radius:3px;">+'+(s.points||1)+' pt</span>'
+          +'<button onclick="toggleSession(\''+s.code+'\','+active+')" style="margin-left:auto;font-size:12px;padding:5px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;background:#fff;cursor:pointer;color:#3A4A3A;">'+(active?'Deactivate':'Activate')+'</button>'
+        +'</div>'
+      +'</div>';
+    }).join('');
+  } else {
+    // Full table on desktop
+    el.innerHTML = '<div style="min-width:560px;">'
+      + '<div style="display:grid;grid-template-columns:120px 1fr 80px 110px 50px 60px 90px;padding:10px 16px;background:#f7f7f7;border-bottom:1px solid rgba(46,74,46,0.1);">'
+      + ['Code','Name','Date','Type','Pts','Status',''].map(function(h){ return '<div style="font-size:11px;font-weight:600;color:#6B7D6B;text-transform:uppercase;letter-spacing:0.06em;">'+h+'</div>'; }).join('')
+      + '</div>'
+      + sessions.map(function(s) {
+        var active = s.active==='true'||s.active===true;
+        return '<div style="display:grid;grid-template-columns:120px 1fr 80px 110px 50px 60px 90px;padding:12px 16px;border-bottom:1px solid rgba(46,74,46,0.06);align-items:center;">'
+          +'<div style="font-size:12px;font-weight:600;color:#1C2B1C;font-family:monospace;">'+s.code+'</div>'
+          +'<div style="font-size:13px;color:#3A4A3A;">'+(s.meeting_name||'')+'</div>'
+          +'<div style="font-size:12px;color:#6B7D6B;">'+(s.meeting_date||'')+'</div>'
+          +'<div style="font-size:12px;color:#6B7D6B;">'+(s.event_type||'Meeting')+'</div>'
+          +'<div style="font-size:13px;color:#3D6B3D;font-weight:600;">'+(s.points||1)+'</div>'
+          +'<div><span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:3px;background:'+(active?'#e6f4e6':'#f5f5f5')+';color:'+(active?'#2e6b2e':'#888')+'">'+(active?'Live':'Off')+'</span></div>'
+          +'<button onclick="toggleSession(\''+s.code+'\','+active+')" style="font-size:11px;padding:4px 10px;border:1px solid rgba(46,74,46,0.2);border-radius:3px;background:#fff;cursor:pointer;">'+(active?'Deactivate':'Activate')+'</button>'
+        +'</div>';
+      }).join('')
+      + '</div>';
+  }
+}
+
+async function createSession() {
+  var code   = document.getElementById('new-code').value.trim().toUpperCase();
+  var name   = document.getElementById('new-name').value.trim();
+  var date   = document.getElementById('new-date').value.trim();
+  var type   = document.getElementById('new-type').value;
+  var points = parseInt(document.getElementById('new-points').value) || 1;
+  var active = document.getElementById('new-active').value;
+  var msg    = document.getElementById('session-create-msg');
+  if (!code||!name) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Code and name are required.'; return; }
+  var res = await sb.from('sessions').insert({ code: code, meeting_name: name, meeting_date: date, event_type: type, points: points, active: active });
+  if (res.error) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Error: '+res.error.message; return; }
+  msg.style.display='block'; msg.style.color='#2e6b2e'; msg.textContent='Session created!';
+  ['new-code','new-name','new-date'].forEach(function(id){ document.getElementById(id).value=''; });
+  document.getElementById('new-points').value='1';
+  loadAdminSessions();
+  setTimeout(function(){ msg.style.display='none'; }, 3000);
+}
+
+async function toggleSession(code, currentlyActive) {
+  await sb.from('sessions').update({ active: !currentlyActive }).eq('code', code);
+  loadAdminSessions();
+}
+
+// ── Admin: Roster ──
+async function loadRoster() {
+  var r1 = await sb.from('members').select('*').order('name',{ascending:true});
+  var r2 = await sb.from('attendance').select('email, points');
+  var members = r1.data || [];
+  var allAtt  = r2.data || [];
+  var pointsMap = {};
+  allAtt.forEach(function(r){ pointsMap[r.email]=(pointsMap[r.email]||0)+(r.points||1); });
+  allRosterData = members.map(function(m){ return Object.assign({}, m, { totalPoints: pointsMap[m.email]||0 }); });
+  renderRosterTable(allRosterData);
+}
+
+function filterRoster() {
+  var search = document.getElementById('roster-search').value.toLowerCase();
+  var role   = document.getElementById('roster-role-filter').value;
+  var filtered = allRosterData.filter(function(m){
+    var matchSearch = !search || (m.name||'').toLowerCase().includes(search) || (m.email||'').toLowerCase().includes(search);
+    var matchRole   = !role || m.role === role;
+    return matchSearch && matchRole;
+  });
+  renderRosterTable(filtered);
+}
+
+function renderRosterTable(members) {
+  var el = document.getElementById('roster-table');
+  if (!members.length) { el.innerHTML='<div style="padding:20px;font-size:13px;color:#6B7D6B;text-align:center;">No members found.</div>'; return; }
+  var ROLES = ['General Member','Analyst','Analyst-Pending','Investment Associate','Investment Associate-Pending','Consulting Associate','Consulting Associate-Pending','Board','Board-Pending','President'];
+  var isMobile = window.innerWidth <= 768;
+
+  var sorted = members.slice().sort(function(a, b) {
+    var aP = a.role && a.role.indexOf('-Pending') !== -1 ? 0 : 1;
+    var bP = b.role && b.role.indexOf('-Pending') !== -1 ? 0 : 1;
+    return aP - bP;
+  });
+
+  var pendingCount = sorted.filter(function(m){ return m.role && m.role.indexOf('-Pending') !== -1; }).length;
+
+  // On mobile: Name, Email, Role, Points, Change Role (hide EID + Semester)
+  var headers = isMobile ? ['Name','Email','Role','Pts',''] : ['Name','Email','EID','Role','Semester','Points',''];
+
+  el.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:13px;">'
+    +'<thead><tr style="background:#f7f7f7;border-bottom:1px solid rgba(46,74,46,0.1);">'
+    +headers.map(function(h){ return '<th style="padding:10px 12px;text-align:left;font-size:11px;font-weight:600;color:#6B7D6B;text-transform:uppercase;letter-spacing:0.06em;white-space:nowrap;">'+h+'</th>'; }).join('')
+    +'</tr></thead><tbody>'
+    +(pendingCount ? '<tr><td colspan="'+(isMobile?5:7)+'" style="padding:8px 12px;background:#fffbe6;border-bottom:1px solid #f0d060;font-size:11px;font-weight:600;color:#856404;letter-spacing:0.06em;text-transform:uppercase;">⏳ '+pendingCount+' pending approval</td></tr>' : '')
+    +sorted.map(function(m){
+      var isPending = m.role && m.role.indexOf('-Pending') !== -1;
+      var isBoard   = m.role === 'Board' || m.role === 'President';
+      var rowBg     = isPending ? 'background:#fffbe6;' : '';
+      var roleBg    = isPending ? '#fde68a' : (isBoard ? '#fde8cc' : '#EEF5EE');
+      var roleColor = isPending ? '#78450a' : (isBoard ? '#7a3e00' : '#2e6b2e');
+      var roleSelect = '<select onchange="changeMemberRole(\''+m.email+'\',this.value)" style="padding:5px 6px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:\'DM Sans\',sans-serif;font-size:11px;background:#F7F4EE;color:#1C2B1C;cursor:pointer;max-width:'+(isMobile?'120px':'160px')+';">'
+        + ROLES.map(function(r){ return '<option value="'+r+'"'+(r===m.role?' selected':'')+'>'+r+'</option>'; }).join('')
+        + '</select>';
+      var nameCell = '<td style="padding:10px 12px;font-weight:'+(isPending?'600':'500')+';color:#1C2B1C;white-space:nowrap;">'+(isPending?'⏳ ':'')+(m.name||'--')+'</td>';
+      var emailCell = '<td style="padding:10px 12px;color:#6B7D6B;font-size:12px;max-width:'+(isMobile?'100px':'200px')+';overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+(m.email||'--')+'</td>';
+      var roleCell  = '<td style="padding:10px 12px;"><span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:3px;background:'+roleBg+';color:'+roleColor+';white-space:nowrap;">'+(m.role||'--')+'</span></td>';
+      var ptsCell   = '<td style="padding:10px 12px;font-weight:600;color:#3D6B3D;">'+m.totalPoints+'</td>';
+      var selectCell= '<td style="padding:10px 12px;">'+roleSelect+'</td>';
+
+      if (isMobile) {
+        return '<tr style="border-bottom:1px solid rgba(46,74,46,0.06);'+rowBg+'">'
+          +nameCell+emailCell+roleCell+ptsCell+selectCell+'</tr>';
+      } else {
+        return '<tr style="border-bottom:1px solid rgba(46,74,46,0.06);'+rowBg+'">'
+          +nameCell+emailCell
+          +'<td style="padding:10px 12px;color:#6B7D6B;font-family:monospace;">'+(m.eid||'--')+'</td>'
+          +roleCell
+          +'<td style="padding:10px 12px;color:#6B7D6B;">'+(m.semester||'--')+'</td>'
+          +ptsCell+selectCell+'</tr>';
+      }
+    }).join('')
+    +'</tbody></table>';
+}
+
+async function changeMemberRole(email, newRole) {
+  var res = await sb.from('members').update({ role: newRole }).eq('email', email);
+  if (res.error) { alert('Error updating role: ' + res.error.message); return; }
+  // Update local cache so badge color refreshes without re-fetching
+  var member = allRosterData.find(function(m){ return m.email === email; });
+  if (member) member.role = newRole;
+  renderRosterTable(allRosterData);
+}
+
+function exportRoster() {
+  var rows = [['Name','Email','EID','Role','Semester','Points']];
+  allRosterData.forEach(function(m){ rows.push([m.name||'',m.email||'',m.eid||'',m.role||'',m.semester||'',m.totalPoints]); });
+  var csv = rows.map(function(r){ return r.map(function(v){ return '"'+String(v).replace(/"/g,'""')+'"'; }).join(','); }).join('\n');
+  var a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = 'ufa-roster.csv';
+  a.click();
+}
+
+// ── Admin: Analytics ──
+async function loadAnalytics() {
+  var r1 = await sb.from('members').select('email,role');
+  var r2 = await sb.from('attendance').select('*');
+  var members     = r1.data || [];
+  var allAtt      = r2.data || [];
+
+  var totalMembers  = members.length;
+  var totalCheckins = allAtt.length;
+  var pointsMap = {};
+  allAtt.forEach(function(r){ pointsMap[r.email]=(pointsMap[r.email]||0)+(r.points||1); });
+  var totalPts = Object.values(pointsMap).reduce(function(a,b){ return a+b; }, 0);
+  var avgPoints = totalMembers ? (totalPts/totalMembers).toFixed(1) : 0;
+
+  document.getElementById('analytics-total-members').textContent  = totalMembers;
+  document.getElementById('analytics-total-checkins').textContent = totalCheckins;
+  document.getElementById('analytics-avg-points').textContent     = avgPoints;
+
+  var eventCount = {};
+  allAtt.forEach(function(r){ eventCount[r.meeting_name]=(eventCount[r.meeting_name]||0)+1; });
+  var topEvents = Object.entries(eventCount).sort(function(a,b){ return b[1]-a[1]; }).slice(0,8);
+  var maxEC = (topEvents[0] && topEvents[0][1]) ? topEvents[0][1] : 1;
+  document.getElementById('analytics-by-event').innerHTML = topEvents.length ? topEvents.map(function(e){
+    return '<div style="padding:10px 16px;border-bottom:1px solid rgba(46,74,46,0.06);">'
+      +'<div style="display:flex;justify-content:space-between;margin-bottom:4px;">'
+        +'<span style="font-size:12px;color:#1C2B1C;font-weight:500;">'+e[0]+'</span>'
+        +'<span style="font-size:12px;color:#3D6B3D;font-weight:600;">'+e[1]+'</span>'
+      +'</div>'
+      +'<div style="height:4px;background:#EEF5EE;border-radius:2px;overflow:hidden;">'
+        +'<div style="height:100%;background:#3D6B3D;border-radius:2px;width:'+Math.round(e[1]/maxEC*100)+'%;"></div>'
+      +'</div>'
+    +'</div>';
+  }).join('') : '<div style="padding:20px;font-size:13px;color:#6B7D6B;text-align:center;">No data yet.</div>';
+
+  var rolePoints = {}, roleCount = {};
+  members.forEach(function(m){ rolePoints[m.role]=(rolePoints[m.role]||0)+(pointsMap[m.email]||0); roleCount[m.role]=(roleCount[m.role]||0)+1; });
+  var roleRows = Object.entries(rolePoints).sort(function(a,b){ return b[1]-a[1]; });
+  document.getElementById('analytics-by-role').innerHTML = roleRows.length ? roleRows.map(function(e){
+    var role=e[0], pts=e[1], cnt=roleCount[role];
+    return '<div style="padding:12px 16px;border-bottom:1px solid rgba(46,74,46,0.06);display:flex;justify-content:space-between;align-items:center;">'
+      +'<div>'
+        +'<div style="font-size:13px;font-weight:500;color:#1C2B1C;">'+role+'</div>'
+        +'<div style="font-size:11px;color:#6B7D6B;">'+cnt+' member'+(cnt!==1?'s':'')+'</div>'
+      +'</div>'
+      +'<div style="text-align:right;">'
+        +'<div style="font-size:14px;font-weight:600;color:#3D6B3D;">'+pts+' pts total</div>'
+        +'<div style="font-size:11px;color:#6B7D6B;">'+(pts/cnt).toFixed(1)+' avg</div>'
+      +'</div>'
+    +'</div>';
+  }).join('') : '<div style="padding:20px;font-size:13px;color:#6B7D6B;text-align:center;">No data yet.</div>';
+}
+
 // ── Restore session on page load ──
-sb.auth.getSession().then(({ data: { session } }) => {
+sb.auth.getSession().then(function(result) {
+  var session = result.data.session;
   if (session) {
     currentUser = session.user;
-    sb.from('members').select('*').eq('email', currentUser.email).single().then(({ data }) => {
-      currentMember = data;
+    sb.from('members').select('*').eq('email', currentUser.email).single().then(function(result2) {
+      currentMember = result2.data;
       showDashboard();
     });
   }
 });
+
 </script>
 <!-- ══════════════════════════════════
      FOOTER (shown on all pages)
@@ -4086,19 +4977,29 @@ async function portalSignup() {
   const name  = document.getElementById('signup-name').value.trim();
   const email = document.getElementById('signup-email').value.trim().toLowerCase();
   const pw    = document.getElementById('signup-password').value;
+  const selectedRole = document.getElementById('signup-role').value;
   const err   = document.getElementById('signup-error');
 
-  if (!name || !email || !pw) { err.style.display='block'; err.textContent='Please fill in all fields.'; return; }
+  if (!name || !email || !pw || !selectedRole) { err.style.display='block'; err.textContent='Please fill in all fields.'; return; }
   if (pw.length < 6) { err.style.display='block'; err.textContent='Password must be at least 6 characters.'; return; }
+
+  // Board signups require admin approval — save as Board-Pending
+  const role = selectedRole === 'Board' ? 'Board-Pending' : selectedRole;
 
   const { data, error } = await sb.auth.signUp({ email, password: pw });
   if (error) { err.style.display='block'; err.textContent=error.message; return; }
 
-  // Add to members table
-const eid = document.getElementById('signup-eid').value.trim();
-await sb.from('members').insert({ email, name, eid, role: 'General Member', semester: 'Fall 2026' });
+  const eid = document.getElementById('signup-eid').value.trim();
+  await sb.from('members').insert({ email, name, eid, role, semester: 'Fall 2026' });
   currentUser = data.user;
-  currentMember = { email, name, eid, role: 'General Member', semester: 'Fall 2026' };
+  currentMember = { email, name, eid, role, semester: 'Fall 2026' };
+
+  if (selectedRole === 'Board') {
+    err.style.display='block';
+    err.style.background='#e6f4e6'; err.style.borderColor='#a8d5a8'; err.style.color='#1a4d1a';
+    err.textContent='Account created! Board access requires admin approval. You can log in as a General Member in the meantime.';
+  }
+
   showDashboard();
 }
 
@@ -4276,11 +5177,18 @@ setTimeout(() => {
       idx++;
     }
   });
-  // Stats via reveal system
-  document.querySelectorAll('.stats-bar .reveal').forEach((el, i) => {
-    setTimeout(() => el.classList.add('visible'), 300 + i * (window.innerWidth <= 768 ? 50 : 80));
+  // Stats via reveal system — observe so they animate when scrolled into view
+  document.querySelectorAll('.stats-bar .reveal').forEach((el) => {
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight && rect.bottom > 0) {
+      setTimeout(() => el.classList.add('visible'), 300);
+    } else {
+      observer.observe(el);
+    }
   });
 }, 50);
+
+
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>
@@ -4336,3 +5244,4 @@ setTimeout(() => {
 </script>
 </body>
 </html>
+<!-- PORTAL_SCRIPT_MARKER -->
