@@ -4473,17 +4473,45 @@ async function loadAnalytics() {
 }
 
 // ── Restore session on page load ──
-sb.auth.getSession().then(function(result) {
-  var session = result.data.session;
-  if (session) {
-    currentUser = session.user;
-    sb.from('members').select('*').eq('email', currentUser.email).single().then(function(result2) {
-      currentMember = result2.data;
-      showPage('portal');
-      showDashboard();
-    });
+// ── Handle magic link / OAuth code in URL ──
+(async function() {
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get('code');
+  const type = params.get('type');
+
+  if (code) {
+    // Exchange the code for a session (PKCE flow)
+    const { data, error } = await sb.auth.exchangeCodeForSession(code);
+    if (!error && data.session) {
+      currentUser = data.session.user;
+      const { data: member } = await sb.from('members').select('*').eq('email', currentUser.email).single();
+      currentMember = member;
+      // Clean the URL
+      window.history.replaceState({}, '', window.location.pathname);
+      if (type === 'recovery') {
+        showPage('portal');
+        showResetPanel();
+      } else {
+        showPage('portal');
+        showDashboard();
+      }
+      return;
+    }
   }
-});
+
+  // No code — normal session restore
+  sb.auth.getSession().then(function(result) {
+    var session = result.data.session;
+    if (session) {
+      currentUser = session.user;
+      sb.from('members').select('*').eq('email', currentUser.email).single().then(function(result2) {
+        currentMember = result2.data;
+        showPage('portal');
+        showDashboard();
+      });
+    }
+  });
+})();
 
 </script>
 <!-- ══════════════════════════════════
@@ -4840,7 +4868,7 @@ async function sendMagicLink() {
   const err = document.getElementById('magic-error');
   msg.style.display = 'none'; err.style.display = 'none';
   if (!email) { err.style.display='block'; err.textContent='Please enter your UT email.'; return; }
-  const { error } = await sb.auth.signInWithOtp({ email, options: { emailRedirectTo: 'https://cadenwarner.github.io/UFA-Website/#portal' } });
+  const { error } = await sb.auth.signInWithOtp({ email, options: { emailRedirectTo: 'https://cadenwarner.github.io/UFA-Website/' } });
   if (error) { err.style.display='block'; err.textContent=error.message; return; }
   msg.style.display = 'block';
   msg.textContent = 'Magic link sent! Check your email and click the link to sign in.';
@@ -5020,9 +5048,8 @@ sb.auth.onAuthStateChange(async (event, session) => {
     showResetPanel();
     return;
   }
-  if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session) {
-    // Only auto-open dashboard if we're on the portal page and not already showing dashboard
-    if (currentUser) return; // already handled
+  // SIGNED_IN fires after code exchange — currentUser already set so skip
+  if (event === 'SIGNED_IN' && session && !currentUser) {
     currentUser = session.user;
     const { data: member } = await sb.from('members').select('*').eq('email', currentUser.email).single();
     currentMember = member;
