@@ -1159,21 +1159,17 @@ align-items: flex-end;
     flex-direction: column;
     gap: 8px;
   }
-  .btn-primary, .btn-outline {
+  .hero-btns .btn-primary,
+  .hero-btns .btn-outline {
     width: 100%;
     text-align: center;
-    height: 44px !important;
+    height: 48px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     box-sizing: border-box !important;
     padding: 0 28px !important;
     font-size: 15px !important;
-  }
-  .hero-btns .btn-primary,
-  .hero-btns .btn-outline {
-    height: 44px !important;
-    padding: 0 28px !important;
   }
 
   /* Stats bar */
@@ -1390,8 +1386,8 @@ align-items: flex-end;
 
   /* Footer */
   .footer-top {
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 16px;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px 24px;
   }
   .footer-brand {
     display: none;
@@ -1742,7 +1738,7 @@ nav .nav-links.open {
 
   /* Home hero — override full shorthand on mobile */
   .hero-img {
-    background: url('https://i.postimg.cc/L5rkmFpr/7X2A3757.jpg') center 100% / cover no-repeat !important;
+    background: url('https://i.postimg.cc/L5rkmFpr/7X2A3757.jpg') center 20% / cover no-repeat !important;
   }
 
   /* Analyst 01/02/03 steps grid → 1 column on mobile */
@@ -1796,6 +1792,7 @@ nav .nav-links.open {
     padding: 0 !important;
     margin-left: 0 !important;
     margin-right: 0 !important;
+    margin-bottom: 40px !important;
     border-radius: 12px !important;
     overflow: hidden !important;
   }
