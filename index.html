@@ -276,17 +276,42 @@
     display: grid; grid-template-columns: repeat(3,1fr);
   }
   .stat-cell {
-    padding: 10px 32px; text-align: center;
-    border-right: 1px solid rgba(255,255,255,0.1);
+    padding: 40px 32px; text-align: center;
+    border-right: 1px solid rgba(255,255,255,0.08);
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-cell::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%) scaleX(0);
+    width: 40px; height: 2px;
+    background: var(--green-accent);
+    border-radius: 2px;
+    transition: transform 0.6s ease;
+  }
+  .stat-cell.visible::before {
+    transform: translateX(-50%) scaleX(1);
   }
   .stat-cell:last-child { border-right: none; }
   .stat-num {
     font-family: var(--font-display);
-    font-size: 40px; font-weight: 500;
-    color: var(--green-pale);
+    font-size: 56px; font-weight: 500;
+    color: #fff;
     display: block;
+    line-height: 1;
+    letter-spacing: -0.01em;
   }
-  .stat-label { font-size: 15px; color: rgba(255,255,255,0.6); letter-spacing: 0.06em; text-transform: uppercase; margin-top: 2px; }
+  .stat-label {
+    font-size: 12px;
+    color: rgba(255,255,255,0.55);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-top: 12px;
+    display: block;
+    font-weight: 400;
+  }
 
   /* ── SECTION UTILITIES ──
      Reusable layout classes for page sections.
@@ -2000,36 +2025,47 @@ nav .nav-links.open {
     white-space: nowrap !important;
   }
 
-  /* Stat cards: 2-col so all 3 fit better */
+  /* Stat cards: 2-col, 3rd card spans full width */
   #ptab-content-overview > div:first-child {
     grid-template-columns: 1fr 1fr !important;
     gap: 10px !important;
+  }
+  #ptab-content-overview > div:first-child > div:nth-child(3) {
+    grid-column: 1 / -1 !important;
   }
 
   /* Points breakdown wraps */
   #points-breakdown { flex-wrap: wrap !important; }
 
-  /* Badges: smaller on mobile */
-  #badges-row { gap: 8px !important; }
+  /* Badges: 3-col grid, hide description text, just show icon + name */
+  #badges-row {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 8px !important;
+  }
   #badges-row > div {
-    min-width: 72px !important;
-    padding: 10px 8px !important;
-    font-size: 10px !important;
+    min-width: unset !important;
+    padding: 10px 6px !important;
   }
   #badges-row > div span:first-child { font-size: 20px !important; }
+  #badges-row > div span:nth-child(2) { font-size: 10px !important; line-height: 1.2 !important; }
+  #badges-row > div span:nth-child(3) { display: none !important; }
 
-  /* Check-in + history: stack */
-  #ptab-content-overview > div:nth-child(4) {
+  /* Check-in + history: stack on mobile */
+  #checkin-history-grid {
     grid-template-columns: 1fr !important;
+    gap: 16px !important;
   }
 
-  /* Leaderboard: stack */
-  #ptab-content-leaderboard > div:first-child {
+  /* Leaderboard: stack columns */
+  #leaderboard-grid {
     grid-template-columns: 1fr !important;
+    gap: 20px !important;
   }
 
-  /* Profile: full width */
-  #ptab-content-profile { max-width: 100% !important; }
+  /* Profile: stack columns on mobile */
+  #ptab-content-profile > div:last-child {
+    grid-template-columns: 1fr !important;
+  }
 
   /* Session codes form: 1-col */
   #atab-content-sessions div[style*="grid-template-columns:1fr 1fr"],
@@ -2046,9 +2082,12 @@ nav .nav-links.open {
     min-width: 600px !important;
   }
 
-  /* Analytics: 2-col stats, 1-col charts */
-  #atab-content-analytics > div:first-child {
+  /* Analytics: 2-col stats with 3rd spanning full width */
+  #analytics-stat-grid {
     grid-template-columns: 1fr 1fr !important;
+  }
+  #analytics-stat-grid > div:nth-child(3) {
+    grid-column: 1 / -1 !important;
   }
   #atab-content-analytics > div:last-child {
     grid-template-columns: 1fr !important;
@@ -2057,6 +2096,11 @@ nav .nav-links.open {
   /* Roster: horizontal scroll */
   #roster-table { overflow-x: auto !important; }
   #roster-table table { min-width: 600px !important; }
+
+  /* Announcements: stack on mobile */
+  #atab-content-announce > div {
+    grid-template-columns: 1fr !important;
+  }
 
   /* Announcement banner */
   #announcement-banner { padding: 12px 16px !important; }
@@ -3260,159 +3304,158 @@ nav .nav-links.open {
 <div id="page-portal" class="page">
   <div style="min-height:100vh;background:#f7f4ee;display:flex;flex-direction:column;">
 
-    <div style="background:#1C2B1C;padding:32px 72px;display:flex;align-items:center;justify-content:space-between;" id="portal-hero-bar">
-      <div>
-        <div style="font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:#D6E8D6;margin-bottom:6px;">Member Portal</div>
-        <div style="font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:500;color:#fff;">University Finance Association</div>
-      </div>
-      <div id="portal-user-badge" style="display:none;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:6px;padding:10px 18px;color:#fff;font-size:13px;"></div>
-    </div>
+
 
  <!-- LOGIN / SIGNUP -->
-    <div id="portal-login" style="flex:1;display:flex;align-items:center;justify-content:center;padding:48px 24px;">
+    <div id="portal-login" style="flex:1;display:flex;align-items:center;justify-content:center;padding:48px 24px;background:var(--cream);">
       
       <!-- Login Card -->
-      <div id="login-card" style="background:#fff;border:1px solid rgba(46,74,46,0.15);border-radius:12px;padding:48px;width:100%;max-width:440px;box-shadow:0 4px 24px rgba(46,74,46,0.08);">
-        <div style="text-align:center;margin-bottom:36px;">
-          <div style="width:56px;height:56px;background:#EEF5EE;border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3D6B3D" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <div id="login-card" style="background:#F7F4EE;border:1px solid rgba(46,74,46,0.12);border-radius:12px;width:100%;max-width:440px;box-shadow:0 8px 32px rgba(46,74,46,0.1);overflow:hidden;">
+        <div style="height:4px;background:linear-gradient(90deg,#1C2B1C,#3D6B3D);"></div>
+        <div style="padding:44px 44px 40px;">
+          <div style="text-align:center;margin-bottom:32px;">
+            <img src="https://i.postimg.cc/3JtYwX5w/37f350-a0a7dee58b1d498989fc2317c1b89ce1-mv2-(1).png" alt="UFA" style="width:52px;height:52px;margin:0 auto 16px;display:block;object-fit:contain;" onerror="this.style.display='none'">
+            <div style="font-family:'Playfair Display',Georgia,serif;font-size:26px;font-weight:500;color:#1C2B1C;margin-bottom:8px;">Member Login</div>
+            <p style="font-size:13px;color:#6B7D6B;line-height:1.6;">Sign in with your UT email to check in to meetings and track your attendance.</p>
           </div>
-          <div style="font-family:'Playfair Display',Georgia,serif;font-size:24px;font-weight:500;color:#1C2B1C;margin-bottom:8px;">Member Login</div>
-          <p style="font-size:14px;color:#6B7D6B;line-height:1.6;">Sign in with your UT email to check in to meetings and track your attendance.</p>
-        </div>
-        <div style="margin-bottom:16px;">
-          <label style="display:block;font-size:13px;font-weight:500;color:#3A4A3A;margin-bottom:6px;">UT Email</label>
-          <input id="eid-input" type="email" placeholder="abc1234@utexas.edu" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;" onkeydown="if(event.key==='Enter')portalLogin()">
-        </div>
-        <div style="margin-bottom:20px;">
-          <label style="display:block;font-size:13px;font-weight:500;color:#3A4A3A;margin-bottom:6px;">Password</label>
-          <input id="pw-input" type="password" placeholder="Your portal password" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;" onkeydown="if(event.key==='Enter')portalLogin()">
-        </div>
-        <button onclick="portalLogin()" style="width:100%;background:#3D6B3D;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:13px;border-radius:4px;border:none;cursor:pointer;letter-spacing:0.02em;">Sign in</button>
-        <div id="login-error" style="display:none;margin-top:12px;padding:10px 14px;background:#fdf0ef;border:1px solid #f0b4b0;border-radius:4px;font-size:13px;color:#8b2e2e;text-align:center;"></div>
-        <div style="margin-top:16px;text-align:center;">
-          <a href="#" onclick="showMagicLink()" style="font-size:13px;color:#3D6B3D;font-weight:500;">Use magic link instead</a>
-        </div>
-        <div style="margin-top:8px;text-align:center;">
-          <a href="#" onclick="showForgotPassword()" style="font-size:13px;color:#6B7D6B;">Forgot your password?</a>
-        </div>
-        <div style="margin-top:16px;padding-top:16px;border-top:1px solid rgba(46,74,46,0.1);text-align:center;">
-          <p style="font-size:12px;color:#6B7D6B;">New member? <a href="#" onclick="showSignup()" style="color:#3D6B3D;font-weight:500;">Create an account →</a></p>
+          <div style="margin-bottom:16px;">
+            <label style="display:block;font-size:12px;font-weight:600;color:#3A4A3A;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;">UT Email</label>
+            <input id="eid-input" type="email" placeholder="abc1234@utexas.edu" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;" onkeydown="if(event.key==='Enter')portalLogin()">
+          </div>
+          <div style="margin-bottom:24px;">
+            <label style="display:block;font-size:12px;font-weight:600;color:#3A4A3A;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;">Password</label>
+            <input id="pw-input" type="password" placeholder="Your portal password" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;" onkeydown="if(event.key==='Enter')portalLogin()">
+          </div>
+          <button onclick="portalLogin()" style="width:100%;background:#1C2B1C;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:13px;border-radius:6px;border:none;cursor:pointer;letter-spacing:0.02em;transition:background 0.2s;" onmouseover="this.style.background='#3D6B3D'" onmouseout="this.style.background='#1C2B1C'">Sign in</button>
+          <div id="login-error" style="display:none;margin-top:12px;padding:10px 14px;background:#fdf0ef;border:1px solid #f0b4b0;border-radius:4px;font-size:13px;color:#8b2e2e;text-align:center;"></div>
+          <div style="margin-top:16px;text-align:center;">
+            <a href="#" onclick="showMagicLink()" style="font-size:13px;color:#3D6B3D;font-weight:500;">Use magic link instead</a>
+          </div>
+          <div style="margin-top:8px;text-align:center;">
+            <a href="#" onclick="showForgotPassword()" style="font-size:13px;color:#6B7D6B;">Forgot your password?</a>
+          </div>
+          <div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(46,74,46,0.1);text-align:center;">
+            <p style="font-size:12px;color:#6B7D6B;">New member? <a href="#" onclick="showSignup()" style="color:#3D6B3D;font-weight:500;">Create an account →</a></p>
+          </div>
         </div>
       </div>
 
       <!-- Signup Card -->
-      <div id="portal-signup" style="display:none;background:#fff;border:1px solid rgba(46,74,46,0.15);border-radius:12px;padding:48px;width:100%;max-width:440px;box-shadow:0 4px 24px rgba(46,74,46,0.08);">
-        <div style="text-align:center;margin-bottom:28px;">
-          <div style="width:56px;height:56px;background:#EEF5EE;border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3D6B3D" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <div id="portal-signup" style="display:none;background:#F7F4EE;border:1px solid rgba(46,74,46,0.12);border-radius:12px;width:100%;max-width:440px;box-shadow:0 8px 32px rgba(46,74,46,0.1);overflow:hidden;">
+        <div style="height:4px;background:linear-gradient(90deg,#1C2B1C,#3D6B3D);"></div>
+        <div style="padding:44px 44px 40px;">
+          <div style="text-align:center;margin-bottom:28px;">
+            <img src="https://i.postimg.cc/3JtYwX5w/37f350-a0a7dee58b1d498989fc2317c1b89ce1-mv2-(1).png" alt="UFA" style="width:52px;height:52px;margin:0 auto 16px;display:block;object-fit:contain;" onerror="this.style.display='none'">
+            <div style="font-family:'Playfair Display',Georgia,serif;font-size:26px;font-weight:500;color:#1C2B1C;margin-bottom:8px;">Create Account</div>
+            <p style="font-size:13px;color:#6B7D6B;">Enter your UT email and choose a password.</p>
           </div>
-          <div style="font-family:'Playfair Display',Georgia,serif;font-size:24px;font-weight:500;color:#1C2B1C;margin-bottom:8px;">Create Account</div>
-          <p style="font-size:14px;color:#6B7D6B;">Enter your UT email and choose a password.</p>
-        </div>
-        <div style="margin-bottom:16px;">
-          <label style="display:block;font-size:13px;font-weight:500;color:#3A4A3A;margin-bottom:6px;">Full Name</label>
-          <input id="signup-name" type="text" placeholder="Jordan Smith" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;">
-        </div>
-        <div style="margin-bottom:16px;">
-          <label style="display:block;font-size:13px;font-weight:500;color:#3A4A3A;margin-bottom:6px;">UT EID</label>
-          <input id="signup-eid" type="text" placeholder="abc1234" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;">
-        </div>
-        <div style="margin-bottom:16px;">
-          <label style="display:block;font-size:13px;font-weight:500;color:#3A4A3A;margin-bottom:6px;">UT Email</label>
-          <input id="signup-email" type="email" placeholder="abc1234@utexas.edu" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;">
-        </div>
-        <div style="margin-bottom:16px;">
-          <label style="display:block;font-size:13px;font-weight:500;color:#3A4A3A;margin-bottom:6px;">Role</label>
-          <select id="signup-role" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;appearance:none;-webkit-appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236B7D6B' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 14px center;">
-            <option value="" disabled selected>Select your role…</option>
-            <option value="General Member">General Member</option>
-            <option value="Analyst">Analyst</option>
-            <option value="Investment Associate">Investment Associate</option>
-            <option value="Consulting Associate">Consulting Associate</option>
-            <option value="Board">Board</option>
-          </select>
-        </div>
-        <div style="margin-bottom:20px;">
-          <label style="display:block;font-size:13px;font-weight:500;color:#3A4A3A;margin-bottom:6px;">Password</label>
-          <input id="signup-password" type="password" placeholder="Choose a password" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;">
-        </div>
-        <button onclick="portalSignup()" style="width:100%;background:#3D6B3D;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:13px;border-radius:4px;border:none;cursor:pointer;">Create account</button>
-        <div id="signup-error" style="display:none;margin-top:12px;padding:10px 14px;background:#fdf0ef;border:1px solid #f0b4b0;border-radius:4px;font-size:13px;color:#8b2e2e;text-align:center;"></div>
-        <div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(46,74,46,0.1);text-align:center;">
-          <p style="font-size:12px;color:#6B7D6B;">Already have an account? <a href="#" onclick="showLogin()" style="color:#3D6B3D;font-weight:500;">Sign in →</a></p>
+          <div style="margin-bottom:14px;">
+            <label style="display:block;font-size:12px;font-weight:600;color:#3A4A3A;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;">Full Name</label>
+            <input id="signup-name" type="text" placeholder="Jordan Smith" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;">
+          </div>
+          <div style="margin-bottom:14px;">
+            <label style="display:block;font-size:12px;font-weight:600;color:#3A4A3A;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;">UT EID</label>
+            <input id="signup-eid" type="text" placeholder="abc1234" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;">
+          </div>
+          <div style="margin-bottom:14px;">
+            <label style="display:block;font-size:12px;font-weight:600;color:#3A4A3A;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;">UT Email</label>
+            <input id="signup-email" type="email" placeholder="abc1234@utexas.edu" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;">
+          </div>
+          <div style="margin-bottom:14px;">
+            <label style="display:block;font-size:12px;font-weight:600;color:#3A4A3A;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;">Role</label>
+            <select id="signup-role" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;appearance:none;-webkit-appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236B7D6B' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 14px center;">
+              <option value="" disabled selected>Select your role…</option>
+              <option value="General Member">General Member</option>
+              <option value="Analyst">Analyst</option>
+              <option value="Investment Associate">Investment Associate</option>
+              <option value="Consulting Associate">Consulting Associate</option>
+              <option value="Board">Board</option>
+            </select>
+          </div>
+          <div style="margin-bottom:24px;">
+            <label style="display:block;font-size:12px;font-weight:600;color:#3A4A3A;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;">Password</label>
+            <input id="signup-password" type="password" placeholder="Choose a password" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;">
+          </div>
+          <button onclick="portalSignup()" style="width:100%;background:#1C2B1C;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:13px;border-radius:6px;border:none;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='#3D6B3D'" onmouseout="this.style.background='#1C2B1C'">Create account</button>
+          <div id="signup-error" style="display:none;margin-top:12px;padding:10px 14px;background:#fdf0ef;border:1px solid #f0b4b0;border-radius:4px;font-size:13px;color:#8b2e2e;text-align:center;"></div>
+          <div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(46,74,46,0.1);text-align:center;">
+            <p style="font-size:12px;color:#6B7D6B;">Already have an account? <a href="#" onclick="showLogin()" style="color:#3D6B3D;font-weight:500;">Sign in →</a></p>
+          </div>
         </div>
       </div>
 
     </div>
 
       <!-- Magic Link Card -->
-      <div id="portal-magic" style="display:none;flex:1;align-items:center;justify-content:center;padding:48px 24px;">
-        <div style="background:#fff;border:1px solid rgba(46,74,46,0.15);border-radius:12px;padding:48px;width:100%;max-width:440px;box-shadow:0 4px 24px rgba(46,74,46,0.08);">
-          <div style="text-align:center;margin-bottom:28px;">
-            <div style="width:56px;height:56px;background:#EEF5EE;border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3D6B3D" stroke-width="1.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      <div id="portal-magic" style="display:none;flex:1;align-items:center;justify-content:center;padding:48px 24px;background:var(--cream);">
+        <div style="background:#F7F4EE;border:1px solid rgba(46,74,46,0.12);border-radius:12px;width:100%;max-width:440px;box-shadow:0 8px 32px rgba(46,74,46,0.1);overflow:hidden;">
+          <div style="height:4px;background:linear-gradient(90deg,#1C2B1C,#3D6B3D);"></div>
+          <div style="padding:44px 44px 40px;">
+            <div style="text-align:center;margin-bottom:28px;">
+              <img src="https://i.postimg.cc/3JtYwX5w/37f350-a0a7dee58b1d498989fc2317c1b89ce1-mv2-(1).png" alt="UFA" style="width:52px;height:52px;margin:0 auto 16px;display:block;object-fit:contain;" onerror="this.style.display='none'">
+              <div style="font-family:'Playfair Display',Georgia,serif;font-size:26px;font-weight:500;color:#1C2B1C;margin-bottom:8px;">Magic Link</div>
+              <p style="font-size:13px;color:#6B7D6B;line-height:1.6;">Enter your UT email and we'll send you a sign-in link — no password needed.</p>
             </div>
-            <div style="font-family:'Playfair Display',Georgia,serif;font-size:24px;font-weight:500;color:#1C2B1C;margin-bottom:8px;">Magic Link</div>
-            <p style="font-size:14px;color:#6B7D6B;line-height:1.6;">Enter your UT email and we'll send you a sign-in link — no password needed.</p>
-          </div>
-          <div style="margin-bottom:20px;">
-            <label style="display:block;font-size:13px;font-weight:500;color:#3A4A3A;margin-bottom:6px;">UT Email</label>
-            <input id="magic-email" type="email" placeholder="abc1234@utexas.edu" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;" onkeydown="if(event.key==='Enter')sendMagicLink()">
-          </div>
-          <button onclick="sendMagicLink()" style="width:100%;background:#3D6B3D;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:13px;border-radius:4px;border:none;cursor:pointer;">Send Magic Link</button>
-          <div id="magic-msg" style="display:none;margin-top:12px;padding:10px 14px;background:#eef5ee;border:1px solid #b4d4b4;border-radius:4px;font-size:13px;color:#2e5e2e;text-align:center;"></div>
-          <div id="magic-error" style="display:none;margin-top:12px;padding:10px 14px;background:#fdf0ef;border:1px solid #f0b4b0;border-radius:4px;font-size:13px;color:#8b2e2e;text-align:center;"></div>
-          <div style="margin-top:16px;text-align:center;">
-            <a href="#" onclick="showLogin()" style="font-size:13px;color:#6B7D6B;">← Back to sign in</a>
+            <div style="margin-bottom:24px;">
+              <label style="display:block;font-size:12px;font-weight:600;color:#3A4A3A;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;">UT Email</label>
+              <input id="magic-email" type="email" placeholder="abc1234@utexas.edu" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;" onkeydown="if(event.key==='Enter')sendMagicLink()">
+            </div>
+            <button onclick="sendMagicLink()" style="width:100%;background:#1C2B1C;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:13px;border-radius:6px;border:none;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='#3D6B3D'" onmouseout="this.style.background='#1C2B1C'">Send Magic Link</button>
+            <div id="magic-msg" style="display:none;margin-top:12px;padding:10px 14px;background:#eef5ee;border:1px solid #b4d4b4;border-radius:4px;font-size:13px;color:#2e5e2e;text-align:center;"></div>
+            <div id="magic-error" style="display:none;margin-top:12px;padding:10px 14px;background:#fdf0ef;border:1px solid #f0b4b0;border-radius:4px;font-size:13px;color:#8b2e2e;text-align:center;"></div>
+            <div style="margin-top:16px;text-align:center;">
+              <a href="#" onclick="showLogin()" style="font-size:13px;color:#6B7D6B;">← Back to sign in</a>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- Forgot Password Card -->
-      <div id="portal-forgot" style="display:none;flex:1;align-items:center;justify-content:center;padding:48px 24px;">
-        <div style="background:#fff;border:1px solid rgba(46,74,46,0.15);border-radius:12px;padding:48px;width:100%;max-width:440px;box-shadow:0 4px 24px rgba(46,74,46,0.08);">
-          <div style="text-align:center;margin-bottom:28px;">
-            <div style="width:56px;height:56px;background:#EEF5EE;border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3D6B3D" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <div id="portal-forgot" style="display:none;flex:1;align-items:center;justify-content:center;padding:48px 24px;background:var(--cream);">
+        <div style="background:#F7F4EE;border:1px solid rgba(46,74,46,0.12);border-radius:12px;width:100%;max-width:440px;box-shadow:0 8px 32px rgba(46,74,46,0.1);overflow:hidden;">
+          <div style="height:4px;background:linear-gradient(90deg,#1C2B1C,#3D6B3D);"></div>
+          <div style="padding:44px 44px 40px;">
+            <div style="text-align:center;margin-bottom:28px;">
+              <img src="https://i.postimg.cc/3JtYwX5w/37f350-a0a7dee58b1d498989fc2317c1b89ce1-mv2-(1).png" alt="UFA" style="width:52px;height:52px;margin:0 auto 16px;display:block;object-fit:contain;" onerror="this.style.display='none'">
+              <div style="font-family:'Playfair Display',Georgia,serif;font-size:26px;font-weight:500;color:#1C2B1C;margin-bottom:8px;">Reset Password</div>
+              <p style="font-size:13px;color:#6B7D6B;line-height:1.6;">Enter your UT email and we'll send you a link to reset your password.</p>
             </div>
-            <div style="font-family:'Playfair Display',Georgia,serif;font-size:24px;font-weight:500;color:#1C2B1C;margin-bottom:8px;">Reset Password</div>
-            <p style="font-size:14px;color:#6B7D6B;line-height:1.6;">Enter your UT email and we'll send you a link to reset your password.</p>
-          </div>
-          <div style="margin-bottom:20px;">
-            <label style="display:block;font-size:13px;font-weight:500;color:#3A4A3A;margin-bottom:6px;">UT Email</label>
-            <input id="forgot-email" type="email" placeholder="abc1234@utexas.edu" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;" onkeydown="if(event.key==='Enter')sendPasswordReset()">
-          </div>
-          <button onclick="sendPasswordReset()" style="width:100%;background:#3D6B3D;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:13px;border-radius:4px;border:none;cursor:pointer;">Send Reset Link</button>
-          <div id="forgot-msg" style="display:none;margin-top:12px;padding:10px 14px;background:#eef5ee;border:1px solid #b4d4b4;border-radius:4px;font-size:13px;color:#2e5e2e;text-align:center;"></div>
-          <div id="forgot-error" style="display:none;margin-top:12px;padding:10px 14px;background:#fdf0ef;border:1px solid #f0b4b0;border-radius:4px;font-size:13px;color:#8b2e2e;text-align:center;"></div>
-          <div style="margin-top:16px;text-align:center;">
-            <a href="#" onclick="showLogin()" style="font-size:13px;color:#6B7D6B;">← Back to sign in</a>
+            <div style="margin-bottom:24px;">
+              <label style="display:block;font-size:12px;font-weight:600;color:#3A4A3A;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;">UT Email</label>
+              <input id="forgot-email" type="email" placeholder="abc1234@utexas.edu" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;" onkeydown="if(event.key==='Enter')sendPasswordReset()">
+            </div>
+            <button onclick="sendPasswordReset()" style="width:100%;background:#1C2B1C;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:13px;border-radius:6px;border:none;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='#3D6B3D'" onmouseout="this.style.background='#1C2B1C'">Send Reset Link</button>
+            <div id="forgot-msg" style="display:none;margin-top:12px;padding:10px 14px;background:#eef5ee;border:1px solid #b4d4b4;border-radius:4px;font-size:13px;color:#2e5e2e;text-align:center;"></div>
+            <div id="forgot-error" style="display:none;margin-top:12px;padding:10px 14px;background:#fdf0ef;border:1px solid #f0b4b0;border-radius:4px;font-size:13px;color:#8b2e2e;text-align:center;"></div>
+            <div style="margin-top:16px;text-align:center;">
+              <a href="#" onclick="showLogin()" style="font-size:13px;color:#6B7D6B;">← Back to sign in</a>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Set New Password Card (shown after clicking reset link in email) -->
-      <div id="portal-reset" style="display:none;flex:1;align-items:center;justify-content:center;padding:48px 24px;">
-        <div style="background:#fff;border:1px solid rgba(46,74,46,0.15);border-radius:12px;padding:48px;width:100%;max-width:440px;box-shadow:0 4px 24px rgba(46,74,46,0.08);">
-          <div style="text-align:center;margin-bottom:28px;">
-            <div style="width:56px;height:56px;background:#EEF5EE;border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3D6B3D" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <!-- Set New Password Card -->
+      <div id="portal-reset" style="display:none;flex:1;align-items:center;justify-content:center;padding:48px 24px;background:var(--cream);">
+        <div style="background:#F7F4EE;border:1px solid rgba(46,74,46,0.12);border-radius:12px;width:100%;max-width:440px;box-shadow:0 8px 32px rgba(46,74,46,0.1);overflow:hidden;">
+          <div style="height:4px;background:linear-gradient(90deg,#1C2B1C,#3D6B3D);"></div>
+          <div style="padding:44px 44px 40px;">
+            <div style="text-align:center;margin-bottom:28px;">
+              <img src="https://i.postimg.cc/3JtYwX5w/37f350-a0a7dee58b1d498989fc2317c1b89ce1-mv2-(1).png" alt="UFA" style="width:52px;height:52px;margin:0 auto 16px;display:block;object-fit:contain;" onerror="this.style.display='none'">
+              <div style="font-family:'Playfair Display',Georgia,serif;font-size:26px;font-weight:500;color:#1C2B1C;margin-bottom:8px;">Set New Password</div>
+              <p style="font-size:13px;color:#6B7D6B;line-height:1.6;">Choose a new password for your account.</p>
             </div>
-            <div style="font-family:'Playfair Display',Georgia,serif;font-size:24px;font-weight:500;color:#1C2B1C;margin-bottom:8px;">Set New Password</div>
-            <p style="font-size:14px;color:#6B7D6B;line-height:1.6;">Choose a new password for your account.</p>
+            <div style="margin-bottom:14px;">
+              <label style="display:block;font-size:12px;font-weight:600;color:#3A4A3A;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;">New Password</label>
+              <input id="reset-password" type="password" placeholder="New password (min 6 characters)" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;">
+            </div>
+            <div style="margin-bottom:24px;">
+              <label style="display:block;font-size:12px;font-weight:600;color:#3A4A3A;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;">Confirm Password</label>
+              <input id="reset-password-confirm" type="password" placeholder="Re-enter new password" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;" onkeydown="if(event.key==='Enter')submitNewPassword()">
+            </div>
+            <button onclick="submitNewPassword()" style="width:100%;background:#1C2B1C;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:13px;border-radius:6px;border:none;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='#3D6B3D'" onmouseout="this.style.background='#1C2B1C'">Set New Password</button>
+            <div id="reset-msg" style="display:none;margin-top:12px;padding:10px 14px;background:#eef5ee;border:1px solid #b4d4b4;border-radius:4px;font-size:13px;color:#2e5e2e;text-align:center;"></div>
+            <div id="reset-error" style="display:none;margin-top:12px;padding:10px 14px;background:#fdf0ef;border:1px solid #f0b4b0;border-radius:4px;font-size:13px;color:#8b2e2e;text-align:center;"></div>
           </div>
-          <div style="margin-bottom:16px;">
-            <label style="display:block;font-size:13px;font-weight:500;color:#3A4A3A;margin-bottom:6px;">New Password</label>
-            <input id="reset-password" type="password" placeholder="New password (min 6 characters)" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;">
-          </div>
-          <div style="margin-bottom:20px;">
-            <label style="display:block;font-size:13px;font-weight:500;color:#3A4A3A;margin-bottom:6px;">Confirm Password</label>
-            <input id="reset-password-confirm" type="password" placeholder="Re-enter new password" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;" onkeydown="if(event.key==='Enter')submitNewPassword()">
-          </div>
-          <button onclick="submitNewPassword()" style="width:100%;background:#3D6B3D;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:13px;border-radius:4px;border:none;cursor:pointer;">Set New Password</button>
-          <div id="reset-msg" style="display:none;margin-top:12px;padding:10px 14px;background:#eef5ee;border:1px solid #b4d4b4;border-radius:4px;font-size:13px;color:#2e5e2e;text-align:center;"></div>
-          <div id="reset-error" style="display:none;margin-top:12px;padding:10px 14px;background:#fdf0ef;border:1px solid #f0b4b0;border-radius:4px;font-size:13px;color:#8b2e2e;text-align:center;"></div>
         </div>
       </div>
 
@@ -3473,7 +3516,7 @@ nav .nav-links.open {
           </div>
 
           <!-- Check-in + History -->
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+          <div id="checkin-history-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
             <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:32px;">
               <div style="font-family:'Playfair Display',Georgia,serif;font-size:20px;font-weight:500;color:#1C2B1C;margin-bottom:8px;">Event Check-In</div>
               <p style="font-size:14px;color:#6B7D6B;line-height:1.65;margin-bottom:24px;">Enter the session code shown at tonight's event to log your attendance and earn points.</p>
@@ -3501,7 +3544,7 @@ nav .nav-links.open {
         <div id="ptab-content-leaderboard" style="display:none;">
           <div style="font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:500;color:#1C2B1C;margin-bottom:4px;">Leaderboard</div>
           <div style="font-size:13px;color:#6B7D6B;margin-bottom:24px;">Top members by points this semester</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px;">
+          <div id="leaderboard-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px;">
             <div>
               <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:12px;">All Members</div>
               <div id="leaderboard-all" style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;overflow:hidden;"></div>
@@ -3523,53 +3566,60 @@ nav .nav-links.open {
         </div>
 
         <!-- ── PROFILE TAB ── -->
-        <div id="ptab-content-profile" style="display:none;max-width:520px;">
+        <div id="ptab-content-profile" style="display:none;">
           <div style="font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:500;color:#1C2B1C;margin-bottom:24px;">Your Profile</div>
-          <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:32px;margin-bottom:24px;">
-            <div style="display:grid;gap:16px;">
-              <div>
-                <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:4px;">Full Name</div>
-                <input id="profile-name" type="text" style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;">
-              </div>
-              <div>
-                <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:4px;">UT EID</div>
-                <input id="profile-eid" type="text" style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;">
-              </div>
-              <div>
-                <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:4px;">Email</div>
-                <input id="profile-email" type="email" style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;">
-                <div style="font-size:11px;color:#6B7D6B;margin-top:4px;">Changing your email will require you to sign in again.</div>
-              </div>
-              <div>
-                <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:4px;">Role</div>
-                <select id="profile-role" style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;appearance:none;-webkit-appearance:none;background-image:url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2712%27 height=%278%27 viewBox=%270 0 12 8%27%3E%3Cpath d=%27M1 1l5 5 5-5%27 stroke=%27%236B7D6B%27 stroke-width=%271.5%27 fill=%27none%27 stroke-linecap=%27round%27/%3E%3C/svg%3E');background-repeat:no-repeat;background-position:right 14px center;">
-                  <option value="General Member">General Member</option>
-                  <option value="Analyst">Analyst</option>
-                  <option value="Investment Associate">Investment Associate</option>
-                  <option value="Consulting Associate">Consulting Associate</option>
-                  <option value="Board">Board</option>
-                  <option value="President">President</option>
-                </select>
-              </div>
-              <button onclick="saveProfile()" style="background:#3D6B3D;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:12px;border-radius:4px;border:none;cursor:pointer;">Save changes</button>
-              <div id="profile-msg" style="display:none;font-size:13px;color:#2e6b2e;text-align:center;"></div>
-            </div>
-          </div>
-          <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:32px;">
-            <div style="font-size:15px;font-weight:500;color:#1C2B1C;margin-bottom:16px;">Change Password</div>
-            <div style="display:grid;gap:12px;">
-              <input id="profile-new-pw" type="password" placeholder="New password" style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;">
-              <input id="profile-confirm-pw" type="password" placeholder="Confirm new password" style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;">
-              <button onclick="changePassword()" style="background:#1C2B1C;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:12px;border-radius:4px;border:none;cursor:pointer;">Update password</button>
-              <div id="pw-change-msg" style="display:none;font-size:13px;text-align:center;"></div>
-            </div>
-          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start;">
 
-          <!-- Milestones -->
-          <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:28px;margin-top:24px;">
-            <div style="font-family:'Playfair Display',Georgia,serif;font-size:18px;font-weight:500;color:#1C2B1C;margin-bottom:6px;">Milestones</div>
-            <div style="font-size:13px;color:#6B7D6B;margin-bottom:20px;">Badges earned through your involvement with UFA.</div>
-            <div id="badges-row" style="display:flex;gap:10px;flex-wrap:wrap;"></div>
+            <!-- Left column: info + password -->
+            <div style="display:flex;flex-direction:column;gap:24px;">
+              <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:32px;">
+                <div style="display:grid;gap:16px;">
+                  <div>
+                    <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:4px;">Full Name</div>
+                    <input id="profile-name" type="text" style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;">
+                  </div>
+                  <div>
+                    <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:4px;">UT EID</div>
+                    <input id="profile-eid" type="text" style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;">
+                  </div>
+                  <div>
+                    <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:4px;">Email</div>
+                    <input id="profile-email" type="email" style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;">
+                    <div style="font-size:11px;color:#6B7D6B;margin-top:4px;">Changing your email will require you to sign in again.</div>
+                  </div>
+                  <div>
+                    <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:4px;">Role</div>
+                    <select id="profile-role" style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;appearance:none;-webkit-appearance:none;background-image:url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2712%27 height=%278%27 viewBox=%270 0 12 8%27%3E%3Cpath d=%27M1 1l5 5 5-5%27 stroke=%27%236B7D6B%27 stroke-width=%271.5%27 fill=%27none%27 stroke-linecap=%27round%27/%3E%3C/svg%3E');background-repeat:no-repeat;background-position:right 14px center;">
+                      <option value="General Member">General Member</option>
+                      <option value="Analyst">Analyst</option>
+                      <option value="Investment Associate">Investment Associate</option>
+                      <option value="Consulting Associate">Consulting Associate</option>
+                      <option value="Board">Board</option>
+                      <option value="President">President</option>
+                    </select>
+                  </div>
+                  <button onclick="saveProfile()" style="background:#3D6B3D;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:12px;border-radius:4px;border:none;cursor:pointer;">Save changes</button>
+                  <div id="profile-msg" style="display:none;font-size:13px;color:#2e6b2e;text-align:center;"></div>
+                </div>
+              </div>
+              <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:32px;">
+                <div style="font-size:15px;font-weight:500;color:#1C2B1C;margin-bottom:16px;">Change Password</div>
+                <div style="display:grid;gap:12px;">
+                  <input id="profile-new-pw" type="password" placeholder="New password" style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;">
+                  <input id="profile-confirm-pw" type="password" placeholder="Confirm new password" style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;">
+                  <button onclick="changePassword()" style="background:#1C2B1C;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:12px;border-radius:4px;border:none;cursor:pointer;">Update password</button>
+                  <div id="pw-change-msg" style="display:none;font-size:13px;text-align:center;"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right column: milestones -->
+            <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:32px;">
+              <div style="font-family:'Playfair Display',Georgia,serif;font-size:18px;font-weight:500;color:#1C2B1C;margin-bottom:6px;">Milestones</div>
+              <div style="font-size:13px;color:#6B7D6B;margin-bottom:20px;">Badges earned through your involvement with UFA.</div>
+              <div id="badges-row" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;"></div>
+            </div>
+
           </div>
         </div>
 
@@ -3662,7 +3712,7 @@ nav .nav-links.open {
 
           <!-- Event Analytics -->
           <div id="atab-content-analytics" style="display:none;">
-            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;">
+            <div id="analytics-stat-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;">
               <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:20px;">
                 <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:8px;">Total Members</div>
                 <div style="font-family:'Playfair Display',Georgia,serif;font-size:32px;font-weight:500;color:#1C2B1C;" id="analytics-total-members">—</div>
@@ -3689,18 +3739,23 @@ nav .nav-links.open {
           </div>
 
           <!-- Announcements -->
-          <div id="atab-content-announce" style="display:none;max-width:600px;">
-            <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:28px;margin-bottom:20px;">
-              <div style="font-size:15px;font-weight:500;color:#1C2B1C;margin-bottom:16px;">Post Announcement</div>
-              <textarea id="announce-text" rows="3" placeholder="Write a message for all members…" style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;resize:vertical;"></textarea>
-              <div style="display:flex;gap:10px;margin-top:12px;">
-                <button onclick="postAnnouncement()" style="background:#3D6B3D;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;padding:10px 24px;border-radius:4px;border:none;cursor:pointer;">Post</button>
-                <button onclick="clearAnnouncement()" style="background:#fff;border:1px solid rgba(46,74,46,0.2);color:#6B7D6B;font-family:'DM Sans',sans-serif;font-size:13px;padding:10px 24px;border-radius:4px;cursor:pointer;">Clear banner</button>
+          <div id="atab-content-announce" style="display:none;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start;">
+              <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:28px;">
+                <div style="font-size:15px;font-weight:500;color:#1C2B1C;margin-bottom:16px;">Post Announcement</div>
+                <textarea id="announce-text" rows="4" placeholder="Write a message for all members…" style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;resize:vertical;"></textarea>
+                <div style="display:flex;gap:10px;margin-top:12px;">
+                  <button onclick="postAnnouncement()" style="background:#3D6B3D;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;padding:10px 24px;border-radius:4px;border:none;cursor:pointer;">Post</button>
+                  <button onclick="clearAnnouncement()" style="background:#fff;border:1px solid rgba(46,74,46,0.2);color:#6B7D6B;font-family:'DM Sans',sans-serif;font-size:13px;padding:10px 24px;border-radius:4px;cursor:pointer;">Clear banner</button>
+                </div>
+                <div id="announce-msg" style="display:none;margin-top:10px;font-size:13px;color:#2e6b2e;"></div>
               </div>
-              <div id="announce-msg" style="display:none;margin-top:10px;font-size:13px;color:#2e6b2e;"></div>
+              <div>
+                <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:10px;">Current Announcement</div>
+                <div id="current-announce" style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:20px;font-size:14px;color:#3A4A3A;line-height:1.6;">None active</div>
+                <div style="font-size:12px;color:#6B7D6B;margin-top:10px;">This message appears as a banner at the top of every member's dashboard.</div>
+              </div>
             </div>
-            <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:10px;">Current Announcement</div>
-            <div id="current-announce" style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:20px;font-size:14px;color:#3A4A3A;">None</div>
           </div>
 
         </div><!-- /admin -->
@@ -3776,13 +3831,13 @@ async function showDashboard() {
   document.getElementById('portal-login').style.display = 'none';
   document.getElementById('portal-dashboard').style.display = 'flex';
   document.getElementById('portal-dashboard').style.flexDirection = 'column';
-  document.getElementById('portal-user-badge').style.display = 'block';
+  
 
   const name     = (currentMember && currentMember.name)     ? currentMember.name     : currentUser.email;
   const role     = (currentMember && currentMember.role)     ? currentMember.role     : 'Member';
   const semester = (currentMember && currentMember.semester) ? currentMember.semester : '---';
 
-  document.getElementById('portal-user-badge').textContent   = name + ' - ' + role;
+  
   document.getElementById('portal-welcome-name').textContent = name;
   document.getElementById('portal-welcome-team').textContent = role + ' - ' + semester;
 
@@ -3937,7 +3992,7 @@ async function portalLogout() {
   currentUser = null; currentMember = null;
   document.getElementById('portal-login').style.display = 'flex';
   document.getElementById('portal-dashboard').style.display = 'none';
-  document.getElementById('portal-user-badge').style.display = 'none';
+  
   document.getElementById('eid-input').value = '';
   document.getElementById('pw-input').value = '';
   document.getElementById('checkin-success').style.display = 'none';
@@ -4076,7 +4131,7 @@ async function requestRoleChange() {
   currentMember.role = newRole;
   document.getElementById('profile-role').value = newRole;
   document.getElementById('portal-welcome-team').textContent = newRole + ' - ' + (currentMember.semester||'');
-  document.getElementById('portal-user-badge').textContent   = (currentMember.name||'') + ' - ' + newRole;
+  
 
   // Replace section with pending message
   document.getElementById('role-request-section').innerHTML =
@@ -4118,7 +4173,7 @@ async function saveProfile() {
   currentMember.name = name; currentMember.eid = eid; currentMember.email = email; currentMember.role = roleToSave;
   document.getElementById('portal-welcome-name').textContent = name;
   document.getElementById('portal-welcome-team').textContent = roleToSave + ' - ' + (currentMember.semester||'');
-  document.getElementById('portal-user-badge').textContent   = name + ' - ' + roleToSave;
+  
 
   var BOARD_ROLES = ['Board', 'President'];
   document.getElementById('ptab-admin').style.display = BOARD_ROLES.includes(roleToSave) ? '' : 'none';
@@ -4424,6 +4479,7 @@ sb.auth.getSession().then(function(result) {
     currentUser = session.user;
     sb.from('members').select('*').eq('email', currentUser.email).single().then(function(result2) {
       currentMember = result2.data;
+      showPage('portal');
       showDashboard();
     });
   }
@@ -4706,6 +4762,7 @@ function closeMenu() {
  * Hides all other auth forms (signup, magic link, forgot password).
  */
 function showLogin() {
+  document.getElementById('portal-login').style.display = 'flex';
   document.getElementById('login-card').style.display = 'block';
   document.getElementById('portal-signup').style.display = 'none';
   document.getElementById('portal-magic').style.display = 'none';
@@ -4720,6 +4777,7 @@ function showLogin() {
  * Hides all other auth forms.
  */
 function showSignup() {
+  document.getElementById('portal-login').style.display = 'flex';
   document.getElementById('login-card').style.display = 'none';
   document.getElementById('portal-signup').style.display = 'block';
   document.getElementById('portal-magic').style.display = 'none';
@@ -4734,8 +4792,7 @@ function showSignup() {
  * User enters their email and receives a one-click login link.
  */
 function showMagicLink() {
-  document.getElementById('login-card').style.display = 'none';
-  document.getElementById('portal-signup').style.display = 'none';
+  document.getElementById('portal-login').style.display = 'none';
   document.getElementById('portal-magic').style.display = 'flex';
   document.getElementById('portal-forgot').style.display = 'none';
   document.getElementById('portal-reset').style.display = 'none';
@@ -4748,8 +4805,7 @@ function showMagicLink() {
  * User enters their email and receives a reset link.
  */
 function showForgotPassword() {
-  document.getElementById('login-card').style.display = 'none';
-  document.getElementById('portal-signup').style.display = 'none';
+  document.getElementById('portal-login').style.display = 'none';
   document.getElementById('portal-magic').style.display = 'none';
   document.getElementById('portal-forgot').style.display = 'flex';
   document.getElementById('portal-reset').style.display = 'none';
@@ -4784,7 +4840,7 @@ async function sendMagicLink() {
   const err = document.getElementById('magic-error');
   msg.style.display = 'none'; err.style.display = 'none';
   if (!email) { err.style.display='block'; err.textContent='Please enter your UT email.'; return; }
-  const { error } = await sb.auth.signInWithOtp({ email, options: { emailRedirectTo: 'https://cadenwarner.github.io/UFA-Website/' } });
+  const { error } = await sb.auth.signInWithOtp({ email, options: { emailRedirectTo: 'https://cadenwarner.github.io/UFA-Website/#portal' } });
   if (error) { err.style.display='block'; err.textContent=error.message; return; }
   msg.style.display = 'block';
   msg.textContent = 'Magic link sent! Check your email and click the link to sign in.';
@@ -4959,9 +5015,19 @@ async function submitNewPassword() {
 // Listen for PASSWORD_RECOVERY event from Supabase (triggered when user
 // arrives via a reset-password email link). Shows the Set New Password form
 // instead of logging them straight in.
-sb.auth.onAuthStateChange((event, session) => {
+sb.auth.onAuthStateChange(async (event, session) => {
   if (event === 'PASSWORD_RECOVERY') {
     showResetPanel();
+    return;
+  }
+  if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session) {
+    // Only auto-open dashboard if we're on the portal page and not already showing dashboard
+    if (currentUser) return; // already handled
+    currentUser = session.user;
+    const { data: member } = await sb.from('members').select('*').eq('email', currentUser.email).single();
+    currentMember = member;
+    showPage('portal');
+    showDashboard();
   }
 });
 
@@ -5005,6 +5071,7 @@ async function portalSignup() {
 
 let observerLocked = false;
 
+// ── IntersectionObserver for reveal elements ──
 const observer = new IntersectionObserver((entries) => {
   if (observerLocked) return;
   entries.forEach(entry => {
@@ -5177,11 +5244,11 @@ setTimeout(() => {
       idx++;
     }
   });
-  // Stats via reveal system — observe so they animate when scrolled into view
-  document.querySelectorAll('.stats-bar .reveal').forEach((el) => {
+  // Stats via reveal system — staggered fade-in when scrolled into view
+  document.querySelectorAll('.stats-bar .reveal').forEach((el, i) => {
     const rect = el.getBoundingClientRect();
     if (rect.top < window.innerHeight && rect.bottom > 0) {
-      setTimeout(() => el.classList.add('visible'), 300);
+      setTimeout(() => el.classList.add('visible'), 300 + i * 150);
     } else {
       observer.observe(el);
     }
