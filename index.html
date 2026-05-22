@@ -3772,7 +3772,7 @@ nav .nav-links.open {
 <script>
 const SUPABASE_URL = 'https://pilbazpbicpuuupwalvh.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBpbGJhenBiaWNwdXV1cHdhbHZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwMzc0OTcsImV4cCI6MjA5MzYxMzQ5N30.47M2ToH3O8hsuiMc1OgcM3XA4K97KukAqEeF9BW0QYE';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { flowType: "pkce" } });
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { flowType: 'implicit', detectSessionInUrl: true, persistSession: true } });
 
 let currentUser   = null;
 let currentMember = null;
@@ -4479,49 +4479,65 @@ async function loadAnalytics() {
 // ── Handle magic link / OAuth code in URL ──
 (async function() {
   const params = new URLSearchParams(window.location.search);
-  const code = params.get('code');
-  const type = params.get('type');
-  const hashParams = new URLSearchParams(window.location.hash.replace('#', ''));
-  const accessToken = hashParams.get('access_token');
+  const error = params.get('error');
+  const errorDesc = params.get('error_description');
 
-  if (code) {
-    try {
-      const { data, error } = await sb.auth.exchangeCodeForSession(window.location.href);
-      if (!error && data.session) {
+  // Handle error in URL (e.g. expired magic link)
+  if (error) {
+    window.history.replaceState({}, '', window.location.pathname);
+    showPage('portal');
+    const errEl = document.getElementById('login-error');
+    if (errEl) {
+      errEl.style.display = 'block';
+      errEl.textContent = (errorDesc && errorDesc.includes('expired'))
+        ? 'Your magic link has expired. Please request a new one.'
+        : 'Sign-in failed: ' + (errorDesc || error);
+    }
+    return;
+  }
+
+  // Check for access_token in hash (implicit flow — what Supabase sends)
+  const hash = window.location.hash;
+  if (hash && hash.includes('access_token')) {
+    const hashParams = new URLSearchParams(hash.replace('#', ''));
+    const accessToken = hashParams.get('access_token');
+    const refreshToken = hashParams.get('refresh_token');
+    if (accessToken) {
+      const { data, error: sessErr } = await sb.auth.setSession({
+        access_token: accessToken,
+        refresh_token: refreshToken || ''
+      });
+      if (!sessErr && data.session) {
         currentUser = data.session.user;
         const { data: member } = await sb.from('members').select('*').eq('email', currentUser.email).single();
         currentMember = member;
         window.history.replaceState({}, '', window.location.pathname);
-        if (type === 'recovery') {
-          showPage('portal');
-          showResetPanel();
-        } else {
-          showPage('portal');
-          showDashboard();
-        }
+        showPage('portal');
+        showDashboard();
+        return;
+      }
+    }
+  }
+
+  // Check for PKCE code in query string
+  const code = params.get('code');
+  const type = params.get('type');
+  if (code) {
+    try {
+      const { data, error: exchErr } = await sb.auth.exchangeCodeForSession(window.location.href);
+      if (!exchErr && data.session) {
+        currentUser = data.session.user;
+        const { data: member } = await sb.from('members').select('*').eq('email', currentUser.email).single();
+        currentMember = member;
+        window.history.replaceState({}, '', window.location.pathname);
+        if (type === 'recovery') { showPage('portal'); showResetPanel(); }
+        else { showPage('portal'); showDashboard(); }
         return;
       }
     } catch(e) { console.log('Code exchange error:', e); }
   }
 
-  // Check for token in hash fragment (implicit flow fallback)
-  if (accessToken) {
-    const { data, error } = await sb.auth.setSession({
-      access_token: accessToken,
-      refresh_token: hashParams.get('refresh_token')
-    });
-    if (!error && data.session) {
-      currentUser = data.session.user;
-      const { data: member } = await sb.from('members').select('*').eq('email', currentUser.email).single();
-      currentMember = member;
-      window.history.replaceState({}, '', window.location.pathname);
-      showPage('portal');
-      showDashboard();
-      return;
-    }
-  }
-
-  // Normal session restore
+  // Normal session restore (already logged in)
   sb.auth.getSession().then(function(result) {
     var session = result.data.session;
     if (session) {
@@ -4890,7 +4906,7 @@ async function sendMagicLink() {
   const err = document.getElementById('magic-error');
   msg.style.display = 'none'; err.style.display = 'none';
   if (!email) { err.style.display='block'; err.textContent='Please enter your UT email.'; return; }
-  const { error } = await sb.auth.signInWithOtp({ email, options: { emailRedirectTo: 'https://cadenwarner.github.io/UFA-Website/' } });
+  const { error } = await sb.auth.signInWithOtp({ email });
   if (error) { err.style.display='block'; err.textContent=error.message; return; }
   msg.style.display = 'block';
   msg.textContent = 'Magic link sent! Check your email and click the link to sign in.';
