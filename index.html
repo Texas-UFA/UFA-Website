@@ -203,7 +203,7 @@
     border-radius: 4px;
     text-decoration: none;
     letter-spacing: 0.02em;
-    transition: background 0.2s;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     border: none; cursor: pointer;
   }
   .btn-primary:hover { background: #5a9e5a; }
@@ -218,7 +218,7 @@
     text-decoration: none;
     border: 2px solid rgba(255,255,255,0.8);
     color: var(--white);
-    transition: all 0.2s;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
   }
   .btn-outline:hover { border-color: rgba(255,255,255,0.8); background: rgba(255,255,255,0.08); }
@@ -573,7 +573,7 @@
   /* .btn-white
      White filled button. Used on dark green backgrounds
      where .btn-primary would not have enough contrast. */
-  .btn-white { background: var(--white); color: var(--green-dark); font-family: var(--font-); font-size: 14px; font-weight: 500; padding: 13px 28px; border-radius: 4px; text-decoration: none; display: inline-block; transition: opacity 0.2s; border: none; cursor: pointer; }
+  .btn-white { background: var(--white); color: var(--green-dark); font-family: var(--font-); font-size: 14px; font-weight: 500; padding: 13px 28px; border-radius: 4px; text-decoration: none; display: inline-block; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); border: none; cursor: pointer; }
   .btn-white:hover { opacity: 0.9; }
 
   /* ── INSTAGRAM ──
@@ -618,10 +618,10 @@ background-position: center 95%;
     overflow: hidden;
     display: flex;
     align-items: flex-end;
-    background-image: linear-gradient(rgba(26,44,26,0.25), rgba(26,44,26,0.25)), url('https://i.postimg.cc/YCvbXTkc/39405936ad96667d2a41e6ed1048bc64-(1).webp');    
+    background-image: linear-gradient(rgba(26,44,26,0.25), rgba(26,44,26,0.25)), url('https://i.postimg.cc/YCvbXTkc/39405936ad96667d2a41e6ed1048bc64-(1).webp');
     background-size: cover;
     background-repeat: no-repeat;
-    background-position: 50% 50%;
+    background-position: 60% 40%;
   }
   .why-hero-overlay { position: absolute; inset: 0; background: rgba(20,36,20,0.25); }
   .why-hero-content { position: relative; z-index: 2; padding: 0 72px 56px; }
@@ -815,6 +815,7 @@ align-items: flex-end;
     background: var(--white); border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
     text-decoration: none; color: inherit; display: block;
     transition: box-shadow 0.2s, transform 0.2s;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 10px 15px -3px rgba(46, 74, 46, 0.04);
   }
   .blog-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.08); transform: translateY(-3px); }
   .blog-card-img { aspect-ratio: 16/9; overflow: hidden; background: var(--green-wash); }
@@ -2839,6 +2840,112 @@ nav .nav-links.open {
 
   <hr class="divider">
 
+  <!-- Recruiting Timeline -->
+  <section class="section" style="background:var(--green-dark);padding-top:64px;padding-bottom:64px;">
+    <div class="section-tag" style="color:var(--green-pale);">How It Works</div>
+    <h2 class="section-title" style="color:var(--white);margin-bottom:12px;">Recruitment Timeline</h2>
+    <p style="font-size:16px;color:rgba(255,255,255,0.65);line-height:1.8;margin-bottom:56px;">Applications open each fall and spring semester. Follow <a href="https://www.instagram.com/texasufa/" target="_blank" style="color:var(--green-pale);text-decoration:none;font-weight:500;">@texasufa</a> for exact dates each cycle.</p>
+
+    <div style="position:relative;max-width:700px;margin:0 auto;">
+      <div style="position:absolute;left:50%;top:0;bottom:0;width:1px;background:rgba(255,255,255,0.15);transform:translateX(-50%);"></div>
+
+      <div class="reveal" style="display:grid;grid-template-columns:1fr 1fr;gap:0;margin-bottom:48px;align-items:center;">
+        <div style="text-align:right;padding-right:40px;">
+          <div style="font-family:var(--font-display);font-size:18px;font-weight:500;color:var(--white);margin-bottom:6px;">Info Session 1</div>
+          <p style="font-size:14px;color:rgba(255,255,255,0.6);line-height:1.65;margin:0;">Learn what each program offers, meet current members, and get your questions answered.</p>
+        </div>
+        <div style="display:flex;align-items:center;padding-left:40px;">
+          <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <span style="font-family:var(--font-display);font-size:13px;font-weight:500;color:var(--white);">01</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="reveal" style="display:grid;grid-template-columns:1fr 1fr;gap:0;margin-bottom:48px;align-items:center;">
+        <div style="display:flex;align-items:center;justify-content:flex-end;padding-right:40px;">
+          <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <span style="font-family:var(--font-display);font-size:13px;font-weight:500;color:var(--white);">02</span>
+          </div>
+        </div>
+        <div style="padding-left:40px;">
+          <div style="font-family:var(--font-display);font-size:18px;font-weight:500;color:var(--white);margin-bottom:0;">Applications Open</div>
+        </div>
+      </div>
+
+      <div class="reveal" style="display:grid;grid-template-columns:1fr 1fr;gap:0;margin-bottom:48px;align-items:center;">
+        <div style="text-align:right;padding-right:40px;">
+          <div style="font-family:var(--font-display);font-size:18px;font-weight:500;color:var(--white);margin-bottom:6px;">Coffee Chat 1</div>
+          <p style="font-size:14px;color:rgba(255,255,255,0.6);line-height:1.65;margin:0;">An informal setting to connect with current members.</p>
+        </div>
+        <div style="display:flex;align-items:center;padding-left:40px;">
+          <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <span style="font-family:var(--font-display);font-size:13px;font-weight:500;color:var(--white);">03</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="reveal" style="display:grid;grid-template-columns:1fr 1fr;gap:0;margin-bottom:48px;align-items:center;">
+        <div style="display:flex;align-items:center;justify-content:flex-end;padding-right:40px;">
+          <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <span style="font-family:var(--font-display);font-size:13px;font-weight:500;color:var(--white);">04</span>
+          </div>
+        </div>
+        <div style="padding-left:40px;">
+          <div style="font-family:var(--font-display);font-size:18px;font-weight:500;color:var(--white);margin-bottom:0;">Info Session 2</div>
+        </div>
+      </div>
+
+      <div class="reveal" style="display:grid;grid-template-columns:1fr 1fr;gap:0;margin-bottom:48px;align-items:center;">
+        <div style="text-align:right;padding-right:40px;">
+          <div style="font-family:var(--font-display);font-size:18px;font-weight:500;color:var(--white);margin-bottom:0;">Coffee Chat 2</div>
+        </div>
+        <div style="display:flex;align-items:center;padding-left:40px;">
+          <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <span style="font-family:var(--font-display);font-size:13px;font-weight:500;color:var(--white);">05</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="reveal" style="display:grid;grid-template-columns:1fr 1fr;gap:0;margin-bottom:48px;align-items:center;">
+        <div style="display:flex;align-items:center;justify-content:flex-end;padding-right:40px;">
+          <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <span style="font-family:var(--font-display);font-size:13px;font-weight:500;color:var(--white);">06</span>
+          </div>
+        </div>
+        <div style="padding-left:40px;">
+          <div style="font-family:var(--font-display);font-size:18px;font-weight:500;color:var(--white);margin-bottom:0;">Applications Close</div>
+        </div>
+      </div>
+
+      <div class="reveal" style="display:grid;grid-template-columns:1fr 1fr;gap:0;margin-bottom:48px;align-items:center;">
+        <div style="text-align:right;padding-right:40px;">
+          <div style="font-family:var(--font-display);font-size:18px;font-weight:500;color:var(--white);margin-bottom:6px;">Interviews</div>
+          <p style="font-size:14px;color:rgba(255,255,255,0.6);line-height:1.65;margin:0 0 8px;">A professional interview covering technical knowledge, behavioral questions, and fit with the team.</p>
+          <p style="font-size:13px;color:var(--green-pale);line-height:1.5;margin:0;font-style:italic;">Investment and Consulting Associates only.</p>
+        </div>
+        <div style="display:flex;align-items:center;padding-left:40px;">
+          <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.4);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <span style="font-family:var(--font-display);font-size:13px;font-weight:500;color:var(--white);">07</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="reveal" style="display:grid;grid-template-columns:1fr 1fr;gap:0;align-items:center;">
+        <div style="display:flex;align-items:center;justify-content:flex-end;padding-right:40px;">
+          <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <span style="font-family:var(--font-display);font-size:13px;font-weight:500;color:var(--white);">08</span>
+          </div>
+        </div>
+        <div style="padding-left:40px;">
+          <div style="font-family:var(--font-display);font-size:18px;font-weight:500;color:var(--white);margin-bottom:0;">Decisions Released</div>
+        </div>
+      </div>
+
+    </div><!-- /timeline -->
+  </section>
+
+  <hr class="divider">
+
 <section class="section" style="background:var(--white);">
   <div style="width:100%;">
     <div class="section-tag">Everything you need to know</div>
@@ -4681,6 +4788,7 @@ async function loadAnalytics() {
    * Example: showPage('about') → shows the About page
    */
   function showPage(id) {
+  window.scrollTo({ top: 0, behavior: 'instant' });
   observerLocked = true;
 
   // Dynamic copyright year
