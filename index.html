@@ -1899,15 +1899,16 @@ nav .nav-links.open {
   /* Research report card — stack on mobile */
   .pub-card-info {
     flex-direction: column !important;
+    align-items: stretch !important;
   }
   .pub-card-info > div:last-child {
-    padding-top: 0 !important;
-    width: 100% !important;
+    flex-shrink: unset !important;
   }
   .pub-card-info > div:last-child .btn-primary {
     width: 100% !important;
     text-align: center !important;
     box-sizing: border-box !important;
+    display: block !important;
   }
 
   /* PDF iframe — full width on mobile */
@@ -1957,6 +1958,14 @@ nav .nav-links.open {
   .team-btn-group {
     flex-direction: row !important;
     display: flex !important;
+  }
+
+  /* Research report card — keep side by side on desktop */
+  .pub-card-info {
+    flex-direction: row !important;
+  }
+  .pub-card-info > div:last-child .btn-primary {
+    width: auto !important;
   }
 
 
@@ -3109,16 +3118,13 @@ nav .nav-links.open {
 
 
     <div class="pub-card-embed-container">
-      <div class="pub-card-info" style="display:flex;align-items:flex-start;justify-content:space-between;gap:32px;flex-wrap:wrap;">
-        <div style="flex:1;min-width:200px;">
+      <div class="pub-card-info" style="display:flex;align-items:center;justify-content:space-between;gap:40px;">
+        <div>
           <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px;">Fall 2025</div>
           <div class="pub-title">Fall 2025 Research Report</div>
-          <p class="pub-desc">
-            Our inaugural Equity Research Journal, a collection of equity research and macro analysis produced by UFA Investment Associates.
-            This edition covers TMT, Healthcare, Energy, Financials, Consumer, and Industrials, featuring deep-dives into companies of all sizes.
-          </p>
+          <p class="pub-desc">Our inaugural Equity Research Journal, a collection of equity research and macro analysis produced by UFA Investment Associates. This edition covers TMT, Healthcare, Energy, Financials, Consumer, and Industrials, featuring deep-dives into companies of all sizes.</p>
         </div>
-        <div style="flex-shrink:0;padding-top:28px;">
+        <div style="flex-shrink:0;">
           <a href="https://drive.google.com/uc?export=download&id=1M3_uEOvIkb5qdzMZXesy35_vrDBJ8AEW" target="_blank" class="btn-primary">Download PDF</a>
         </div>
       </div>
