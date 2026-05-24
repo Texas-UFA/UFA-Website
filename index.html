@@ -973,9 +973,8 @@ align-items: flex-end;
 }
 .pub-card-embed-container iframe {
   display: block;
-  width: 140%;
-  margin-left: -20%;
-  transform-origin: top center;
+  width: 100%;
+  margin-left: 0;
 }
 .pub-card-info {
   padding: 40px 48px;
@@ -1883,6 +1882,55 @@ nav .nav-links.open {
   #page-why-ufa div[style*="grid-template-columns:repeat(4,1fr)"] {
     grid-template-columns: repeat(2,1fr) !important;
   }
+
+  /* ── Mobile button fixes ── */
+
+  /* Full width buttons on mobile for easy tapping */
+  .btn-primary, .btn-outline {
+    width: 100% !important;
+    text-align: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Button groups — stack vertically */
+  .hero-btns,
+  div[style*="display:flex"][style*="gap"] > .btn-primary,
+  div[style*="display:flex"][style*="gap"] > .btn-outline,
+  div[style*="display: flex"][style*="gap"] > .btn-primary,
+  div[style*="display: flex"][style*="gap"] > .btn-outline {
+    width: 100% !important;
+  }
+
+  /* Team page Apply + Work with us buttons — stack and full width */
+  .tab-content .btn-primary,
+  .tab-content .btn-outline {
+    width: 100% !important;
+    display: block !important;
+  }
+
+  /* Download PDF button — center on mobile */
+  .pub-card-info .btn-primary {
+    display: block !important;
+    width: fit-content !important;
+    margin: 0 auto !important;
+  }
+
+  /* Blog card buttons — bigger and full width on mobile */
+  .blog-card-new .btn-primary,
+  .blog-card-new .btn-outline {
+    padding: 12px 20px !important;
+    font-size: 15px !important;
+    width: 100% !important;
+  }
+
+  /* PDF iframe — full width on mobile */
+  .pub-card-embed-container iframe {
+    width: 100% !important;
+    margin-left: 0 !important;
+    max-width: 100% !important;
+  }
+
 }  /* ← this closes the 768px block */
 
 
@@ -2380,120 +2428,120 @@ nav .nav-links.open {
     <div class="board-grid">
 
       <div class="board-card">
-        <div class="board-photo"><img style="width:100%;height:100%;object-fit:cover;object-position:center top;" style="object-position:center top;" src="https://i.imgur.com/ciltwuJ.png" alt="Yashi Jain" onerror="this.style.display='none'"></div>
-        <div class="board-name">Yashi Jain</div>
-        <div class="board-role">Co-President</div>
-        <a href="https://www.linkedin.com/in/yashasvinijain/" target="_blank" class="board-li">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
-          LinkedIn
-        </a>
-      </div>
-
-      <div class="board-card">
-        <div class="board-photo"><img style="width:100%;height:100%;object-fit:cover;object-position:center top;" style="object-position:center top;" src="https://i.imgur.com/YmSDfgl.jpeg" alt="Graham Young" onerror="this.style.display='none'"></div>
-        <div class="board-name">Graham Young</div>
-        <div class="board-role">Co-President</div>
-        <a href="https://linkedin.com/in/grahamkyoung" target="_blank" class="board-li">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
-          LinkedIn
-        </a>
-      </div>
-
-      <div class="board-card">
-        <div class="board-photo"><img style="width:100%;height:100%;object-fit:cover;object-position:center top;" style="object-position:center top;" src="https://i.imgur.com/iqRMDjI.png" alt="Josh Fair" onerror="this.style.display='none'"></div>
-        <div class="board-name">Josh Fair</div>
-        <div class="board-role">Treasurer</div>
-        <a href="https://linkedin.com/in/joshuafair" target="_blank" class="board-li">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
-          LinkedIn
-        </a>
-      </div>
-
-      <div class="board-card">
-        <div class="board-photo"><img style="width:100%;height:100%;object-fit:cover;object-position:center top;" style="object-position:center top;" src="https://i.imgur.com/uOrOhpU.png" alt="Sriya Dev" onerror="this.style.display='none'"></div>
-        <div class="board-name">Sriya Dev</div>
-        <div class="board-role">External Affairs</div>
-        <a href="https://linkedin.com/in/sriya-dev" target="_blank" class="board-li">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
-          LinkedIn
-        </a>
-      </div>
-
-      <div class="board-card">
-        <div class="board-photo"><img style="width:100%;height:100%;object-fit:cover;object-position:center top;" style="object-position:center top;" src="https://i.imgur.com/gQIamoa.jpeg" alt="Caden Warner" onerror="this.style.display='none'"></div>
+        <div class="board-photo"><img style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1759765238227%20(2).jpeg" alt="Caden Warner" onerror="this.style.display='none'"></div>
         <div class="board-name">Caden Warner</div>
-        <div class="board-role">Director of Investments</div>
-        <a href="https://linkedin.com/in/caden-warner" target="_blank" class="board-li">
+        <div class="board-role">President</div>
+        <a href="https://www.linkedin.com/in/caden-warner/" target="_blank" class="board-li">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
           LinkedIn
         </a>
       </div>
 
       <div class="board-card">
-        <div class="board-photo"><img style="width:100%;height:100%;object-fit:cover;object-position:center top;" style="object-position:center top;" src="https://i.imgur.com/C6HkIyI.png" alt="Nathan Li" onerror="this.style.display='none'"></div>
-        <div class="board-name">Nathan Li</div>
-        <div class="board-role">Director of Investments</div>
-        <a href="https://linkedin.com/in/nathanyuxianli" target="_blank" class="board-li">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
-          LinkedIn
-        </a>
-      </div>
-
-      <div class="board-card">
-        <div class="board-photo"><img style="width:100%;height:100%;object-fit:cover;object-position:center top;" style="object-position:center top;" src="https://i.imgur.com/7rRJQbW.jpeg" alt="Beomjun Kim" onerror="this.style.display='none'"></div>
-        <div class="board-name">Beomjun Kim</div>
-        <div class="board-role">Director of Consulting</div>
-        <a href="https://linkedin.com/in/beomjun-kim999" target="_blank" class="board-li">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
-          LinkedIn
-        </a>
-      </div>
-
-      <div class="board-card">
-        <div class="board-photo"><img style="width:100%;height:100%;object-fit:cover;object-position:center top;" style="object-position:center top;" src="https://i.imgur.com/gaC3ykP.jpeg" alt="Bohdan Tychyna" onerror="this.style.display='none'"></div>
-        <div class="board-name">Bohdan Tychyna</div>
-        <div class="board-role">Director of Consulting</div>
-        <a href="https://linkedin.com/in/bohdantychyna" target="_blank" class="board-li">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
-          LinkedIn
-        </a>
-      </div>
-
-      <div class="board-card">
-        <div class="board-photo"><img style="width:100%;height:100%;object-fit:cover;object-position:center top;" style="object-position:center top;" src="https://i.imgur.com/xXF2RvO.jpeg" alt="Adam Ageeb" onerror="this.style.display='none'"></div>
-        <div class="board-name">Adam Ageeb</div>
-        <div class="board-role">Director of Corporate Relations</div>
-        <a href="https://linkedin.com/in/adamageeb" target="_blank" class="board-li">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
-          LinkedIn
-        </a>
-      </div>
-
-      <div class="board-card">
-        <div class="board-photo"><img style="width:100%;height:100%;object-fit:cover;object-position:center top;" style="object-position:center top;" src="https://i.imgur.com/eJhVxxp.jpeg" alt="Julia Apuda" onerror="this.style.display='none'"></div>
-        <div class="board-name">Julia Marie Apuda</div>
-        <div class="board-role">Director of Corporate Relations</div>
-        <a href="https://linkedin.com/in/julia-apuda" target="_blank" class="board-li">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
-          LinkedIn
-        </a>
-      </div>
-
-      <div class="board-card">
-        <div class="board-photo"><img style="width:100%;height:100%;object-fit:cover;object-position:center top;" style="object-position:center top;" src="https://i.imgur.com/ZcYKaIo.png" alt="Alika Frankovska" onerror="this.style.display='none'"></div>
+        <div class="board-photo"><img style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1772591854732.png" alt="Alika Frankovska" onerror="this.style.display='none'"></div>
         <div class="board-name">Alika Frankovska</div>
-        <div class="board-role">Director of Marketing</div>
-        <a href="https://linkedin.com/in/alikafrankovska-703a69269" target="_blank" class="board-li">
+        <div class="board-role">Vice President</div>
+        <a href="https://www.linkedin.com/in/alikafrankovska/" target="_blank" class="board-li">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
           LinkedIn
         </a>
       </div>
 
       <div class="board-card">
-        <div class="board-photo"><img style="width:100%;height:100%;object-fit:cover;object-position:center top;" style="object-position:center top;" src="https://i.imgur.com/RJxYIM6.jpeg" alt="Marissa Mazzaferro" onerror="this.style.display='none'"></div>
-        <div class="board-name">Marissa Mazzaferro</div>
+        <div class="board-photo"><img style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1759271799751.png" alt="Nikhil Parida" onerror="this.style.display='none'"></div>
+        <div class="board-name">Nikhil Parida</div>
+        <div class="board-role">Director of External Affairs</div>
+        <a href="https://www.linkedin.com/in/nikhilparida/" target="_blank" class="board-li">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+          LinkedIn
+        </a>
+      </div>
+
+      <div class="board-card">
+        <div class="board-photo"><img style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1774545012262.png" alt="Nathan Li" onerror="this.style.display='none'"></div>
+        <div class="board-name">Nathan Li</div>
+        <div class="board-role">Director of Investment</div>
+        <a href="https://www.linkedin.com/in/nathanyuxianli/" target="_blank" class="board-li">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+          LinkedIn
+        </a>
+      </div>
+
+      <div class="board-card">
+        <div class="board-photo"><img style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1774587526109.png" alt="Emily Liu" onerror="this.style.display='none'"></div>
+        <div class="board-name">Emily Liu</div>
+        <div class="board-role">Director of Investment</div>
+        <a href="https://www.linkedin.com/in/emily-liu07/" target="_blank" class="board-li">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+          LinkedIn
+        </a>
+      </div>
+
+      <div class="board-card">
+        <div class="board-photo"><img style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1726811705179.jpeg" alt="Shreyas Sripurushottam" onerror="this.style.display='none'"></div>
+        <div class="board-name">Shreyas Sripurushottam</div>
+        <div class="board-role">Director of Consulting</div>
+        <a href="https://www.linkedin.com/in/shreyas-sri/" target="_blank" class="board-li">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+          LinkedIn
+        </a>
+      </div>
+
+      <div class="board-card">
+        <div class="board-photo"><img style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1777307808671.png" alt="Seyoon (Sam) Jung" onerror="this.style.display='none'"></div>
+        <div class="board-name">Seyoon (Sam) Jung</div>
+        <div class="board-role">Director of Consulting</div>
+        <a href="https://www.linkedin.com/in/sam-jung-b5ab261ba/" target="_blank" class="board-li">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+          LinkedIn
+        </a>
+      </div>
+
+      <div class="board-card">
+        <div class="board-photo"><img style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1763951935507.jpeg" alt="Varsha Ravi" onerror="this.style.display='none'"></div>
+        <div class="board-name">Varsha Ravi</div>
+        <div class="board-role">Director of Corporate Relations</div>
+        <a href="https://www.linkedin.com/in/varsha-ravi108/" target="_blank" class="board-li">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+          LinkedIn
+        </a>
+      </div>
+
+      <div class="board-card">
+        <div class="board-photo"><img style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1778272105108.png" alt="Grace Miller" onerror="this.style.display='none'"></div>
+        <div class="board-name">Grace Miller</div>
+        <div class="board-role">Director of Corporate Relations</div>
+        <a href="https://www.linkedin.com/in/gracemiller219/" target="_blank" class="board-li">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+          LinkedIn
+        </a>
+      </div>
+
+      <div class="board-card">
+        <div class="board-photo"><img style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1770835392157.jpeg" alt="Layne Nguyen" onerror="this.style.display='none'"></div>
+        <div class="board-name">Layne Nguyen</div>
         <div class="board-role">Director of Marketing</div>
-        <a href="https://linkedin.com/in/marissa-mazzaferro" target="_blank" class="board-li">
+        <a href="https://www.linkedin.com/in/laynenguyen/" target="_blank" class="board-li">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+          LinkedIn
+        </a>
+      </div>
+
+      <div class="board-card">
+        <div class="board-photo"><img style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1768946413296.jpeg" alt="Emma Nowotny" onerror="this.style.display='none'"></div>
+        <div class="board-name">Emma Nowotny</div>
+        <div class="board-role">Director of Marketing</div>
+        <a href="https://www.linkedin.com/in/emmanowotny/" target="_blank" class="board-li">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+          LinkedIn
+        </a>
+      </div>
+
+      <div class="board-card">
+        <div class="board-photo"><img style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1773078471094.jpeg" alt="Aryan Jhaveri" onerror="this.style.display='none'"></div>
+        <div class="board-name">Aryan Jhaveri</div>
+        <div class="board-role">Treasurer</div>
+        <a href="https://www.linkedin.com/in/aryanjhaveri07/" target="_blank" class="board-li">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
           LinkedIn
         </a>
