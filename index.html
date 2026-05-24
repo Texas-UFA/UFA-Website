@@ -893,14 +893,19 @@ align-items: flex-end;
 .blog-card-new .blog-card-actions {
   display: flex;
   gap: 10px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   margin-top: 16px;
+}
+.blog-card-new .blog-card-actions .btn-primary,
+.blog-card-new .blog-card-actions .btn-outline {
+  flex: 1 !important;
+  width: auto !important;
 }
 .blog-grid-3col .btn-primary,
 .blog-grid-3col .btn-outline {
-  font-size: 13px !important;
-  padding: 9px 20px !important;
-  height: 38px !important;
+  font-size: 14px !important;
+  padding: 11px 24px !important;
+  height: 42px !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -1885,43 +1890,24 @@ nav .nav-links.open {
 
   /* ── Mobile button fixes ── */
 
-  /* Full width buttons on mobile for easy tapping */
-  .btn-primary, .btn-outline {
+
+
+
+
+
+
+  /* Research report card — stack on mobile */
+  .pub-card-info {
+    flex-direction: column !important;
+  }
+  .pub-card-info > div:last-child {
+    padding-top: 0 !important;
+    width: 100% !important;
+  }
+  .pub-card-info > div:last-child .btn-primary {
     width: 100% !important;
     text-align: center !important;
-    justify-content: center !important;
     box-sizing: border-box !important;
-  }
-
-  /* Button groups — stack vertically */
-  .hero-btns,
-  div[style*="display:flex"][style*="gap"] > .btn-primary,
-  div[style*="display:flex"][style*="gap"] > .btn-outline,
-  div[style*="display: flex"][style*="gap"] > .btn-primary,
-  div[style*="display: flex"][style*="gap"] > .btn-outline {
-    width: 100% !important;
-  }
-
-  /* Team page Apply + Work with us buttons — stack and full width */
-  .tab-content .btn-primary,
-  .tab-content .btn-outline {
-    width: 100% !important;
-    display: block !important;
-  }
-
-  /* Download PDF button — center on mobile */
-  .pub-card-info .btn-primary {
-    display: block !important;
-    width: fit-content !important;
-    margin: 0 auto !important;
-  }
-
-  /* Blog card buttons — bigger and full width on mobile */
-  .blog-card-new .btn-primary,
-  .blog-card-new .btn-outline {
-    padding: 12px 20px !important;
-    font-size: 15px !important;
-    width: 100% !important;
   }
 
   /* PDF iframe — full width on mobile */
@@ -1954,6 +1940,26 @@ nav .nav-links.open {
    Styles that only apply on wider screens.
    Used to ensure desktop layouts aren't broken by mobile-first rules. */
 @media (min-width: 769px) {
+  /* Blog buttons — restore side by side on desktop */
+  .blog-card-new .btn-primary,
+  .blog-card-new .btn-outline {
+    width: auto !important;
+  }
+  .blog-card-new .blog-card-actions {
+    flex-direction: row !important;
+  }
+
+  /* Work with us — restore inline-block on desktop */
+  .work-with-us-btn {
+    display: inline-block !important;
+    width: auto !important;
+  }
+  .team-btn-group {
+    flex-direction: row !important;
+    display: flex !important;
+  }
+
+
   .hero-img {
     background: url('https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/hero%20img%20(1).jpg') 52% 55% / cover no-repeat !important;
   }
@@ -2191,6 +2197,25 @@ nav .nav-links.open {
   #announcement-banner { padding: 12px 16px !important; }
 }
 
+</style>
+<style>
+@media (max-width: 768px) {
+  .work-with-us-btn {
+    display: block !important;
+    width: 100% !important;
+    text-align: center !important;
+    box-sizing: border-box !important;
+  }
+  .team-btn-group {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  #tab-analysts .btn-primary {
+    display: block !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+}
 </style>
 </head>
 <body>
@@ -2583,7 +2608,7 @@ nav .nav-links.open {
           <h2 class="section-title">Analyst Program</h2>
           <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:20px;">The Analyst Program is designed for underclassmen and new members with no prior finance experience. In addition to the general member meeting, analysts meet weekly for dedicated training sessions to build the skills needed to succeed in UFA and beyond.</p>
           <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:32px;">Each week, our Directors of Investments and Consulting lead sessions covering accounting, valuation, financial modeling, and market analysis. Everything you need to hit the ground running in UFA and in recruiting.</p>
-          <a href="https://docs.google.com/forms/d/e/1FAIpQLSednj-xoNhhCCvGKyAnP4W1m9p-CNeTw28Cag6ibZsy71G5_A/viewform" target="_blank" class="btn-primary reveal">Apply to Analyst Program</a>
+          <div class="team-btn-group"><a href="https://docs.google.com/forms/d/e/1FAIpQLSednj-xoNhhCCvGKyAnP4W1m9p-CNeTw28Cag6ibZsy71G5_A/viewform" target="_blank" class="btn-primary reveal" style="text-align:center;">Apply to Analyst Program</a></div>
         </div>
          <div class="team-photo-tall analyst-comp-photo" style="border-radius:12px; overflow:hidden; height:400px;">
   <img src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/imgur%20photos/3O0joVw.jpeg" 
@@ -2686,9 +2711,9 @@ nav .nav-links.open {
           <h2 class="section-title">Investment Team</h2>
           <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">The Investment Associate Program is where serious finance preparation meets a tight-knit community. You'll build the technical skills recruiters want and the relationships that last long after graduation.</p>
           <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:32px;">The technical training is rigorous. But ask any Investment Associate what they remember most, and they'll tell you it's the people.</p>
-          <div style="display:flex;gap:12px;flex-wrap:wrap;">
-          <a href="https://docs.google.com/forms/d/e/1FAIpQLSfv0DWYxpYH4c7VQk0Rf-zPa3Y9Ou1uEn5SE3_vROkMRIrsqQ/viewform" target="_blank" class="btn-primary reveal">Apply to Investment Associates</a>
-          <a href="#contact" onclick="showPage('contact')" class="btn-outline" style="color:var(--green-dark);border-color:var(--green-accent);">Work with us</a>
+          <div class="team-btn-group" style="display:flex;gap:12px;flex-wrap:wrap;">
+          <a href="https://docs.google.com/forms/d/e/1FAIpQLSfv0DWYxpYH4c7VQk0Rf-zPa3Y9Ou1uEn5SE3_vROkMRIrsqQ/viewform" target="_blank" class="btn-primary reveal" style="text-align:center;">Apply to Investment Associates</a>
+          <a href="#contact" onclick="showPage('contact')" class="btn-outline work-with-us-btn" style="color:var(--green-dark);border-color:var(--green-accent);text-align:center;">Work with us</a>
           </div>
         </div>
         <img src = "https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/imgur%20photos/SZntCtT%20(1).jpeg"
@@ -2780,9 +2805,9 @@ nav .nav-links.open {
       <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:32px;">
         Outside the casework, you'll find a group that genuinely enjoys spending time together, from team socials and dinners to friendships that last long after graduation.
       </p>
-      <div style="display:flex;gap:12px;flex-wrap:wrap;">
-        <a href="https://docs.google.com/forms/d/e/1FAIpQLSedfQrjZSVGodbKUNOcViYNfYHsjWsRYBn-cCZ1YmUbU_1faw/viewform" target="_blank" class="btn-primary reveal">Apply to Consulting Associates</a>
-        <a href="#contact" onclick="showPage('contact')" class="btn-outline" style="color:var(--green-dark);border-color:var(--green-accent);">Work with us</a>
+      <div class="team-btn-group" style="display:flex;gap:12px;flex-wrap:wrap;">
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSedfQrjZSVGodbKUNOcViYNfYHsjWsRYBn-cCZ1YmUbU_1faw/viewform" target="_blank" class="btn-primary reveal" style="text-align:center;">Apply to Consulting Associates</a>
+        <a href="#contact" onclick="showPage('contact')" class="btn-outline work-with-us-btn" style="color:var(--green-dark);border-color:var(--green-accent);text-align:center;">Work with us</a>
       </div>
     </div>
     <img src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/photos/0E1F9EF3-B787-4F0E-8087-83C71AD14552.png" 
@@ -3084,14 +3109,16 @@ nav .nav-links.open {
 
 
     <div class="pub-card-embed-container">
-      <div class="pub-card-info">
-        <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px;">Fall 2025</div>
-        <div class="pub-title">Fall 2025 Research Report</div>
-        <p class="pub-desc">
-          Our inaugural Equity Research Journal, a collection of equity research and macro analysis produced by UFA Investment Associates.
-          This edition covers TMT, Healthcare, Energy, Financials, Consumer, and Industrials, featuring deep-dives into companies of all sizes.
-        </p>
-        <div style="margin-top:24px;display:flex;gap:12px;flex-wrap:wrap;">
+      <div class="pub-card-info" style="display:flex;align-items:flex-start;justify-content:space-between;gap:32px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:200px;">
+          <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px;">Fall 2025</div>
+          <div class="pub-title">Fall 2025 Research Report</div>
+          <p class="pub-desc">
+            Our inaugural Equity Research Journal, a collection of equity research and macro analysis produced by UFA Investment Associates.
+            This edition covers TMT, Healthcare, Energy, Financials, Consumer, and Industrials, featuring deep-dives into companies of all sizes.
+          </p>
+        </div>
+        <div style="flex-shrink:0;padding-top:28px;">
           <a href="https://drive.google.com/uc?export=download&id=1M3_uEOvIkb5qdzMZXesy35_vrDBJ8AEW" target="_blank" class="btn-primary">Download PDF</a>
         </div>
       </div>
