@@ -3526,12 +3526,12 @@ nav .nav-links.open {
      MEMBER PORTAL PAGE
 ══════════════════════════════════ -->
 <div id="page-portal" class="page">
-  <div style="min-height:100vh;background:#f7f4ee;display:flex;flex-direction:column;">
+  <div style="min-height:100vh;background:#f7f4ee;display:flex;flex-direction:column;justify-content:flex-start;">
 
 
 
  <!-- LOGIN / SIGNUP -->
-    <div id="portal-login" style="flex:1;display:flex;align-items:center;justify-content:center;padding:48px 24px;background:var(--cream);">
+    <div id="portal-login" style="flex:1;display:flex;align-items:center;justify-content:center;padding:16px 24px 48px;background:var(--cream);">
       
       <!-- Login Card -->
       <div id="login-card" style="background:#F7F4EE;border:1px solid rgba(46,74,46,0.12);border-radius:12px;width:100%;max-width:440px;box-shadow:0 8px 32px rgba(46,74,46,0.1);overflow:hidden;">
@@ -3565,44 +3565,62 @@ nav .nav-links.open {
       </div>
 
       <!-- Signup Card -->
-      <div id="portal-signup" style="display:none;background:#F7F4EE;border:1px solid rgba(46,74,46,0.12);border-radius:12px;width:100%;max-width:440px;box-shadow:0 8px 32px rgba(46,74,46,0.1);overflow:hidden;">
+      <div id="portal-signup" style="display:none;background:#F7F4EE;border:1px solid rgba(46,74,46,0.12);border-radius:12px;width:100%;max-width:520px;box-shadow:0 8px 32px rgba(46,74,46,0.1);overflow:hidden;">
         <div style="height:4px;background:linear-gradient(90deg,#1C2B1C,#3D6B3D);"></div>
-        <div style="padding:44px 44px 40px;">
-          <div style="text-align:center;margin-bottom:28px;">
-            <img src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/logos/37f350-a0a7dee58b1d498989fc2317c1b89ce1-mv2-(1).png" alt="UFA" style="width:52px;height:52px;margin:0 auto 16px;display:block;object-fit:contain;" onerror="this.style.display='none'">
-            <div style="font-family:'Playfair Display',Georgia,serif;font-size:26px;font-weight:500;color:#1C2B1C;margin-bottom:8px;">Create Account</div>
-            <p style="font-size:13px;color:#6B7D6B;">Enter your UT email and choose a password.</p>
+        <div style="padding:36px 40px 32px;">
+          <div style="text-align:center;margin-bottom:24px;">
+            <img src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/logos/37f350-a0a7dee58b1d498989fc2317c1b89ce1-mv2-(1).png" alt="UFA" style="width:48px;height:48px;margin:0 auto 12px;display:block;object-fit:contain;" onerror="this.style.display='none'">
+            <div style="font-family:'Playfair Display',Georgia,serif;font-size:24px;font-weight:500;color:#1C2B1C;margin-bottom:6px;">Create Account</div>
+            <p style="font-size:13px;color:#6B7D6B;">Enter your details to create your member account.</p>
           </div>
-          <div style="margin-bottom:14px;">
-            <label style="display:block;font-size:12px;font-weight:600;color:#3A4A3A;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;">Full Name</label>
-            <input id="signup-name" type="text" placeholder="Jordan Smith" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;">
+          <div style="margin-bottom:12px;">
+            <label style="display:block;font-size:12px;font-weight:600;color:#3A4A3A;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.06em;">Full Name</label>
+            <input id="signup-name" type="text" placeholder="Jordan Smith" style="width:100%;padding:10px 13px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;">
           </div>
-          <div style="margin-bottom:14px;">
-            <label style="display:block;font-size:12px;font-weight:600;color:#3A4A3A;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;">UT EID</label>
-            <input id="signup-eid" type="text" placeholder="abc1234" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;">
+          <div style="margin-bottom:12px;">
+            <label style="display:block;font-size:12px;font-weight:600;color:#3A4A3A;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.06em;">UT Email</label>
+            <input id="signup-email" type="email" placeholder="abc1234@utexas.edu" style="width:100%;padding:10px 13px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;">
           </div>
-          <div style="margin-bottom:14px;">
-            <label style="display:block;font-size:12px;font-weight:600;color:#3A4A3A;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;">UT Email</label>
-            <input id="signup-email" type="email" placeholder="abc1234@utexas.edu" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+            <div>
+              <label style="display:block;font-size:12px;font-weight:600;color:#3A4A3A;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.06em;">UT EID</label>
+              <input id="signup-eid" type="text" placeholder="abc1234" style="width:100%;padding:10px 13px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;">
+            </div>
+            <div>
+              <label style="display:block;font-size:12px;font-weight:600;color:#3A4A3A;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.06em;">Graduation Year</label>
+              <input id="signup-grad-year" type="text" placeholder="2027" maxlength="4" style="width:100%;padding:10px 13px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;">
+            </div>
           </div>
-          <div style="margin-bottom:14px;">
-            <label style="display:block;font-size:12px;font-weight:600;color:#3A4A3A;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;">Role</label>
-            <select id="signup-role" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;appearance:none;-webkit-appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236B7D6B' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 14px center;">
-              <option value="" disabled selected>Select your role…</option>
-              <option value="General Member">General Member</option>
-              <option value="Analyst">Analyst</option>
-              <option value="Investment Associate">Investment Associate</option>
-              <option value="Consulting Associate">Consulting Associate</option>
-              <option value="Board">Board</option>
-            </select>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+            <div>
+              <label style="display:block;font-size:12px;font-weight:600;color:#3A4A3A;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.06em;">Role</label>
+              <select id="signup-role" style="width:100%;padding:10px 13px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;appearance:none;-webkit-appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236B7D6B' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 13px center;">
+                <option value="" disabled selected>Select…</option>
+                <option value="General Member">General Member</option>
+                <option value="Analyst">Analyst</option>
+                <option value="Investment Associate">Investment Associate</option>
+                <option value="Consulting Associate">Consulting Associate</option>
+                <option value="Board">Board</option>
+              </select>
+            </div>
+            <div>
+              <label style="display:block;font-size:12px;font-weight:600;color:#3A4A3A;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.06em;">Major</label>
+              <input id="signup-major" type="text" placeholder="Finance" style="width:100%;padding:10px 13px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;">
+            </div>
           </div>
-          <div style="margin-bottom:24px;">
-            <label style="display:block;font-size:12px;font-weight:600;color:#3A4A3A;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;">Password</label>
-            <input id="signup-password" type="password" placeholder="Choose a password" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
+            <div>
+              <label style="display:block;font-size:12px;font-weight:600;color:#3A4A3A;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.06em;">Password</label>
+              <input id="signup-password" type="password" placeholder="Choose a password" style="width:100%;padding:10px 13px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;">
+            </div>
+            <div>
+              <label style="display:block;font-size:12px;font-weight:600;color:#3A4A3A;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.06em;">Confirm Password</label>
+              <input id="signup-password-confirm" type="password" placeholder="Re-enter password" style="width:100%;padding:10px 13px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;">
+            </div>
           </div>
           <button onclick="portalSignup()" style="width:100%;background:#1C2B1C;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:13px;border-radius:6px;border:none;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='#3D6B3D'" onmouseout="this.style.background='#1C2B1C'">Create account</button>
           <div id="signup-error" style="display:none;margin-top:12px;padding:10px 14px;background:#fdf0ef;border:1px solid #f0b4b0;border-radius:4px;font-size:13px;color:#8b2e2e;text-align:center;"></div>
-          <div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(46,74,46,0.1);text-align:center;">
+          <div style="margin-top:16px;padding-top:14px;border-top:1px solid rgba(46,74,46,0.1);text-align:center;">
             <p style="font-size:12px;color:#6B7D6B;">Already have an account? <a href="#" onclick="showLogin()" style="color:#3D6B3D;font-weight:500;">Sign in →</a></p>
           </div>
         </div>
@@ -3611,7 +3629,7 @@ nav .nav-links.open {
     </div>
 
       <!-- Magic Link Card -->
-      <div id="portal-magic" style="display:none;flex:1;align-items:center;justify-content:center;padding:48px 24px;background:var(--cream);">
+      <div id="portal-magic" style="display:none;flex:1;align-items:center;justify-content:center;padding:16px 24px 48px;background:var(--cream);">
         <div style="background:#F7F4EE;border:1px solid rgba(46,74,46,0.12);border-radius:12px;width:100%;max-width:440px;box-shadow:0 8px 32px rgba(46,74,46,0.1);overflow:hidden;">
           <div style="height:4px;background:linear-gradient(90deg,#1C2B1C,#3D6B3D);"></div>
           <div style="padding:44px 44px 40px;">
@@ -3635,7 +3653,7 @@ nav .nav-links.open {
       </div>
 
       <!-- Forgot Password Card -->
-      <div id="portal-forgot" style="display:none;flex:1;align-items:center;justify-content:center;padding:48px 24px;background:var(--cream);">
+      <div id="portal-forgot" style="display:none;flex:1;align-items:center;justify-content:center;padding:16px 24px 48px;background:var(--cream);">
         <div style="background:#F7F4EE;border:1px solid rgba(46,74,46,0.12);border-radius:12px;width:100%;max-width:440px;box-shadow:0 8px 32px rgba(46,74,46,0.1);overflow:hidden;">
           <div style="height:4px;background:linear-gradient(90deg,#1C2B1C,#3D6B3D);"></div>
           <div style="padding:44px 44px 40px;">
@@ -3659,7 +3677,7 @@ nav .nav-links.open {
       </div>
 
       <!-- Set New Password Card -->
-      <div id="portal-reset" style="display:none;flex:1;align-items:center;justify-content:center;padding:48px 24px;background:var(--cream);">
+      <div id="portal-reset" style="display:none;flex:1;align-items:center;justify-content:center;padding:16px 24px 48px;background:var(--cream);">
         <div style="background:#F7F4EE;border:1px solid rgba(46,74,46,0.12);border-radius:12px;width:100%;max-width:440px;box-shadow:0 8px 32px rgba(46,74,46,0.1);overflow:hidden;">
           <div style="height:4px;background:linear-gradient(90deg,#1C2B1C,#3D6B3D);"></div>
           <div style="padding:44px 44px 40px;">
@@ -4042,7 +4060,7 @@ async function portalLogin() {
   if (!email || !pw) { err.style.display='block'; err.textContent='Please enter your UT email and password.'; return; }
   btn.textContent = 'Signing in...'; btn.disabled = true;
   const { data, error } = await sb.auth.signInWithPassword({ email, password: pw });
-  if (error) { err.style.display='block'; err.textContent='Login failed: '+error.message; btn.textContent='Sign in'; btn.disabled=false; return; }
+  if (error) { let msg = 'Something went wrong. Please try again.'; if (error.message.includes('Invalid login credentials')) msg = 'Incorrect email or password. Please try again.'; else if (error.message.includes('Email not confirmed')) msg = 'Please confirm your email before signing in.'; else if (error.message.includes('Too many requests')) msg = 'Too many attempts. Please wait a few minutes and try again.'; err.style.display='block'; err.textContent=msg; btn.textContent='Sign in'; btn.disabled=false; return; }
   currentUser = data.user;
   err.style.display = 'none'; btn.textContent = 'Sign in'; btn.disabled = false;
   const { data: member } = await sb.from('members').select('*').eq('email', currentUser.email).single();
@@ -5276,7 +5294,7 @@ async function sendPasswordReset() {
   const err = document.getElementById('forgot-error');
   msg.style.display = 'none'; err.style.display = 'none';
   if (!email) { err.style.display='block'; err.textContent='Please enter your UT email.'; return; }
-  const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: 'https://texasufa.org/?type=recovery' });
+  const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: 'https://cadenwarner.github.io/UFA-Website/?type=recovery' });
   if (error) { err.style.display='block'; err.textContent=error.message; return; }
   msg.style.display = 'block';
   msg.textContent = 'Reset link sent! Check your email to set a new password.';
@@ -5349,23 +5367,28 @@ sb.auth.onAuthStateChange(async (event, session) => {
 async function portalSignup() {
   const name  = document.getElementById('signup-name').value.trim();
   const email = document.getElementById('signup-email').value.trim().toLowerCase();
-  const pw    = document.getElementById('signup-password').value;
+  const pw    = document.getElementById("signup-password").value;
+  const pw2   = document.getElementById("signup-password-confirm").value;
   const selectedRole = document.getElementById('signup-role').value;
+  const major = document.getElementById('signup-major').value.trim();
+  const gradYear = document.getElementById('signup-grad-year').value;
   const err   = document.getElementById('signup-error');
 
-  if (!name || !email || !pw || !selectedRole) { err.style.display='block'; err.textContent='Please fill in all fields.'; return; }
-  if (pw.length < 6) { err.style.display='block'; err.textContent='Password must be at least 6 characters.'; return; }
+  if (!name || !email || !pw || !pw2 || !selectedRole || !major || !gradYear) { err.style.display="block"; err.textContent="Please fill in all fields."; return; }
+  if (!/^\d{4}$/.test(gradYear)) { err.style.display='block'; err.textContent='Graduation year must be exactly 4 digits.'; return; }
+  if (pw.length < 6) { err.style.display="block"; err.textContent="Password must be at least 6 characters."; return; }
+  if (pw !== pw2) { err.style.display="block"; err.textContent="Passwords do not match."; return; }
 
   // Board signups require admin approval — save as Board-Pending
   const role = selectedRole === 'Board' ? 'Board-Pending' : selectedRole;
 
   const { data, error } = await sb.auth.signUp({ email, password: pw });
-  if (error) { err.style.display='block'; err.textContent=error.message; return; }
+  if (error) { let msg = "Something went wrong. Please try again."; if (error.message.includes("already registered") || error.message.includes("already exists")) msg = "An account with this email already exists. Try signing in instead."; else if (error.message.includes("invalid")) msg = "Please enter a valid UT email address."; else if (error.message.includes("Password")) msg = "Password must be at least 6 characters."; err.style.display="block"; err.textContent=msg; return; }
 
   const eid = document.getElementById('signup-eid').value.trim();
-  await sb.from('members').insert({ email, name, eid, role, semester: 'Fall 2026' });
+  await sb.from('members').insert({ email, name, eid, role, semester: 'Fall 2026', major, grad_year: gradYear });
   currentUser = data.user;
-  currentMember = { email, name, eid, role, semester: 'Fall 2026' };
+  currentMember = { email, name, eid, role, semester: 'Fall 2026', major, grad_year: gradYear };
 
   if (selectedRole === 'Board') {
     err.style.display='block';
