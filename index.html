@@ -5276,7 +5276,7 @@ async function sendPasswordReset() {
   const err = document.getElementById('forgot-error');
   msg.style.display = 'none'; err.style.display = 'none';
   if (!email) { err.style.display='block'; err.textContent='Please enter your UT email.'; return; }
-  const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: 'https://cadenwarner.github.io/UFA-Website/?type=recovery' });
+  const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: 'https://texasufa.org/?type=recovery' });
   if (error) { err.style.display='block'; err.textContent=error.message; return; }
   msg.style.display = 'block';
   msg.textContent = 'Reset link sent! Check your email to set a new password.';
