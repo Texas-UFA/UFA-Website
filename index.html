@@ -3557,7 +3557,7 @@ nav .nav-links.open {
             <label style="display:block;font-size:12px;font-weight:600;color:#3A4A3A;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;">Password</label>
             <input id="pw-input" type="password" placeholder="Your portal password" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;" onkeydown="if(event.key==='Enter')portalLogin()">
           </div>
-          <button onclick="portalLogin()" style="width:100%;background:#1C2B1C;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:13px;border-radius:6px;border:none;cursor:pointer;letter-spacing:0.02em;transition:background 0.2s;" onmouseover="this.style.background='#3D6B3D'" onmouseout="this.style.background='#1C2B1C'">Sign in</button>
+          <button id="login-btn" onclick="portalLogin()" style="width:100%;background:#1C2B1C;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:13px;border-radius:6px;border:none;cursor:pointer;letter-spacing:0.02em;transition:background 0.2s;" onmouseover="this.style.background='#3D6B3D'" onmouseout="this.style.background='#1C2B1C'">Sign in</button>
           <div id="login-error" style="display:none;margin-top:12px;padding:10px 14px;background:#fdf0ef;border:1px solid #f0b4b0;border-radius:4px;font-size:13px;color:#8b2e2e;text-align:center;"></div>
           <div style="margin-top:16px;text-align:center;">
             <a href="#" onclick="showMagicLink()" style="font-size:13px;color:#3D6B3D;font-weight:500;">Use magic link instead</a>
@@ -4063,18 +4063,18 @@ async function portalLogin() {
   const email = document.getElementById('eid-input').value.trim().toLowerCase();
   const pw    = document.getElementById('pw-input').value;
   const err   = document.getElementById('login-error');
-  const btn   = document.querySelector('#portal-login button');
+  const btn   = document.getElementById('login-btn');
   if (!email || !pw) { err.style.display='block'; err.textContent='Please enter your UT email and password.'; return; }
-  btn.textContent = 'Signing in...'; btn.disabled = true;
+  if (btn) { btn.textContent = 'Signing in...'; btn.disabled = true; }
   try {
     const { data, error } = await sb.auth.signInWithPassword({ email, password: pw });
-    if (error) { let msg = 'Something went wrong. Please try again.'; if (error.message.includes('Invalid login credentials')) msg = 'Incorrect email or password. Please try again.'; else if (error.message.includes('Email not confirmed')) msg = 'Please confirm your email before signing in.'; else if (error.message.includes('Too many requests')) msg = 'Too many attempts. Please wait a few minutes and try again.'; err.style.display='block'; err.textContent=msg; btn.textContent='Sign in'; btn.disabled=false; return; }
+    if (error) { let msg = 'Something went wrong. Please try again.'; if (error.message.includes('Invalid login credentials')) msg = 'Incorrect email or password. Please try again.'; else if (error.message.includes('Email not confirmed')) msg = 'Please confirm your email before signing in.'; else if (error.message.includes('Too many requests')) msg = 'Too many attempts. Please wait a few minutes and try again.'; err.style.display='block'; err.textContent=msg; if (btn) { btn.textContent='Sign in'; btn.disabled=false; } return; }
     currentUser = data.user;
-    err.style.display = 'none'; btn.textContent = 'Sign in'; btn.disabled = false;
+    err.style.display = 'none'; if (btn) { btn.textContent = 'Sign in'; btn.disabled = false; }
     const { data: member } = await sb.from('members').select('*').eq('email', currentUser.email).single();
     currentMember = member;
     showDashboard();
-  } catch(e) { err.style.display='block'; err.textContent='Something went wrong. Please try again.'; btn.textContent='Sign in'; btn.disabled=false; }
+  } catch(e) { err.style.display='block'; err.textContent='Something went wrong: ' + e.message; if (btn) { btn.textContent='Sign in'; btn.disabled=false; } }
 }
 
 // ── Show Dashboard ──
@@ -4250,6 +4250,11 @@ async function portalLogout() {
   document.getElementById('checkin-form').style.display = 'block';
   document.getElementById('checkin-error').style.display = 'none';
   document.getElementById('announcement-banner').style.display = 'none';
+  // Reset login button state
+  const loginBtn = document.getElementById('login-btn');
+  if (loginBtn) { loginBtn.textContent = 'Sign in'; loginBtn.disabled = false; }
+  const loginErr = document.getElementById('login-error');
+  if (loginErr) loginErr.style.display = 'none';
   // Reset to overview tab
   switchPortalTab('overview');
 }
@@ -5561,6 +5566,10 @@ function applyMobileHeroFixes() {
 
 applyMobileHeroFixes();
 window.addEventListener('resize', applyMobileHeroFixes);
+
+// Sign out when user leaves the page
+window.addEventListener('pagehide', function() { if (sb) sb.auth.signOut(); });
+window.addEventListener('beforeunload', function() { if (sb) sb.auth.signOut(); });
 
 // Re-apply when join page is shown
 const _origShowPage = showPage;
