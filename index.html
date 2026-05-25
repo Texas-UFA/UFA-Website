@@ -5400,7 +5400,7 @@ async function portalSignup() {
   if (!signInError && signInData) currentUser = signInData.user;
 
   const { error: insertError } = await sb.from('members').insert({ email, name, eid, role, semester: 'Fall 2026', major, grad_year: gradYear });
-  if (insertError) { console.error('Member insert failed:', insertError.message); }
+  if (insertError) { console.error('Member insert failed:', insertError.message, insertError.code, insertError.details); err.style.display="block"; err.textContent="Account created but profile save failed: " + insertError.message; }
   currentMember = { email, name, eid, role, semester: 'Fall 2026', major, grad_year: gradYear };
 
   if (selectedRole === 'Board') {
