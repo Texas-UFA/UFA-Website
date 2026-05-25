@@ -5443,6 +5443,15 @@ sb.auth.onAuthStateChange(async (event, session) => {
     showResetPanel();
     return;
   }
+  // EMAIL_CHANGE — sync new email to members table
+  if (event === 'USER_UPDATED' && session) {
+    const newEmail = session.user.email;
+    if (currentMember && currentMember.email && newEmail !== currentMember.email) {
+      await sb.from('members').update({ email: newEmail }).eq('email', currentMember.email);
+      currentMember.email = newEmail;
+      currentUser = session.user;
+    }
+  }
   // SIGNED_OUT — clear state and reset login button
   if (event === 'SIGNED_OUT') {
     currentUser = null;
