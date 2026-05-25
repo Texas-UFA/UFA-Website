@@ -4608,7 +4608,9 @@ async function loadAdminSessions() {
           +'<span style="font-size:11px;color:#6B7D6B;">'+(s.meeting_date||'—')+'</span>'
           +'<span style="font-size:11px;font-weight:500;background:'+tc[0]+';color:'+tc[1]+';padding:2px 8px;border-radius:3px;">'+type+'</span>'
           +'<span style="font-size:11px;font-weight:600;color:#3D6B3D;background:#EEF5EE;padding:2px 8px;border-radius:3px;">+'+(s.points||1)+' pt</span>'
-          +'<button onclick="toggleSession(\''+s.code+'\','+active+')" style="margin-left:auto;font-size:12px;padding:5px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;background:#fff;cursor:pointer;color:#3A4A3A;">'+(active?'Deactivate':'Activate')+'</button>'
+          +'<button onclick="editPoints(\''+s.code+'\','+(s.points||1)+')" style="margin-left:auto;font-size:12px;padding:5px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;background:#fff;cursor:pointer;color:#3A4A3A;">Edit Pts</button>'
+          +'<button onclick="toggleSession(\''+s.code+'\','+active+')" style="font-size:12px;padding:5px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;background:#fff;cursor:pointer;color:#3A4A3A;">'+(active?'Deactivate':'Activate')+'</button>'
+          +'<button onclick="deleteSession(\''+s.code+'\')" style="font-size:12px;padding:5px 12px;border:1px solid rgba(200,50,50,0.3);border-radius:4px;background:#fff;cursor:pointer;color:#c0392b;">Delete</button>'
         +'</div>'
       +'</div>';
     }).join('');
@@ -4627,7 +4629,11 @@ async function loadAdminSessions() {
           +'<div style="font-size:12px;color:#6B7D6B;">'+(s.event_type||'Meeting')+'</div>'
           +'<div style="font-size:13px;color:#3D6B3D;font-weight:600;">'+(s.points||1)+'</div>'
           +'<div><span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:3px;background:'+(active?'#e6f4e6':'#f5f5f5')+';color:'+(active?'#2e6b2e':'#888')+'">'+(active?'Live':'Off')+'</span></div>'
-          +'<button onclick="toggleSession(\''+s.code+'\','+active+')" style="font-size:11px;padding:4px 10px;border:1px solid rgba(46,74,46,0.2);border-radius:3px;background:#fff;cursor:pointer;">'+(active?'Deactivate':'Activate')+'</button>'
+          +'<div style="display:flex;gap:4px;">'
+          +'<button onclick="editPoints(\''+s.code+'\','+(s.points||1)+')" style="font-size:11px;padding:4px 10px;border:1px solid rgba(46,74,46,0.2);border-radius:3px;background:#fff;cursor:pointer;">Pts</button>'
+          +'<button onclick="toggleSession(\''+s.code+'\','+active+')" style="font-size:11px;padding:4px 10px;border:1px solid rgba(46,74,46,0.2);border-radius:3px;background:#fff;cursor:pointer;">'+(active?'Off':'Live')+'</button>'
+          +'<button onclick="deleteSession(\''+s.code+'\')" style="font-size:11px;padding:4px 10px;border:1px solid rgba(200,50,50,0.3);border-radius:3px;background:#fff;cursor:pointer;color:#c0392b;">Del</button>'
+          +'</div>'
         +'</div>';
       }).join('')
       + '</div>';
@@ -4650,6 +4656,29 @@ async function createSession() {
   document.getElementById('new-points').value='1';
   loadAdminSessions();
   setTimeout(function(){ msg.style.display='none'; }, 3000);
+}
+
+async function editPoints(code, currentPoints) {
+  var newPoints = prompt('Enter new point value for session ' + code + ':', currentPoints);
+  if (newPoints === null) return;
+  newPoints = parseInt(newPoints);
+  if (isNaN(newPoints) || newPoints < 1) { alert('Please enter a valid number greater than 0.'); return; }
+  // Update session points
+  var res = await sb.from('sessions').update({ points: newPoints }).eq('code', code);
+  if (res.error) { alert('Error updating points: ' + res.error.message); return; }
+  // Also update attendance records for this session
+  var res2 = await sb.from('attendance').update({ points: newPoints }).eq('session_code', code);
+  if (res2.error) { alert('Session updated but attendance points failed: ' + res2.error.message); return; }
+  loadAdminSessions();
+  // Refresh stats if dashboard visible
+  if (currentUser) { const { data: records } = await sb.from('attendance').select('*').eq('email', currentUser.email); updateStats(records||[]); renderBreakdown(records||[]); }
+}
+
+async function deleteSession(code) {
+  if (!confirm('Delete session "' + code + '"? This cannot be undone.')) return;
+  var res = await sb.from('sessions').delete().eq('code', code);
+  if (res.error) { alert('Error deleting session: ' + res.error.message); return; }
+  loadAdminSessions();
 }
 
 async function toggleSession(code, currentlyActive) {
@@ -5443,11 +5472,13 @@ sb.auth.onAuthStateChange(async (event, session) => {
     showResetPanel();
     return;
   }
-  // EMAIL_CHANGE — sync new email to members table
+  // EMAIL_CHANGE — sync new email to members and attendance tables
   if (event === 'USER_UPDATED' && session) {
     const newEmail = session.user.email;
     if (currentMember && currentMember.email && newEmail !== currentMember.email) {
-      await sb.from('members').update({ email: newEmail }).eq('email', currentMember.email);
+      const oldEmail = currentMember.email;
+      await sb.from('members').update({ email: newEmail }).eq('email', oldEmail);
+      await sb.from('attendance').update({ email: newEmail }).eq('email', oldEmail);
       currentMember.email = newEmail;
       currentUser = session.user;
     }
