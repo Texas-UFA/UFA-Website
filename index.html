@@ -4066,13 +4066,15 @@ async function portalLogin() {
   const btn   = document.querySelector('#portal-login button');
   if (!email || !pw) { err.style.display='block'; err.textContent='Please enter your UT email and password.'; return; }
   btn.textContent = 'Signing in...'; btn.disabled = true;
-  const { data, error } = await sb.auth.signInWithPassword({ email, password: pw });
-  if (error) { let msg = 'Something went wrong. Please try again.'; if (error.message.includes('Invalid login credentials')) msg = 'Incorrect email or password. Please try again.'; else if (error.message.includes('Email not confirmed')) msg = 'Please confirm your email before signing in.'; else if (error.message.includes('Too many requests')) msg = 'Too many attempts. Please wait a few minutes and try again.'; err.style.display='block'; err.textContent=msg; btn.textContent='Sign in'; btn.disabled=false; return; }
-  currentUser = data.user;
-  err.style.display = 'none'; btn.textContent = 'Sign in'; btn.disabled = false;
-  const { data: member } = await sb.from('members').select('*').eq('email', currentUser.email).single();
-  currentMember = member;
-  showDashboard();
+  try {
+    const { data, error } = await sb.auth.signInWithPassword({ email, password: pw });
+    if (error) { let msg = 'Something went wrong. Please try again.'; if (error.message.includes('Invalid login credentials')) msg = 'Incorrect email or password. Please try again.'; else if (error.message.includes('Email not confirmed')) msg = 'Please confirm your email before signing in.'; else if (error.message.includes('Too many requests')) msg = 'Too many attempts. Please wait a few minutes and try again.'; err.style.display='block'; err.textContent=msg; btn.textContent='Sign in'; btn.disabled=false; return; }
+    currentUser = data.user;
+    err.style.display = 'none'; btn.textContent = 'Sign in'; btn.disabled = false;
+    const { data: member } = await sb.from('members').select('*').eq('email', currentUser.email).single();
+    currentMember = member;
+    showDashboard();
+  } catch(e) { err.style.display='block'; err.textContent='Something went wrong. Please try again.'; btn.textContent='Sign in'; btn.disabled=false; }
 }
 
 // ── Show Dashboard ──
