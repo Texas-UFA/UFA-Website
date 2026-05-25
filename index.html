@@ -5479,8 +5479,11 @@ sb.auth.onAuthStateChange(async (event, session) => {
       const oldEmail = currentMember.email;
       await sb.from('members').update({ email: newEmail }).eq('email', oldEmail);
       await sb.from('attendance').update({ email: newEmail }).eq('email', oldEmail);
-      currentMember.email = newEmail;
       currentUser = session.user;
+      // Re-fetch full member row so name/role are preserved
+      const { data: updatedMember } = await sb.from('members').select('*').eq('email', newEmail).single();
+      currentMember = updatedMember;
+      showDashboard();
     }
   }
   // SIGNED_OUT — clear state and reset login button
