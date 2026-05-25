@@ -4117,7 +4117,7 @@ async function switchPortalTab(tab) {
   if (tab === 'events') renderUpcoming();
   if (tab === 'profile') {
     if (currentUser && !currentMember) {
-      const { data: m } = await sb.from('members').select('*').eq('email', currentUser.email).single();
+      const m = await fetchMember(currentUser.email);
       if (m) currentMember = m;
     }
     renderProfile();
@@ -4138,9 +4138,31 @@ function switchAdminTab(tab) {
   if (tab === 'announce') loadCurrentAnnouncement();
 }
 
+// ── Member fetch helper (handles case mismatch) ──
+async function fetchMember(email) {
+  if (!email) return null;
+  const lower = email.toLowerCase();
+  // Try exact match first
+  const { data: exact, error: e1 } = await sb.from('members').select('*').eq('email', lower).maybeSingle();
+  console.log('fetchMember exact:', exact, 'error:', e1, 'email tried:', lower);
+  if (exact) return exact;
+  // Fallback: case-insensitive match (ilike)
+  const { data: rows, error: e2 } = await sb.from('members').select('*').ilike('email', lower);
+  console.log('fetchMember ilike:', rows, 'error:', e2);
+  if (rows && rows.length > 0) return rows[0];
+  // Last resort: fetch all and match client-side
+  const { data: all, error: e3 } = await sb.from('members').select('*');
+  console.log('fetchMember all rows:', all, 'error:', e3);
+  if (all) {
+    const match = all.find(m => m.email && m.email.toLowerCase() === lower);
+    if (match) return match;
+  }
+  return null;
+}
+
 // ── Login ──
 async function portalLogin() {
-  const email = document.getElementById('eid-input').value.trim().toLowerCase();
+  const email = document.getElementById('eid-input').value.trim().toLowerCase().replace(/[^\x20-\x7E]/g, '');
   const pw    = document.getElementById('pw-input').value;
   const err   = document.getElementById('login-error');
   const btn   = document.getElementById('login-btn');
@@ -4153,9 +4175,7 @@ async function portalLogin() {
     err.style.display = 'none'; if (btn) { btn.textContent = 'Sign in'; btn.disabled = false; }
     // Save email for next login
     try { localStorage.setItem('ufa_saved_email', email); } catch(e) {}
-    const { data: member, error: memberErr } = await sb.from('members').select('*').eq('email', currentUser.email).single();
-    if (memberErr) console.error('Member fetch error:', memberErr.message, memberErr.code);
-    currentMember = member;
+    currentMember = await fetchMember(currentUser.email);
     console.log('currentMember:', currentMember, 'email used:', currentUser.email);
     showDashboard();
   } catch(e) { err.style.display='block'; err.textContent='Something went wrong: ' + e.message; if (btn) { btn.textContent='Sign in'; btn.disabled=false; } }
@@ -4481,46 +4501,41 @@ async function requestRoleChange() {
 }
 
 async function saveProfile() {
-  const saveBtn = document.querySelector('button[onclick="saveProfile()"]');
-  if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Saving...'; }
   var name  = document.getElementById('profile-name').value.trim();
   var eid   = document.getElementById('profile-eid').value.trim();
-  var email = document.getElementById('profile-email').value.trim().toLowerCase();
+  var email = document.getElementById('profile-email').value.trim().toLowerCase().replace(/[^\x20-\x7E]/g, '');
   var selectedRole = document.getElementById('profile-role').value;
   var msg   = document.getElementById('profile-msg');
-  if (!name) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Name cannot be empty.'; if (saveBtn) { saveBtn.disabled=false; saveBtn.textContent='Save changes'; } return; }
-  if (!email) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Email cannot be empty.'; if (saveBtn) { saveBtn.disabled=false; saveBtn.textContent='Save changes'; } return; }
+  if (!name) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Name cannot be empty.'; return; }
+  if (!email) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Email cannot be empty.'; return; }
 
-  var emailChanged  = email !== (currentMember ? currentMember.email : currentUser.email);
-  var currentRole   = currentMember.role || 'General Member';
+  var emailChanged = email !== (currentMember ? currentMember.email : currentUser.email);
+  var currentRole  = currentMember.role || 'General Member';
   var baseCurrentRole = currentRole.replace('-Pending','');
 
-  // If changing role, save as pending (except General Member which needs no approval)
   var roleToSave;
   if (selectedRole === currentRole || selectedRole === baseCurrentRole) {
-    roleToSave = currentRole; // no change
+    roleToSave = currentRole;
   } else if (selectedRole === 'General Member') {
-    roleToSave = 'General Member'; // downgrade, no approval needed
+    roleToSave = 'General Member';
   } else {
-    roleToSave = selectedRole + '-Pending'; // needs board approval
+    roleToSave = selectedRole + '-Pending';
   }
 
-  // If email is changing, update auth FIRST — if it fails, don't update members table
+  // Update members table first
+  var matchEmail = (currentMember && currentMember.email) ? currentMember.email : currentUser.email;
+  var res = await sb.from('members').update({ name: name, eid: eid, email: email, role: roleToSave }).eq('email', matchEmail);
+  if (res.error) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Error saving. Try again.'; return; }
+
+  // Then update auth email if changed
   if (emailChanged) {
     var authRes = await sb.auth.updateUser({ email: email });
-    if (authRes.error) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Email update failed: '+authRes.error.message; if (saveBtn) { saveBtn.disabled=false; saveBtn.textContent='Save changes'; } return; }
+    if (authRes.error) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Profile saved but email update failed: '+authRes.error.message; return; }
   }
-
-  // Save name, eid, role (but NOT email yet — that updates when confirmed)
-  var fieldsToUpdate = { name: name, eid: eid, role: roleToSave };
-  if (!emailChanged) fieldsToUpdate.email = email;
-  var res = await sb.from('members').update(fieldsToUpdate).eq('email', currentUser.email);
-  if (res.error) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Error saving. Try again.'; if (saveBtn) { saveBtn.disabled=false; saveBtn.textContent='Save changes'; } return; }
 
   currentMember.name = name; currentMember.eid = eid; currentMember.email = email; currentMember.role = roleToSave;
   document.getElementById('portal-welcome-name').textContent = name;
   document.getElementById('portal-welcome-team').textContent = roleToSave + ' - ' + (currentMember.semester||'');
-  
 
   var BOARD_ROLES = ['Board', 'President'];
   document.getElementById('ptab-admin').style.display = BOARD_ROLES.includes(roleToSave) ? '' : 'none';
@@ -4528,23 +4543,12 @@ async function saveProfile() {
   if (roleToSave.indexOf('-Pending') !== -1) {
     msg.style.display='block'; msg.style.color='#856404';
     msg.textContent = '⏳ Role change requested — pending board approval.';
-    // Update dropdown to show their pending state
     document.getElementById('profile-role').value = selectedRole;
   } else if (emailChanged) {
     msg.style.display='block'; msg.style.color='#2e6b2e';
-    msg.textContent = 'Check your new email for a confirmation link. Signing you out...';
-    const saveBtn = document.querySelector('button[onclick="saveProfile()"]');
-    if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Signing out...'; }
-    await sb.auth.signOut();
-    currentUser = null; currentMember = null;
-    document.getElementById('portal-dashboard').style.display = 'none';
-    document.getElementById('portal-login').style.display = 'flex';
-    const loginBtn = document.getElementById('login-btn');
-    if (loginBtn) { loginBtn.textContent = 'Sign in'; loginBtn.disabled = false; }
-    document.getElementById('eid-input').value = email;
+    msg.textContent = 'Profile saved! Check your new email for a confirmation link.';
   } else {
     msg.style.display='block'; msg.style.color='#2e6b2e'; msg.textContent='Profile saved!';
-    if (saveBtn) { saveBtn.disabled=false; saveBtn.textContent='Save changes'; }
   }
 
   setTimeout(function(){ msg.style.display='none'; }, 5000);
@@ -4892,8 +4896,7 @@ async function loadAnalytics() {
       });
       if (!sessErr && data.session) {
         currentUser = data.session.user;
-        const { data: member } = await sb.from('members').select('*').eq('email', currentUser.email).single();
-        currentMember = member;
+        currentMember = await fetchMember(currentUser.email);
         window.history.replaceState({}, '', window.location.pathname);
         showPage('portal');
         showDashboard();
@@ -4910,8 +4913,7 @@ async function loadAnalytics() {
       const { data, error: exchErr } = await sb.auth.exchangeCodeForSession(window.location.href);
       if (!exchErr && data.session) {
         currentUser = data.session.user;
-        const { data: member } = await sb.from('members').select('*').eq('email', currentUser.email).single();
-        currentMember = member;
+        currentMember = await fetchMember(currentUser.email);
         window.history.replaceState({}, '', window.location.pathname);
         if (type === 'recovery') { showPage('portal'); showResetPanel(); }
         else { showPage('portal'); showDashboard(); }
@@ -5310,7 +5312,7 @@ function showResetPanel() {
  * Shows a success or error message based on the result.
  */
 async function sendMagicLink() {
-  const email = document.getElementById('magic-email').value.trim().toLowerCase();
+  const email = document.getElementById('magic-email').value.trim().toLowerCase().replace(/[^\x20-\x7E]/g, '');
   const msg = document.getElementById('magic-msg');
   const err = document.getElementById('magic-error');
   msg.style.display = 'none'; err.style.display = 'none';
@@ -5438,7 +5440,7 @@ window.showPage = function(id) {
  * The reset link redirects back to the live GitHub Pages site.
  */
 async function sendPasswordReset() {
-  const email = document.getElementById('forgot-email').value.trim().toLowerCase();
+  const email = document.getElementById('forgot-email').value.trim().toLowerCase().replace(/[^\x20-\x7E]/g, '');
   const msg = document.getElementById('forgot-msg');
   const err = document.getElementById('forgot-error');
   msg.style.display = 'none'; err.style.display = 'none';
@@ -5477,8 +5479,7 @@ async function submitNewPassword() {
     const { data: { session } } = await sb.auth.getSession();
     if (session) {
       currentUser = session.user;
-      const { data } = await sb.from('members').select('*').eq('email', currentUser.email).single();
-      currentMember = data;
+      currentMember = await fetchMember(currentUser.email);
       document.getElementById('portal-reset').style.display = 'none';
       showDashboard();
     } else {
@@ -5508,7 +5509,7 @@ sb.auth.onAuthStateChange(async (event, session) => {
     }
     currentUser = session.user;
     // Always re-fetch full member row
-    const { data: updatedMember } = await sb.from('members').select('*').eq('email', newEmail).single();
+    const updatedMember = await fetchMember(newEmail);
     if (updatedMember) {
       currentMember = updatedMember;
       showDashboard();
@@ -5533,7 +5534,7 @@ sb.auth.onAuthStateChange(async (event, session) => {
  */
 async function portalSignup() {
   const name  = document.getElementById('signup-name').value.trim();
-  const email = document.getElementById('signup-email').value.trim().toLowerCase();
+  const email = document.getElementById('signup-email').value.trim().toLowerCase().replace(/[^\x20-\x7E]/g, '');
   const pw    = document.getElementById("signup-password").value;
   const pw2   = document.getElementById("signup-password-confirm").value;
   const selectedRole = document.getElementById('signup-role').value;
