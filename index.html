@@ -5567,10 +5567,6 @@ function applyMobileHeroFixes() {
 applyMobileHeroFixes();
 window.addEventListener('resize', applyMobileHeroFixes);
 
-// Sign out when user leaves the page
-window.addEventListener('pagehide', function() { if (sb) sb.auth.signOut(); });
-window.addEventListener('beforeunload', function() { if (sb) sb.auth.signOut(); });
-
 // Re-apply when join page is shown
 const _origShowPage = showPage;
 window.showPage = function(id) {
