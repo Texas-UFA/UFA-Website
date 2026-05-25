@@ -3902,7 +3902,7 @@ nav .nav-links.open {
                   </div>
                   <div>
                     <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:4px;">UT EID</div>
-                    <input id="profile-eid" type="text" style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;">
+                    <input id="profile-eid" type="text" readonly style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#6B7D6B;background:#efefef;box-sizing:border-box;cursor:not-allowed;">
                   </div>
                   <div>
                     <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:4px;">Email</div>
@@ -4106,7 +4106,7 @@ const TYPE_COLORS = {
 };
 
 // ── Tab switching ──
-function switchPortalTab(tab) {
+async function switchPortalTab(tab) {
   ['overview','leaderboard','events','profile','admin'].forEach(t => {
     const btn = document.getElementById('ptab-' + t);
     const content = document.getElementById('ptab-content-' + t);
@@ -4115,7 +4115,14 @@ function switchPortalTab(tab) {
   });
   if (tab === 'leaderboard') renderLeaderboard();
   if (tab === 'events') renderUpcoming();
-  if (tab === 'profile') { renderProfile(); loadProfileBadges(); }
+  if (tab === 'profile') {
+    if (currentUser && !currentMember) {
+      const { data: m } = await sb.from('members').select('*').eq('email', currentUser.email).single();
+      if (m) currentMember = m;
+    }
+    renderProfile();
+    loadProfileBadges();
+  }
   if (tab === 'admin') { switchAdminTab('sessions'); loadAdminSessions(); }
 }
 
@@ -4146,8 +4153,10 @@ async function portalLogin() {
     err.style.display = 'none'; if (btn) { btn.textContent = 'Sign in'; btn.disabled = false; }
     // Save email for next login
     try { localStorage.setItem('ufa_saved_email', email); } catch(e) {}
-    const { data: member } = await sb.from('members').select('*').eq('email', currentUser.email).single();
+    const { data: member, error: memberErr } = await sb.from('members').select('*').eq('email', currentUser.email).single();
+    if (memberErr) console.error('Member fetch error:', memberErr.message, memberErr.code);
     currentMember = member;
+    console.log('currentMember:', currentMember, 'email used:', currentUser.email);
     showDashboard();
   } catch(e) { err.style.display='block'; err.textContent='Something went wrong: ' + e.message; if (btn) { btn.textContent='Sign in'; btn.disabled=false; } }
 }
@@ -4157,7 +4166,8 @@ async function showDashboard() {
   document.getElementById('portal-login').style.display = 'none';
   document.getElementById('portal-dashboard').style.display = 'flex';
   document.getElementById('portal-dashboard').style.flexDirection = 'column';
-  
+
+
 
   const name     = (currentMember && currentMember.name)     ? currentMember.name     : currentUser.email;
   const role     = (currentMember && currentMember.role)     ? currentMember.role     : 'Member';
@@ -4471,15 +4481,17 @@ async function requestRoleChange() {
 }
 
 async function saveProfile() {
+  const saveBtn = document.querySelector('button[onclick="saveProfile()"]');
+  if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Saving...'; }
   var name  = document.getElementById('profile-name').value.trim();
   var eid   = document.getElementById('profile-eid').value.trim();
   var email = document.getElementById('profile-email').value.trim().toLowerCase();
   var selectedRole = document.getElementById('profile-role').value;
   var msg   = document.getElementById('profile-msg');
-  if (!name) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Name cannot be empty.'; return; }
-  if (!email) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Email cannot be empty.'; return; }
+  if (!name) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Name cannot be empty.'; if (saveBtn) { saveBtn.disabled=false; saveBtn.textContent='Save changes'; } return; }
+  if (!email) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Email cannot be empty.'; if (saveBtn) { saveBtn.disabled=false; saveBtn.textContent='Save changes'; } return; }
 
-  var emailChanged  = email !== currentMember.email;
+  var emailChanged  = email !== (currentMember ? currentMember.email : currentUser.email);
   var currentRole   = currentMember.role || 'General Member';
   var baseCurrentRole = currentRole.replace('-Pending','');
 
@@ -4493,13 +4505,17 @@ async function saveProfile() {
     roleToSave = selectedRole + '-Pending'; // needs board approval
   }
 
-  var res = await sb.from('members').update({ name: name, eid: eid, email: email, role: roleToSave }).eq('email', currentUser.email);
-  if (res.error) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Error saving. Try again.'; return; }
-
+  // If email is changing, update auth FIRST — if it fails, don't update members table
   if (emailChanged) {
     var authRes = await sb.auth.updateUser({ email: email });
-    if (authRes.error) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Profile saved but email update failed: '+authRes.error.message; return; }
+    if (authRes.error) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Email update failed: '+authRes.error.message; if (saveBtn) { saveBtn.disabled=false; saveBtn.textContent='Save changes'; } return; }
   }
+
+  // Save name, eid, role (but NOT email yet — that updates when confirmed)
+  var fieldsToUpdate = { name: name, eid: eid, role: roleToSave };
+  if (!emailChanged) fieldsToUpdate.email = email;
+  var res = await sb.from('members').update(fieldsToUpdate).eq('email', currentUser.email);
+  if (res.error) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Error saving. Try again.'; if (saveBtn) { saveBtn.disabled=false; saveBtn.textContent='Save changes'; } return; }
 
   currentMember.name = name; currentMember.eid = eid; currentMember.email = email; currentMember.role = roleToSave;
   document.getElementById('portal-welcome-name').textContent = name;
@@ -4516,9 +4532,19 @@ async function saveProfile() {
     document.getElementById('profile-role').value = selectedRole;
   } else if (emailChanged) {
     msg.style.display='block'; msg.style.color='#2e6b2e';
-    msg.textContent = 'Profile saved! Check your new email for a confirmation link.';
+    msg.textContent = 'Check your new email for a confirmation link. Signing you out...';
+    const saveBtn = document.querySelector('button[onclick="saveProfile()"]');
+    if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Signing out...'; }
+    await sb.auth.signOut();
+    currentUser = null; currentMember = null;
+    document.getElementById('portal-dashboard').style.display = 'none';
+    document.getElementById('portal-login').style.display = 'flex';
+    const loginBtn = document.getElementById('login-btn');
+    if (loginBtn) { loginBtn.textContent = 'Sign in'; loginBtn.disabled = false; }
+    document.getElementById('eid-input').value = email;
   } else {
     msg.style.display='block'; msg.style.color='#2e6b2e'; msg.textContent='Profile saved!';
+    if (saveBtn) { saveBtn.disabled=false; saveBtn.textContent='Save changes'; }
   }
 
   setTimeout(function(){ msg.style.display='none'; }, 5000);
@@ -4894,21 +4920,18 @@ async function loadAnalytics() {
     } catch(e) { console.log('Code exchange error:', e); }
   }
 
-  // Always sign out any stale session on page load so login always works fresh
-  sb.auth.signOut().then(function() {
-    currentUser = null;
-    currentMember = null;
-    const loginBtn = document.getElementById('login-btn');
-    if (loginBtn) { loginBtn.textContent = 'Sign in'; loginBtn.disabled = false; }
-    // Pre-fill saved email
-    try {
-      const savedEmail = localStorage.getItem('ufa_saved_email');
-      if (savedEmail) {
-        const eidInput = document.getElementById('eid-input');
-        if (eidInput) eidInput.value = savedEmail;
-      }
-    } catch(e) {}
-  });
+  // Reset login button state and pre-fill saved email
+  currentUser = null;
+  currentMember = null;
+  const loginBtn = document.getElementById('login-btn');
+  if (loginBtn) { loginBtn.textContent = 'Sign in'; loginBtn.disabled = false; }
+  try {
+    const savedEmail = localStorage.getItem('ufa_saved_email');
+    if (savedEmail) {
+      const eidInput = document.getElementById('eid-input');
+      if (eidInput) eidInput.value = savedEmail;
+    }
+  } catch(e) {}
 })();
 
 </script>
@@ -5475,13 +5498,18 @@ sb.auth.onAuthStateChange(async (event, session) => {
   // EMAIL_CHANGE — sync new email to members and attendance tables
   if (event === 'USER_UPDATED' && session) {
     const newEmail = session.user.email;
-    if (currentMember && currentMember.email && newEmail !== currentMember.email) {
-      const oldEmail = currentMember.email;
+    // Get old email from currentMember or from currentUser (before update)
+    const oldEmail = (currentMember && currentMember.email) ? currentMember.email
+                   : (currentUser && currentUser.email && currentUser.email !== newEmail) ? currentUser.email
+                   : null;
+    if (oldEmail && oldEmail !== newEmail) {
       await sb.from('members').update({ email: newEmail }).eq('email', oldEmail);
       await sb.from('attendance').update({ email: newEmail }).eq('email', oldEmail);
-      currentUser = session.user;
-      // Re-fetch full member row so name/role are preserved
-      const { data: updatedMember } = await sb.from('members').select('*').eq('email', newEmail).single();
+    }
+    currentUser = session.user;
+    // Always re-fetch full member row
+    const { data: updatedMember } = await sb.from('members').select('*').eq('email', newEmail).single();
+    if (updatedMember) {
       currentMember = updatedMember;
       showDashboard();
     }
