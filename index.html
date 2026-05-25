@@ -5389,7 +5389,7 @@ async function portalSignup() {
   // Board signups require admin approval — save as Board-Pending
   const role = selectedRole === 'Board' ? 'Board-Pending' : selectedRole;
 
-  const { data, error } = await sb.auth.signUp({ email, password: pw });
+  const { data, error } = await sb.auth.signUp({ email, password: pw, options: { data: { name, eid, role, major, grad_year: gradYear } } });
   if (error) { let msg = "Something went wrong. Please try again."; if (error.message.includes("already registered") || error.message.includes("already exists")) msg = "An account with this email already exists. Try signing in instead."; else if (error.message.includes("invalid")) msg = "Please enter a valid UT email address."; else if (error.message.includes("Password")) msg = "Password must be at least 6 characters."; err.style.display="block"; err.textContent=msg; return; }
 
   const eid = document.getElementById('signup-eid').value.trim();
