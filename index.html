@@ -4071,6 +4071,8 @@ async function portalLogin() {
     if (error) { let msg = 'Something went wrong. Please try again.'; if (error.message.includes('Invalid login credentials')) msg = 'Incorrect email or password. Please try again.'; else if (error.message.includes('Email not confirmed')) msg = 'Please confirm your email before signing in.'; else if (error.message.includes('Too many requests')) msg = 'Too many attempts. Please wait a few minutes and try again.'; err.style.display='block'; err.textContent=msg; if (btn) { btn.textContent='Sign in'; btn.disabled=false; } return; }
     currentUser = data.user;
     err.style.display = 'none'; if (btn) { btn.textContent = 'Sign in'; btn.disabled = false; }
+    // Save email for next login
+    try { localStorage.setItem('ufa_saved_email', email); } catch(e) {}
     const { data: member } = await sb.from('members').select('*').eq('email', currentUser.email).single();
     currentMember = member;
     showDashboard();
@@ -4790,19 +4792,20 @@ async function loadAnalytics() {
     } catch(e) { console.log('Code exchange error:', e); }
   }
 
-  // Normal session restore — only redirect to portal if already on portal page
-  sb.auth.getSession().then(function(result) {
-    var session = result.data.session;
-    if (session) {
-      currentUser = session.user;
-      sb.from('members').select('*').eq('email', currentUser.email).single().then(function(result2) {
-        currentMember = result2.data;
-        // Only show dashboard if user is already on the portal page
-        if (window.location.hash === '#portal' || document.getElementById('page-portal').style.display !== 'none') {
-          showDashboard();
-        }
-      });
-    }
+  // Always sign out any stale session on page load so login always works fresh
+  sb.auth.signOut().then(function() {
+    currentUser = null;
+    currentMember = null;
+    const loginBtn = document.getElementById('login-btn');
+    if (loginBtn) { loginBtn.textContent = 'Sign in'; loginBtn.disabled = false; }
+    // Pre-fill saved email
+    try {
+      const savedEmail = localStorage.getItem('ufa_saved_email');
+      if (savedEmail) {
+        const eidInput = document.getElementById('eid-input');
+        if (eidInput) eidInput.value = savedEmail;
+      }
+    } catch(e) {}
   });
 })();
 
@@ -5367,17 +5370,12 @@ sb.auth.onAuthStateChange(async (event, session) => {
     showResetPanel();
     return;
   }
-  // SIGNED_IN fires after magic link / OAuth — only handle if not already logged in via password
-  if (event === 'SIGNED_IN' && session && !currentUser) {
-    // Only auto-login for magic link (no password flow) — password login handled by portalLogin()
-    const provider = session.user?.app_metadata?.provider;
-    if (provider === 'email' && session.user?.confirmed_at) {
-      currentUser = session.user;
-      const { data: member } = await sb.from('members').select('*').eq('email', currentUser.email).single();
-      currentMember = member;
-      showPage('portal');
-      showDashboard();
-    }
+  // SIGNED_OUT — clear state and reset login button
+  if (event === 'SIGNED_OUT') {
+    currentUser = null;
+    currentMember = null;
+    const loginBtn = document.getElementById('login-btn');
+    if (loginBtn) { loginBtn.textContent = 'Sign in'; loginBtn.disabled = false; }
   }
 });
 
