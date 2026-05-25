@@ -5393,8 +5393,14 @@ async function portalSignup() {
   if (error) { let msg = "Something went wrong. Please try again."; if (error.message.includes("already registered") || error.message.includes("already exists")) msg = "An account with this email already exists. Try signing in instead."; else if (error.message.includes("invalid")) msg = "Please enter a valid UT email address."; else if (error.message.includes("Password")) msg = "Password must be at least 6 characters."; err.style.display="block"; err.textContent=msg; return; }
 
   const eid = document.getElementById('signup-eid').value.trim();
-  await sb.from('members').insert({ email, name, eid, role, semester: 'Fall 2026', major, grad_year: gradYear });
   currentUser = data.user;
+
+  // Sign in immediately so the session is active before inserting
+  const { data: signInData, error: signInError } = await sb.auth.signInWithPassword({ email, password: pw });
+  if (!signInError && signInData) currentUser = signInData.user;
+
+  const { error: insertError } = await sb.from('members').insert({ email, name, eid, role, semester: 'Fall 2026', major, grad_year: gradYear });
+  if (insertError) { console.error('Member insert failed:', insertError.message); }
   currentMember = { email, name, eid, role, semester: 'Fall 2026', major, grad_year: gradYear };
 
   if (selectedRole === 'Board') {
