@@ -2027,6 +2027,13 @@ nav .nav-links.open {
   background: rgba(46,74,46,0.1) !important;
   color: #1C2B1C !important;
 }
+.res-filter {
+  font-size:12px;padding:6px 14px;border:1px solid #D0D9D0;border-radius:20px;
+  background:#fff;color:#3D6B3D;cursor:pointer;font-family:'DM Sans',sans-serif;
+  font-weight:500;transition:all 0.15s;white-space:nowrap;
+}
+.res-filter:hover { background:#f0f5f0; }
+.res-filter.active { background:#3D6B3D;color:#fff;border-color:#3D6B3D; }
 .portal-tab.active {
   background: #1C2B1C !important;
   color: #fff !important;
@@ -2621,7 +2628,7 @@ nav .nav-links.open {
       </div>
 
       <div class="board-card">
-        <div class="board-photo"><img style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1774545012262.png" alt="Nathan Li" onerror="this.style.display='none'"></div>
+        <div class="board-photo"><img style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/Headshot.jpg" alt="Nathan Li" onerror="this.style.display='none'"></div>
         <div class="board-name">Nathan Li</div>
         <div class="board-role">Director of Investment</div>
         <a href="https://www.linkedin.com/in/nathanyuxianli/" target="_blank" class="board-li">
@@ -3806,6 +3813,7 @@ nav .nav-links.open {
           <button onclick="switchPortalTab('leaderboard')" class="portal-tab" id="ptab-leaderboard">Leaderboard</button>
           <button onclick="switchPortalTab('events')" class="portal-tab" id="ptab-events">Events</button>
           <button onclick="switchPortalTab('profile')" class="portal-tab" id="ptab-profile">Profile</button>
+          <button onclick="switchPortalTab('resources')" class="portal-tab" id="ptab-resources">Resources</button>
           <button onclick="switchPortalTab('admin')" class="portal-tab" id="ptab-admin" style="display:none;">Admin</button>
         </div>
       </div>
@@ -3945,7 +3953,53 @@ nav .nav-links.open {
           </div>
         </div>
 
-        <!-- ── ADMIN TAB ── -->
+        <!-- ── RESOURCES TAB ── -->
+        <div id="ptab-content-resources" style="display:none;">
+          <div style="margin-bottom:24px;">
+            <div style="font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:500;color:#1C2B1C;margin-bottom:4px;">Resources</div>
+            <div style="font-size:13px;color:#6B7D6B;">Guides, templates, and tools to help you recruit</div>
+          </div>
+
+          <!-- WSJ Access -->
+          <div style="background:#1C2B1C;border-radius:8px;padding:20px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+            <div>
+              <div style="font-size:15px;font-weight:600;color:#fff;margin-bottom:4px;">Wall Street Journal Access</div>
+              <div style="font-size:13px;color:#A8BCA8;">Complimentary WSJ subscription for UFA members</div>
+            </div>
+            <div style="display:flex;gap:24px;flex-wrap:wrap;">
+              <div>
+                <div style="font-size:11px;color:#A8BCA8;margin-bottom:2px;">USERNAME</div>
+                <div style="font-size:14px;font-weight:500;color:#fff;font-family:monospace;">financeassociationtx@gmail.com</div>
+              </div>
+              <div>
+                <div style="font-size:11px;color:#A8BCA8;margin-bottom:2px;">PASSWORD</div>
+                <div style="font-size:14px;font-weight:500;color:#fff;font-family:monospace;">ufa2021</div>
+              </div>
+              <a href="https://wsj.com" target="_blank" style="align-self:center;background:#fff;color:#1C2B1C;font-size:13px;font-weight:600;padding:8px 16px;border-radius:4px;text-decoration:none;white-space:nowrap;">Visit WSJ →</a>
+            </div>
+          </div>
+
+          <!-- Filter tabs -->
+          <div id="resources-filter" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+            <button onclick="filterResources('resume')" class="res-filter active" id="rfilt-resume">Resume</button>
+            <button onclick="filterResources('recruiting')" class="res-filter" id="rfilt-recruiting">Recruiting</button>
+            <button onclick="toggleIBMenu()" class="res-filter" id="rfilt-ib">IB Guides ▾</button>
+            <button onclick="filterResources('consulting')" class="res-filter" id="rfilt-consulting">Consulting</button>
+            <button onclick="filterResources('pe')" class="res-filter" id="rfilt-pe">Private Equity</button>
+            <button onclick="filterResources('hf')" class="res-filter" id="rfilt-hf">Hedge Funds</button>
+          </div>
+          <div id="ib-submenu" style="display:none;margin-bottom:16px;padding:10px 14px;background:#f5f8f5;border-radius:8px;flex-wrap:wrap;gap:8px;">
+            <span style="font-size:12px;color:#6B7D6B;align-self:center;margin-right:4px;">Filter by:</span>
+            <button onclick="filterResources('ib-long')" class="res-filter" id="rfilt-ib-long">Long Guides</button>
+            <button onclick="filterResources('ib-short')" class="res-filter" id="rfilt-ib-short">Short Guides</button>
+            <button onclick="filterResources('ib-other')" class="res-filter" id="rfilt-ib-other">Other</button>
+          </div>
+
+          <div id="resources-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;"></div>
+          <div id="resources-loading" style="text-align:center;padding:40px;color:#6B7D6B;font-size:14px;">Loading resources...</div>
+        </div>
+
+                <!-- ── ADMIN TAB ── -->
         <div id="ptab-content-admin" style="display:none;">
           <div style="margin-bottom:24px;">
             <div style="font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:500;color:#1C2B1C;margin-bottom:4px;">Admin Panel</div>
@@ -4107,7 +4161,7 @@ const TYPE_COLORS = {
 
 // ── Tab switching ──
 async function switchPortalTab(tab) {
-  ['overview','leaderboard','events','profile','admin'].forEach(t => {
+  ['overview','leaderboard','events','profile','resources','admin'].forEach(t => {
     const btn = document.getElementById('ptab-' + t);
     const content = document.getElementById('ptab-content-' + t);
     if (btn) btn.classList.toggle('active', t === tab);
@@ -4124,6 +4178,144 @@ async function switchPortalTab(tab) {
     loadProfileBadges();
   }
   if (tab === 'admin') { switchAdminTab('sessions'); loadAdminSessions(); }
+  if (tab === 'resources') { loadResources(); }
+}
+
+// ── Resources ──
+const RESOURCES = [
+  // Resume
+  { name: 'McCombs Resume', file: 'recruitmccombs-bba-resume-template (4).docx', category: 'resume', desc: 'UT McCombs BBA resume template', type: 'docx' },
+
+  // Recruiting
+  { name: 'Insider Edge', file: 'Insider Edge.pdf', category: 'recruiting', desc: 'Insider guide to finance recruiting', type: 'pdf' },
+  { name: 'BIWS 400 Questions', file: 'BIWS 400 Qs.pdf', category: 'recruiting', desc: '400 IB interview questions and answers', type: 'pdf' },
+  { name: 'BIWS Fit Guide', file: 'BIWS Fit Guide.pdf', category: 'recruiting', desc: 'Behavioral & fit interview prep', type: 'pdf' },
+  { name: 'Banking at Michigan', file: 'Banking at Michigan.pdf', category: 'recruiting', desc: 'Comprehensive IB recruiting guide', type: 'pdf' },
+  { name: 'WSP Red Book', file: 'WallStreetPrep-RedBook.pdf', category: 'recruiting', desc: 'Wall Street Prep IB interview prep guide', type: 'pdf' },
+
+  // IB Long
+  { name: 'Core Concepts', file: '0. Core Concepts.pdf', category: 'ib-long', desc: 'Foundational IB concepts overview', type: 'pdf' },
+  { name: 'Accounting', file: '1. Accounting.pdf', category: 'ib-long', desc: 'Accounting fundamentals for interviews', type: 'pdf' },
+  { name: 'Advanced Accounting', file: '1.5. (OPTIONAL) Advanced Accounting.pdf', category: 'ib-long', desc: 'Advanced accounting topics', type: 'pdf' },
+  { name: 'Valuation & DCF', file: '2. Valuation and DCF Analysis.pdf', category: 'ib-long', desc: 'Core valuation and DCF concepts', type: 'pdf' },
+  { name: 'EV & Multiples', file: '3. Enterprise Value, Equity Value, Metrics, Multiples.pdf', category: 'ib-long', desc: 'Enterprise value and valuation multiples', type: 'pdf' },
+  { name: 'Advanced Valuation', file: '4. Valuation and DCF Analysis.pdf', category: 'ib-long', desc: 'Advanced valuation techniques', type: 'pdf' },
+  { name: 'M&A & Merger Models', file: '5. M&A Deals, Merger Models.pdf', category: 'ib-long', desc: 'M&A deal structures and modeling', type: 'pdf' },
+  { name: 'LBO Models', file: '6. LBO Models.pdf', category: 'ib-long', desc: 'Leveraged buyout modeling guide', type: 'pdf' },
+  { name: 'Bank-Specific Questions', file: 'Real Bank-Specific Questions.pdf', category: 'ib-long', desc: 'Interview questions by firm', type: 'pdf' },
+  { name: 'Core Mastery', file: 'Copy of Core Mastery.pdf', category: 'ib-long', desc: 'Core finance concepts guide', type: 'pdf' },
+
+  // IB Short
+  { name: 'Short Accounting', file: 'Short Accounting Guide.pdf', category: 'ib-short', desc: 'Quick reference accounting guide', type: 'pdf' },
+  { name: 'Short Valuation', file: 'Short Valuation Guide.pdf', category: 'ib-short', desc: 'Quick reference valuation guide', type: 'pdf' },
+  { name: 'Short DCF', file: 'Short DCF Guide.pdf', category: 'ib-short', desc: 'Quick reference DCF guide', type: 'pdf' },
+  { name: 'Short QV-EV', file: 'Short QV-EV Guide.pdf', category: 'ib-short', desc: 'Quick reference EV/equity value guide', type: 'pdf' },
+  { name: 'Short LBO', file: 'Short LBO Guide.pdf', category: 'ib-short', desc: 'Quick reference LBO guide', type: 'pdf' },
+  { name: 'Short Merger', file: 'Short Merger Guide.pdf', category: 'ib-short', desc: 'Quick reference merger model guide', type: 'pdf' },
+
+  // IB Other
+  { name: 'WSP M&A Guide', url: 'https://www.wallstreetprep.com/knowledge/the-ultimate-guide-to-mergers-acquisitions/', category: 'ib-other', desc: 'Free M&A concepts guide', type: 'link' },
+  { name: 'Vanderbilt IB Guide', url: 'https://cdn.vanderbilt.edu/vu-URL/wp-content/uploads/sites/269/2020/08/19222742/Investment-Banking-Guide-Final.pdf', category: 'ib-other', desc: 'Complete IB guide — no signup needed', type: 'pdf-link' },
+  { name: 'BIWS YouTube Channel', url: 'https://www.youtube.com/channel/UC4LeewYWZ3ruS3Bc64ldXuw', category: 'ib-other', desc: 'Free financial modeling video tutorials', type: 'link' },
+
+  // Consulting
+  { name: 'HBS Consulting Guide', url: 'https://www.wallstreetoasis.com/files/hbs_older.pdf', category: 'consulting', desc: 'HBS case interview framework guide', type: 'pdf-link' },
+  { name: 'IGotAnOffer Cases', url: 'https://igotanoffer.com/blogs/mckinsey-case-interview-blog/case-interview-examples', category: 'consulting', desc: '47 free case examples from MBB', type: 'link' },
+
+  // Private Equity
+  { name: 'M&I PE Guide', url: 'https://mergersandinquisitions.com/private-equity-interviews/', category: 'pe', desc: 'Guide to breaking into private equity', type: 'link' },
+  { name: 'WSO PE Q&A', url: 'https://www.wallstreetoasis.com/resources/interviews/private-equity-interview-questions', category: 'pe', desc: '40 PE interview questions with answers', type: 'link' },
+
+  // Hedge Funds
+  { name: 'WSO HF Q&A', url: 'https://www.wallstreetoasis.com/resources/interviews/hedge-funds-interview-questions', category: 'hf', desc: '40 HF interview questions with answers', type: 'link' },
+];
+
+var resourcesLoaded = false;
+var currentResourceFilter = 'all';
+
+async function loadResources() {
+  if (resourcesLoaded) return;
+  resourcesLoaded = true;
+  renderResources('resume');
+}
+
+function toggleIBMenu() {
+  var menu = document.getElementById('ib-submenu');
+  var btn = document.getElementById('rfilt-ib');
+  var isOpen = menu.style.display !== 'none';
+  menu.style.display = isOpen ? 'none' : 'flex';
+  btn.classList.toggle('active', !isOpen);
+  if (!isOpen) filterResources('ib-long');
+}
+
+function filterResources(cat) {
+  currentResourceFilter = cat;
+  var isIB = cat === 'ib-long' || cat === 'ib-short' || cat === 'ib-other';
+  ['resume','recruiting','consulting','pe','hf'].forEach(function(c) {
+    var btn = document.getElementById('rfilt-' + c);
+    if (btn) btn.classList.toggle('active', c === cat);
+  });
+  ['ib-long','ib-short','ib-other'].forEach(function(c) {
+    var btn = document.getElementById('rfilt-' + c);
+    if (btn) btn.classList.toggle('active', c === cat);
+  });
+  var ibBtn = document.getElementById('rfilt-ib');
+  if (ibBtn) ibBtn.classList.toggle('active', isIB);
+  // Hide IB submenu if switching to non-IB category
+  if (!isIB) {
+    var menu = document.getElementById('ib-submenu');
+    if (menu) menu.style.display = 'none';
+  }
+  renderResources(cat);
+}
+
+function renderResources(cat) {
+  const grid = document.getElementById('resources-grid');
+  const loading = document.getElementById('resources-loading');
+  const filtered = cat === 'all' ? RESOURCES : RESOURCES.filter(function(r){ return r.category === cat; });
+  loading.style.display = 'none';
+  var html = '';
+  for (var i = 0; i < filtered.length; i++) {
+    var r = filtered[i];
+    var icon = r.type === 'link' ? '🔗' : r.type === 'docx' ? '📄' : '📕';
+    var badge = {'ib-long':'IB Long','ib-short':'IB Short','ib-other':'IB Other',recruiting:'Recruiting',resume:'Resume',consulting:'Consulting',pe:'Private Equity',hf:'Hedge Funds'}[r.category] || r.category;
+    var badgeColor = {'ib-long':'#3D6B3D','ib-short':'#4A5A8A','ib-other':'#5A5A5A',recruiting:'#8A5A3D',resume:'#2C5F2E',consulting:'#6B3D6B',pe:'#3D5A8A',hf:'#8A3D3D'}[r.category] || '#3D6B3D';
+    var actionAttr = (r.type === 'link')
+      ? 'onclick="window.open(' + "'" + r.url + "'" + ',' + "'" + '_blank' + "'" + ')"'
+      : (r.type === 'pdf-link')
+      ? 'onclick="window.open(' + "'" + r.url + "'" + ',' + "'" + '_blank' + "'" + ')"'
+      : 'onclick="downloadResource(' + "'" + r.file.replace(/'/g, "\'") + "'" + ',' + "'" + r.type + "'" + ')"';
+    var actionLabel = (r.type === 'link') ? 'Open link →' : 'Download →';
+    html += '<div style="background:#fff;border:1px solid #E8EDE8;border-radius:8px;padding:20px;cursor:pointer;transition:box-shadow 0.2s;" onmouseover="this.style.boxShadow=\'0 4px 12px rgba(0,0,0,0.08)\'" onmouseout="this.style.boxShadow=\'\'" ' + actionAttr + '>';
+    html += '<div style="display:flex;align-items:flex-start;gap:12px;">';
+    html += '<div style="font-size:24px;line-height:1;">' + icon + '</div>';
+    html += '<div style="flex:1;min-width:0;">';
+    html += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">';
+    html += '<div style="font-size:14px;font-weight:600;color:#1C2B1C;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + r.name + '</div>';
+    html += '<span style="font-size:10px;font-weight:600;color:#fff;background:' + badgeColor + ';padding:2px 7px;border-radius:10px;white-space:nowrap;flex-shrink:0;">' + badge + '</span>';
+    html += '</div>';
+    html += '<div style="font-size:12px;color:#6B7D6B;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + r.desc + '</div>';
+    html += '<div style="font-size:11px;color:#3D6B3D;margin-top:8px;font-weight:500;">' + actionLabel + '</div>';
+    html += '</div></div></div>';
+  }
+  grid.innerHTML = html;
+}
+
+async function downloadResource(filename, type) {
+  try {
+    const { data, error } = await sb.storage.from('resources').download(filename);
+    if (error) { alert('Could not download file. Please try again.'); return; }
+    const url = URL.createObjectURL(data);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  } catch(e) {
+    alert('Download failed: ' + e.message);
+  }
 }
 
 function switchAdminTab(tab) {
