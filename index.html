@@ -3705,6 +3705,10 @@ nav .nav-links.open {
               <input id="signup-password-confirm" type="password" placeholder="Re-enter password" style="width:100%;padding:10px 13px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;">
             </div>
           </div>
+          <div style="margin-bottom:16px;padding:12px 14px;background:#fff;border:1px solid rgba(46,74,46,0.2);border-radius:6px;display:flex;align-items:flex-start;gap:10px;">
+            <input type="checkbox" id="signup-dues-check" style="margin-top:2px;accent-color:#1C2B1C;flex-shrink:0;width:15px;height:15px;cursor:pointer;">
+            <label for="signup-dues-check" style="font-size:13px;color:#3A4A3A;line-height:1.5;cursor:pointer;">I have paid my UFA dues for this semester. I understand my account requires board approval before I can access the portal.</label>
+          </div>
           <button onclick="portalSignup()" style="width:100%;background:#1C2B1C;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:13px;border-radius:6px;border:none;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='#3D6B3D'" onmouseout="this.style.background='#1C2B1C'">Create account</button>
           <div id="signup-error" style="display:none;margin-top:12px;padding:10px 14px;background:#fdf0ef;border:1px solid #f0b4b0;border-radius:4px;font-size:13px;color:#8b2e2e;text-align:center;"></div>
           <div style="margin-top:16px;padding-top:14px;border-top:1px solid rgba(46,74,46,0.1);text-align:center;">
@@ -3787,6 +3791,19 @@ nav .nav-links.open {
           </div>
         </div>
       </div>
+
+    <!-- PENDING APPROVAL MESSAGE -->
+    <div id="portal-pending" style="display:none;flex:1;align-items:flex-start;justify-content:center;padding:80px 24px 48px;background:var(--cream);">
+      <div style="background:#F7F4EE;border:1px solid rgba(46,74,46,0.12);border-radius:12px;width:100%;max-width:440px;box-shadow:0 8px 32px rgba(46,74,46,0.1);overflow:hidden;">
+        <div style="height:4px;background:linear-gradient(90deg,#1C2B1C,#3D6B3D);"></div>
+        <div style="padding:44px 40px 40px;text-align:center;">
+          <div style="font-size:40px;margin-bottom:16px;">⏳</div>
+          <div style="font-family:'Playfair Display',Georgia,serif;font-size:24px;font-weight:500;color:#1C2B1C;margin-bottom:12px;">Account Pending Approval</div>
+          <p style="font-size:14px;color:#6B7D6B;line-height:1.7;margin-bottom:24px;">Your account has been created and is awaiting board approval. A board member will verify your dues payment and approve your account shortly.<br><br>You'll be able to sign in once approved.</p>
+          <a href="#" onclick="showLogin();document.getElementById('portal-pending').style.display='none';" style="font-size:13px;color:#3D6B3D;font-weight:500;">← Back to sign in</a>
+        </div>
+      </div>
+    </div>
 
     <!-- DASHBOARD -->
     <div id="portal-dashboard" style="display:none;flex:1;padding:0 0 60px;">
@@ -4012,6 +4029,7 @@ nav .nav-links.open {
             <button onclick="switchAdminTab('roster')" class="admin-tab" id="atab-roster">Roster</button>
             <button onclick="switchAdminTab('analytics')" class="admin-tab" id="atab-analytics">Analytics</button>
             <button onclick="switchAdminTab('announce')" class="admin-tab" id="atab-announce">Announcements</button>
+            <button onclick="switchAdminTab('approvals')" class="admin-tab" id="atab-approvals">Approvals <span id="approvals-badge" style="display:none;background:#c0392b;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;margin-left:4px;"></span></button>
           </div>
 
           <!-- Session Codes -->
@@ -4131,6 +4149,15 @@ nav .nav-links.open {
                 <div id="current-announce" style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:20px;font-size:14px;color:#3A4A3A;line-height:1.6;">None active</div>
                 <div style="font-size:12px;color:#6B7D6B;margin-top:10px;">This message appears as a banner at the top of every member's dashboard.</div>
               </div>
+            </div>
+          </div>
+
+          <!-- Pending Approvals -->
+          <div id="atab-content-approvals" style="display:none;">
+            <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:10px;">Pending Member Approvals</div>
+            <div style="font-size:13px;color:#6B7D6B;margin-bottom:16px;line-height:1.6;">These members have signed up but are pending approval. Cross-reference with Venmo payments before approving. Approved members will be able to log in immediately.</div>
+            <div id="approvals-list" style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;overflow:hidden;">
+              <div style="padding:20px;font-size:13px;color:#6B7D6B;text-align:center;">Loading…</div>
             </div>
           </div>
 
@@ -4319,7 +4346,7 @@ async function downloadResource(filename, type) {
 }
 
 function switchAdminTab(tab) {
-  ['sessions','roster','analytics','announce'].forEach(t => {
+  ['sessions','roster','analytics','announce','approvals'].forEach(t => {
     const btn = document.getElementById('atab-' + t);
     const content = document.getElementById('atab-content-' + t);
     if (btn) btn.classList.toggle('active', t === tab);
@@ -4328,6 +4355,7 @@ function switchAdminTab(tab) {
   if (tab === 'roster') loadRoster();
   if (tab === 'analytics') loadAnalytics();
   if (tab === 'announce') loadCurrentAnnouncement();
+  if (tab === 'approvals') loadApprovals();
 }
 
 // ── Member fetch helper (handles case mismatch) ──
@@ -4369,6 +4397,14 @@ async function portalLogin() {
     try { localStorage.setItem('ufa_saved_email', email); } catch(e) {}
     currentMember = await fetchMember(currentUser.email);
     console.log('currentMember:', currentMember, 'email used:', currentUser.email);
+    // Block pending accounts
+    if (currentMember && currentMember.status === 'pending') {
+      await sb.auth.signOut();
+      currentUser = null; currentMember = null;
+      err.style.display='block'; err.textContent='Your account is pending board approval. You will be able to sign in once a board member approves your dues payment.';
+      if (btn) { btn.textContent='Sign in'; btn.disabled=false; }
+      return;
+    }
     showDashboard();
   } catch(e) { err.style.display='block'; err.textContent='Something went wrong: ' + e.message; if (btn) { btn.textContent='Sign in'; btn.disabled=false; } }
 }
@@ -4392,6 +4428,7 @@ async function showDashboard() {
   const BOARD_ROLES = ['Board', 'President'];
   const isBoard = BOARD_ROLES.includes(role);
   document.getElementById('ptab-admin').style.display = isBoard ? '' : 'none';
+  if (isBoard) loadApprovals(); // populate badge count on login
 
   loadAnnouncement();
 
@@ -4908,6 +4945,48 @@ async function toggleSession(code, currentlyActive) {
   loadAdminSessions();
 }
 
+// ── Admin: Pending Approvals ──
+async function loadApprovals() {
+  const list = document.getElementById('approvals-list');
+  if (!list) return;
+  list.innerHTML = '<div style="padding:20px;font-size:13px;color:#6B7D6B;text-align:center;">Loading…</div>';
+
+  const { data, error } = await sb.from('members').select('*').eq('status', 'pending').order('name', { ascending: true });
+  if (error || !data) { list.innerHTML = '<div style="padding:20px;font-size:13px;color:#8b2e2e;text-align:center;">Error loading approvals.</div>'; return; }
+
+  // Update badge count
+  const badge = document.getElementById('approvals-badge');
+  if (badge) { badge.textContent = data.length; badge.style.display = data.length > 0 ? 'inline' : 'none'; }
+
+  if (data.length === 0) { list.innerHTML = '<div style="padding:28px;font-size:13px;color:#6B7D6B;text-align:center;">No pending approvals. All caught up ✓</div>'; return; }
+
+  list.innerHTML = data.map(m => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid rgba(46,74,46,0.08);flex-wrap:wrap;gap:10px;">
+      <div>
+        <div style="font-size:14px;font-weight:500;color:#1C2B1C;">${m.name || '—'}</div>
+        <div style="font-size:12px;color:#6B7D6B;margin-top:2px;">${m.email} · ${m.role || '—'} · ${m.major || '—'} · Class of ${m.grad_year || '—'}</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-shrink:0;">
+        <button onclick="approveMember('${m.email}')" style="background:#1C2B1C;color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;padding:7px 16px;border-radius:4px;border:none;cursor:pointer;">Approve</button>
+        <button onclick="denyMember('${m.email}')" style="background:#fff;border:1px solid #f0b4b0;color:#8b2e2e;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;padding:7px 16px;border-radius:4px;cursor:pointer;">Deny</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function approveMember(email) {
+  const { error } = await sb.from('members').update({ status: 'approved' }).eq('email', email);
+  if (error) { alert('Error approving member: ' + error.message); return; }
+  loadApprovals();
+}
+
+async function denyMember(email) {
+  if (!confirm('Deny and remove ' + email + '? This will delete their account request.')) return;
+  await sb.from('members').delete().eq('email', email);
+  // Also remove from Supabase auth if possible
+  loadApprovals();
+}
+
 // ── Admin: Roster ──
 async function loadRoster() {
   var r1 = await sb.from('members').select('*').order('name',{ascending:true});
@@ -5091,6 +5170,22 @@ async function loadAnalytics() {
         currentMember = await fetchMember(currentUser.email);
         window.history.replaceState({}, '', window.location.pathname);
         showPage('portal');
+        if (!currentMember) {
+          await sb.auth.signOut();
+          currentUser = null;
+          const errEl = document.getElementById('login-error');
+          if (errEl) { errEl.style.display = 'block'; errEl.textContent = 'No member account found for this email. Please create an account or contact a board member.'; }
+          showLogin();
+          return;
+        }
+        if (currentMember.status === 'pending') {
+          await sb.auth.signOut();
+          currentUser = null; currentMember = null;
+          showPage('portal');
+          document.getElementById('portal-login').style.display = 'none';
+          document.getElementById('portal-pending').style.display = 'flex';
+          return;
+        }
         showDashboard();
         return;
       }
@@ -5108,7 +5203,26 @@ async function loadAnalytics() {
         currentMember = await fetchMember(currentUser.email);
         window.history.replaceState({}, '', window.location.pathname);
         if (type === 'recovery') { showPage('portal'); showResetPanel(); }
-        else { showPage('portal'); showDashboard(); }
+        else {
+          showPage('portal');
+          if (!currentMember) {
+            // Authenticated with Supabase but no matching member record — block access
+            await sb.auth.signOut();
+            currentUser = null;
+            const errEl = document.getElementById('login-error');
+            if (errEl) { errEl.style.display = 'block'; errEl.textContent = 'No member account found for this email. Please create an account or contact a board member.'; }
+            showLogin();
+            return;
+          }
+          if (currentMember.status === 'pending') {
+            await sb.auth.signOut();
+            currentUser = null; currentMember = null;
+            document.getElementById('portal-login').style.display = 'none';
+            document.getElementById('portal-pending').style.display = 'flex';
+            return;
+          }
+          showDashboard();
+        }
         return;
       }
     } catch(e) { console.log('Code exchange error:', e); }
@@ -5509,6 +5623,15 @@ async function sendMagicLink() {
   const err = document.getElementById('magic-error');
   msg.style.display = 'none'; err.style.display = 'none';
   if (!email) { err.style.display='block'; err.textContent='Please enter your UT email.'; return; }
+
+  // Check that the email exists in the members table before sending a magic link
+  const member = await fetchMember(email);
+  if (!member) {
+    err.style.display = 'block';
+    err.textContent = 'No account found for that email. Please create an account first, or contact a board member if you believe this is an error.';
+    return;
+  }
+
   const { error } = await sb.auth.signInWithOtp({ email });
   if (error) { err.style.display='block'; err.textContent=error.message; return; }
   msg.style.display = 'block';
@@ -5732,9 +5855,11 @@ async function portalSignup() {
   const selectedRole = document.getElementById('signup-role').value;
   const major = document.getElementById('signup-major').value.trim();
   const gradYear = document.getElementById('signup-grad-year').value;
+  const duesChecked = document.getElementById('signup-dues-check').checked;
   const err   = document.getElementById('signup-error');
 
   if (!name || !email || !pw || !pw2 || !selectedRole || !major || !gradYear) { err.style.display="block"; err.textContent="Please fill in all fields."; return; }
+  if (!duesChecked) { err.style.display="block"; err.textContent="Please confirm you have paid your UFA dues before creating an account."; return; }
   if (!/^\d{4}$/.test(gradYear)) { err.style.display='block'; err.textContent='Graduation year must be exactly 4 digits.'; return; }
   if (pw.length < 6) { err.style.display="block"; err.textContent="Password must be at least 6 characters."; return; }
   if (pw !== pw2) { err.style.display="block"; err.textContent="Passwords do not match."; return; }
@@ -5747,19 +5872,18 @@ async function portalSignup() {
   const { data, error } = await sb.auth.signUp({ email, password: pw, options: { data: { name, eid, role, major, grad_year: gradYear } } });
   if (error) { let msg = "Something went wrong. Please try again."; if (error.message.includes("already registered") || error.message.includes("already exists")) msg = "An account with this email already exists. Try signing in instead."; else if (error.message.includes("invalid")) msg = "Please enter a valid UT email address."; else if (error.message.includes("Password")) msg = "Password must be at least 6 characters."; err.style.display="block"; err.textContent=msg; return; }
 
-  // Sign in so session is active (trigger handles members insert)
-  const { data: signInData, error: signInError } = await sb.auth.signInWithPassword({ email, password: pw });
-  if (signInError) { err.style.display="block"; err.textContent="Account created! Please sign in."; return; }
-  currentUser = signInData.user;
-  currentMember = { email, name, eid, role, semester: 'Fall 2026', major, grad_year: gradYear };
+  // Insert into members table with status = pending
+  await sb.from('members').insert({
+    email, name, eid, role, major, grad_year: gradYear,
+    semester: 'Fall 2026', status: 'pending'
+  });
 
-  if (selectedRole === 'Board') {
-    err.style.display='block';
-    err.style.background='#e6f4e6'; err.style.borderColor='#a8d5a8'; err.style.color='#1a4d1a';
-    err.textContent='Account created! Board access requires admin approval. You can log in as a General Member in the meantime.';
-  }
-
-  showDashboard();
+  // Show pending message — do NOT sign them in or show dashboard
+  document.getElementById('portal-signup').style.display = 'none';
+  document.getElementById('portal-login').style.display = 'flex';
+  document.getElementById('login-card').style.display = 'none';
+  const pendingDiv = document.getElementById('portal-pending');
+  if (pendingDiv) pendingDiv.style.display = 'block';
 }
 
 let observerLocked = false;
