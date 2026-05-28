@@ -5837,6 +5837,7 @@ sb.auth.onAuthStateChange(async (event, session) => {
     showResetPanel();
     return;
   }
+
   // EMAIL_CHANGE — sync new email to members and attendance tables
   if (event === 'USER_UPDATED' && session) {
     const newEmail = session.user.email;
