@@ -4230,7 +4230,7 @@ async function switchPortalTab(tab) {
     renderProfile();
     loadProfileBadges();
   }
-  if (tab === 'admin') { switchAdminTab('sessions'); loadAdminSessions(); }
+  if (tab === 'admin') { switchAdminTab('sessions'); loadAdminSessions(); loadRosterBadge(); }
   if (tab === 'resources') { loadResources(); }
 }
 
@@ -4782,12 +4782,10 @@ async function saveProfile() {
   var res = await sb.from('members').update({ name: name, eid: eid, role: roleToSave }).eq('email', matchEmail);
   if (res.error) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Error saving. Try again.'; return; }
 
-  // Then update email separately if changed
+  // Then trigger auth email update — members table will sync via USER_UPDATED handler
   if (emailChanged) {
-    var emailRes = await sb.from('members').update({ email: email }).eq('email', matchEmail);
-    if (emailRes.error) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Profile saved but email update failed. Try again.'; return; }
     var authRes = await sb.auth.updateUser({ email: email });
-    if (authRes.error) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Profile saved but auth email update failed: '+authRes.error.message; return; }
+    if (authRes.error) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Profile saved but email update failed: '+authRes.error.message; return; }
   }
 
   currentMember.name = name; currentMember.eid = eid; currentMember.email = email; currentMember.role = roleToSave;
@@ -4803,7 +4801,9 @@ async function saveProfile() {
     document.getElementById('profile-role').value = selectedRole;
   } else if (emailChanged) {
     msg.style.display='block'; msg.style.color='#2e6b2e';
-    msg.textContent = 'Profile saved! Check your new email for a confirmation link.';
+    msg.textContent = 'Check your new email for a confirmation link. You will be signed out now.';
+    setTimeout(async function(){ await sb.auth.signOut(); }, 3000);
+    return;
   } else {
     msg.style.display='block'; msg.style.color='#2e6b2e'; msg.textContent='Profile saved!';
   }
@@ -5016,6 +5016,14 @@ async function denyMember(email) {
 }
 
 // ── Admin: Roster ──
+async function loadRosterBadge() {
+  var r = await sb.from('members').select('role');
+  var members = r.data || [];
+  var pendingCount = members.filter(function(m){ return m.role && m.role.indexOf('-Pending') !== -1; }).length;
+  var badge = document.getElementById('roster-badge');
+  if (badge) { badge.textContent = pendingCount; badge.style.display = pendingCount > 0 ? 'inline' : 'none'; }
+}
+
 async function loadRoster() {
   var r1 = await sb.from('members').select('*').order('name',{ascending:true});
   var r2 = await sb.from('attendance').select('email, points');
