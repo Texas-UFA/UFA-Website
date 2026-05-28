@@ -4052,7 +4052,7 @@ nav .nav-links.open {
           <!-- Admin sub-tabs -->
           <div class="admin-tab-nav">
             <button onclick="switchAdminTab('sessions')" class="admin-tab active" id="atab-sessions">Sessions</button>
-            <button onclick="switchAdminTab('roster')" class="admin-tab" id="atab-roster">Roster</button>
+            <button onclick="switchAdminTab('roster')" class="admin-tab" id="atab-roster">Roster <span id="roster-badge" style="display:none;background:#c0392b;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;margin-left:4px;"></span></button>
             <button onclick="switchAdminTab('analytics')" class="admin-tab" id="atab-analytics">Analytics</button>
             <button onclick="switchAdminTab('announce')" class="admin-tab" id="atab-announce">Announcements</button>
             <button onclick="switchAdminTab('approvals')" class="admin-tab" id="atab-approvals">Approvals <span id="approvals-badge" style="display:none;background:#c0392b;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;margin-left:4px;"></span></button>
@@ -4777,15 +4777,17 @@ async function saveProfile() {
     roleToSave = selectedRole + '-Pending';
   }
 
-  // Update members table first
+  // Update members table - exclude email first to avoid RLS mismatch
   var matchEmail = (currentMember && currentMember.email) ? currentMember.email : currentUser.email;
-  var res = await sb.from('members').update({ name: name, eid: eid, email: email, role: roleToSave }).eq('email', matchEmail);
+  var res = await sb.from('members').update({ name: name, eid: eid, role: roleToSave }).eq('email', matchEmail);
   if (res.error) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Error saving. Try again.'; return; }
 
-  // Then update auth email if changed
+  // Then update email separately if changed
   if (emailChanged) {
+    var emailRes = await sb.from('members').update({ email: email }).eq('email', matchEmail);
+    if (emailRes.error) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Profile saved but email update failed. Try again.'; return; }
     var authRes = await sb.auth.updateUser({ email: email });
-    if (authRes.error) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Profile saved but email update failed: '+authRes.error.message; return; }
+    if (authRes.error) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Profile saved but auth email update failed: '+authRes.error.message; return; }
   }
 
   currentMember.name = name; currentMember.eid = eid; currentMember.email = email; currentMember.role = roleToSave;
@@ -5022,6 +5024,10 @@ async function loadRoster() {
   var pointsMap = {};
   allAtt.forEach(function(r){ pointsMap[r.email]=(pointsMap[r.email]||0)+(r.points||1); });
   allRosterData = members.map(function(m){ return Object.assign({}, m, { totalPoints: pointsMap[m.email]||0 }); });
+  // Update roster badge with pending role count
+  var pendingRoleCount = members.filter(function(m){ return m.role && m.role.indexOf('-Pending') !== -1; }).length;
+  var rosterBadge = document.getElementById('roster-badge');
+  if (rosterBadge) { rosterBadge.textContent = pendingRoleCount; rosterBadge.style.display = pendingRoleCount > 0 ? 'inline' : 'none'; }
   renderRosterTable(allRosterData);
 }
 
