@@ -4777,18 +4777,23 @@ async function saveProfile() {
     roleToSave = selectedRole + '-Pending';
   }
 
-  // Update members table - exclude email first to avoid RLS mismatch
+  // Update members table - name, eid, role only (email synced via USER_UPDATED after confirmation)
   var matchEmail = (currentMember && currentMember.email) ? currentMember.email : currentUser.email;
   var res = await sb.from('members').update({ name: name, eid: eid, role: roleToSave }).eq('email', matchEmail);
   if (res.error) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Error saving. Try again.'; return; }
 
-  // Then trigger auth email update — members table will sync via USER_UPDATED handler
+  // If email changed: trigger auth update, show message, sign out immediately
+  // Do NOT update currentMember.email — USER_UPDATED handler needs the old email to sync members table
   if (emailChanged) {
     var authRes = await sb.auth.updateUser({ email: email });
-    if (authRes.error) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Profile saved but email update failed: '+authRes.error.message; return; }
+    if (authRes.error) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Email update failed: '+authRes.error.message; return; }
+    await sb.auth.signOut();
+    window.location.href = window.location.pathname + '#portal';
+    return;
   }
 
-  currentMember.name = name; currentMember.eid = eid; currentMember.email = email; currentMember.role = roleToSave;
+  // No email change — update local state normally
+  currentMember.name = name; currentMember.eid = eid; currentMember.role = roleToSave;
   document.getElementById('portal-welcome-name').textContent = name;
   document.getElementById('portal-welcome-team').textContent = roleToSave + ' - ' + (currentMember.semester||'');
 
@@ -4799,11 +4804,6 @@ async function saveProfile() {
     msg.style.display='block'; msg.style.color='#856404';
     msg.textContent = '⏳ Role change requested — pending board approval.';
     document.getElementById('profile-role').value = selectedRole;
-  } else if (emailChanged) {
-    msg.style.display='block'; msg.style.color='#2e6b2e';
-    msg.textContent = 'Check your new email for a confirmation link. You will be signed out now.';
-    setTimeout(async function(){ await sb.auth.signOut(); }, 3000);
-    return;
   } else {
     msg.style.display='block'; msg.style.color='#2e6b2e'; msg.textContent='Profile saved!';
   }
@@ -5586,6 +5586,8 @@ function closeMenu() {
  */
 function showLogin() {
   document.getElementById('portal-login').style.display = 'flex';
+  document.getElementById('portal-dashboard').style.display = 'none';
+  document.getElementById('portal-pending').style.display = 'none';
   document.getElementById('login-card').style.display = 'block';
   document.getElementById('portal-signup').style.display = 'none';
   document.getElementById('portal-magic').style.display = 'none';
@@ -5855,28 +5857,25 @@ sb.auth.onAuthStateChange(async (event, session) => {
   // EMAIL_CHANGE — sync new email to members and attendance tables
   if (event === 'USER_UPDATED' && session) {
     const newEmail = session.user.email;
-    // Get old email from currentMember or from currentUser (before update)
-    const oldEmail = (currentMember && currentMember.email) ? currentMember.email
-                   : (currentUser && currentUser.email && currentUser.email !== newEmail) ? currentUser.email
+    // oldEmail: use currentUser (not currentMember) since currentMember.email was NOT updated on save
+    const oldEmail = (currentUser && currentUser.email && currentUser.email !== newEmail)
+                   ? currentUser.email
                    : null;
-    if (oldEmail && oldEmail !== newEmail) {
+    if (oldEmail) {
       await sb.from('members').update({ email: newEmail }).eq('email', oldEmail);
       await sb.from('attendance').update({ email: newEmail }).eq('email', oldEmail);
     }
     currentUser = session.user;
-    // Always re-fetch full member row
+    // Re-fetch member row with new email
     const updatedMember = await fetchMember(newEmail);
     if (updatedMember) {
       currentMember = updatedMember;
       showDashboard();
     }
   }
-  // SIGNED_OUT — clear state and reset login button
+  // SIGNED_OUT — reload page to show login
   if (event === 'SIGNED_OUT') {
-    currentUser = null;
-    currentMember = null;
-    const loginBtn = document.getElementById('login-btn');
-    if (loginBtn) { loginBtn.textContent = 'Sign in'; loginBtn.disabled = false; }
+    window.location.reload();
   }
 });
 
