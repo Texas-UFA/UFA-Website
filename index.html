@@ -4777,26 +4777,14 @@ async function saveProfile() {
     roleToSave = selectedRole + '-Pending';
   }
 
-  // Update members table - name, eid, role only (email synced via USER_UPDATED after confirmation)
   var matchEmail = (currentMember && currentMember.email) ? currentMember.email : currentUser.email;
-  console.log('saveProfile: matchEmail=', matchEmail, 'name=', name, 'emailChanged=', emailChanged);
-  var updatePromise = sb.from('members').update({ name: name, eid: eid, role: roleToSave }).eq('email', matchEmail);
-  var timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Request timed out')), 8000));
-  var res;
-  try {
-    res = await Promise.race([updatePromise, timeoutPromise]);
-  } catch(e) {
-    msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Save failed: '+e.message; return;
-  }
-  if (res.error) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Error saving: '+res.error.message; return; }
+  var updateData = { name: name, eid: eid, role: roleToSave };
+  if (emailChanged) updateData.email = email;
+  var res = await sb.from('members').update(updateData).eq('email', matchEmail);
+  if (res.error) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Error saving. Try again.'; return; }
 
-  // If email changed: trigger auth update, show message, sign out immediately
-  // Do NOT update currentMember.email — USER_UPDATED handler needs the old email to sync members table
   if (emailChanged) {
-    var authRes = await sb.auth.updateUser({ email: email });
-    if (authRes.error) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Email update failed: '+authRes.error.message; return; }
     await sb.auth.signOut();
-    window.location.href = window.location.pathname + '#portal';
     return;
   }
 
