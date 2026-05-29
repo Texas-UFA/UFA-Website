@@ -4784,8 +4784,18 @@ async function saveProfile() {
   if (res.error) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Error saving. Try again.'; return; }
 
   if (emailChanged) {
-    await sb.auth.updateUser({ email: email });
-    await sb.auth.signOut();
+    var authRes = await sb.auth.updateUser({ email: email });
+    if (authRes.error) {
+      msg.style.display='block'; msg.style.color='#8b2e2e';
+      msg.textContent = 'Error updating email: ' + authRes.error.message;
+      return;
+    }
+    msg.style.display='block'; msg.style.color='#2e6b2e';
+    msg.textContent = 'Check your new email inbox for a confirmation link. Signing you out…';
+    setTimeout(async function() {
+      await sb.auth.signOut();
+      showLogin();
+    }, 2500);
     return;
   }
 
