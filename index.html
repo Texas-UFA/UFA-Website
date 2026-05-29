@@ -4790,7 +4790,6 @@ async function saveProfile() {
       msg.textContent = 'Error updating email: ' + authRes.error.message;
       return;
     }
-    window._emailChangePending = true;
     return;
   }
 
@@ -5858,11 +5857,6 @@ sb.auth.onAuthStateChange(async (event, session) => {
 
   // EMAIL_CHANGE — sync new email to members and attendance tables
   if (event === 'USER_UPDATED' && session) {
-    // If triggered by a profile email change, skip dashboard reload — sign out instead
-    if (window._emailChangePending) {
-      window._emailChangePending = false;
-      return;
-    }
     const newEmail = session.user.email;
     // oldEmail: use currentUser (not currentMember) since currentMember.email was NOT updated on save
     const oldEmail = (currentUser && currentUser.email && currentUser.email !== newEmail)
@@ -5882,21 +5876,7 @@ sb.auth.onAuthStateChange(async (event, session) => {
   }
   // SIGNED_OUT — reload page to show login
   if (event === 'SIGNED_OUT') {
-    if (window._emailChangePending) {
-      window._emailChangePending = false;
-      showLogin();
-      setTimeout(function() {
-        var loginErr = document.getElementById('login-error');
-        if (loginErr) {
-          loginErr.style.display = 'block';
-          loginErr.style.color = '#2e6b2e';
-          loginErr.style.background = '#f0f7f0';
-          loginErr.textContent = 'Check your new email inbox for a confirmation link, then sign in with your new address.';
-        }
-      }, 100);
-    } else {
-      window.location.reload();
-    }
+    window.location.reload();
   }
 });
 
