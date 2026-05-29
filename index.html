@@ -4790,12 +4790,7 @@ async function saveProfile() {
       msg.textContent = 'Error updating email: ' + authRes.error.message;
       return;
     }
-    msg.style.display='block'; msg.style.color='#2e6b2e';
-    msg.textContent = 'Check your new email inbox for a confirmation link. Signing you out…';
-    setTimeout(async function() {
-      await sb.auth.signOut();
-      showLogin();
-    }, 2500);
+    window._emailChangePending = true;
     return;
   }
 
@@ -5863,6 +5858,11 @@ sb.auth.onAuthStateChange(async (event, session) => {
 
   // EMAIL_CHANGE — sync new email to members and attendance tables
   if (event === 'USER_UPDATED' && session) {
+    // If triggered by a profile email change, skip dashboard reload — sign out instead
+    if (window._emailChangePending) {
+      window._emailChangePending = false;
+      return;
+    }
     const newEmail = session.user.email;
     // oldEmail: use currentUser (not currentMember) since currentMember.email was NOT updated on save
     const oldEmail = (currentUser && currentUser.email && currentUser.email !== newEmail)
@@ -5882,7 +5882,21 @@ sb.auth.onAuthStateChange(async (event, session) => {
   }
   // SIGNED_OUT — reload page to show login
   if (event === 'SIGNED_OUT') {
-    window.location.reload();
+    if (window._emailChangePending) {
+      window._emailChangePending = false;
+      showLogin();
+      setTimeout(function() {
+        var loginErr = document.getElementById('login-error');
+        if (loginErr) {
+          loginErr.style.display = 'block';
+          loginErr.style.color = '#2e6b2e';
+          loginErr.style.background = '#f0f7f0';
+          loginErr.textContent = 'Check your new email inbox for a confirmation link, then sign in with your new address.';
+        }
+      }, 100);
+    } else {
+      window.location.reload();
+    }
   }
 });
 
