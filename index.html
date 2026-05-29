@@ -4790,6 +4790,8 @@ async function saveProfile() {
       msg.textContent = 'Error updating email: ' + authRes.error.message;
       return;
     }
+    msg.style.display='block'; msg.style.color='#2e6b2e';
+    msg.textContent = 'Email update requested. Please sign out and check your new inbox for a confirmation link.';
     return;
   }
 
