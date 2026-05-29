@@ -5851,16 +5851,14 @@ async function submitNewPassword() {
 // arrives via a reset-password email link). Shows the Set New Password form
 // instead of logging them straight in.
 sb.auth.onAuthStateChange(async (event, session) => {
-  console.log('[AUTH]', event, session ? session.user.email : null);
   if (event === 'PASSWORD_RECOVERY') {
     showResetPanel();
     return;
   }
 
 
-  // EMAIL_CHANGE — sync new email to members and attendance tables after confirmation
-  // new_email is set while confirmation is pending; null once confirmed
-  if (event === 'USER_UPDATED' && session && !session.user.new_email) {
+  // EMAIL_CHANGE — sync new email to members and attendance tables
+  if (event === 'USER_UPDATED' && session) {
     const newEmail = session.user.email;
     const oldEmail = (currentUser && currentUser.email && currentUser.email !== newEmail)
                    ? currentUser.email : null;
