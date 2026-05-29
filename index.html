@@ -4784,14 +4784,14 @@ async function saveProfile() {
   if (res.error) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Error saving. Try again.'; return; }
 
   if (emailChanged) {
-    var authRes = await sb.auth.updateUser({ email: email });
-    if (authRes.error) {
-      msg.style.display='block'; msg.style.color='#8b2e2e';
-      msg.textContent = 'Error updating email: ' + authRes.error.message;
-      return;
-    }
+    // Show message FIRST before anything async can fire
     msg.style.display='block'; msg.style.color='#2e6b2e';
     msg.textContent = 'Email update requested. Please sign out and check your new inbox for a confirmation link.';
+    var authRes = await sb.auth.updateUser({ email: email });
+    if (authRes.error) {
+      msg.style.color='#8b2e2e';
+      msg.textContent = 'Error updating email: ' + authRes.error.message;
+    }
     return;
   }
 
@@ -5852,6 +5852,7 @@ async function submitNewPassword() {
 // arrives via a reset-password email link). Shows the Set New Password form
 // instead of logging them straight in.
 sb.auth.onAuthStateChange(async (event, session) => {
+  console.log('[AUTH]', event, session ? session.user.email : null);
   if (event === 'PASSWORD_RECOVERY') {
     showResetPanel();
     return;
@@ -5870,7 +5871,7 @@ sb.auth.onAuthStateChange(async (event, session) => {
   }
   // SIGNED_OUT — reload page to show login
   if (event === 'SIGNED_OUT') {
-    window.location.reload();
+    return;
   }
 });
 
