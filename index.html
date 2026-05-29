@@ -4388,21 +4388,21 @@ function switchAdminTab(tab) {
 async function fetchMember(email) {
   if (!email) return null;
   const lower = email.toLowerCase();
-  // Try exact match first
-  const { data: exact, error: e1 } = await sb.from('members').select('*').eq('email', lower).maybeSingle();
-  console.log('fetchMember exact:', exact, 'error:', e1, 'email tried:', lower);
-  if (exact) return exact;
-  // Fallback: case-insensitive match (ilike)
-  const { data: rows, error: e2 } = await sb.from('members').select('*').ilike('email', lower);
-  console.log('fetchMember ilike:', rows, 'error:', e2);
-  if (rows && rows.length > 0) return rows[0];
-  // Last resort: fetch all and match client-side
-  const { data: all, error: e3 } = await sb.from('members').select('*');
-  console.log('fetchMember all rows:', all, 'error:', e3);
-  if (all) {
-    const match = all.find(m => m.email && m.email.toLowerCase() === lower);
-    if (match) return match;
-  }
+  try {
+    const { data, error } = await sb.from('members').select('*').eq('email', lower).maybeSingle();
+    if (data) return data;
+  } catch(e) {}
+  try {
+    const { data } = await sb.from('members').select('*').ilike('email', lower);
+    if (data && data.length > 0) return data[0];
+  } catch(e) {}
+  try {
+    const { data } = await sb.from('members').select('*');
+    if (data) {
+      const match = data.find(m => m.email && m.email.toLowerCase() === lower);
+      if (match) return match;
+    }
+  } catch(e) {}
   return null;
 }
 
@@ -4780,8 +4780,14 @@ async function saveProfile() {
   // Update members table - name, eid, role only (email synced via USER_UPDATED after confirmation)
   var matchEmail = (currentMember && currentMember.email) ? currentMember.email : currentUser.email;
   console.log('saveProfile: matchEmail=', matchEmail, 'name=', name, 'emailChanged=', emailChanged);
-  var res = await sb.from('members').update({ name: name, eid: eid, role: roleToSave }).eq('email', matchEmail);
-  console.log('saveProfile: update result=', res);
+  var updatePromise = sb.from('members').update({ name: name, eid: eid, role: roleToSave }).eq('email', matchEmail);
+  var timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Request timed out')), 8000));
+  var res;
+  try {
+    res = await Promise.race([updatePromise, timeoutPromise]);
+  } catch(e) {
+    msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Save failed: '+e.message; return;
+  }
   if (res.error) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Error saving: '+res.error.message; return; }
 
   // If email changed: trigger auth update, show message, sign out immediately
