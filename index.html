@@ -4784,6 +4784,7 @@ async function saveProfile() {
   if (res.error) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Error saving. Try again.'; return; }
 
   if (emailChanged) {
+    await sb.auth.updateUser({ email: email });
     await sb.auth.signOut();
     return;
   }
