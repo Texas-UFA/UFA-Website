@@ -5860,21 +5860,13 @@ sb.auth.onAuthStateChange(async (event, session) => {
   // EMAIL_CHANGE — sync new email to members and attendance tables
   if (event === 'USER_UPDATED' && session) {
     const newEmail = session.user.email;
-    // oldEmail: use currentUser (not currentMember) since currentMember.email was NOT updated on save
     const oldEmail = (currentUser && currentUser.email && currentUser.email !== newEmail)
                    ? currentUser.email
                    : null;
-    if (oldEmail) {
-      await sb.from('members').update({ email: newEmail }).eq('email', oldEmail);
-      await sb.from('attendance').update({ email: newEmail }).eq('email', oldEmail);
-    }
+    if (!oldEmail) return;
+    await sb.from('members').update({ email: newEmail }).eq('email', oldEmail);
+    await sb.from('attendance').update({ email: newEmail }).eq('email', oldEmail);
     currentUser = session.user;
-    // Re-fetch member row with new email
-    const updatedMember = await fetchMember(newEmail);
-    if (updatedMember) {
-      currentMember = updatedMember;
-      showDashboard();
-    }
   }
   // SIGNED_OUT — reload page to show login
   if (event === 'SIGNED_OUT') {
