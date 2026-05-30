@@ -459,7 +459,7 @@
   .mission-band-img img { width: 100%; height: 100%; object-fit: cover; object-position: center 60%; transform: scale(1.3); }
   .mission-quote {
     font-family: var(--font-display);
-    font-size: clamp(18px, 2.2vw, 26px);
+    font-size: clamp(20px, 2.6vw, 30px);
     color: var(--white); line-height: 1.5;
     font-weight: 400;
   }
@@ -783,13 +783,12 @@ align-items: flex-end;
   .join-hero::after { content: ''; position: absolute; inset: 0; background: rgba(20,36,20,0.25); }
   .join-hero-content { position: relative; z-index: 2; padding: 0 72px 56px; }
 
-  .membership-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 24px; align-items: stretch; }
+  .membership-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 24px; align-items: start; }
   .membership-card {
     background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 36px 32px;
     display: flex; flex-direction: column;
   }
   .membership-card .btn-primary {
-    margin-top: auto;
     align-self: flex-start;
   }
   .membership-card.featured { border-color: var(--green-accent); border-width: 2px; }
@@ -797,7 +796,7 @@ align-items: flex-end;
   .membership-badge.open { background: #e6f4e6; color: #2e6b2e; }
   .membership-badge.closed { background: #f4e6e6; color: #8b2e2e; }
   .membership-title { font-family: var(--font-display); font-size: 22px; font-weight: 500; margin-bottom: 12px; }
-  .membership-desc { font-size: 14px; color: var(--text-muted); line-height: 1.7; margin-bottom: 24px; }
+  .membership-desc { font-size: 14px; color: var(--text-muted); line-height: 1.7; margin-bottom: 20px; }
   .membership-price { font-size: 22px; font-weight: 500; color: var(--green-dark); margin-bottom: 4px; }
   .membership-price-note { font-size: 12px; color: var(--text-muted); margin-bottom: 20px; }
 
@@ -880,20 +879,19 @@ align-items: flex-end;
   font-weight: 500;
   color: var(--text-dark);
   line-height: 1.4;
-  height: 3em; /* Fixed 2-line height so all cards align */
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 .blog-card-new .blog-card-author {
   font-size: 13px;
   color: var(--text-muted);
-  height: 2em; /* Fixed 1-line height */
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  margin-bottom: 6px;
 }
 .blog-card-new .blog-card-actions {
   display: flex;
@@ -1066,8 +1064,8 @@ align-items: flex-end;
   .contact-row { display: flex; align-items: flex-start; gap: 14px; }
   .contact-row-icon { width: 36px; height: 36px; background: var(--green-wash); border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .contact-row-icon svg { width: 16px; height: 16px; stroke: var(--green-accent); fill: none; stroke-width: 1.5; }
-  .contact-row-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 3px; }
-  .contact-row-val { font-size: 14px; color: var(--text-dark); }
+  .contact-row-label { font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 4px; }
+  .contact-row-val { font-size: 16px; color: var(--text-dark); }
   .contact-row-val a { color: var(--green-accent); text-decoration: none; }
   .contact-row-val a:hover { text-decoration: underline; }
   .contact-form-area { background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 36px; }
@@ -1295,7 +1293,7 @@ align-items: flex-end;
     object-position: center 60%;
   }
   .mission-quote {
-    font-size: 0.95rem;
+    font-size: 1.3rem !important;
     line-height: 1.5 !important;
   }
 
@@ -1726,7 +1724,7 @@ nav .nav-links.open {
     line-height: 1.6 !important;
   }
   .invest-comp {
-    margin-top: 16px !important;
+    margin-top: 0 !important;
     margin-bottom: 16px !important;
   }
   .invest-comp h3 {
@@ -2477,7 +2475,7 @@ nav .nav-links.open {
     </div>
     <div>
       <div class="section-tag" style="color:var(--green-pale)"><span style="background:var(--green-pale);display:inline-block;width:24px;height:1px;"></span> Our mission</div>
-<p class="mission-quote" style="margin-top:16px; display: flex; align-items: flex-start; color: white; font-size: 1.5rem; line-height: 1.45; position: relative;">
+<p class="mission-quote" style="margin-top:16px; display: flex; align-items: flex-start; color: white; font-size: 1.9rem; line-height: 1.45; position: relative;">
   <span style="font-size: 4rem; font-family: serif; line-height: 1; margin-top: -10px; margin-right: 10px; flex-shrink: 0;">&ldquo;</span>
   
   <span>
@@ -2498,16 +2496,16 @@ nav .nav-links.open {
   <section class="section bg-cream">
     <div class="section-tag">Our programs</div>
     <h2 class="section-title">Pick your path</h2>
-    <p class="section-subtitle">Two tracks in three programs designed to build technical knowledge, practice real skills, and prepare you for the career path that excites you most.</p>
+    <p class="section-subtitle">Two tracks in three programs designed to build technical knowledge, practice real skills, and prepare you for the career path that excites you.</p>
     <div class="teams-grid">
       <a href="#teams" onclick="showPage('teams')" class="team-card reveal">
         <div class="team-card-img">
-<img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/imgur%20photos/8Da2AcT.jpeg" style="object-position: center 100%;">
+<img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/imgur%20photos/8Da2AcT.jpeg" style="object-position: center 100%; transform: scale(1.08); transform-origin: center 100%;">
 </div>
         <div class="team-card-body">
           <div class="team-card-tag">Entry level</div>
           <div class="team-card-title">Analyst Program</div>
-          <p class="team-card-desc">The perfect starting point for new members. Build foundational finance and consulting knowledge in a collaborative, lecture-based environment with end-of-semester competitions to put your skills to the test.</p>
+          <p class="team-card-desc">The perfect starting point for new members to build foundational finance and consulting knowledge in a collaborative, lecture-based environment.</p>
           <span class="team-card-link">Explore the program →</span>
         </div>
       </a>
@@ -2516,7 +2514,7 @@ nav .nav-links.open {
           <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/photos/B946E1C8-A6DA-4939-9A7C-FF90434B9AD7-1-105-c.jpg";>
         </div>
         <div class="team-card-body">
-          <div class="team-card-tag">Selective Investment</div>
+          <div class="team-card-tag">Selective</div>
           <div class="team-card-title">Investment Associates</div>
           <p class="team-card-desc">Portfolio management, equity research, stock pitches, market watches, professional blogs, and financial modeling — with mentorship from alumni who've landed at top firms.</p>
           <span class="team-card-link">Explore the team →</span>
@@ -2524,10 +2522,10 @@ nav .nav-links.open {
       </a>
       <a href="#teams" onclick="showPage('teams')" class="team-card reveal">
         <div class="team-card-img">
-<img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/imgur%20photos/ZNlUiNl.jpeg" style="object-position: center 60%;">
+<img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/imgur%20photos/ZNlUiNl.jpeg" style="object-position: center 80%; transform: scale(1.1); transform-origin: center 80%;">
 </div>
         <div class="team-card-body">
-          <div class="team-card-tag">Selective Consulting</div>
+          <div class="team-card-tag">Selective</div>
           <div class="team-card-title">Consulting Associates</div>
           <p class="team-card-desc">Pro bono consulting for real local businesses. Apply strategic frameworks, build client-ready deliverables, and develop the problem-solving skills top firms look for.</p>
           <span class="team-card-link">Explore the team →</span>
@@ -2764,7 +2762,7 @@ nav .nav-links.open {
     </div>
   </section>
 
-  <section class="section bg-cream" style="padding-bottom:0;">
+  <section class="section bg-cream" style="padding-top:32px;padding-bottom:0;">
     <div class="tabs">
       <button class="tab-btn active" onclick="switchTab('analysts')">Analyst Program</button>
       <button class="tab-btn" onclick="switchTab('investment')">Investment Associates</button>
@@ -2773,12 +2771,12 @@ nav .nav-links.open {
 
     <!-- ANALYSTS TAB -->
     <div id="tab-analysts" class="tab-pane active">
-      <div class="two-col tab-two-col" style="margin-bottom:56px;">
+      <div class="two-col tab-two-col" style="margin-bottom:28px;">
         <div>
           <div class="section-tag">No Experience Required · One Round of Applications</div>
           <h2 class="section-title">Analyst Program</h2>
           <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:20px;">The Analyst Program is designed for underclassmen and new members with no prior finance experience. In addition to the general member meeting, analysts meet weekly for dedicated training sessions to build the skills needed to succeed in UFA and beyond.</p>
-          <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:32px;">Each week, our Directors of Investments and Consulting lead sessions covering accounting, valuation, financial modeling, and market analysis. Everything you need to hit the ground running in UFA and in recruiting.</p>
+          <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:32px;">Each week, our Directors of Investments and Consulting lead sessions covering accounting, valuation, financial modeling, and market analysis: everything you need to hit the ground running in UFA and in recruiting.</p>
           <div class="team-btn-group"><a href="https://docs.google.com/forms/d/e/1FAIpQLSednj-xoNhhCCvGKyAnP4W1m9p-CNeTw28Cag6ibZsy71G5_A/viewform" target="_blank" class="btn-primary reveal" style="text-align:center;">Apply to Analyst Program</a></div>
         </div>
          <div class="team-photo-tall analyst-comp-photo" style="border-radius:12px; overflow:hidden; height:400px;">
@@ -2808,18 +2806,18 @@ nav .nav-links.open {
       </div>
 
     <!-- Competitions + photo on white background -->
-    <div style="background:var(--white);margin:0 -72px;padding:64px 72px 72px;">
+    <div style="background:var(--white);margin:0 -72px;padding:40px 72px 48px;">
 
-      <div class="section-tag">End-of-Semester · $1,000 Prize Pool</div>
-      <h2 class="section-title" style="margin-bottom:12px;">Analyst Competitions</h2>
-      <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:48px;">Every analyst competes twice — once in the fall, once in the spring. Both competitions run multiple rounds and are judged by people who have done the real thing.</p>
+      
+      <h2 class="section-title" style="margin-bottom:8px;">Analyst Competitions</h2>
+      <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:32px;">Every analyst competes twice — once in the fall, once in the spring.</p>
 
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:48px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:32px;">
 
-        <div class="reveal" style="background:var(--green-dark);border-radius:8px;padding:40px 36px;">
+        <div class="reveal" style="background:var(--green-dark);border-radius:8px;padding:28px 28px;">
           <div style="font-size:11px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:var(--green-pale);opacity:0.7;margin-bottom:16px;">Fall Semester</div>
           <h3 style="font-family:var(--font-display);font-size:26px;font-weight:500;color:var(--white);margin-bottom:16px;">Stock Pitch Competition</h3>
-          <p style="font-size:15px;color:rgba(255,255,255,0.65);line-height:1.75;margin-bottom:28px;">Analyst teams select any publicly traded stock on a U.S. exchange, build their investment thesis, and defend it in front of a room. Top teams advance to a final round judged by UFA upperclassmen and alumni working in finance.</p>
+          <p style="font-size:15px;color:rgba(255,255,255,0.65);line-height:1.75;margin-bottom:28px;">Analyst teams select any publicly traded stock on a U.S. exchange, build their investment thesis, and defend it in front of a room. Top teams advance to a final round. </p>
           <div style="display:flex;flex-direction:column;gap:14px;">
             <div style="display:flex;align-items:flex-start;gap:12px;">
               <div style="width:6px;height:6px;border-radius:50%;background:var(--green-pale);flex-shrink:0;margin-top:8px;"></div>
@@ -2840,10 +2838,10 @@ nav .nav-links.open {
           </div>
         </div>
 
-        <div class="reveal" style="background:var(--green-mid);border-radius:8px;padding:40px 36px;">
+        <div class="reveal" style="background:var(--green-mid);border-radius:8px;padding:28px 28px;">
           <div style="font-size:11px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:var(--green-pale);opacity:0.7;margin-bottom:16px;">Spring Semester</div>
           <h3 style="font-family:var(--font-display);font-size:26px;font-weight:500;color:var(--white);margin-bottom:16px;">Case Competition</h3>
-          <p style="font-size:15px;color:rgba(255,255,255,0.65);line-height:1.75;margin-bottom:28px;">Analyst teams are assigned a real corporate case and given approximately one week to develop and present their recommendation. Finalists present to a panel of active industry professionals who judge on rigor, creativity, and execution.</p>
+          <p style="font-size:15px;color:rgba(255,255,255,0.65);line-height:1.75;margin-bottom:28px;">Analyst teams are assigned a real corporate case and given approximately one week to develop and present their recommendation.</p>
           <div style="display:flex;flex-direction:column;gap:14px;">
             <div style="display:flex;align-items:flex-start;gap:12px;">
               <div style="width:6px;height:6px;border-radius:50%;background:var(--green-pale);flex-shrink:0;margin-top:8px;"></div>
@@ -2876,7 +2874,7 @@ nav .nav-links.open {
 
     <!-- INVESTMENT TAB -->
     <div id="tab-investment" class="tab-pane">
-      <div class="two-col tab-two-col" style="margin-bottom:56px;">
+      <div class="two-col tab-two-col" style="margin-bottom:28px;">
         <div>
           <div class="section-tag">Experience Required · Application + Interview</div>
           <h2 class="section-title">Investment Team</h2>
@@ -2918,14 +2916,14 @@ nav .nav-links.open {
     </div><!-- /invest-lower-bullets -->
 
     <!-- What You'll Learn + photo on white background -->
-    <div style="background:var(--white);margin:0 -72px;padding:64px 72px 72px;">
+    <div style="background:var(--white);margin:0 -72px;padding:40px 72px 48px;">
 
-<div class="invest-comp" style="margin-top: 0; margin-bottom: 30px; text-align: center;">
-  <h3 style="font-family: serif; font-size: 36px; color: var(--text-dark); margin-bottom: 16px; font-weight: 600;">What You'll Learn</h3>
-  <div style="width: 60px; height: 3px; background: var(--green-dark); margin: 0 auto 24px;"></div>
+<div class="invest-comp" style="margin-top: 0; margin-bottom: 20px; text-align: center;">
+  <h3 style="font-family: serif; font-size: 36px; color: var(--text-dark); margin-bottom: 10px; font-weight: 600;">What You'll Learn</h3>
+  <div style="width: 60px; height: 3px; background: var(--green-dark); margin: 0 auto 16px;"></div>
 </div>
 
-<div class="offering-grid-wrapper" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 80px; align-items: stretch;" id="comp-grid-main">  
+<div class="offering-grid-wrapper" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 40px; align-items: stretch;" id="comp-grid-main">  
   <div class="comp-card reveal" style="background: var(--white); border: 1px solid var(--border); padding: 32px; border-radius: 12px; transition: all 0.3s ease;">
     <div style="color: var(--green-accent); font-size: 24px; margin-bottom: 16px;opacity: 1.0;">01</div>
     <h4 style="font-family: serif; font-size: 20px; color: var(--text-dark); margin-bottom: 12px;">Active Fund Management</h4>
@@ -2966,7 +2964,7 @@ nav .nav-links.open {
 
     <!-- CONSULTING TAB -->
     <div id="tab-consulting" class="tab-pane">
-      <div class="two-col tab-two-col" style="margin-bottom:56px;">
+      <div class="two-col tab-two-col" style="margin-bottom:28px;">
         <div>
           <div class="section-tag">Experience Required · Application + Interview</div>
       <h2 class="section-title">Consulting Team</h2>
@@ -3010,7 +3008,7 @@ nav .nav-links.open {
         </div>
       </div>
 
-  <div style="background:var(--white);margin:0 -72px;padding:0 72px 72px;">
+  <div style="background:var(--white);margin:0 -72px;padding:32px 72px 48px;">
     <div class="team-photo-tall" style="margin-top:0; padding:0;">
       <div style="border-radius:12px; overflow:hidden; height:600px;">
         <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/imgur%20photos/1qDXUl0.jpeg" style="width:100%; height:100%; object-fit:cover; object-position:55% 40%; transform:scale(1.15); transform-origin:55% 40%; display:block;">
@@ -3043,7 +3041,7 @@ nav .nav-links.open {
     <h2 class="section-title">Choose your level of involvement</h2>
     <p class="section-subtitle">All UT Austin students are welcome. No prior finance experience required.</p>
     <div class="membership-grid">
-      <div class="reveal" style="grid-column:1/-1;background:var(--green-wash);border:2px solid var(--green-accent);border-radius:8px;padding:20px 28px;display:flex;align-items:flex-start;gap:16px;margin-bottom:8px;flex-wrap:wrap;">
+      <div class="reveal" style="grid-column:1/-1;background:var(--green-wash);border:2px solid var(--green-accent);border-radius:8px;padding:20px 28px;display:flex;align-items:center;gap:16px;margin-bottom:0;flex-wrap:wrap;">
         <span style="font-size:14px;font-weight:700;color:var(--green-accent);letter-spacing:0.08em;text-transform:uppercase;">Next Recruitment Cycle</span>
         <span style="font-size:15px;color:var(--text-dark);">Analyst, Investment Associates, and Consulting Associates applications open <strong>Fall 2026 (September)</strong>.</span>
       </div>
@@ -3231,7 +3229,7 @@ nav .nav-links.open {
 
 
     <div class="pub-card-embed-container">
-      <div class="pub-card-info" style="display:flex;align-items:center;justify-content:space-between;gap:40px;">
+      <div class="pub-card-info" style="display:flex;align-items:flex-start;justify-content:space-between;gap:40px;">
         <div>
           <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px;">Fall 2025</div>
           <div class="pub-title">Fall 2025 Research Report</div>
@@ -3352,7 +3350,7 @@ nav .nav-links.open {
         </a>
         <div class="blog-card-body">
           <div class="blog-card-date">11/17/2025 · Weekly Blog</div>
-          <div class="blog-card-title">Why AI Will Cause One of the Worst Crashes in Market History</div>
+          <div class="blog-card-title">Why AI Will Cause One of the Worst Crashes in History</div>
           <p class="blog-card-author">Farzad Hussain — Investment Associate</p>
           <div class="blog-card-actions">
             <a href="https://drive.google.com/file/d/1x9ZDjMDJzaWFO1DKPZcqT6xgf-coDCZf/view" target="_blank" class="btn-primary">Read</a>
@@ -3545,33 +3543,33 @@ nav .nav-links.open {
   <!-- Four pillars — OPTION 2: Editorial two-column -->
   <section class="section bg-cream" style="padding-bottom:40px;">
     <div class="section-tag">What sets us apart</div>
-    <h2 class="section-title">Serious about finance. Serious about you.</h2>
+    <h2 class="section-title">Start here. Go anywhere.</h2>
     <p class="section-subtitle">UFA is built around you. We offer the breadth, access, and community to explore every corner of finance on your own terms, without locking you into a single path before you're ready.</p>
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid var(--border);margin-top:8px;">
 
       <div class="reveal" style="padding:48px 48px 48px 0;border-bottom:1px solid var(--border);">
         <div style="font-size:11px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-muted);margin-bottom:16px;">01</div>
-        <h3 style="font-family:var(--font-display);font-size:28px;font-weight:400;color:var(--text-dark);line-height:1.2;margin:0 0 16px;">Food at every meeting</h3>
-        <p style="font-size:15px;color:var(--text-muted);line-height:1.75;margin:0;">Every Wednesday we feed you. Showing up is easy when there is a meal waiting, and it is part of what makes UFA feel like a community rather than just another club.</p>
+        <h3 style="font-family:var(--font-display);font-size:28px;font-weight:400;color:var(--text-dark);line-height:1.2;margin:0 0 16px;">We bring the industry to you</h3>
+        <p style="font-size:15px;color:var(--text-muted);line-height:1.75;margin:0;">From bulge-bracket bankers to PE professionals, we bring real practitioners into the room so you do not have to cold-email your way into a conversation.</p>
       </div>
 
       <div class="reveal" style="padding:48px 0 48px 48px;border-left:1px solid var(--border);border-bottom:1px solid var(--border);">
         <div style="font-size:11px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-muted);margin-bottom:16px;">02</div>
-        <h3 style="font-family:var(--font-display);font-size:28px;font-weight:400;color:var(--text-dark);line-height:1.2;margin:0 0 16px;">We bring the industry to you</h3>
-        <p style="font-size:15px;color:var(--text-muted);line-height:1.75;margin:0;">From bulge-bracket bankers to PE professionals, we bring real practitioners into the room so you do not have to cold-email your way into a conversation.</p>
+        <h3 style="font-family:var(--font-display);font-size:28px;font-weight:400;color:var(--text-dark);line-height:1.2;margin:0 0 16px;">The widest curriculum on campus</h3>
+        <p style="font-size:15px;color:var(--text-muted);line-height:1.75;margin:0;">IB, PE, asset management, consulting, corporate finance, tech. UFA is the only finance organization at UT that covers all of it under one roof, so you can explore before you commit.</p>
       </div>
 
       <div class="reveal" style="padding:48px 48px 48px 0;">
         <div style="font-size:11px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-muted);margin-bottom:16px;">03</div>
         <h3 style="font-family:var(--font-display);font-size:28px;font-weight:400;color:var(--text-dark);line-height:1.2;margin:0 0 16px;">Involvement at every level</h3>
-        <p style="font-size:15px;color:var(--text-muted);line-height:1.75;margin:0;">Never read a balance sheet? Two internships in? Either way, there is a place for you. General Member, Analyst, or Associate, you choose how deep you go.</p>
+        <p style="font-size:15px;color:var(--text-muted);line-height:1.75;margin:0;">No matter where you are in your finance journey, there is a place for you in UFA. General Member, Analyst, or Associate, you choose how deep you go.</p>
       </div>
 
       <div class="reveal" style="padding:48px 0 48px 48px;border-left:1px solid var(--border);">
         <div style="font-size:11px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-muted);margin-bottom:16px;">04</div>
-        <h3 style="font-family:var(--font-display);font-size:28px;font-weight:400;color:var(--text-dark);line-height:1.2;margin:0 0 16px;">The widest curriculum on campus</h3>
-        <p style="font-size:15px;color:var(--text-muted);line-height:1.75;margin:0;">IB, PE, asset management, consulting, corporate finance, tech. UFA is the only finance organization at UT that covers all of it under one roof, so you can explore before you commit.</p>
+        <h3 style="font-family:var(--font-display);font-size:28px;font-weight:400;color:var(--text-dark);line-height:1.2;margin:0 0 16px;">Food at every meeting</h3>
+        <p style="font-size:15px;color:var(--text-muted);line-height:1.75;margin:0;">Every Wednesday we feed you. Showing up is easy when there is a meal waiting, and it is part of what makes UFA feel like a community rather than just another club.</p>
       </div>
 
     </div>
