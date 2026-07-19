@@ -4100,11 +4100,11 @@ nav .nav-links.open {
             <div style="display:flex;gap:24px;flex-wrap:wrap;">
               <div>
                 <div style="font-size:11px;color:#A8BCA8;margin-bottom:2px;">USERNAME</div>
-                <div style="font-size:14px;font-weight:500;color:#fff;font-family:monospace;">financeassociationtx@gmail.com</div>
+                <div id="wsj-username" style="font-size:14px;font-weight:500;color:#fff;font-family:monospace;">Loading…</div>
               </div>
               <div>
                 <div style="font-size:11px;color:#A8BCA8;margin-bottom:2px;">PASSWORD</div>
-                <div style="font-size:14px;font-weight:500;color:#fff;font-family:monospace;">ufa2021</div>
+                <div id="wsj-password" style="font-size:14px;font-weight:500;color:#fff;font-family:monospace;">Loading…</div>
               </div>
               <a href="https://wsj.com" target="_blank" style="align-self:center;background:#fff;color:#1C2B1C;font-size:13px;font-weight:600;padding:8px 16px;border-radius:4px;text-decoration:none;white-space:nowrap;">Visit WSJ →</a>
             </div>
@@ -4450,6 +4450,36 @@ async function loadResources() {
   if (resourcesLoaded) return;
   resourcesLoaded = true;
   renderResources('resume');
+  loadWsjCreds();
+}
+
+/**
+ * loadWsjCreds()  [async]
+ * ------------------------
+ * Fetches the shared WSJ credentials from the Supabase app_secrets
+ * table. Row Level Security on that table only allows SELECT for
+ * authenticated users, so logged-out visitors (and crawlers reading
+ * the page source) can never see the actual values.
+ */
+async function loadWsjCreds() {
+  var userEl = document.getElementById('wsj-username');
+  var passEl = document.getElementById('wsj-password');
+  if (!userEl || !passEl) return;
+  try {
+    var res = await sb.from('app_secrets').select('name, value').in('name', ['wsj_username', 'wsj_password']);
+    if (res.error || !res.data || !res.data.length) {
+      userEl.textContent = 'Unavailable';
+      passEl.textContent = 'Unavailable';
+      return;
+    }
+    var map = {};
+    res.data.forEach(function(r) { map[r.name] = r.value; });
+    userEl.textContent = map.wsj_username || 'Unavailable';
+    passEl.textContent = map.wsj_password || 'Unavailable';
+  } catch (e) {
+    userEl.textContent = 'Unavailable';
+    passEl.textContent = 'Unavailable';
+  }
 }
 
 function toggleIBMenu() {
