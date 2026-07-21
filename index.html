@@ -5,7 +5,7 @@
     
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>University Finance Association — UT Austin</title>
+    <title>Texas UFA — University Finance Association at UT Austin</title>
 
     <!-- SEO -->
     <meta name="description" content="UT Austin's oldest and largest finance organization, connecting ambitious students to Wall Street, private equity, and consulting since 1951.">
@@ -15,7 +15,7 @@
     <!-- Open Graph -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://texasufa.org">
-    <meta property="og:title" content="University Finance Association — UT Austin">
+    <meta property="og:title" content="Texas UFA — University Finance Association at UT Austin">
     <meta property="og:description" content="UT Austin's oldest and largest finance organization, connecting ambitious students to Wall Street, private equity, and consulting since 1951.">
     <meta property="og:image" content="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/heroimg.jpg">
     <meta property="og:site_name" content="Texas UFA">
@@ -48,7 +48,7 @@
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="https://texasufa.org">
-    <meta name="twitter:title" content="University Finance Association — UT Austin">
+    <meta name="twitter:title" content="Texas UFA — University Finance Association at UT Austin">
     <meta name="twitter:description" content="UT Austin's oldest and largest finance organization, connecting ambitious students to Wall Street, private equity, and consulting since 1951.">
     <meta name="twitter:image" content="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/heroimg.jpg">
 
@@ -528,7 +528,7 @@
     border-radius: 8px; padding: 32px 28px;
     transition: box-shadow 0.2s, transform 0.2s;
   }
-  .pillar-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.08); transform: translateY(-2px); }
+  /* pillar cards are informational (not links) — no hover lift */
   .pillar-icon { display: none; }
   .pillar-title { font-family: var(--font-display); font-size: 24px; font-weight: 500; margin-bottom: 12px; color: var(--text-dark); }
   .pillar-body { font-size: 16px; color: var(--text-muted); line-height: 1.7; }
@@ -586,6 +586,12 @@
 .team-card-img { aspect-ratio: 16/9; overflow: hidden; }
 .team-card-img img { width: 100%; height: 100%; object-fit: cover; object-position: center 50%; transition: transform 0.4s; }
 .team-card:hover .team-card-img img { transform: scale(1.04); }
+/* Per-card photo framing — keeps each image's crop while still allowing the
+   shared hover zoom (inline transforms would override the hover rule). */
+.team-card-img img.img-frame-analyst { object-position: center 100%; transform: scale(1.08); transform-origin: center 100%; }
+.team-card:hover .team-card-img img.img-frame-analyst { transform: scale(1.12); }
+.team-card-img img.img-frame-consulting { object-position: center 80%; transform: scale(1.1); transform-origin: center 80%; }
+.team-card:hover .team-card-img img.img-frame-consulting { transform: scale(1.14); }
 .team-card-tag { font-size: 12px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: var(--green-accent); margin-bottom: 6px; }
 .team-card-title { font-family: var(--font-display); font-size: 20px; font-weight: 500; margin-bottom: 10px; }
 .team-card-desc { font-size: 15px; color: var(--text-muted); line-height: 1.65; }
@@ -770,23 +776,14 @@ background-position: center 95%;
   .feature-title { font-family: var(--font-display); font-size: 19px; font-weight: 600; margin-bottom: 12px; color: var(--text-dark); }
   .feature-body { font-size: 14px; color: var(--text-muted); line-height: 1.7; }
 
-.feature-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(0,0,0,0.05);
-}
+/* feature cards are informational (not links) — no hover lift */
 
-.comp-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(0,0,0,0.08);
-}
+/* comp cards are informational (not links) — no hover lift */
 
 .membership-card {
   transition: transform 0.2s, box-shadow 0.2s;
 }
-.membership-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(0,0,0,0.08);
-}
+/* membership cards act via their button, not the whole card — no hover lift */
 
 .step-card {
   transition: transform 0.2s, box-shadow 0.2s;
@@ -800,9 +797,7 @@ background-position: center 95%;
 .board-card {
   transition: transform 0.2s;
 }
-.board-card:hover {
-  transform: translateY(-4px);
-}
+/* board cards act via their LinkedIn link, not the whole card — no hover lift */
 
 .pub-card-embed-container {
   transition: transform 0.2s, box-shadow 0.2s;
@@ -878,7 +873,15 @@ align-items: flex-end;
     display: flex; flex-direction: column;
   }
   .membership-card .btn-primary {
-    align-self: flex-start;
+    align-self: stretch;
+    text-align: center;
+    padding-top: 15px; padding-bottom: 15px;
+  }
+  /* The card isn't a link, so the BUTTON is what animates — reinforces the
+     one clear action per card. */
+  .membership-card .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(46,74,46,0.20);
   }
   .membership-card.featured { border-color: var(--green-accent); border-width: 2px; }
   .membership-badge { display: inline-block; font-size: 10px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; background: var(--green-wash); color: var(--green-accent); padding: 4px 12px; border-radius: 3px; margin-bottom: 16px; align-self: flex-start; }
@@ -2459,8 +2462,8 @@ nav .nav-links.open {
 {
   "@context": "https://schema.org",
   "@type": "Organization",
-  "name": "University Finance Association",
-  "alternateName": "UFA",
+  "name": "Texas UFA",
+  "alternateName": ["University Finance Association", "UFA"],
   "url": "https://texasufa.org",
   "logo": "https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/logos/37f350-a0a7dee58b1d498989fc2317c1b89ce1-mv2-(1).png",
   "description": "UT Austin's oldest and largest finance organization, connecting ambitious students to Wall Street, private equity, and consulting since 1951.",
@@ -2523,7 +2526,7 @@ nav .nav-links.open {
         <p class="hero-sub">UT Austin's oldest and largest finance organization, connecting ambitious students to Wall Street, private equity, and consulting since 1951.</p>
         <div class="hero-btns">
           <a href="https://utexas.campuslabs.com/engage/organization/texasufa" target="_blank" class="btn-primary">Become a General Member</a>
-          <a href="/teams" onclick="showPage('teams');return false;" class="btn-outline">Explore Teams</a>
+          <a href="/teams" onclick="showPage('teams');return false;" class="btn-outline">Explore teams</a>
         </div>
       </div>
     </div>
@@ -2587,9 +2590,9 @@ nav .nav-links.open {
     <h2 class="section-title">Pick your path</h2>
     <p class="section-subtitle">Two tracks in three programs designed to build technical knowledge, practice real skills, and prepare you for the career path that excites you.</p>
     <div class="teams-grid">
-      <a href="/teams" onclick="showPage('teams');return false;" class="team-card reveal">
+      <a href="/teams" onclick="goToTeam('analysts');return false;" class="team-card reveal">
         <div class="team-card-img">
-<img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/imgur%20photos/8Da2AcT.jpeg" alt="UFA Analyst Program members in a lecture session" style="object-position: center 100%; transform: scale(1.08); transform-origin: center 100%;">
+<img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/imgur%20photos/8Da2AcT.jpeg" alt="UFA Analyst Program members in a lecture session" class="img-frame-analyst">
 </div>
         <div class="team-card-body">
           <div class="team-card-tag">Entry level</div>
@@ -2598,7 +2601,7 @@ nav .nav-links.open {
           <span class="team-card-link">Explore the program →</span>
         </div>
       </a>
-      <a href="/teams" onclick="showPage('teams');return false;" class="team-card reveal">
+      <a href="/teams" onclick="goToTeam('investment');return false;" class="team-card reveal">
         <div class="team-card-img">
           <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/photos/B946E1C8-A6DA-4939-9A7C-FF90434B9AD7-1-105-c.jpg" alt="UFA Investment Associates team members">
         </div>
@@ -2609,9 +2612,9 @@ nav .nav-links.open {
           <span class="team-card-link">Explore the team →</span>
         </div>
       </a>
-      <a href="/teams" onclick="showPage('teams');return false;" class="team-card reveal">
+      <a href="/teams" onclick="goToTeam('consulting');return false;" class="team-card reveal">
         <div class="team-card-img">
-<img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/imgur%20photos/ZNlUiNl.jpeg" alt="UFA Consulting Associates team members" style="object-position: center 80%; transform: scale(1.1); transform-origin: center 80%;">
+<img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/imgur%20photos/ZNlUiNl.jpeg" alt="UFA Consulting Associates team members" class="img-frame-consulting">
 </div>
         <div class="team-card-body">
           <div class="team-card-tag">Selective</div>
@@ -2835,7 +2838,7 @@ nav .nav-links.open {
     <div class="teams-hero-overlay" style="position:absolute;inset:0;background:rgba(20,36,20,0.35);"></div>
     <div class="teams-hero-content" style="position:relative;z-index:2;">
       <div class="page-eyebrow">Programs</div>
-      <h1 class="page-hero-title">Three Teams,<br>Two Paths,<br>One Community.</h1>
+      <h1 class="page-hero-title">Three teams.<br>Two paths.<br>One community.</h1>
     </div>
   </section>
 
@@ -2853,7 +2856,7 @@ nav .nav-links.open {
           <div class="section-tag">No Experience Required · One Round of Applications</div>
           <h2 class="section-title">Analyst Program</h2>
           <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:20px;">The Analyst Program is designed for underclassmen and new members with no prior finance experience. In addition to the general member meeting, analysts meet weekly for dedicated training sessions to build the skills needed to succeed in UFA and beyond.</p>
-          <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:32px;">Each week, our Directors of Investments and Consulting lead sessions covering accounting, valuation, financial modeling, and market analysis: everything you need to hit the ground running in UFA and in recruiting.</p>
+          <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:32px;">Each week, our Directors of Investments and Consulting lead sessions covering accounting, valuation, financial modeling, and market analysis — everything you need to hit the ground running in UFA and in recruiting.</p>
           <div class="team-btn-group"><a href="https://docs.google.com/forms/d/e/1FAIpQLSednj-xoNhhCCvGKyAnP4W1m9p-CNeTw28Cag6ibZsy71G5_A/viewform" target="_blank" class="btn-primary reveal" style="text-align:center;">Apply to Analyst Program</a></div>
         </div>
          <div class="team-photo-tall analyst-comp-photo" style="border-radius:12px; overflow:hidden; height:400px;">
@@ -2867,7 +2870,7 @@ nav .nav-links.open {
           <div style="padding:32px 28px 32px 0;border-right:1px solid var(--border);text-align:center;">
             <div style="font-family:var(--font-display);font-size:48px;font-weight:500;color:var(--green-light);line-height:1;margin-bottom:12px;">01</div>
             <div style="font-family:var(--font-display);font-size:18px;font-weight:500;color:var(--text-dark);margin-bottom:10px;">Explore Both Paths</div>
-            <p style="font-size:15px;color:var(--text-muted);line-height:1.7;">Gain exposure to high-finance and consulting through weekly lectures and assignments that build knowledge from the ground up.</p>
+            <p style="font-size:15px;color:var(--text-muted);line-height:1.7;">Gain exposure to high finance and consulting through weekly lectures and assignments that build knowledge from the ground up.</p>
           </div>
           <div style="padding:32px 28px;border-right:1px solid var(--border);text-align:center;">
             <div style="font-family:var(--font-display);font-size:48px;font-weight:500;color:var(--green-light);line-height:1;margin-bottom:12px;">02</div>
@@ -2886,7 +2889,7 @@ nav .nav-links.open {
     <div style="background:var(--white);margin:0 -72px;padding:40px 72px 48px;">
 
       
-      <h2 class="section-title" style="margin-bottom:8px;">Analyst Competitions</h2>
+      <h2 class="section-title" style="margin-bottom:8px;">Analyst competitions</h2>
       <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:32px;">Every analyst competes twice — once in the fall, once in the spring.</p>
 
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:32px;">
@@ -2894,7 +2897,7 @@ nav .nav-links.open {
         <div class="reveal" style="background:var(--green-dark);border-radius:8px;padding:28px 28px;">
           <div style="font-size:11px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:var(--green-pale);opacity:0.7;margin-bottom:16px;">Fall Semester</div>
           <h3 style="font-family:var(--font-display);font-size:26px;font-weight:500;color:var(--white);margin-bottom:16px;">Stock Pitch Competition</h3>
-          <p style="font-size:15px;color:rgba(255,255,255,0.65);line-height:1.75;margin-bottom:28px;">Analyst teams select any publicly traded stock on a U.S. exchange, build their investment thesis, and defend it in front of a room. Top teams advance to a final round. </p>
+          <p style="font-size:15px;color:rgba(255,255,255,0.65);line-height:1.75;margin-bottom:28px;">Analyst teams select any publicly traded stock on a U.S. exchange, build their investment thesis, and defend it in front of a room. Top teams advance to a final round.</p>
           <div style="display:flex;flex-direction:column;gap:14px;">
             <div style="display:flex;align-items:flex-start;gap:12px;">
               <div style="width:6px;height:6px;border-radius:50%;background:var(--green-pale);flex-shrink:0;margin-top:8px;"></div>
@@ -2953,7 +2956,7 @@ nav .nav-links.open {
     <div id="tab-investment" class="tab-pane">
       <div class="two-col tab-two-col" style="margin-bottom:28px;">
         <div>
-          <div class="section-tag">Experience Required · Application + Interview</div>
+          <div class="section-tag">Experience Required · Application + Interview · Applications Open September 2026</div>
           <h2 class="section-title">Investment Team</h2>
           <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">The Investment Associate Program is where serious finance preparation meets a tight-knit community. You'll build the technical skills recruiters want and the relationships that last long after graduation.</p>
           <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:32px;">The technical training is rigorous. But ask any Investment Associate what they remember most, and they'll tell you it's the people.</p>
@@ -2962,7 +2965,8 @@ nav .nav-links.open {
           <a href="/contact" onclick="showPage('contact');return false;" class="btn-outline work-with-us-btn" style="color:var(--green-dark);border-color:var(--green-accent);text-align:center;">Work with us</a>
           </div>
         </div>
-        <img loading="lazy" src = "https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/imgur%20photos/SZntCtT%20(1).jpeg"
+        <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/imgur%20photos/SZntCtT%20(1).jpeg"
+        alt="UFA Investment Associates team members"
         style="width: 100%; max-height: 400px; object-fit: cover; object-position: center 20%; border-radius: 12px;">
       </div>
       <div class="invest-lower">
@@ -3043,7 +3047,7 @@ nav .nav-links.open {
     <div id="tab-consulting" class="tab-pane">
       <div class="two-col tab-two-col" style="margin-bottom:28px;">
         <div>
-          <div class="section-tag">Experience Required · Application + Interview</div>
+          <div class="section-tag">Experience Required · Application + Interview · Applications Open September 2026</div>
       <h2 class="section-title">Consulting Team</h2>
       <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">
         UFA's Consulting Associates tackle real business problems, build client-ready deliverables, and develop the structured thinking that top firms look for.
@@ -3135,23 +3139,23 @@ nav .nav-links.open {
         <div class="membership-badge closed">Applications currently closed</div>
         <div class="membership-title">Analyst</div>
         <p class="membership-desc">An introductory program covering finance fundamentals, stock pitches, and market discussions. Open to all UT Austin students with no experience required. Applications open each fall and spring semester.</p>
-        <div class="membership-price">$25 / year (addition to GM)</div>
-        <div class="membership-price-note">or $15 per semester (addition to GM)</div>
-        <a href="https://docs.google.com/forms/d/e/1FAIpQLSednj-xoNhhCCvGKyAnP4W1m9p-CNeTw28Cag6ibZsy71G5_A/viewform" target="_blank" class="btn-primary" style="background:var(--green-mid);">View Application Form</a>
+        <div class="membership-price">$25 / year (in addition to GM)</div>
+        <div class="membership-price-note">or $15 per semester (in addition to GM)</div>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSednj-xoNhhCCvGKyAnP4W1m9p-CNeTw28Cag6ibZsy71G5_A/viewform" target="_blank" class="btn-primary" style="background:var(--green-mid);">View application form</a>
         <a href="https://www.instagram.com/texasufa/" target="_blank" style="display:block;margin-top:10px;font-size:13px;color:var(--green-accent);text-decoration:none;">Follow @texasufa for updates →</a>
       </div>
       <div class="membership-card reveal">
         <div class="membership-badge closed">Applications currently closed</div>
         <div class="membership-title">Investment Associates</div>
         <p class="membership-desc">A selective, application-based track with deep technical training, one-on-one mentorship, and strong recruiting outcomes. Applications open each fall and spring semester.</p>
-        <a href="https://docs.google.com/forms/d/e/1FAIpQLSfv0DWYxpYH4c7VQk0Rf-zPa3Y9Ou1uEn5SE3_vROkMRIrsqQ/viewform" target="_blank" class="btn-primary" style="background:var(--green-mid);">View Application Form</a>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSfv0DWYxpYH4c7VQk0Rf-zPa3Y9Ou1uEn5SE3_vROkMRIrsqQ/viewform" target="_blank" class="btn-primary" style="background:var(--green-mid);">View application form</a>
         <a href="https://www.instagram.com/texasufa/" target="_blank" style="display:block;margin-top:10px;font-size:13px;color:var(--green-accent);text-decoration:none;">Follow @texasufa for updates →</a>
       </div>
        <div class="membership-card reveal">
         <div class="membership-badge closed">Applications currently closed</div>
         <div class="membership-title">Consulting Associates</div>
         <p class="membership-desc">A selective, application-based track focused on real client engagements, case-study training, and developing the structured thinking top firms look for. Applications open each fall and spring semester.</p>
-        <a href="https://docs.google.com/forms/d/e/1FAIpQLSedfQrjZSVGodbKUNOcViYNfYHsjWsRYBn-cCZ1YmUbU_1faw/viewform" target="_blank" class="btn-primary" style="background:var(--green-mid);">View Application Form</a>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSedfQrjZSVGodbKUNOcViYNfYHsjWsRYBn-cCZ1YmUbU_1faw/viewform" target="_blank" class="btn-primary" style="background:var(--green-mid);">View application form</a>
         <a href="https://www.instagram.com/texasufa/" target="_blank" style="display:block;margin-top:10px;font-size:13px;color:var(--green-accent);text-decoration:none;">Follow @texasufa for updates →</a>
       </div>
     </div>
@@ -3162,7 +3166,7 @@ nav .nav-links.open {
   <!-- Recruiting Timeline -->
   <section class="section" style="background:var(--green-dark);padding-top:80px;padding-bottom:80px;">
     <div class="section-tag" style="color:var(--green-pale);">How It Works</div>
-    <h2 class="section-title" style="color:var(--white);margin-bottom:12px;">Recruitment Timeline</h2>
+    <h2 class="section-title" style="color:var(--white);margin-bottom:12px;">Recruitment timeline</h2>
     <p style="font-size:16px;color:rgba(255,255,255,0.65);line-height:1.8;margin-bottom:56px;">Applications open each fall and spring semester. Follow <a href="https://www.instagram.com/texasufa/" target="_blank" style="color:var(--green-pale);text-decoration:none;font-weight:500;">@texasufa</a> for exact dates each cycle.</p>
 
     <!-- Horizontal timeline (desktop) / vertical (mobile) -->
@@ -3202,7 +3206,7 @@ nav .nav-links.open {
 
         <div class="recruit-step reveal">
           <div class="recruit-dot recruit-dot--highlight"><span>07</span></div>
-          <div class="recruit-text"><div class="recruit-label">Interviews</div><div class="recruit-desc">Technical, behavioral, and fit interview.<br><em style="color:var(--green-pale);font-size:12px;">IA & CA only.</em></div></div>
+          <div class="recruit-text"><div class="recruit-label">Interviews</div><div class="recruit-desc">Technical, behavioral, and fit interviews.<br><em style="color:var(--green-pale);font-size:12px;">IA & CA only.</em></div></div>
         </div>
 
         <div class="recruit-step reveal">
@@ -3645,7 +3649,7 @@ nav .nav-links.open {
 
       <div class="reveal" style="padding:48px 0 48px 48px;border-left:1px solid var(--border);">
         <div style="font-size:11px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-muted);margin-bottom:16px;">04</div>
-        <h3 style="font-family:var(--font-display);font-size:28px;font-weight:400;color:var(--text-dark);line-height:1.2;margin:0 0 16px;">A Community Every Week</h3>
+        <h3 style="font-family:var(--font-display);font-size:28px;font-weight:400;color:var(--text-dark);line-height:1.2;margin:0 0 16px;">A community every week</h3>
         <p style="font-size:15px;color:var(--text-muted);line-height:1.75;margin:0;">Every Wednesday we feed you. Showing up is easy when there is a meal waiting, and it is part of what makes UFA feel like a community rather than just another club.</p>
       </div>
 
@@ -3656,7 +3660,7 @@ nav .nav-links.open {
       <div style="font-family:var(--font-display);font-size:56px;font-weight:500;color:var(--green-pale);flex-shrink:0;line-height:1;">75%</div>
       <div>
         <h3 style="font-family:var(--font-display);font-size:20px;font-weight:500;color:var(--white);margin-bottom:8px;">A clear path upward</h3>
-        <p style="font-size:15px;color:rgba(255,255,255,0.7);line-height:1.75;margin:0;">Three in four Investment and Consulting Associates began in the Analyst Program. UFA rewards commitment, and the analyst program is the proven pipeline into our most selective teams.</p>
+        <p style="font-size:15px;color:rgba(255,255,255,0.7);line-height:1.75;margin:0;">Three in four Investment and Consulting Associates began in the Analyst Program. UFA rewards commitment, and the Analyst Program is the proven pipeline into our most selective teams.</p>
       </div>
     </div>
 
@@ -3665,7 +3669,7 @@ nav .nav-links.open {
   <!-- Placements collage -->
   <section class="bg-white" style="padding:40px 72px 60px;" id="placements-section">
     <div class="section-tag">Where our members go</div>
-    <h2 class="section-title">Our Recent Placements</h2>
+    <h2 class="section-title">Our recent placements</h2>
     <p class="section-subtitle">UFA members have landed internships and full-time roles at the most respected firms in finance, from Wall Street banks to Texas-based institutions.</p>
 
     <!-- Logo collage — 4 col forced -->
@@ -3713,7 +3717,7 @@ nav .nav-links.open {
     </div>
     <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center;">
       <a href="https://utexas.campuslabs.com/engage/organization/texasufa" target="_blank" class="btn-white" style="padding:16px 36px;font-size:15px;text-align:center;display:flex;align-items:center;justify-content:center;">Become a General Member</a>
-      <a href="/join" onclick="showPage('join');return false;" class="btn-outline" style="color:#fff;padding:16px 36px;font-size:15px;display:flex;align-items:center;justify-content:center;">Explore Recruitment Timelines</a>
+      <a href="/join" onclick="showPage('join');return false;" class="btn-outline" style="color:#fff;padding:16px 36px;font-size:15px;display:flex;align-items:center;justify-content:center;">Explore recruitment timelines</a>
     </div>
   </div>
 
@@ -5515,11 +5519,11 @@ async function loadAnalytics() {
     <div>
       <div class="footer-col-title">Apply</div>
       <ul class="footer-links">
-        <li><a href="https://utexas.campuslabs.com/engage/organization/texasufa" target="_blank">General membership</a></li>
-        <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSeGEtzK6gp8CCAIRzTwnvoZlNKANFII7CRJRO_sy9XNEUFbMQ/viewform" target="_blank">Interest form</a></li>
-        <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSednj-xoNhhCCvGKyAnP4W1m9p-CNeTw28Cag6ibZsy71G5_A/viewform" target="_blank">Analyst program</a></li>
-        <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSfv0DWYxpYH4c7VQk0Rf-zPa3Y9Ou1uEn5SE3_vROkMRIrsqQ/viewform" target="_blank">Investment associates</a></li>
-        <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSedfQrjZSVGodbKUNOcViYNfYHsjWsRYBn-cCZ1YmUbU_1faw/viewform" target="_blank">Consulting associates</a></li>
+        <li><a href="https://utexas.campuslabs.com/engage/organization/texasufa" target="_blank">General Membership</a></li>
+        <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSeGEtzK6gp8CCAIRzTwnvoZlNKANFII7CRJRO_sy9XNEUFbMQ/viewform" target="_blank">Interest Form</a></li>
+        <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSednj-xoNhhCCvGKyAnP4W1m9p-CNeTw28Cag6ibZsy71G5_A/viewform" target="_blank">Analyst Program</a></li>
+        <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSfv0DWYxpYH4c7VQk0Rf-zPa3Y9Ou1uEn5SE3_vROkMRIrsqQ/viewform" target="_blank">Investment Associates</a></li>
+        <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSedfQrjZSVGodbKUNOcViYNfYHsjWsRYBn-cCZ1YmUbU_1faw/viewform" target="_blank">Consulting Associates</a></li>
       </ul>
     </div>
   </div>
@@ -5588,16 +5592,16 @@ async function loadAnalytics() {
 
   // Dynamic page titles
   const pageTitles = {
-    'home':         'University Finance Association — UT Austin',
-    'why-ufa':      'Why UFA — University Finance Association',
-    'about':        'Board — University Finance Association',
-    'teams':        'Teams — University Finance Association',
-    'join':         'Join — University Finance Association',
-    'publications': 'Publications — University Finance Association',
-    'contact':      'Contact — University Finance Association',
-    'portal':       'Member Portal — University Finance Association'
+    'home':         'Texas UFA — University Finance Association at UT Austin',
+    'why-ufa':      'Why UFA — Texas UFA',
+    'about':        'Board — Texas UFA',
+    'teams':        'Teams — Texas UFA',
+    'join':         'Join — Texas UFA',
+    'publications': 'Publications — Texas UFA',
+    'contact':      'Contact — Texas UFA',
+    'portal':       'Member Portal — Texas UFA'
   };
-  document.title = pageTitles[id] || 'University Finance Association — UT Austin';
+  document.title = pageTitles[id] || 'Texas UFA — University Finance Association at UT Austin';
 
   // Dynamic meta descriptions — gives each page its own unique snippet in
   // search results instead of one generic description for the whole site.
@@ -5605,7 +5609,7 @@ async function loadAnalytics() {
     'home':         "UT Austin's oldest and largest finance organization, connecting ambitious students to Wall Street, private equity, and consulting since 1951.",
     'why-ufa':      'Learn why the University Finance Association is UT Austin\'s premier destination for students pursuing careers in finance.',
     'about':        'Meet the board members leading the University Finance Association at UT Austin.',
-    'teams':        'Explore the Analyst, Investing, and Consulting teams within the University Finance Association at UT Austin.',
+    'teams':        'Explore the Analyst, Investment, and Consulting teams within the University Finance Association at UT Austin.',
     'join':         'Learn how to join the University Finance Association at UT Austin — recruitment timelines, requirements, and application info.',
     'publications': 'Read research, market analysis, and student publications from the University Finance Association at UT Austin.',
     'contact':      'Get in touch with the University Finance Association at UT Austin.',
@@ -5756,8 +5760,24 @@ async function loadAnalytics() {
       }
     });
   });
-  event.target.classList.add('active');
+  // Highlight the matching tab button (works for both real clicks and
+  // programmatic calls, e.g. from the home page team cards)
+  const activeBtn = document.querySelector(".tab-btn[onclick*=\"switchTab('" + id + "')\"]");
+  if (activeBtn) activeBtn.classList.add('active');
 }
+
+  /**
+   * goToTeam(tabId)
+   * ----------------
+   * Navigates from anywhere (e.g. the home page team cards) to the
+   * Teams page with the correct team tab pre-selected.
+   *
+   * @param {string} tabId - 'analysts' | 'investment' | 'consulting'
+   */
+  function goToTeam(tabId) {
+    switchTab(tabId);
+    showPage('teams');
+  }
 
   /**
    * toggleFaq(btn)
