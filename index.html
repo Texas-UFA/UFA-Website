@@ -673,7 +673,7 @@
   /* .btn-white
      White filled button. Used on dark green backgrounds
      where .btn-primary would not have enough contrast. */
-  .btn-white { background: var(--white); color: var(--green-dark); font-family: var(--font-); font-size: 14px; font-weight: 500; padding: 13px 28px; border-radius: 4px; text-decoration: none; display: inline-block; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); border: none; cursor: pointer; }
+  .btn-white { background: var(--white); color: var(--green-dark); font-family: var(--font-body); font-size: 14px; font-weight: 500; padding: 13px 28px; border-radius: 4px; text-decoration: none; display: inline-block; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); border: none; cursor: pointer; }
   .btn-white:hover { opacity: 0.9; }
 
   /* ── INSTAGRAM ──
@@ -1008,9 +1008,6 @@ align-items: flex-end;
 .blog-grid-3col .btn-outline {
   color: var(--green-dark) !important;
   border-color: var(--green-accent) !important;
-}
-  overflow: hidden;
-  position: relative;
 }
 .blog-grid-3col > div > div:first-child iframe {
   width: 140% !important;
@@ -1972,10 +1969,6 @@ nav .nav-links.open {
     height: auto !important;
     white-space: normal !important;
   }
-    height: 50vh !important;
-    background-size: cover !important;
-    background-position: center 40% !important;
-  }
   /* Why UFA logo grid → 2 cols on mobile */
   #page-why-ufa .logo-cell:nth-child(4n) { border-right: 1px solid var(--border) !important; }
   #page-why-ufa .logo-cell:nth-child(2n) { border-right: none !important; }
@@ -2592,6 +2585,20 @@ nav .nav-links.open {
   .iv-row.iv-flip .iv-media { order: 0; }
 }
 
+/* ── REDUCED MOTION ──
+   Respect the OS "reduce motion" setting: disable the scroll-reveal
+   animations, hover zooms, and long transitions for users who ask for it. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .reveal { opacity: 1 !important; transform: none !important; }
+  .placement-logo-img { opacity: 1 !important; transform: none !important; }
+}
+
 </style>
 <style>
 @media (max-width: 768px) {
@@ -2642,7 +2649,7 @@ nav .nav-links.open {
 <nav>
   <a class="nav-logo" href="/" onclick="showPage('home');return false;" style="display:flex;align-items:center;gap:10px;"><img src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/logos/37f350-a0a7dee58b1d498989fc2317c1b89ce1-mv2-(1).png" alt="UFA Logo" class="nav-logo-img" style="height:42px;width:42px;object-fit:contain;"><span class="nav-logo-text"><span class="nav-logo-abbr">UFA <span>·</span> </span>University Finance Association</span></a>
   
-  <button class="hamburger" onclick="toggleMenu()" id="hamburger-btn">
+  <button class="hamburger" onclick="toggleMenu()" id="hamburger-btn" aria-label="Toggle navigation menu" aria-controls="nav-menu" aria-expanded="false">
     <span></span>
     <span></span>
     <span></span>
@@ -2680,7 +2687,7 @@ nav .nav-links.open {
       <div class="hero-bottom">
         <p class="hero-sub">UT Austin's oldest and largest finance organization, connecting ambitious students to Wall Street, private equity, and consulting since 1951.</p>
         <div class="hero-btns">
-          <a href="https://utexas.campuslabs.com/engage/organization/texasufa" target="_blank" class="btn-primary">Become a General Member</a>
+          <a href="https://utexas.campuslabs.com/engage/organization/texasufa" target="_blank" rel="noopener noreferrer" class="btn-primary">Become a General Member</a>
           <a href="/teams" onclick="showPage('teams');return false;" class="btn-outline">Explore Teams</a>
         </div>
       </div>
@@ -2792,17 +2799,17 @@ nav .nav-links.open {
   <section class="section bg-white">
     <div class="section-tag">Stay connected</div>
     <h2 class="section-title">Latest from Instagram</h2>
-    <p class="section-subtitle">Follow <a href="https://www.instagram.com/texasufa/" target="_blank" style="color:var(--green-accent)">@texasufa</a> for everything UFA.</p>
+    <p class="section-subtitle">Follow <a href="https://www.instagram.com/texasufa/" target="_blank" rel="noopener noreferrer" style="color:var(--green-accent)">@texasufa</a> for everything UFA.</p>
     <div class="insta-grid">
-      <a href="https://www.instagram.com/p/DXaJ42qglS5/" target="_blank" class="insta-card reveal">
+      <a href="https://www.instagram.com/p/DXaJ42qglS5/" target="_blank" rel="noopener noreferrer" class="insta-card reveal">
         <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/instagram/1CC31E95-ED94-4053-9967-A140C497BCB7.png" alt="Metric Point Capital speaker">
         <div class="insta-meta"><strong class="insta-handle" style="color:var(--green-accent)">@texasufa</strong> <span class="insta-handle">· Metric Point Capital speaker</span></div>
       </a>
-      <a href="https://www.instagram.com/p/DXIEsPzklEe/" target="_blank" class="insta-card reveal">
+      <a href="https://www.instagram.com/p/DXIEsPzklEe/" target="_blank" rel="noopener noreferrer" class="insta-card reveal">
         <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/instagram/B631CA5F-17C2-4144-8CA7-8CFAF1C83377.png" alt="Haveli Investments speaker">
         <div class="insta-meta"><strong class="insta-handle" style="color:var(--green-accent)">@texasufa</strong> <span class="insta-handle">· Haveli Investments speaker</span></div>
       </a>
-      <a href="https://www.instagram.com/p/DXFrIVilJ6E/" target="_blank" class="insta-card reveal">
+      <a href="https://www.instagram.com/p/DXFrIVilJ6E/" target="_blank" rel="noopener noreferrer" class="insta-card reveal">
         <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/instagram/F77DE977-1361-474A-B485-5729A9CAAA09.png" alt="HBA x UFA Case Competition">
         <div class="insta-meta"><strong class="insta-handle" style="color:var(--green-accent)">@texasufa</strong> <span class="insta-handle">· HBA × UFA Case Competition</span></div>
       </a>
@@ -2860,7 +2867,7 @@ nav .nav-links.open {
         <div class="board-photo"><img loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1759765238227%20(2).jpeg" alt="Caden Warner" onerror="this.style.display='none'"></div>
         <div class="board-name">Caden Warner</div>
         <div class="board-role">President</div>
-        <a href="https://www.linkedin.com/in/caden-warner/" target="_blank" class="board-li">
+        <a href="https://www.linkedin.com/in/caden-warner/" target="_blank" rel="noopener noreferrer" class="board-li">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
           LinkedIn
         </a>
@@ -2870,7 +2877,7 @@ nav .nav-links.open {
         <div class="board-photo"><img loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1772591854732.png" alt="Alika Frankovska" onerror="this.style.display='none'"></div>
         <div class="board-name">Alika Frankovska</div>
         <div class="board-role">Vice President</div>
-        <a href="https://www.linkedin.com/in/alikafrankovska/" target="_blank" class="board-li">
+        <a href="https://www.linkedin.com/in/alikafrankovska/" target="_blank" rel="noopener noreferrer" class="board-li">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
           LinkedIn
         </a>
@@ -2880,7 +2887,7 @@ nav .nav-links.open {
         <div class="board-photo"><img loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1759271799751.png" alt="Nikhil Parida" onerror="this.style.display='none'"></div>
         <div class="board-name">Nikhil Parida</div>
         <div class="board-role">Director of External Affairs</div>
-        <a href="https://www.linkedin.com/in/nikhilparida/" target="_blank" class="board-li">
+        <a href="https://www.linkedin.com/in/nikhilparida/" target="_blank" rel="noopener noreferrer" class="board-li">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
           LinkedIn
         </a>
@@ -2890,7 +2897,7 @@ nav .nav-links.open {
         <div class="board-photo"><img loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/Headshot.jpg" alt="Nathan Li" onerror="this.style.display='none'"></div>
         <div class="board-name">Nathan Li</div>
         <div class="board-role">Director of Investment</div>
-        <a href="https://www.linkedin.com/in/nathanyuxianli/" target="_blank" class="board-li">
+        <a href="https://www.linkedin.com/in/nathanyuxianli/" target="_blank" rel="noopener noreferrer" class="board-li">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
           LinkedIn
         </a>
@@ -2900,7 +2907,7 @@ nav .nav-links.open {
         <div class="board-photo"><img loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1774587526109.png" alt="Emily Liu" onerror="this.style.display='none'"></div>
         <div class="board-name">Emily Liu</div>
         <div class="board-role">Director of Investment</div>
-        <a href="https://www.linkedin.com/in/emily-liu07/" target="_blank" class="board-li">
+        <a href="https://www.linkedin.com/in/emily-liu07/" target="_blank" rel="noopener noreferrer" class="board-li">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
           LinkedIn
         </a>
@@ -2910,7 +2917,7 @@ nav .nav-links.open {
         <div class="board-photo"><img loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1726811705179.jpeg" alt="Shreyas Sripurushottam" onerror="this.style.display='none'"></div>
         <div class="board-name">Shreyas Sripurushottam</div>
         <div class="board-role">Director of Consulting</div>
-        <a href="https://www.linkedin.com/in/shreyas-sri/" target="_blank" class="board-li">
+        <a href="https://www.linkedin.com/in/shreyas-sri/" target="_blank" rel="noopener noreferrer" class="board-li">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
           LinkedIn
         </a>
@@ -2920,7 +2927,7 @@ nav .nav-links.open {
         <div class="board-photo"><img loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1777307808671.png" alt="Seyoon (Sam) Jung" onerror="this.style.display='none'"></div>
         <div class="board-name">Seyoon (Sam) Jung</div>
         <div class="board-role">Director of Consulting</div>
-        <a href="https://www.linkedin.com/in/sam-jung-b5ab261ba/" target="_blank" class="board-li">
+        <a href="https://www.linkedin.com/in/sam-jung-b5ab261ba/" target="_blank" rel="noopener noreferrer" class="board-li">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
           LinkedIn
         </a>
@@ -2930,7 +2937,7 @@ nav .nav-links.open {
         <div class="board-photo"><img loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1763951935507.jpeg" alt="Varsha Ravi" onerror="this.style.display='none'"></div>
         <div class="board-name">Varsha Ravi</div>
         <div class="board-role">Director of Corporate Relations</div>
-        <a href="https://www.linkedin.com/in/varsha-ravi108/" target="_blank" class="board-li">
+        <a href="https://www.linkedin.com/in/varsha-ravi108/" target="_blank" rel="noopener noreferrer" class="board-li">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
           LinkedIn
         </a>
@@ -2940,7 +2947,7 @@ nav .nav-links.open {
         <div class="board-photo"><img loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1778272105108.png" alt="Grace Miller" onerror="this.style.display='none'"></div>
         <div class="board-name">Grace Miller</div>
         <div class="board-role">Director of Corporate Relations</div>
-        <a href="https://www.linkedin.com/in/gracemiller219/" target="_blank" class="board-li">
+        <a href="https://www.linkedin.com/in/gracemiller219/" target="_blank" rel="noopener noreferrer" class="board-li">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
           LinkedIn
         </a>
@@ -2950,7 +2957,7 @@ nav .nav-links.open {
         <div class="board-photo"><img loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1770835392157.jpeg" alt="Layne Nguyen" onerror="this.style.display='none'"></div>
         <div class="board-name">Layne Nguyen</div>
         <div class="board-role">Director of Marketing</div>
-        <a href="https://www.linkedin.com/in/laynenguyen/" target="_blank" class="board-li">
+        <a href="https://www.linkedin.com/in/laynenguyen/" target="_blank" rel="noopener noreferrer" class="board-li">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
           LinkedIn
         </a>
@@ -2960,7 +2967,7 @@ nav .nav-links.open {
         <div class="board-photo"><img loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1768946413296.jpeg" alt="Emma Nowotny" onerror="this.style.display='none'"></div>
         <div class="board-name">Emma Nowotny</div>
         <div class="board-role">Director of Marketing</div>
-        <a href="https://www.linkedin.com/in/emmanowotny/" target="_blank" class="board-li">
+        <a href="https://www.linkedin.com/in/emmanowotny/" target="_blank" rel="noopener noreferrer" class="board-li">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
           LinkedIn
         </a>
@@ -2970,7 +2977,7 @@ nav .nav-links.open {
         <div class="board-photo"><img loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1773078471094.jpeg" alt="Aryan Jhaveri" onerror="this.style.display='none'"></div>
         <div class="board-name">Aryan Jhaveri</div>
         <div class="board-role">Treasurer</div>
-        <a href="https://www.linkedin.com/in/aryanjhaveri07/" target="_blank" class="board-li">
+        <a href="https://www.linkedin.com/in/aryanjhaveri07/" target="_blank" rel="noopener noreferrer" class="board-li">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
           LinkedIn
         </a>
@@ -3013,7 +3020,7 @@ nav .nav-links.open {
           <h2 class="section-title">Analyst Program</h2>
           <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:20px;">The Analyst Program is designed for underclassmen and new members with no prior finance experience. In addition to the general member meeting, analysts meet weekly for dedicated training sessions to build the skills needed to succeed in UFA and beyond.</p>
           <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:32px;">Each week, our Directors of Investments and Consulting lead sessions covering accounting, valuation, financial modeling, and market analysis: everything you need to hit the ground running in UFA and in recruiting.</p>
-          <div class="team-btn-group"><a href="https://docs.google.com/forms/d/e/1FAIpQLSednj-xoNhhCCvGKyAnP4W1m9p-CNeTw28Cag6ibZsy71G5_A/viewform" target="_blank" class="btn-primary reveal" style="text-align:center;">Apply to Analyst Program</a></div>
+          <div class="team-btn-group"><a href="https://docs.google.com/forms/d/e/1FAIpQLSednj-xoNhhCCvGKyAnP4W1m9p-CNeTw28Cag6ibZsy71G5_A/viewform" target="_blank" rel="noopener noreferrer" class="btn-primary reveal" style="text-align:center;">Apply to Analyst Program</a></div>
         </div>
          <div class="team-photo-tall analyst-comp-photo" style="border-radius:12px; overflow:hidden; height:400px;">
   <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/imgur%20photos/3O0joVw.jpeg" 
@@ -3118,7 +3125,7 @@ nav .nav-links.open {
           <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">The Investment Team is where serious finance preparation meets a tight-knit community. You'll build the technical skills recruiters want and the relationships that last long after graduation.</p>
           <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:32px;">The technical training is rigorous. But ask any Investment Team member what they remember most, and they'll tell you it's the people.</p>
           <div class="team-btn-group" style="display:flex;gap:12px;flex-wrap:wrap;">
-          <a href="https://docs.google.com/forms/d/e/1FAIpQLSfv0DWYxpYH4c7VQk0Rf-zPa3Y9Ou1uEn5SE3_vROkMRIrsqQ/viewform" target="_blank" class="btn-primary reveal" style="text-align:center;">Apply to Investment Team</a>
+          <a href="https://docs.google.com/forms/d/e/1FAIpQLSfv0DWYxpYH4c7VQk0Rf-zPa3Y9Ou1uEn5SE3_vROkMRIrsqQ/viewform" target="_blank" rel="noopener noreferrer" class="btn-primary reveal" style="text-align:center;">Apply to Investment Team</a>
           <a href="/contact" onclick="showPage('contact');return false;" class="btn-outline work-with-us-btn" style="color:var(--green-dark);border-color:var(--green-accent);text-align:center;">Work with us</a>
           </div>
         </div>
@@ -3135,7 +3142,7 @@ nav .nav-links.open {
         <div class="iv-flow">
           <div class="iv-step"><div class="n">01</div><div class="t">Research</div><div class="d">Pick a company, dig into the fundamentals.</div></div>
           <div class="iv-step"><div class="n">02</div><div class="t">Build the Model</div><div class="d">Build a discounted cash flow model and competitor analysis.</div></div>
-          <div class="iv-step"><div class="n">03</div><div class="t">Pitch the Stock</div><div class="d">Present and defned your thesis.</div></div>
+          <div class="iv-step"><div class="n">03</div><div class="t">Pitch the Stock</div><div class="d">Present and defend your thesis.</div></div>
           <div class="iv-step"><div class="n">04</div><div class="t">Tally Votes</div><div class="d">Members decide if the pitch passes.</div></div>
           <div class="iv-step"><div class="n">05</div><div class="t">Start the Position</div><div class="d">Winning ideas enter the portfolio, at the discretion of the fund team.</div></div>
         </div>
@@ -3229,7 +3236,7 @@ nav .nav-links.open {
         Outside the casework, you'll find a group that loves to spend time together.
       </p>
       <div class="team-btn-group" style="display:flex;gap:12px;flex-wrap:wrap;">
-        <a href="https://docs.google.com/forms/d/e/1FAIpQLSedfQrjZSVGodbKUNOcViYNfYHsjWsRYBn-cCZ1YmUbU_1faw/viewform" target="_blank" class="btn-primary reveal" style="text-align:center;">Apply to Consulting Team</a>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSedfQrjZSVGodbKUNOcViYNfYHsjWsRYBn-cCZ1YmUbU_1faw/viewform" target="_blank" rel="noopener noreferrer" class="btn-primary reveal" style="text-align:center;">Apply to Consulting Team</a>
         <a href="/contact" onclick="showPage('contact');return false;" class="btn-outline work-with-us-btn" style="color:var(--green-dark);border-color:var(--green-accent);text-align:center;">Work with us</a>
       </div>
     </div>
@@ -3305,7 +3312,7 @@ nav .nav-links.open {
         <p class="membership-desc">Attend weekly Wednesday speaker meetings, access networking events, and get access to the full UFA community. Open to all UT students at any time — no application required.</p>
         <div class="membership-price">$90 / year</div>
         <div class="membership-price-note">or $55 per semester</div>
-        <a href="https://utexas.campuslabs.com/engage/organization/texasufa" target="_blank" class="btn-primary">Join on HornsLink</a>
+        <a href="https://utexas.campuslabs.com/engage/organization/texasufa" target="_blank" rel="noopener noreferrer" class="btn-primary">Join on HornsLink</a>
         <p style="font-size:12px;color:var(--text-muted);margin-top:10px;">After joining HornsLink, pay dues via Venmo @TEXASUFA25</p>
       </div>
       <div class="membership-card">
@@ -3314,22 +3321,22 @@ nav .nav-links.open {
         <p class="membership-desc">An introductory program covering finance fundamentals, stock pitches, and market discussions. Welcoming of all UT students with no experience required. Applications open each fall and spring semester.</p>
         <div class="membership-price">$25 / year (in addition to GM)</div>
         <div class="membership-price-note">or $15 per semester (in addition to GM)</div>
-        <a href="https://docs.google.com/forms/d/e/1FAIpQLSednj-xoNhhCCvGKyAnP4W1m9p-CNeTw28Cag6ibZsy71G5_A/viewform" target="_blank" class="btn-primary" style="background:var(--green-mid);">View application form</a>
-        <a href="https://www.instagram.com/texasufa/" target="_blank" style="display:block;margin-top:10px;font-size:13px;color:var(--green-accent);text-decoration:none;">Follow @texasufa for updates →</a>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSednj-xoNhhCCvGKyAnP4W1m9p-CNeTw28Cag6ibZsy71G5_A/viewform" target="_blank" rel="noopener noreferrer" class="btn-primary" style="background:var(--green-mid);">View application form</a>
+        <a href="https://www.instagram.com/texasufa/" target="_blank" rel="noopener noreferrer" style="display:block;margin-top:10px;font-size:13px;color:var(--green-accent);text-decoration:none;">Follow @texasufa for updates →</a>
       </div>
       <div class="membership-card">
         <div class="membership-badge closed">Applications currently closed</div>
         <div class="membership-title">Investment Team</div>
         <p class="membership-desc">A selective, application-based track with deep technical training, one-on-one mentorship, and strong recruiting outcomes. Applications open each fall and spring semester.</p>
-        <a href="https://docs.google.com/forms/d/e/1FAIpQLSfv0DWYxpYH4c7VQk0Rf-zPa3Y9Ou1uEn5SE3_vROkMRIrsqQ/viewform" target="_blank" class="btn-primary" style="background:var(--green-mid);">View application form</a>
-        <a href="https://www.instagram.com/texasufa/" target="_blank" style="display:block;margin-top:10px;font-size:13px;color:var(--green-accent);text-decoration:none;">Follow @texasufa for updates →</a>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSfv0DWYxpYH4c7VQk0Rf-zPa3Y9Ou1uEn5SE3_vROkMRIrsqQ/viewform" target="_blank" rel="noopener noreferrer" class="btn-primary" style="background:var(--green-mid);">View application form</a>
+        <a href="https://www.instagram.com/texasufa/" target="_blank" rel="noopener noreferrer" style="display:block;margin-top:10px;font-size:13px;color:var(--green-accent);text-decoration:none;">Follow @texasufa for updates →</a>
       </div>
        <div class="membership-card">
         <div class="membership-badge closed">Applications currently closed</div>
         <div class="membership-title">Consulting Team</div>
         <p class="membership-desc">A selective, application-based track focused on real client engagements, case-study training, and developing the structured thinking top firms look for. Applications open each fall and spring semester.</p>
-        <a href="https://docs.google.com/forms/d/e/1FAIpQLSedfQrjZSVGodbKUNOcViYNfYHsjWsRYBn-cCZ1YmUbU_1faw/viewform" target="_blank" class="btn-primary" style="background:var(--green-mid);">View application form</a>
-        <a href="https://www.instagram.com/texasufa/" target="_blank" style="display:block;margin-top:10px;font-size:13px;color:var(--green-accent);text-decoration:none;">Follow @texasufa for updates →</a>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSedfQrjZSVGodbKUNOcViYNfYHsjWsRYBn-cCZ1YmUbU_1faw/viewform" target="_blank" rel="noopener noreferrer" class="btn-primary" style="background:var(--green-mid);">View application form</a>
+        <a href="https://www.instagram.com/texasufa/" target="_blank" rel="noopener noreferrer" style="display:block;margin-top:10px;font-size:13px;color:var(--green-accent);text-decoration:none;">Follow @texasufa for updates →</a>
       </div>
     </div>
   </section>
@@ -3340,7 +3347,7 @@ nav .nav-links.open {
   <section class="section" style="background:var(--green-dark);padding-top:80px;padding-bottom:80px;">
     <div class="section-tag" style="color:var(--green-pale);">How It Works</div>
     <h2 class="section-title" style="color:var(--white);margin-bottom:12px;">Recruitment Timeline</h2>
-    <p style="font-size:16px;color:rgba(255,255,255,0.65);line-height:1.8;margin-bottom:56px;">Applications open each fall and spring semester. Follow <a href="https://www.instagram.com/texasufa/" target="_blank" style="color:var(--green-pale);text-decoration:none;font-weight:500;">@texasufa</a> for exact dates each cycle.</p>
+    <p style="font-size:16px;color:rgba(255,255,255,0.65);line-height:1.8;margin-bottom:56px;">Applications open each fall and spring semester. Follow <a href="https://www.instagram.com/texasufa/" target="_blank" rel="noopener noreferrer" style="color:var(--green-pale);text-decoration:none;font-weight:500;">@texasufa</a> for exact dates each cycle.</p>
 
     <!-- Horizontal timeline (desktop) / vertical (mobile) -->
     <div class="recruit-timeline">
@@ -3490,7 +3497,7 @@ nav .nav-links.open {
           <p class="pub-desc">Our inaugural Equity Research Journal, a collection of equity research and macro analysis produced by the UFA Investment Team. This edition covers TMT, Healthcare, Energy, Financials, Consumer, and Industrials, featuring deep-dives into companies of all sizes.</p>
         </div>
         <div style="flex-shrink:0;">
-          <a href="https://drive.google.com/uc?export=download&id=1M3_uEOvIkb5qdzMZXesy35_vrDBJ8AEW" target="_blank" class="btn-primary">Download PDF</a>
+          <a href="https://drive.google.com/uc?export=download&id=1M3_uEOvIkb5qdzMZXesy35_vrDBJ8AEW" target="_blank" rel="noopener noreferrer" class="btn-primary">Download PDF</a>
         </div>
       </div>
       <div style="margin-top:32px;width:100%;border-radius:12px;overflow:hidden;box-shadow:0 2px 16px rgba(0,0,0,0.10);">
@@ -3509,7 +3516,7 @@ nav .nav-links.open {
         <div class="blog-grid-3col" style="display:grid;gap:24px;margin-top:40px;">
 
       <div class="reveal blog-card-new">
-        <a href="https://drive.google.com/file/d/10exWdvRU1oTF6wOv9Ut7lmGiOjRGlHVw/view" target="_blank" class="blog-card-thumb" style="background:var(--green-wash);">
+        <a href="https://drive.google.com/file/d/10exWdvRU1oTF6wOv9Ut7lmGiOjRGlHVw/view" target="_blank" rel="noopener noreferrer" class="blog-card-thumb" style="background:var(--green-wash);">
           <img loading="lazy" src="https://drive.google.com/thumbnail?id=10exWdvRU1oTF6wOv9Ut7lmGiOjRGlHVw&sz=w800" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block;"  alt="The Looming Maturity Wall">
         </a>
         <div class="blog-card-body">
@@ -3517,14 +3524,14 @@ nav .nav-links.open {
           <div class="blog-card-title">The Looming Maturity Wall</div>
           <p class="blog-card-author">Darya Chernyatin — Financial Institutions Group</p>
           <div class="blog-card-actions">
-            <a href="https://drive.google.com/file/d/10exWdvRU1oTF6wOv9Ut7lmGiOjRGlHVw/view" target="_blank" class="btn-primary">Read</a>
-            <a href="https://drive.google.com/uc?export=download&id=10exWdvRU1oTF6wOv9Ut7lmGiOjRGlHVw" target="_blank" class="btn-outline">Download</a>
+            <a href="https://drive.google.com/file/d/10exWdvRU1oTF6wOv9Ut7lmGiOjRGlHVw/view" target="_blank" rel="noopener noreferrer" class="btn-primary">Read</a>
+            <a href="https://drive.google.com/uc?export=download&id=10exWdvRU1oTF6wOv9Ut7lmGiOjRGlHVw" target="_blank" rel="noopener noreferrer" class="btn-outline">Download</a>
           </div>
         </div>
       </div>
 
       <div class="reveal blog-card-new">
-        <a href="https://drive.google.com/file/d/1jcZI0aLiHr6F61tjTfs8HKjdMIpk8Ixv/view" target="_blank" class="blog-card-thumb" style="background:var(--green-wash);">
+        <a href="https://drive.google.com/file/d/1jcZI0aLiHr6F61tjTfs8HKjdMIpk8Ixv/view" target="_blank" rel="noopener noreferrer" class="blog-card-thumb" style="background:var(--green-wash);">
           <img loading="lazy" src="https://drive.google.com/thumbnail?id=1jcZI0aLiHr6F61tjTfs8HKjdMIpk8Ixv&sz=w800" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block;"  alt="From Best to Worst">
         </a>
         <div class="blog-card-body">
@@ -3532,14 +3539,14 @@ nav .nav-links.open {
           <div class="blog-card-title">From Best to Worst: The Narrative for Technology</div>
           <p class="blog-card-author">Arnav Goel — Investment Team, TMT Industry</p>
           <div class="blog-card-actions">
-            <a href="https://drive.google.com/file/d/1jcZI0aLiHr6F61tjTfs8HKjdMIpk8Ixv/view" target="_blank" class="btn-primary">Read</a>
-            <a href="https://drive.google.com/uc?export=download&id=1jcZI0aLiHr6F61tjTfs8HKjdMIpk8Ixv" target="_blank" class="btn-outline">Download</a>
+            <a href="https://drive.google.com/file/d/1jcZI0aLiHr6F61tjTfs8HKjdMIpk8Ixv/view" target="_blank" rel="noopener noreferrer" class="btn-primary">Read</a>
+            <a href="https://drive.google.com/uc?export=download&id=1jcZI0aLiHr6F61tjTfs8HKjdMIpk8Ixv" target="_blank" rel="noopener noreferrer" class="btn-outline">Download</a>
           </div>
         </div>
       </div>
 
       <div class="reveal blog-card-new">
-        <a href="https://drive.google.com/file/d/1vb40r6FEqYKDYe8wIw_fWteyM5i5lSwd/view" target="_blank" class="blog-card-thumb" style="background:var(--green-wash);">
+        <a href="https://drive.google.com/file/d/1vb40r6FEqYKDYe8wIw_fWteyM5i5lSwd/view" target="_blank" rel="noopener noreferrer" class="blog-card-thumb" style="background:var(--green-wash);">
           <img loading="lazy" src="https://drive.google.com/thumbnail?id=1vb40r6FEqYKDYe8wIw_fWteyM5i5lSwd&sz=w800" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block;"  alt="Panic at the Disco">
         </a>
         <div class="blog-card-body">
@@ -3547,14 +3554,14 @@ nav .nav-links.open {
           <div class="blog-card-title">Panic at the Disco!</div>
           <p class="blog-card-author">Vivaan Shah — Co-Head of Energy Industry</p>
           <div class="blog-card-actions">
-            <a href="https://drive.google.com/file/d/1vb40r6FEqYKDYe8wIw_fWteyM5i5lSwd/view" target="_blank" class="btn-primary">Read</a>
-            <a href="https://drive.google.com/uc?export=download&id=1vb40r6FEqYKDYe8wIw_fWteyM5i5lSwd" target="_blank" class="btn-outline">Download</a>
+            <a href="https://drive.google.com/file/d/1vb40r6FEqYKDYe8wIw_fWteyM5i5lSwd/view" target="_blank" rel="noopener noreferrer" class="btn-primary">Read</a>
+            <a href="https://drive.google.com/uc?export=download&id=1vb40r6FEqYKDYe8wIw_fWteyM5i5lSwd" target="_blank" rel="noopener noreferrer" class="btn-outline">Download</a>
           </div>
         </div>
       </div>
 
       <div class="reveal blog-card-new">
-        <a href="https://drive.google.com/file/d/1P4_u8vYzvvqVU-p-ziOr0max5_-q-W8B/view" target="_blank" class="blog-card-thumb" style="background:var(--green-wash);">
+        <a href="https://drive.google.com/file/d/1P4_u8vYzvvqVU-p-ziOr0max5_-q-W8B/view" target="_blank" rel="noopener noreferrer" class="blog-card-thumb" style="background:var(--green-wash);">
           <img loading="lazy" src="https://drive.google.com/thumbnail?id=1P4_u8vYzvvqVU-p-ziOr0max5_-q-W8B&sz=w800" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block;"  alt="Is American Exceptionalism Fading">
         </a>
         <div class="blog-card-body">
@@ -3562,14 +3569,14 @@ nav .nav-links.open {
           <div class="blog-card-title">Is American Exceptionalism Fading?</div>
           <p class="blog-card-author">Felipe Motta — Investment Team, Healthcare Industry</p>
           <div class="blog-card-actions">
-            <a href="https://drive.google.com/file/d/1P4_u8vYzvvqVU-p-ziOr0max5_-q-W8B/view" target="_blank" class="btn-primary">Read</a>
-            <a href="https://drive.google.com/uc?export=download&id=1P4_u8vYzvvqVU-p-ziOr0max5_-q-W8B" target="_blank" class="btn-outline">Download</a>
+            <a href="https://drive.google.com/file/d/1P4_u8vYzvvqVU-p-ziOr0max5_-q-W8B/view" target="_blank" rel="noopener noreferrer" class="btn-primary">Read</a>
+            <a href="https://drive.google.com/uc?export=download&id=1P4_u8vYzvvqVU-p-ziOr0max5_-q-W8B" target="_blank" rel="noopener noreferrer" class="btn-outline">Download</a>
           </div>
         </div>
       </div>
 
       <div class="reveal blog-card-new">
-        <a href="https://drive.google.com/file/d/1PDV-3I0M8TM8p_iEhnt2eSWFrKWdeeVr/view" target="_blank" class="blog-card-thumb" style="background:var(--green-wash);">
+        <a href="https://drive.google.com/file/d/1PDV-3I0M8TM8p_iEhnt2eSWFrKWdeeVr/view" target="_blank" rel="noopener noreferrer" class="blog-card-thumb" style="background:var(--green-wash);">
           <img loading="lazy" src="https://drive.google.com/thumbnail?id=1PDV-3I0M8TM8p_iEhnt2eSWFrKWdeeVr&sz=w800" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block;"  alt="The Illusion of Stability">
         </a>
         <div class="blog-card-body">
@@ -3577,14 +3584,14 @@ nav .nav-links.open {
           <div class="blog-card-title">The Illusion of Stability</div>
           <p class="blog-card-author">Neil Kaushik — Investment Team, Energy Industry</p>
           <div class="blog-card-actions">
-            <a href="https://drive.google.com/file/d/1PDV-3I0M8TM8p_iEhnt2eSWFrKWdeeVr/view" target="_blank" class="btn-primary">Read</a>
-            <a href="https://drive.google.com/uc?export=download&id=1PDV-3I0M8TM8p_iEhnt2eSWFrKWdeeVr" target="_blank" class="btn-outline">Download</a>
+            <a href="https://drive.google.com/file/d/1PDV-3I0M8TM8p_iEhnt2eSWFrKWdeeVr/view" target="_blank" rel="noopener noreferrer" class="btn-primary">Read</a>
+            <a href="https://drive.google.com/uc?export=download&id=1PDV-3I0M8TM8p_iEhnt2eSWFrKWdeeVr" target="_blank" rel="noopener noreferrer" class="btn-outline">Download</a>
           </div>
         </div>
       </div>
 
       <div class="reveal blog-card-new">
-        <a href="https://drive.google.com/file/d/1fBm3bNq7IcNGXoXtQFxCyM_TIjbwrZJV/view" target="_blank" class="blog-card-thumb" style="background:var(--green-wash);">
+        <a href="https://drive.google.com/file/d/1fBm3bNq7IcNGXoXtQFxCyM_TIjbwrZJV/view" target="_blank" rel="noopener noreferrer" class="blog-card-thumb" style="background:var(--green-wash);">
           <img loading="lazy" src="https://drive.google.com/thumbnail?id=1fBm3bNq7IcNGXoXtQFxCyM_TIjbwrZJV&sz=w800" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block;"  alt="The Private Credit Takeover">
         </a>
         <div class="blog-card-body">
@@ -3592,14 +3599,14 @@ nav .nav-links.open {
           <div class="blog-card-title">The Private Credit Takeover</div>
           <p class="blog-card-author">Joya Trivedi — Head of Industrials Industry Group</p>
           <div class="blog-card-actions">
-            <a href="https://drive.google.com/file/d/1fBm3bNq7IcNGXoXtQFxCyM_TIjbwrZJV/view" target="_blank" class="btn-primary">Read</a>
-            <a href="https://drive.google.com/uc?export=download&id=1fBm3bNq7IcNGXoXtQFxCyM_TIjbwrZJV" target="_blank" class="btn-outline">Download</a>
+            <a href="https://drive.google.com/file/d/1fBm3bNq7IcNGXoXtQFxCyM_TIjbwrZJV/view" target="_blank" rel="noopener noreferrer" class="btn-primary">Read</a>
+            <a href="https://drive.google.com/uc?export=download&id=1fBm3bNq7IcNGXoXtQFxCyM_TIjbwrZJV" target="_blank" rel="noopener noreferrer" class="btn-outline">Download</a>
           </div>
         </div>
       </div>
 
       <div class="reveal blog-card-new">
-        <a href="https://drive.google.com/file/d/1x9ZDjMDJzaWFO1DKPZcqT6xgf-coDCZf/view" target="_blank" class="blog-card-thumb" style="background:var(--green-wash);">
+        <a href="https://drive.google.com/file/d/1x9ZDjMDJzaWFO1DKPZcqT6xgf-coDCZf/view" target="_blank" rel="noopener noreferrer" class="blog-card-thumb" style="background:var(--green-wash);">
           <img loading="lazy" src="https://drive.google.com/thumbnail?id=1x9ZDjMDJzaWFO1DKPZcqT6xgf-coDCZf&sz=w800" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block;"  alt="Why AI Will Cause One of the Worst Crashes">
         </a>
         <div class="blog-card-body">
@@ -3607,14 +3614,14 @@ nav .nav-links.open {
           <div class="blog-card-title">Why AI Will Cause One of the Worst Crashes in History</div>
           <p class="blog-card-author">Farzad Hussain — Investment Associate</p>
           <div class="blog-card-actions">
-            <a href="https://drive.google.com/file/d/1x9ZDjMDJzaWFO1DKPZcqT6xgf-coDCZf/view" target="_blank" class="btn-primary">Read</a>
-            <a href="https://drive.google.com/uc?export=download&id=1x9ZDjMDJzaWFO1DKPZcqT6xgf-coDCZf" target="_blank" class="btn-outline">Download</a>
+            <a href="https://drive.google.com/file/d/1x9ZDjMDJzaWFO1DKPZcqT6xgf-coDCZf/view" target="_blank" rel="noopener noreferrer" class="btn-primary">Read</a>
+            <a href="https://drive.google.com/uc?export=download&id=1x9ZDjMDJzaWFO1DKPZcqT6xgf-coDCZf" target="_blank" rel="noopener noreferrer" class="btn-outline">Download</a>
           </div>
         </div>
       </div>
 
       <div class="reveal blog-card-new">
-        <a href="https://drive.google.com/file/d/13MHlsWXPnN934olg7zos26FT7hDWISHT/view" target="_blank" class="blog-card-thumb" style="background:var(--green-wash);">
+        <a href="https://drive.google.com/file/d/13MHlsWXPnN934olg7zos26FT7hDWISHT/view" target="_blank" rel="noopener noreferrer" class="blog-card-thumb" style="background:var(--green-wash);">
           <img loading="lazy" src="https://drive.google.com/thumbnail?id=13MHlsWXPnN934olg7zos26FT7hDWISHT&sz=w800" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block;"  alt="The Lone Star Takes on Wall Street">
         </a>
         <div class="blog-card-body">
@@ -3622,14 +3629,14 @@ nav .nav-links.open {
           <div class="blog-card-title">The Lone Star Takes on Wall Street</div>
           <p class="blog-card-author">Caden Warner — Director of Investments</p>
           <div class="blog-card-actions">
-            <a href="https://drive.google.com/file/d/13MHlsWXPnN934olg7zos26FT7hDWISHT/view" target="_blank" class="btn-primary">Read</a>
-            <a href="https://drive.google.com/uc?export=download&id=13MHlsWXPnN934olg7zos26FT7hDWISHT" target="_blank" class="btn-outline">Download</a>
+            <a href="https://drive.google.com/file/d/13MHlsWXPnN934olg7zos26FT7hDWISHT/view" target="_blank" rel="noopener noreferrer" class="btn-primary">Read</a>
+            <a href="https://drive.google.com/uc?export=download&id=13MHlsWXPnN934olg7zos26FT7hDWISHT" target="_blank" rel="noopener noreferrer" class="btn-outline">Download</a>
           </div>
         </div>
       </div>
 
       <div class="reveal blog-card-new">
-        <a href="https://drive.google.com/file/d/1zN0JbTc6cR6drrZnFRR2N7M2Eto3bwO7/view" target="_blank" class="blog-card-thumb" style="background:var(--green-wash);">
+        <a href="https://drive.google.com/file/d/1zN0JbTc6cR6drrZnFRR2N7M2Eto3bwO7/view" target="_blank" rel="noopener noreferrer" class="blog-card-thumb" style="background:var(--green-wash);">
           <img loading="lazy" src="https://drive.google.com/thumbnail?id=1zN0JbTc6cR6drrZnFRR2N7M2Eto3bwO7&sz=w800" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block;"  alt="The SPAC is Back">
         </a>
         <div class="blog-card-body">
@@ -3637,14 +3644,14 @@ nav .nav-links.open {
           <div class="blog-card-title">The SPAC is Back</div>
           <p class="blog-card-author">Nathan Li — Director of Investments</p>
           <div class="blog-card-actions">
-            <a href="https://drive.google.com/file/d/1zN0JbTc6cR6drrZnFRR2N7M2Eto3bwO7/view" target="_blank" class="btn-primary">Read</a>
-            <a href="https://drive.google.com/uc?export=download&id=1zN0JbTc6cR6drrZnFRR2N7M2Eto3bwO7" target="_blank" class="btn-outline">Download</a>
+            <a href="https://drive.google.com/file/d/1zN0JbTc6cR6drrZnFRR2N7M2Eto3bwO7/view" target="_blank" rel="noopener noreferrer" class="btn-primary">Read</a>
+            <a href="https://drive.google.com/uc?export=download&id=1zN0JbTc6cR6drrZnFRR2N7M2Eto3bwO7" target="_blank" rel="noopener noreferrer" class="btn-outline">Download</a>
           </div>
         </div>
       </div>
 
       <div class="reveal blog-card-new">
-        <a href="https://drive.google.com/file/d/1g1sUtSdg5kwIj7JGgoYMuviBTSNFIvKd/view" target="_blank" class="blog-card-thumb" style="background:var(--green-wash);">
+        <a href="https://drive.google.com/file/d/1g1sUtSdg5kwIj7JGgoYMuviBTSNFIvKd/view" target="_blank" rel="noopener noreferrer" class="blog-card-thumb" style="background:var(--green-wash);">
           <img loading="lazy" src="https://drive.google.com/thumbnail?id=1g1sUtSdg5kwIj7JGgoYMuviBTSNFIvKd&sz=w800" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block;"  alt="UBS Under Siege">
         </a>
         <div class="blog-card-body">
@@ -3652,14 +3659,14 @@ nav .nav-links.open {
           <div class="blog-card-title">UBS Under Siege</div>
           <p class="blog-card-author">Derek Flores — Head of Financial Industry Group</p>
           <div class="blog-card-actions">
-            <a href="https://drive.google.com/file/d/1g1sUtSdg5kwIj7JGgoYMuviBTSNFIvKd/view" target="_blank" class="btn-primary">Read</a>
-            <a href="https://drive.google.com/uc?export=download&id=1g1sUtSdg5kwIj7JGgoYMuviBTSNFIvKd" target="_blank" class="btn-outline">Download</a>
+            <a href="https://drive.google.com/file/d/1g1sUtSdg5kwIj7JGgoYMuviBTSNFIvKd/view" target="_blank" rel="noopener noreferrer" class="btn-primary">Read</a>
+            <a href="https://drive.google.com/uc?export=download&id=1g1sUtSdg5kwIj7JGgoYMuviBTSNFIvKd" target="_blank" rel="noopener noreferrer" class="btn-outline">Download</a>
           </div>
         </div>
       </div>
 
       <div class="reveal blog-card-new">
-        <a href="https://drive.google.com/file/d/1X0eSKyFIf9v7jQKVHihddA1wh_uT5Vkl/view" target="_blank" class="blog-card-thumb" style="background:var(--green-wash);">
+        <a href="https://drive.google.com/file/d/1X0eSKyFIf9v7jQKVHihddA1wh_uT5Vkl/view" target="_blank" rel="noopener noreferrer" class="blog-card-thumb" style="background:var(--green-wash);">
           <img loading="lazy" src="https://drive.google.com/thumbnail?id=1X0eSKyFIf9v7jQKVHihddA1wh_uT5Vkl&sz=w800" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block;"  alt="The Brain Drain Campaign">
         </a>
         <div class="blog-card-body">
@@ -3667,8 +3674,8 @@ nav .nav-links.open {
           <div class="blog-card-title">The Brain Drain Campaign</div>
           <p class="blog-card-author">Adam Ageeb — Investment Associate</p>
           <div class="blog-card-actions">
-            <a href="https://drive.google.com/file/d/1X0eSKyFIf9v7jQKVHihddA1wh_uT5Vkl/view" target="_blank" class="btn-primary">Read</a>
-            <a href="https://drive.google.com/uc?export=download&id=1X0eSKyFIf9v7jQKVHihddA1wh_uT5Vkl" target="_blank" class="btn-outline">Download</a>
+            <a href="https://drive.google.com/file/d/1X0eSKyFIf9v7jQKVHihddA1wh_uT5Vkl/view" target="_blank" rel="noopener noreferrer" class="btn-primary">Read</a>
+            <a href="https://drive.google.com/uc?export=download&id=1X0eSKyFIf9v7jQKVHihddA1wh_uT5Vkl" target="_blank" rel="noopener noreferrer" class="btn-outline">Download</a>
           </div>
         </div>
       </div>
@@ -3721,14 +3728,14 @@ nav .nav-links.open {
           <div class="contact-row reveal">
             <div>
               <div class="contact-row-label">Instagram</div>
-              <div class="contact-row-val"><a href="https://www.instagram.com/texasufa/" target="_blank">@texasufa</a></div>
+              <div class="contact-row-val"><a href="https://www.instagram.com/texasufa/" target="_blank" rel="noopener noreferrer">@texasufa</a></div>
             </div>
           </div>
 
           <div class="contact-row reveal">
             <div>
               <div class="contact-row-label">LinkedIn</div>
-              <div class="contact-row-val"><a href="https://www.linkedin.com/company/university-finance-association/" target="_blank">University Finance Association</a></div>
+              <div class="contact-row-val"><a href="https://www.linkedin.com/company/university-finance-association/" target="_blank" rel="noopener noreferrer">University Finance Association</a></div>
             </div>
           </div>
 
@@ -3748,15 +3755,15 @@ nav .nav-links.open {
           <p style="font-size:14px;color:var(--text-muted);">We'll get back to you within 48 hours.</p>
         </div>
         <div class="form-group">
-          <label class="form-label">Your name</label>
-          <input id="contact-name" class="form-input" type="text" placeholder="First and last name">
+          <label class="form-label" for="contact-name">Your name</label>
+          <input id="contact-name" class="form-input" type="text" placeholder="First and last name" autocomplete="name">
         </div>
         <div class="form-group">
-          <label class="form-label">Email address</label>
-          <input id="contact-email" class="form-input" type="email" placeholder="your@email.com">
+          <label class="form-label" for="contact-email">Email address</label>
+          <input id="contact-email" class="form-input" type="email" placeholder="your@email.com" autocomplete="email">
         </div>
         <div class="form-group">
-          <label class="form-label">Subject</label>
+          <label class="form-label" for="contact-subject">Subject</label>
           <select id="contact-subject" class="form-input">
             <option>I'm a prospective member</option>
             <option>Corporate partnership inquiry</option>
@@ -3766,7 +3773,7 @@ nav .nav-links.open {
           </select>
         </div>
         <div class="form-group">
-          <label class="form-label">Message</label>
+          <label class="form-label" for="contact-message">Message</label>
           <textarea id="contact-message" class="form-input" placeholder="Tell us a bit about yourself or what you're looking for..."></textarea>
         </div>
         <button class="btn-primary" id="contact-submit" style="width:100%;" onclick="sendContactForm()">Send message</button>
@@ -3889,7 +3896,7 @@ nav .nav-links.open {
       <p class="cta-band-sub">General membership is always open. Analyst and team recruitment cycles launch at the start of every fall and spring semester.</p>
     </div>
     <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center;">
-      <a href="https://utexas.campuslabs.com/engage/organization/texasufa" target="_blank" class="btn-white" style="padding:16px 36px;font-size:15px;text-align:center;display:flex;align-items:center;justify-content:center;">Become a General Member</a>
+      <a href="https://utexas.campuslabs.com/engage/organization/texasufa" target="_blank" rel="noopener noreferrer" class="btn-white" style="padding:16px 36px;font-size:15px;text-align:center;display:flex;align-items:center;justify-content:center;">Become a General Member</a>
       <a href="/join" onclick="showPage('join');return false;" class="btn-outline" style="color:#fff;padding:16px 36px;font-size:15px;display:flex;align-items:center;justify-content:center;">Explore recruitment timelines</a>
     </div>
   </div>
@@ -3921,11 +3928,11 @@ nav .nav-links.open {
           </div>
           <div style="margin-bottom:16px;">
             <label style="display:block;font-size:12px;font-weight:600;color:#3A4A3A;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;">UT Email</label>
-            <input id="eid-input" type="email" placeholder="abc1234@utexas.edu" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;" onkeydown="if(event.key==='Enter')portalLogin()">
+            <input id="eid-input" type="email" placeholder="abc1234@utexas.edu" aria-label="UT email" autocomplete="username" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;" onkeydown="if(event.key==='Enter')portalLogin()">
           </div>
           <div style="margin-bottom:24px;">
             <label style="display:block;font-size:12px;font-weight:600;color:#3A4A3A;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;">Password</label>
-            <input id="pw-input" type="password" placeholder="Your portal password" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;" onkeydown="if(event.key==='Enter')portalLogin()">
+            <input id="pw-input" type="password" placeholder="Your portal password" aria-label="Password" autocomplete="current-password" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;" onkeydown="if(event.key==='Enter')portalLogin()">
           </div>
           <button id="login-btn" onclick="portalLogin()" style="width:100%;background:#1C2B1C;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:13px;border-radius:6px;border:none;cursor:pointer;letter-spacing:0.02em;transition:background 0.2s;" onmouseover="this.style.background='#3D6B3D'" onmouseout="this.style.background='#1C2B1C'">Sign in</button>
           <div id="login-error" style="display:none;margin-top:12px;padding:10px 14px;background:#fdf0ef;border:1px solid #f0b4b0;border-radius:4px;font-size:13px;color:#8b2e2e;text-align:center;"></div>
@@ -3952,26 +3959,26 @@ nav .nav-links.open {
           </div>
           <div style="margin-bottom:12px;">
             <label style="display:block;font-size:12px;font-weight:600;color:#3A4A3A;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.06em;">Full Name</label>
-            <input id="signup-name" type="text" placeholder="Jordan Smith" style="width:100%;padding:10px 13px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;">
+            <input id="signup-name" type="text" placeholder="Jordan Smith" aria-label="Full name" autocomplete="name" style="width:100%;padding:10px 13px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;">
           </div>
           <div style="margin-bottom:12px;">
             <label style="display:block;font-size:12px;font-weight:600;color:#3A4A3A;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.06em;">UT Email</label>
-            <input id="signup-email" type="email" placeholder="abc1234@utexas.edu" style="width:100%;padding:10px 13px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;">
+            <input id="signup-email" type="email" placeholder="abc1234@utexas.edu" aria-label="UT email" autocomplete="email" style="width:100%;padding:10px 13px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;">
           </div>
           <div class="signup-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
             <div>
               <label style="display:block;font-size:12px;font-weight:600;color:#3A4A3A;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.06em;">UT EID</label>
-              <input id="signup-eid" type="text" placeholder="abc1234" style="width:100%;padding:10px 13px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;">
+              <input id="signup-eid" type="text" placeholder="abc1234" aria-label="UT EID" style="width:100%;padding:10px 13px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;">
             </div>
             <div>
               <label style="display:block;font-size:12px;font-weight:600;color:#3A4A3A;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.06em;">Graduation Year</label>
-              <input id="signup-grad-year" type="text" placeholder="2027" maxlength="4" style="width:100%;padding:10px 13px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;">
+              <input id="signup-grad-year" type="text" placeholder="2027" maxlength="4" aria-label="Graduation year" style="width:100%;padding:10px 13px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;">
             </div>
           </div>
           <div class="signup-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
             <div>
               <label style="display:block;font-size:12px;font-weight:600;color:#3A4A3A;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.06em;">Role</label>
-              <select id="signup-role" style="width:100%;padding:10px 13px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;appearance:none;-webkit-appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236B7D6B' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 13px center;">
+              <select id="signup-role" aria-label="Role" style="width:100%;padding:10px 13px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;appearance:none;-webkit-appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236B7D6B' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 13px center;">
                 <option value="" disabled selected>Select…</option>
                 <option value="General Member">General Member</option>
                 <option value="Analyst">Analyst</option>
@@ -3982,17 +3989,17 @@ nav .nav-links.open {
             </div>
             <div>
               <label style="display:block;font-size:12px;font-weight:600;color:#3A4A3A;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.06em;">Major</label>
-              <input id="signup-major" type="text" placeholder="Finance" style="width:100%;padding:10px 13px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;">
+              <input id="signup-major" type="text" placeholder="Finance" aria-label="Major" style="width:100%;padding:10px 13px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;">
             </div>
           </div>
           <div class="signup-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
             <div>
               <label style="display:block;font-size:12px;font-weight:600;color:#3A4A3A;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.06em;">Password</label>
-              <input id="signup-password" type="password" placeholder="Choose a password" style="width:100%;padding:10px 13px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;">
+              <input id="signup-password" type="password" placeholder="Choose a password" aria-label="Password" autocomplete="new-password" style="width:100%;padding:10px 13px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;">
             </div>
             <div>
               <label style="display:block;font-size:12px;font-weight:600;color:#3A4A3A;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.06em;">Confirm Password</label>
-              <input id="signup-password-confirm" type="password" placeholder="Re-enter password" style="width:100%;padding:10px 13px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;">
+              <input id="signup-password-confirm" type="password" placeholder="Re-enter password" aria-label="Confirm password" autocomplete="new-password" style="width:100%;padding:10px 13px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;">
             </div>
           </div>
           <div style="margin-bottom:16px;padding:12px 14px;background:#fff;border:1px solid rgba(46,74,46,0.2);border-radius:6px;display:flex;align-items:flex-start;gap:10px;">
@@ -4021,7 +4028,7 @@ nav .nav-links.open {
             </div>
             <div style="margin-bottom:24px;">
               <label style="display:block;font-size:12px;font-weight:600;color:#3A4A3A;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;">UT Email</label>
-              <input id="magic-email" type="email" placeholder="abc1234@utexas.edu" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;" onkeydown="if(event.key==='Enter')sendMagicLink()">
+              <input id="magic-email" type="email" placeholder="abc1234@utexas.edu" aria-label="UT email" autocomplete="email" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;" onkeydown="if(event.key==='Enter')sendMagicLink()">
             </div>
             <button onclick="sendMagicLink()" style="width:100%;background:#1C2B1C;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:13px;border-radius:6px;border:none;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='#3D6B3D'" onmouseout="this.style.background='#1C2B1C'">Send Magic Link</button>
             <div id="magic-msg" style="display:none;margin-top:12px;padding:10px 14px;background:#eef5ee;border:1px solid #b4d4b4;border-radius:4px;font-size:13px;color:#2e5e2e;text-align:center;"></div>
@@ -4045,7 +4052,7 @@ nav .nav-links.open {
             </div>
             <div style="margin-bottom:24px;">
               <label style="display:block;font-size:12px;font-weight:600;color:#3A4A3A;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;">UT Email</label>
-              <input id="forgot-email" type="email" placeholder="abc1234@utexas.edu" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;" onkeydown="if(event.key==='Enter')sendPasswordReset()">
+              <input id="forgot-email" type="email" placeholder="abc1234@utexas.edu" aria-label="UT email" autocomplete="email" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;" onkeydown="if(event.key==='Enter')sendPasswordReset()">
             </div>
             <button onclick="sendPasswordReset()" style="width:100%;background:#1C2B1C;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:13px;border-radius:6px;border:none;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='#3D6B3D'" onmouseout="this.style.background='#1C2B1C'">Send Reset Link</button>
             <div id="forgot-msg" style="display:none;margin-top:12px;padding:10px 14px;background:#eef5ee;border:1px solid #b4d4b4;border-radius:4px;font-size:13px;color:#2e5e2e;text-align:center;"></div>
@@ -4069,11 +4076,11 @@ nav .nav-links.open {
             </div>
             <div style="margin-bottom:14px;">
               <label style="display:block;font-size:12px;font-weight:600;color:#3A4A3A;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;">New Password</label>
-              <input id="reset-password" type="password" placeholder="New password (min 6 characters)" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;">
+              <input id="reset-password" type="password" placeholder="New password (min 6 characters)" aria-label="New password" autocomplete="new-password" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;">
             </div>
             <div style="margin-bottom:24px;">
               <label style="display:block;font-size:12px;font-weight:600;color:#3A4A3A;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;">Confirm Password</label>
-              <input id="reset-password-confirm" type="password" placeholder="Re-enter new password" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;" onkeydown="if(event.key==='Enter')submitNewPassword()">
+              <input id="reset-password-confirm" type="password" placeholder="Re-enter new password" aria-label="Confirm new password" autocomplete="new-password" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;" onkeydown="if(event.key==='Enter')submitNewPassword()">
             </div>
             <button onclick="submitNewPassword()" style="width:100%;background:#1C2B1C;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:13px;border-radius:6px;border:none;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='#3D6B3D'" onmouseout="this.style.background='#1C2B1C'">Set New Password</button>
             <div id="reset-msg" style="display:none;margin-top:12px;padding:10px 14px;background:#eef5ee;border:1px solid #b4d4b4;border-radius:4px;font-size:13px;color:#2e5e2e;text-align:center;"></div>
@@ -4164,7 +4171,7 @@ nav .nav-links.open {
               </div>
               <div id="checkin-form">
                 <label style="display:block;font-size:13px;font-weight:500;color:#3A4A3A;margin-bottom:6px;">Session code</label>
-                <input id="session-code" type="text" placeholder="UFA-W01" maxlength="12" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:15px;letter-spacing:0.1em;text-transform:uppercase;background:#F7F4EE;color:#1C2B1C;box-sizing:border-box;margin-bottom:16px;" onkeydown="if(event.key==='Enter')checkIn()">
+                <input id="session-code" type="text" placeholder="UFA-W01" maxlength="12" aria-label="Session code" style="width:100%;padding:11px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:15px;letter-spacing:0.1em;text-transform:uppercase;background:#F7F4EE;color:#1C2B1C;box-sizing:border-box;margin-bottom:16px;" onkeydown="if(event.key==='Enter')checkIn()">
                 <button id="checkin-btn" onclick="checkIn()" style="width:100%;background:#1C2B1C;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:13px;border-radius:4px;border:none;cursor:pointer;">Check in to tonight's event</button>
                 <div id="checkin-error" style="display:none;margin-top:10px;padding:10px 14px;background:#fdf0ef;border:1px solid #f0b4b0;border-radius:4px;font-size:13px;color:#8b2e2e;"></div>
               </div>
@@ -4283,7 +4290,7 @@ nav .nav-links.open {
                 <div style="font-size:11px;color:#A8BCA8;margin-bottom:2px;">PASSWORD</div>
                 <div id="wsj-password" style="font-size:14px;font-weight:500;color:#fff;font-family:monospace;">Loading…</div>
               </div>
-              <a href="https://wsj.com" target="_blank" style="align-self:center;background:#fff;color:#1C2B1C;font-size:13px;font-weight:600;padding:8px 16px;border-radius:4px;text-decoration:none;white-space:nowrap;">Visit WSJ →</a>
+              <a href="https://wsj.com" target="_blank" rel="noopener noreferrer" style="align-self:center;background:#fff;color:#1C2B1C;font-size:13px;font-weight:600;padding:8px 16px;border-radius:4px;text-decoration:none;white-space:nowrap;">Visit WSJ →</a>
             </div>
           </div>
 
@@ -4321,7 +4328,7 @@ nav .nav-links.open {
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:640px;">
 
               <!-- Recruit McCombs -->
-              <a href="https://mccombs-utexas.12twenty.com/login?ReturnUrl=%2Fdashboard" target="_blank"
+              <a href="https://mccombs-utexas.12twenty.com/login?ReturnUrl=%2Fdashboard" target="_blank" rel="noopener noreferrer"
                  style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:#fff;border:1px solid rgba(46,74,46,0.15);border-radius:10px;padding:28px 20px;text-decoration:none;transition:box-shadow 0.2s,transform 0.2s;"
                  onmouseover="this.style.boxShadow='0 6px 20px rgba(0,0,0,0.08)';this.style.transform='translateY(-2px)'"
                  onmouseout="this.style.boxShadow='';this.style.transform=''">
@@ -4336,7 +4343,7 @@ nav .nav-links.open {
               </a>
 
               <!-- Handshake -->
-              <a href="https://app.joinhandshake.com/job-search/11144109?page=1&per_page=25" target="_blank"
+              <a href="https://app.joinhandshake.com/job-search/11144109?page=1&per_page=25" target="_blank" rel="noopener noreferrer"
                  style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:#fff;border:1px solid rgba(46,74,46,0.15);border-radius:10px;padding:28px 20px;text-decoration:none;transition:box-shadow 0.2s,transform 0.2s;"
                  onmouseover="this.style.boxShadow='0 6px 20px rgba(0,0,0,0.08)';this.style.transform='translateY(-2px)'"
                  onmouseout="this.style.boxShadow='';this.style.transform=''">
@@ -4364,7 +4371,7 @@ nav .nav-links.open {
                   <div style="font-size:14px;font-weight:600;color:#1C2B1C;">UFA Internship Tracker</div>
                   <div style="font-size:12px;color:#6B7D6B;margin-top:2px;">Shared spreadsheet &#8212; track openings and add your applications</div>
                 </div>
-                <a href="https://docs.google.com/spreadsheets/d/1Uct8-VQKGCsDKCquW01Dxi0SLVUdbiD4lmuSp1NHEVA/edit?usp=sharing" target="_blank"
+                <a href="https://docs.google.com/spreadsheets/d/1Uct8-VQKGCsDKCquW01Dxi0SLVUdbiD4lmuSp1NHEVA/edit?usp=sharing" target="_blank" rel="noopener noreferrer"
                    style="font-size:12px;font-weight:600;color:#fff;background:#1C2B1C;padding:8px 16px;border-radius:4px;text-decoration:none;white-space:nowrap;">Open in Google Sheets &#8594;</a>
               </div>
               <iframe
@@ -5323,7 +5330,7 @@ async function editPoints(code, currentPoints) {
   var res = await sb.from('sessions').update({ points: newPoints }).eq('code', code);
   if (res.error) { alert('Error updating points: ' + res.error.message); return; }
   // Also update attendance records for this session
-  var res2 = await sb.from('attendance').update({ points: newPoints }).eq('session_code', code);
+  var res2 = await sb.from('attendance').update({ points: newPoints }).eq('code_used', code);
   if (res2.error) { alert('Session updated but attendance points failed: ' + res2.error.message); return; }
   loadAdminSessions();
   // Refresh stats if dashboard visible
@@ -5682,11 +5689,11 @@ async function loadAnalytics() {
       <div class="footer-logo-text">University Finance Association</div>
       <p class="footer-tagline">The oldest McCombs-affiliated finance organization at UT Austin, building finance leaders since 1951.</p>
       <div class="social-links" style="margin-top:20px;">
-        <a href="https://www.instagram.com/texasufa/" target="_blank" class="social-link" style="background:transparent;border-color:rgba(255,255,255,0.15);color:rgba(255,255,255,0.55);">
+        <a href="https://www.instagram.com/texasufa/" target="_blank" rel="noopener noreferrer" class="social-link" style="background:transparent;border-color:rgba(255,255,255,0.15);color:rgba(255,255,255,0.55);">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
           Instagram
         </a>
-        <a href="https://www.linkedin.com/company/university-finance-association/" target="_blank" class="social-link" style="background:transparent;border-color:rgba(255,255,255,0.15);color:rgba(255,255,255,0.55);">
+        <a href="https://www.linkedin.com/company/university-finance-association/" target="_blank" rel="noopener noreferrer" class="social-link" style="background:transparent;border-color:rgba(255,255,255,0.15);color:rgba(255,255,255,0.55);">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
           LinkedIn
         </a>
@@ -5713,11 +5720,11 @@ async function loadAnalytics() {
     <div>
       <div class="footer-col-title">Apply</div>
       <ul class="footer-links">
-        <li><a href="https://utexas.campuslabs.com/engage/organization/texasufa" target="_blank">General Membership</a></li>
-        <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSeGEtzK6gp8CCAIRzTwnvoZlNKANFII7CRJRO_sy9XNEUFbMQ/viewform" target="_blank">Interest Form</a></li>
-        <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSednj-xoNhhCCvGKyAnP4W1m9p-CNeTw28Cag6ibZsy71G5_A/viewform" target="_blank">Analyst Program</a></li>
-        <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSfv0DWYxpYH4c7VQk0Rf-zPa3Y9Ou1uEn5SE3_vROkMRIrsqQ/viewform" target="_blank">Investment Team</a></li>
-        <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSedfQrjZSVGodbKUNOcViYNfYHsjWsRYBn-cCZ1YmUbU_1faw/viewform" target="_blank">Consulting Team</a></li>
+        <li><a href="https://utexas.campuslabs.com/engage/organization/texasufa" target="_blank" rel="noopener noreferrer">General Membership</a></li>
+        <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSeGEtzK6gp8CCAIRzTwnvoZlNKANFII7CRJRO_sy9XNEUFbMQ/viewform" target="_blank" rel="noopener noreferrer">Interest Form</a></li>
+        <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSednj-xoNhhCCvGKyAnP4W1m9p-CNeTw28Cag6ibZsy71G5_A/viewform" target="_blank" rel="noopener noreferrer">Analyst Program</a></li>
+        <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSfv0DWYxpYH4c7VQk0Rf-zPa3Y9Ou1uEn5SE3_vROkMRIrsqQ/viewform" target="_blank" rel="noopener noreferrer">Investment Team</a></li>
+        <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSedfQrjZSVGodbKUNOcViYNfYHsjWsRYBn-cCZ1YmUbU_1faw/viewform" target="_blank" rel="noopener noreferrer">Consulting Team</a></li>
       </ul>
     </div>
   </div>
@@ -6000,8 +6007,9 @@ async function loadAnalytics() {
 function toggleMenu() {
   const menu = document.getElementById('nav-menu');
   const btn = document.getElementById('hamburger-btn');
-  menu.classList.toggle('open');
+  const isOpen = menu.classList.toggle('open');
   btn.classList.toggle('open');
+  btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
 }
 
 /**
@@ -6016,6 +6024,7 @@ function closeMenu() {
   const btn = document.getElementById('hamburger-btn');
   menu.classList.remove('open');
   btn.classList.remove('open');
+  btn.setAttribute('aria-expanded', 'false');
 }
 /**
  * showLogin()
@@ -6249,7 +6258,7 @@ async function sendPasswordReset() {
   const err = document.getElementById('forgot-error');
   msg.style.display = 'none'; err.style.display = 'none';
   if (!email) { err.style.display='block'; err.textContent='Please enter your UT email.'; return; }
-  const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: 'https://cadenwarner.github.io/UFA-Website/?type=recovery' });
+  const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: 'https://texasufa.org/?type=recovery' });
   if (error) { err.style.display='block'; err.textContent=error.message; return; }
   msg.style.display = 'block';
   msg.textContent = 'Reset link sent! Check your email to set a new password.';
@@ -6560,6 +6569,10 @@ window.showPage = function(id, updateHistory) {
   if (id === 'why-ufa') setTimeout(initLogoAnimation, 100);
   if (id === 'home') setTimeout(syncAnalystCardTitleWrap, 50);
 };
+
+// Set the footer copyright year on initial load. showPage() also sets this,
+// but it isn't called when the home page loads directly, so set it here too.
+document.getElementById('copyright-year').textContent = new Date().getFullYear();
 
 // Trigger initial reveals for home page on load
 setTimeout(() => {
