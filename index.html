@@ -2583,6 +2583,23 @@ nav .nav-links.open {
 .iv-social h4 { font-family: var(--font-display); font-size: 31px; font-weight: 500; line-height: 1.2; margin-bottom: 16px; color: var(--text-dark); }
 .iv-social p { font-size: 17px; color: var(--text-muted); line-height: 1.75; }
 
+/* ── CONSULTING: practices (left) + team photo (right) ── */
+.consult-split {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 56px;
+  align-items: stretch; margin-top: 56px; margin-bottom: 48px;
+}
+.consult-split-list { border-top: 1px solid var(--border); }
+.consult-split-photo {
+  border-radius: 12px; overflow: hidden;
+  order: -1; position: relative;
+  align-self: stretch; min-height: 0; height: 100%;
+}
+.consult-split-photo img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%; object-fit: cover;
+  object-position: 55% 40%; display: block;
+}
+
 @media (max-width: 820px) {
   .iv-fund { padding: 36px 26px; }
   .iv-fund h3 { font-size: 26px; }
@@ -2599,6 +2616,8 @@ nav .nav-links.open {
   }
   .iv-step:not(:last-child)::after { display: none; }
   .iv-row.iv-flip .iv-media { order: 0; }
+  .consult-split { grid-template-columns: 1fr; gap: 32px; }
+  .consult-split-photo { min-height: 0; height: 280px; order: 0; }
 }
 
 /* ── REDUCED MOTION ──
@@ -3124,7 +3143,7 @@ nav .nav-links.open {
       </div>
 
       <div class="team-photo-tall" style="border-radius:12px; overflow:hidden;">
-        <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/imgur%20photos/yC6O7xX.jpeg" alt="UFA Analyst Program members collaborating" style="width:100%; height:340px; object-fit:cover; object-position:center 20%; display:block;">
+        <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/imgur%20photos/yC6O7xX.jpeg" alt="UFA Analyst Program members collaborating" style="width:100%; height:600px; object-fit:cover; object-position:center 20%; display:block;">
       </div>
 
     </div><!-- /white competitions+photo block -->
@@ -3157,33 +3176,32 @@ nav .nav-links.open {
         <h3>Pitch a stock. If the team's convinced, the fund actually buys it.</h3>
         <div class="iv-flow">
           <div class="iv-step"><div class="n">01</div><div class="t">Research</div><div class="d">Pick a company, dig into the fundamentals.</div></div>
-          <div class="iv-step"><div class="n">02</div><div class="t">Build the model</div><div class="d">DCF, comps, the full workup.</div></div>
-          <div class="iv-step"><div class="n">03</div><div class="t">Pitch the team</div><div class="d">Present your thesis and defend it.</div></div>
-          <div class="iv-step"><div class="n">04</div><div class="t">The team votes</div><div class="d">Members decide if the thesis holds.</div></div>
-          <div class="iv-step"><div class="n">05</div><div class="t">The fund buys</div><div class="d">Winning ideas enter the portfolio.</div></div>
+          <div class="iv-step"><div class="n">02</div><div class="t">Build the Model</div><div class="d">Build a discounted cash flow model and competitor analysis.</div></div>
+          <div class="iv-step"><div class="n">03</div><div class="t">Pitch the Stock</div><div class="d">Present and defend your thesis.</div></div>
+          <div class="iv-step"><div class="n">04</div><div class="t">Tally Votes</div><div class="d">Members decide if the pitch passes.</div></div>
+          <div class="iv-step"><div class="n">05</div><div class="t">Start the Position</div><div class="d">Winning ideas enter the portfolio, at the discretion of the fund team.</div></div>
         </div>
-        <div class="iv-kicker"><strong>Your idea can move real capital.</strong></div>
       </div>
 
       <!-- Supporting skills: click a chip to reveal its description -->
-      <div class="reveal">
+      <div class="reveal iv-chips-block">
         <div class="iv-chips" id="iv-chips">
-          <button type="button" class="iv-chip is-active" data-desc="Excel-based DCF, comps, and LBO modeling built from scratch.">Financial modeling</button>
-          <button type="button" class="iv-chip" data-desc="Real-world cases that mirror what interviews and the job demand.">Case studies</button>
-          <button type="button" class="iv-chip" data-desc="Weekly sessions on market-moving news and macro trends.">Market watch</button>
-          <button type="button" class="iv-chip" data-desc="Upperclassmen who guide you through recruiting and technical prep.">Mentorship</button>
-          <button type="button" class="iv-chip" data-desc="Step up as an industry head, fund manager, or social lead.">Leadership roles</button>
+          <button type="button" class="iv-chip is-active" data-desc="Build DCFs, comps, and LBOs in Excel from a blank sheet &mdash; the same workups you'll be asked to walk through in a technical interview.">Financial Modeling</button>
+          <button type="button" class="iv-chip" data-desc="Work through real transactions and company situations, then defend your reasoning the way you would in front of an interviewer or a client.">Case Studies</button>
+          <button type="button" class="iv-chip" data-desc="Weekly sessions breaking down market-moving news, earnings, and macro trends so you can speak to what's happening and why it matters.">Market Watch</button>
+          <button type="button" class="iv-chip" data-desc="Upperclassmen who've been through recruiting guide you one-on-one, offering technical expertise, resume reviews, mock interviews, and timeline advice.">Mentorship</button>
+          <button type="button" class="iv-chip" data-desc="Step up as an industry head, fund manager, or social lead and take real ownership over the team's research, portfolio, and culture.">Leadership Roles</button>
         </div>
-        <p class="iv-chip-desc" id="iv-chip-desc" aria-live="polite">Excel-based DCF, comps, and LBO modeling built from scratch.</p>
+        <p class="iv-chip-desc" id="iv-chip-desc" aria-live="polite">Build DCFs, comps, and LBOs in Excel from a blank sheet &mdash; the same workups you'll be asked to walk through in a technical interview.</p>
       </div>
 
       <!-- ROW: equity research journal -->
       <div class="iv-row reveal">
         <div>
           <div class="iv-idx">What you'll produce</div>
-          <h4>Publish real equity research</h4>
-          <p>Every member contributes to our annual equity research journal &mdash; in-depth analysis of public companies across TMT, healthcare, energy, financials, consumer, and industrials. It's a portfolio piece you can hand a recruiter.</p>
-          <a class="iv-link" href="/publications" onclick="showPage('publications');return false;">Read this year's journal &rarr;</a>
+          <h4>Publish tangible equity research</h4>
+          <p>Every member contributes to our annual equity research journal &mdash; in-depth analysis of public companies across TMT, healthcare, energy, financial, consumer, and industrial verticals. Researched, written, and defended the way an analyst would, it's a portfolio piece you can hand a recruiter.</p>
+          <a class="iv-link" href="/publications" onclick="showPage('publications');return false;">Read the 2025 journal &rarr;</a>
         </div>
         <div class="iv-media iv-media-cover">
           <!-- Real Fall 2025 Research Report cover. If the image fails to load,
@@ -3207,9 +3225,9 @@ nav .nav-links.open {
       <div class="iv-row iv-flip reveal">
         <div>
           <div class="iv-idx">Where it leads</div>
-          <h4>Recruit with an edge</h4>
-          <p>Technical interview prep, resume reviews, and one-on-one mentorship from upperclassmen who've been through it. Members have gone on to IB, PE, and asset management roles at firms across the Street.</p>
-          <a class="iv-link" href="/why-ufa" onclick="showPage('why-ufa');return false;">See where our members land &rarr;</a>
+          <h4>Recruit with support</h4>
+          <p>Technical bootcamps, resume reviews, mock interviews, and recruiting guidance from upperclassmen who've been through it. Members have gone on to IB, PE, and asset management roles at firms across the Street, with peers helping each other every step of the way.</p>
+          <a class="iv-link" href="/why-ufa" onclick="showPage('why-ufa');return false;">See where our members place &rarr;</a>
         </div>
         <div class="iv-media">
           <div class="iv-logos">
@@ -3223,15 +3241,16 @@ nav .nav-links.open {
         </div>
       </div>
 
-      <!-- CLOSING: the social side. Swap this image for a casual social-event photo. -->
+      <!-- CLOSING: the social side. Text left / photo right so the three lower
+           rows alternate: cover right → logos left → photo right. -->
       <div class="iv-social reveal">
         <div>
-          <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/imgur%20photos/ILa8P5V.jpeg" alt="UFA Investment Team members at a social event">
+          <div class="iv-idx">Beyond career prep</div>
+          <h4>Build lasting friendships</h4>
+          <p>Give back to the community that invested in you. Join a team built on mentorship, collaboration, and lasting friendships through team dinners, socials, alumni events, and shared experiences. Learn from those who came before you, support those who come after, and become part of a network that extends far beyond graduation.</p>
         </div>
         <div>
-          <div class="iv-idx">Beyond the desk</div>
-          <h4>It's not all spreadsheets</h4>
-          <p>Between the pitches and the models, this is a group that actually likes spending time together &mdash; team dinners, socials, and friendships that outlast graduation.</p>
+          <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/imgur%20photos/ILa8P5V.jpeg" alt="UFA Investment Team members at a social event">
         </div>
       </div>
 
@@ -3261,37 +3280,37 @@ nav .nav-links.open {
          style="width:100%; max-height:400px; object-fit:cover; object-position:center 40%; border-radius:12px;">
   </div>
 
-<div class="reveal" style="margin-bottom:40px;border-top:1px solid var(--border);">
-        <div style="display:flex;align-items:flex-start;gap:16px;padding:24px 0;border-bottom:1px solid var(--border);">
-          <div style="width:8px;height:8px;border-radius:50%;background:var(--green-light);flex-shrink:0;margin-top:6px;"></div>
-          <div>
-            <div style="font-family:var(--font-display);font-size:17px;font-weight:500;color:var(--text-dark);margin-bottom:6px;">Case Coaching</div>
-            <p style="font-size:15px;color:var(--text-muted);line-height:1.7;margin:0;">Practice live case interviews. Sharpen your structured thinking and communication under realistic interview conditions.</p>
-          </div>
-        </div>
-        <div style="display:flex;align-items:flex-start;gap:16px;padding:24px 0;border-bottom:1px solid var(--border);">
-          <div style="width:8px;height:8px;border-radius:50%;background:var(--green-light);flex-shrink:0;margin-top:6px;"></div>
-          <div>
-            <div style="font-family:var(--font-display);font-size:17px;font-weight:500;color:var(--text-dark);margin-bottom:6px;">Industry Deep Dives</div>
-            <p style="font-size:15px;color:var(--text-muted);line-height:1.7;margin:0;">Explore consulting frameworks applied to real industries. Sessions cover market sizing, competitive analysis, and strategic recommendations.</p>
-          </div>
-        </div>
-        <div style="display:flex;align-items:flex-start;gap:16px;padding:24px 0;border-bottom:1px solid var(--border);">
-          <div style="width:8px;height:8px;border-radius:50%;background:var(--green-light);flex-shrink:0;margin-top:6px;"></div>
-          <div>
-            <div style="font-family:var(--font-display);font-size:17px;font-weight:500;color:var(--text-dark);margin-bottom:6px;">Client Simulations</div>
-            <p style="font-size:15px;color:var(--text-muted);line-height:1.7;margin:0;">Build and present consulting deliverables to simulated clients. Develop slide decks, synthesize findings, and defend your recommendations.</p>
-          </div>
-        </div>
-      </div>
+<div class="consult-split reveal">
 
-  <div style="background:var(--cream);margin:0 -72px;padding:32px 72px 48px;">
-    <div class="team-photo-tall" style="margin-top:0; padding:0;">
-      <div style="border-radius:12px; overflow:hidden; height:340px;">
-        <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/imgur%20photos/1qDXUl0.jpeg" alt="UFA Consulting Team members" style="width:100%; height:100%; object-fit:cover; object-position:55% 40%; transform:scale(1.15); transform-origin:55% 40%; display:block;">
+  <div class="consult-split-list">
+    <div style="display:flex;align-items:flex-start;gap:16px;padding:24px 0;border-bottom:1px solid var(--border);">
+      <div style="width:8px;height:8px;border-radius:50%;background:var(--green-light);flex-shrink:0;margin-top:6px;"></div>
+      <div>
+        <div style="font-family:var(--font-display);font-size:17px;font-weight:500;color:var(--text-dark);margin-bottom:6px;">Case Coaching</div>
+        <p style="font-size:15px;color:var(--text-muted);line-height:1.7;margin:0;">Practice live case interviews. Sharpen your structured thinking and communication under realistic interview conditions.</p>
+      </div>
+    </div>
+    <div style="display:flex;align-items:flex-start;gap:16px;padding:24px 0;border-bottom:1px solid var(--border);">
+      <div style="width:8px;height:8px;border-radius:50%;background:var(--green-light);flex-shrink:0;margin-top:6px;"></div>
+      <div>
+        <div style="font-family:var(--font-display);font-size:17px;font-weight:500;color:var(--text-dark);margin-bottom:6px;">Industry Deep Dives</div>
+        <p style="font-size:15px;color:var(--text-muted);line-height:1.7;margin:0;">Explore consulting frameworks applied to real industries. Sessions cover market sizing, competitive analysis, and strategic recommendations.</p>
+      </div>
+    </div>
+    <div style="display:flex;align-items:flex-start;gap:16px;padding:24px 0;border-bottom:1px solid var(--border);">
+      <div style="width:8px;height:8px;border-radius:50%;background:var(--green-light);flex-shrink:0;margin-top:6px;"></div>
+      <div>
+        <div style="font-family:var(--font-display);font-size:17px;font-weight:500;color:var(--text-dark);margin-bottom:6px;">Client Simulations</div>
+        <p style="font-size:15px;color:var(--text-muted);line-height:1.7;margin:0;">Build and present consulting deliverables to simulated clients. Develop slide decks, synthesize findings, and defend your recommendations.</p>
       </div>
     </div>
   </div>
+
+  <div class="consult-split-photo">
+    <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/imgur%20photos/1qDXUl0.jpeg" alt="UFA Consulting Team members">
+  </div>
+
+</div>
 
 
 
