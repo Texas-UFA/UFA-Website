@@ -743,7 +743,8 @@ background-position: center 95%;
      Grid layout for displaying executive board members. */
   .board-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 24px;max-width: 1100px;margin: 0 auto; }
   .board-card { text-align: center; }
-  .board-photo { width: 100%; aspect-ratio: 1; border-radius: 8px; overflow: hidden; margin-bottom: 14px; background: var(--green-wash); }
+  .board-photo { width: 100%; aspect-ratio: 1; border-radius: 8px; overflow: hidden; margin-bottom: 14px; background: var(--green-wash); position: relative; }
+  .board-photo-link { display: block; width: 100%; height: 100%; position: relative; }
   .board-photo img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
   .board-name { font-family: var(--font-display); font-size: 15px; font-weight: 500; color: var(--text-dark); margin-bottom: 3px; }
   .board-role { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
@@ -755,11 +756,26 @@ background-position: center 95%;
       height: 100%;
       object-fit: cover;
       filter: grayscale(15%) contrast(105%); /* Subtle "editorial" look */
-      transition: filter 0.3s ease;
+      transition: filter 0.35s ease, transform 0.35s ease;
+}
+
+.board-photo-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(28,43,28,0.55), rgba(28,43,28,0) 55%);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
 }
 
 .board-card:hover .board-photo img {
   filter: grayscale(0%) contrast(100%);
+  transform: scale(1.08);
+}
+
+.board-card:hover .board-photo-link::after {
+  opacity: 1;
 }
   
   /* ── TEAMS PAGE ──
@@ -1109,7 +1125,7 @@ align-items: flex-end;
   .faq-item { border-bottom: 1px solid var(--border); background: var(--white); }
   .faq-item:last-child { border-bottom: none; }
   .faq-q { width: 100%; background: none; border: none; cursor: pointer; text-align: left; cursor: pointer; padding: 24px 28px; display: flex; justify-content: space-between; align-items: center; gap: 16px; font-family: var(--font-body); font-size: 15px; font-weight: 500; color: var(--text-dark); }
-  .faq-q:hover { background: var(--green-wash); }
+  .faq-q:hover { background: var(--cream); }
   .faq-q svg { flex-shrink: 0; transition: transform 0.25s; stroke: var(--green-accent); }
   .faq-item.open .faq-q svg { transform: rotate(45deg); }
   .faq-a { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
@@ -2864,7 +2880,7 @@ nav .nav-links.open {
     <div class="board-grid">
 
       <div class="board-card reveal">
-        <div class="board-photo"><img loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1759765238227%20(2).jpeg" alt="Caden Warner" onerror="this.style.display='none'"></div>
+        <div class="board-photo"><a href="https://www.linkedin.com/in/caden-warner/" target="_blank" rel="noopener noreferrer" class="board-photo-link" aria-label="View Caden Warner's LinkedIn profile"><img loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1759765238227%20(2).jpeg" alt="Caden Warner" onerror="this.style.display='none'"></a></div>
         <div class="board-name">Caden Warner</div>
         <div class="board-role">President</div>
         <a href="https://www.linkedin.com/in/caden-warner/" target="_blank" rel="noopener noreferrer" class="board-li">
@@ -2874,7 +2890,7 @@ nav .nav-links.open {
       </div>
 
       <div class="board-card reveal">
-        <div class="board-photo"><img loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1772591854732.png" alt="Alika Frankovska" onerror="this.style.display='none'"></div>
+        <div class="board-photo"><a href="https://www.linkedin.com/in/alikafrankovska/" target="_blank" rel="noopener noreferrer" class="board-photo-link" aria-label="View Alika Frankovska's LinkedIn profile"><img loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1772591854732.png" alt="Alika Frankovska" onerror="this.style.display='none'"></a></div>
         <div class="board-name">Alika Frankovska</div>
         <div class="board-role">Vice President</div>
         <a href="https://www.linkedin.com/in/alikafrankovska/" target="_blank" rel="noopener noreferrer" class="board-li">
@@ -2884,7 +2900,7 @@ nav .nav-links.open {
       </div>
 
       <div class="board-card reveal">
-        <div class="board-photo"><img loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1759271799751.png" alt="Nikhil Parida" onerror="this.style.display='none'"></div>
+        <div class="board-photo"><a href="https://www.linkedin.com/in/nikhilparida/" target="_blank" rel="noopener noreferrer" class="board-photo-link" aria-label="View Nikhil Parida's LinkedIn profile"><img loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1759271799751.png" alt="Nikhil Parida" onerror="this.style.display='none'"></a></div>
         <div class="board-name">Nikhil Parida</div>
         <div class="board-role">Director of External Affairs</div>
         <a href="https://www.linkedin.com/in/nikhilparida/" target="_blank" rel="noopener noreferrer" class="board-li">
@@ -2894,7 +2910,7 @@ nav .nav-links.open {
       </div>
 
       <div class="board-card reveal">
-        <div class="board-photo"><img loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/Headshot.jpg" alt="Nathan Li" onerror="this.style.display='none'"></div>
+        <div class="board-photo"><a href="https://www.linkedin.com/in/nathanyuxianli/" target="_blank" rel="noopener noreferrer" class="board-photo-link" aria-label="View Nathan Li's LinkedIn profile"><img loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/Headshot.jpg" alt="Nathan Li" onerror="this.style.display='none'"></a></div>
         <div class="board-name">Nathan Li</div>
         <div class="board-role">Director of Investment</div>
         <a href="https://www.linkedin.com/in/nathanyuxianli/" target="_blank" rel="noopener noreferrer" class="board-li">
@@ -2904,7 +2920,7 @@ nav .nav-links.open {
       </div>
 
       <div class="board-card reveal">
-        <div class="board-photo"><img loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1774587526109.png" alt="Emily Liu" onerror="this.style.display='none'"></div>
+        <div class="board-photo"><a href="https://www.linkedin.com/in/emily-liu07/" target="_blank" rel="noopener noreferrer" class="board-photo-link" aria-label="View Emily Liu's LinkedIn profile"><img loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1774587526109.png" alt="Emily Liu" onerror="this.style.display='none'"></a></div>
         <div class="board-name">Emily Liu</div>
         <div class="board-role">Director of Investment</div>
         <a href="https://www.linkedin.com/in/emily-liu07/" target="_blank" rel="noopener noreferrer" class="board-li">
@@ -2914,7 +2930,7 @@ nav .nav-links.open {
       </div>
 
       <div class="board-card reveal">
-        <div class="board-photo"><img loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1726811705179.jpeg" alt="Shreyas Sripurushottam" onerror="this.style.display='none'"></div>
+        <div class="board-photo"><a href="https://www.linkedin.com/in/shreyas-sri/" target="_blank" rel="noopener noreferrer" class="board-photo-link" aria-label="View Shreyas Sripurushottam's LinkedIn profile"><img loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1726811705179.jpeg" alt="Shreyas Sripurushottam" onerror="this.style.display='none'"></a></div>
         <div class="board-name">Shreyas Sripurushottam</div>
         <div class="board-role">Director of Consulting</div>
         <a href="https://www.linkedin.com/in/shreyas-sri/" target="_blank" rel="noopener noreferrer" class="board-li">
@@ -2924,7 +2940,7 @@ nav .nav-links.open {
       </div>
 
       <div class="board-card reveal">
-        <div class="board-photo"><img loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1777307808671.png" alt="Seyoon (Sam) Jung" onerror="this.style.display='none'"></div>
+        <div class="board-photo"><a href="https://www.linkedin.com/in/sam-jung-b5ab261ba/" target="_blank" rel="noopener noreferrer" class="board-photo-link" aria-label="View Seyoon (Sam) Jung's LinkedIn profile"><img loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1777307808671.png" alt="Seyoon (Sam) Jung" onerror="this.style.display='none'"></a></div>
         <div class="board-name">Seyoon (Sam) Jung</div>
         <div class="board-role">Director of Consulting</div>
         <a href="https://www.linkedin.com/in/sam-jung-b5ab261ba/" target="_blank" rel="noopener noreferrer" class="board-li">
@@ -2934,7 +2950,7 @@ nav .nav-links.open {
       </div>
 
       <div class="board-card reveal">
-        <div class="board-photo"><img loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1763951935507.jpeg" alt="Varsha Ravi" onerror="this.style.display='none'"></div>
+        <div class="board-photo"><a href="https://www.linkedin.com/in/varsha-ravi108/" target="_blank" rel="noopener noreferrer" class="board-photo-link" aria-label="View Varsha Ravi's LinkedIn profile"><img loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1763951935507.jpeg" alt="Varsha Ravi" onerror="this.style.display='none'"></a></div>
         <div class="board-name">Varsha Ravi</div>
         <div class="board-role">Director of Corporate Relations</div>
         <a href="https://www.linkedin.com/in/varsha-ravi108/" target="_blank" rel="noopener noreferrer" class="board-li">
@@ -2944,7 +2960,7 @@ nav .nav-links.open {
       </div>
 
       <div class="board-card reveal">
-        <div class="board-photo"><img loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1778272105108.png" alt="Grace Miller" onerror="this.style.display='none'"></div>
+        <div class="board-photo"><a href="https://www.linkedin.com/in/gracemiller219/" target="_blank" rel="noopener noreferrer" class="board-photo-link" aria-label="View Grace Miller's LinkedIn profile"><img loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1778272105108.png" alt="Grace Miller" onerror="this.style.display='none'"></a></div>
         <div class="board-name">Grace Miller</div>
         <div class="board-role">Director of Corporate Relations</div>
         <a href="https://www.linkedin.com/in/gracemiller219/" target="_blank" rel="noopener noreferrer" class="board-li">
@@ -2954,7 +2970,7 @@ nav .nav-links.open {
       </div>
 
       <div class="board-card reveal">
-        <div class="board-photo"><img loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1770835392157.jpeg" alt="Layne Nguyen" onerror="this.style.display='none'"></div>
+        <div class="board-photo"><a href="https://www.linkedin.com/in/laynenguyen/" target="_blank" rel="noopener noreferrer" class="board-photo-link" aria-label="View Layne Nguyen's LinkedIn profile"><img loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1770835392157.jpeg" alt="Layne Nguyen" onerror="this.style.display='none'"></a></div>
         <div class="board-name">Layne Nguyen</div>
         <div class="board-role">Director of Marketing</div>
         <a href="https://www.linkedin.com/in/laynenguyen/" target="_blank" rel="noopener noreferrer" class="board-li">
@@ -2964,7 +2980,7 @@ nav .nav-links.open {
       </div>
 
       <div class="board-card reveal">
-        <div class="board-photo"><img loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1768946413296.jpeg" alt="Emma Nowotny" onerror="this.style.display='none'"></div>
+        <div class="board-photo"><a href="https://www.linkedin.com/in/emmanowotny/" target="_blank" rel="noopener noreferrer" class="board-photo-link" aria-label="View Emma Nowotny's LinkedIn profile"><img loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1768946413296.jpeg" alt="Emma Nowotny" onerror="this.style.display='none'"></a></div>
         <div class="board-name">Emma Nowotny</div>
         <div class="board-role">Director of Marketing</div>
         <a href="https://www.linkedin.com/in/emmanowotny/" target="_blank" rel="noopener noreferrer" class="board-li">
@@ -2974,7 +2990,7 @@ nav .nav-links.open {
       </div>
 
       <div class="board-card reveal">
-        <div class="board-photo"><img loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1773078471094.jpeg" alt="Aryan Jhaveri" onerror="this.style.display='none'"></div>
+        <div class="board-photo"><a href="https://www.linkedin.com/in/aryanjhaveri07/" target="_blank" rel="noopener noreferrer" class="board-photo-link" aria-label="View Aryan Jhaveri's LinkedIn profile"><img loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center top;" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1773078471094.jpeg" alt="Aryan Jhaveri" onerror="this.style.display='none'"></a></div>
         <div class="board-name">Aryan Jhaveri</div>
         <div class="board-role">Treasurer</div>
         <a href="https://www.linkedin.com/in/aryanjhaveri07/" target="_blank" rel="noopener noreferrer" class="board-li">
@@ -3108,7 +3124,7 @@ nav .nav-links.open {
       </div>
 
       <div class="team-photo-tall" style="border-radius:12px; overflow:hidden;">
-        <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/imgur%20photos/yC6O7xX.jpeg" alt="UFA Analyst Program members collaborating" style="width:100%; height:600px; object-fit:cover; object-position:center 20%; display:block;">
+        <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/imgur%20photos/yC6O7xX.jpeg" alt="UFA Analyst Program members collaborating" style="width:100%; height:340px; object-fit:cover; object-position:center 20%; display:block;">
       </div>
 
     </div><!-- /white competitions+photo block -->
@@ -3174,7 +3190,7 @@ nav .nav-links.open {
                it removes itself and the styled fallback panel below shows. -->
           <a class="iv-cover-link" href="/publications" onclick="showPage('publications');return false;" aria-label="Read the Fall 2025 Research Report">
             <img class="iv-cover" loading="lazy"
-                 src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/photos/fall2025-research-report-cover.jpg"
+                 src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/fall2025-research-report-cover.jpg"
                  alt="Fall 2025 Research Report, presented by the University Finance Association"
                  onerror="this.remove()">
             <div class="iv-journal">
@@ -3269,9 +3285,9 @@ nav .nav-links.open {
         </div>
       </div>
 
-  <div style="background:var(--white);margin:0 -72px;padding:32px 72px 48px;">
+  <div style="background:var(--cream);margin:0 -72px;padding:32px 72px 48px;">
     <div class="team-photo-tall" style="margin-top:0; padding:0;">
-      <div style="border-radius:12px; overflow:hidden; height:600px;">
+      <div style="border-radius:12px; overflow:hidden; height:340px;">
         <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/imgur%20photos/1qDXUl0.jpeg" alt="UFA Consulting Team members" style="width:100%; height:100%; object-fit:cover; object-position:55% 40%; transform:scale(1.15); transform-origin:55% 40%; display:block;">
       </div>
     </div>
