@@ -4796,8 +4796,16 @@ async function portalLogin() {
     // Save email for next login
     try { localStorage.setItem('ufa_saved_email', email); } catch(e) {}
     currentMember = await fetchMember(currentUser.email);
+    // Block accounts with no matching member record (e.g. denied/removed members)
+    if (!currentMember) {
+      await sb.auth.signOut();
+      currentUser = null; currentMember = null;
+      err.style.display='block'; err.textContent='We could not find a member account for this login. Please contact a board member.';
+      if (btn) { btn.textContent='Sign in'; btn.disabled=false; }
+      return;
+    }
     // Block pending accounts
-    if (currentMember && currentMember.status === 'pending') {
+    if (currentMember.status === 'pending') {
       await sb.auth.signOut();
       currentUser = null; currentMember = null;
       err.style.display='block'; err.textContent='Your account is pending board approval. You will be able to sign in once a board member approves your dues payment.';
@@ -5387,7 +5395,12 @@ async function approveMember(email) {
 async function denyMember(email) {
   if (!confirm('Deny and remove ' + email + '? This will delete their account request.')) return;
   await sb.from('members').delete().eq('email', email);
-  // Also remove from Supabase auth if possible
+  // TODO: This does NOT remove the person's Supabase Auth account, only their
+  // members row. portalLogin() now blocks login when no matching member row
+  // exists, which prevents dashboard access after a deny. But the underlying
+  // auth account still exists and could theoretically still authenticate.
+  // Full fix requires a Supabase Edge Function (using the service-role key,
+  // never exposed client-side) to actually delete the auth user. Not done yet.
   loadApprovals();
 }
 
