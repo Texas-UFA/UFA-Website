@@ -70,6 +70,58 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     
 <style>
+  /* ════════════════════════════════════════════════════════════════
+     TABLE OF CONTENTS
+     Search for any heading in quotes below (e.g. "── NAV ──") to
+     jump straight to that section. Order below matches file order.
+
+     FOUNDATIONS
+       "DESIGN TOKENS"            → colors, fonts, spacing variables
+       "PAGES"                    → page show/hide system
+       "FOCUS VISIBLE"            → keyboard focus outline
+       "HERO"                     → home page hero banner
+       "NAV"                     → top navigation bar
+       "NAV COLLAPSE (MID-WIDTH)" → nav behavior at tablet widths
+       "STATS BAR"                → home page stats strip
+       "SECTION UTILITIES"        → shared section/tag/title styles
+
+     HOME PAGE SECTIONS
+       "LOGO COLLAGE (Why UFA placements)" → placement logos grid
+       "PILLARS"                  → "why UFA" 4-pillar cards
+       "MISSION BAND"             → home page mission statement band
+       "TEAMS"                    → team preview cards on home page
+       "HOW TO JOIN"              → home page join preview
+       "CTA BAND"                 → call-to-action band
+       "INSTAGRAM"                → home page Instagram feed grid
+
+     OTHER PAGES
+       "ABOUT PAGE"               → Board page (nav says "Board")
+       "TEAM GRID"                → member grid on team pages
+       "TEAMS PAGE"               → analyst/investment/consulting tabs
+       "HOW TO JOIN PAGE"         → full join page layout
+       "BLOG"                     → blog card styles
+       "PUBLICATIONS"             → publications page
+       "FAQS"                     → FAQ accordion
+       "CONTACT"                  → contact page layout
+       "FOOTER"                   → site footer
+
+     SHARED / MISC
+       "PHOTO STRIP"              → home + about page photo strips
+       "MISC"                     → small one-off styles
+       "CONSULTING SPECIFICS"     → consulting tab overrides
+       "Recruitment Timeline"     → join page timeline
+       "INVESTMENT TAB"           → redesigned investment tab (iv- classes)
+       "CONSULTING: practices (left) + team photo (right)"
+
+     RESPONSIVE / STATE OVERRIDES  (keep near bottom — order matters
+     for the cascade; do not move these above the base rules)
+       "MOBILE RESPONSIVENESS"    → all max-width:768px overrides
+       "Mobile button fixes"
+       "DESKTOP OVERRIDES"        → min-width:769px overrides
+       "PORTAL TABS"              → member portal tab styles (all sizes)
+       "REDUCED MOTION"           → prefers-reduced-motion overrides
+     ════════════════════════════════════════════════════════════════ */
+
   /* ============================================================
      CSS CUSTOM PROPERTIES (DESIGN TOKENS)
      All colors, fonts, and spacing variables used throughout the site.
@@ -703,7 +755,7 @@
     display: flex;
     align-items: flex-end;
     background-position: center 95%;
-background-image: linear-gradient(rgba(26, 44, 26, 0.10), rgba(26, 44, 26, 0.10)), url("https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/photos/Mc-Combs1-1-(1).jpg");
+background-image: linear-gradient(rgba(26, 44, 26, 0.10), rgba(26, 44, 26, 0.10)), url("https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/F954C921-9F38-4A98-ACAD-2C071B03A086.jpeg");
 background-size: cover;
 background-repeat: no-repeat;
 background-position: center 95%;
@@ -781,7 +833,7 @@ background-position: center 95%;
   /* ── TEAMS PAGE ──
      Styles for the full Teams page including filters and member cards. */
   .team-detail-hero {
-    height: 60vh; min-height: 380px; position: relative; overflow: hidden;
+    height: 60vh; min-height: 400px; position: relative; overflow: hidden;
     display: flex; align-items: flex-end;
   }
   .team-features { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; margin-bottom: 40px; align-items: stretch; }
@@ -1143,11 +1195,11 @@ align-items: flex-end;
     display: flex;
     align-items: flex-end;
     justify-content: flex-start;
-    background-position: center 65%;
+    background-position: center 55%;
     filter: brightness(1.15);
     background-size: cover;
     background-repeat: no-repeat;
-    background-image: url('https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/A77E83A5-AF5B-464B-BC3B-68A9ECF91163_1_201_a.jpeg');
+    background-image: url('https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/B%20-%20.JPG');
 }
   .contact-hero::after { content: ''; position: absolute; inset: 0; background: rgba(20,36,20,0.10); }
   .contact-hero-content { position: relative; z-index: 2; padding: 0 72px 56px; }
@@ -2824,10 +2876,10 @@ nav .nav-links.open {
   </section>
 
   <!-- Photo strip -->
-    <div class="photo-strip" style="height:360px;grid-template-columns:repeat(3,1fr);">
-    <div class="photo-strip-img" style="overflow:hidden;"><img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/imgur%20photos/8kF1RMl.jpeg" alt="UFA board dinner" style="width:118%;height:118%;object-fit:cover;object-position:center 40%;margin:-9% 0 0 -9%;transition:transform 0.4s;"></div>
-    <div class="photo-strip-img"><img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/imgur%20photos/ILa8P5V.jpeg" alt="UFA members at a social event" style="object-position:center 30%;"></div>   
-    <div class="photo-strip-img"><img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/imgur%20photos/nn0Cd9j.jpeg"alt="UFA board dinner" style="object-position:center 5%;"></div>   
+    <div class="photo-strip" style="height:300px;grid-template-columns:repeat(3,1fr);">
+    <div class="photo-strip-img" style="overflow:hidden;"><img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/IMG_2906.jpeg" alt="UFA board dinner" style="width:100%;height:100%;object-fit:cover;object-position:center 65%;transition:transform 0.4s;"></div>
+    <div class="photo-strip-img" style="overflow:hidden;"><img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/imgur%20photos/ILa8P5V.jpeg" alt="UFA members at a social event" style="width:100%;height:100%;object-fit:cover;object-position:center 0%;"></div>   
+    <div class="photo-strip-img" style="overflow:hidden;"><img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/A77E83A5-AF5B-464B-BC3B-68A9ECF91163_1_201_a.jpeg"alt="UFA board dinner" style="width:100%;height:100%;object-fit:cover;object-position:center 95%;"></div>   
     </div>
 
   <!-- Instagram -->
@@ -2855,7 +2907,10 @@ nav .nav-links.open {
 
 
 <!-- ══════════════════════════════════
-     ABOUT PAGE
+     ABOUT PAGE  (id="page-about")
+     NOTE: shown in the nav bar as "Board", not "About" — the nav
+     link text and this page's id/comment name don't match. Search
+     for id="page-about" if you're looking for the Board page.
      Overview of UFA's history, mission, and values.
      Includes the executive board photo and team highlights.
 ══════════════════════════════════ -->
@@ -2883,7 +2938,7 @@ nav .nav-links.open {
       </div>
       <div>
         <div style="overflow:hidden; border-radius:8px; max-height:450px;">
-          <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/photos/B60389D4-5F02-434C-BC14-1B40E0A680C1-1-105-c.jpg"
+          <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/B60389D4-5F02-434C-BC14-1B40E0A680C1_1_105_c.jpeg"
   alt="UFA Board dinner" style="width:100%; height:100%; object-fit:cover; object-position:center 100%; display:block;">
         </div>
       </div>
@@ -3031,7 +3086,7 @@ nav .nav-links.open {
 ══════════════════════════════════ -->
 <div id="page-teams" class="page">
 
-  <section class="team-detail-hero" style="background:url('https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/photos/6C72F408-1A52-4EBC-8A32-750ECBBE1EE7.png') center 40%/cover no-repeat;">
+  <section class="team-detail-hero" style="background:url('https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/31137340-96F8-4B7F-9EE6-68DCE8D91BB2.jpeg') center 5%/cover no-repeat;">
     <div class="teams-hero-overlay" style="position:absolute;inset:0;background:rgba(20,36,20,0.35);"></div>
     <div class="teams-hero-content" style="position:relative;z-index:2;">
       <div class="page-eyebrow">Programs</div>
@@ -3528,11 +3583,24 @@ nav .nav-links.open {
           <p class="pub-desc">Our inaugural Equity Research Journal, a collection of equity research and macro analysis produced by the UFA Investment Team. This edition covers TMT, Healthcare, Energy, Financials, Consumer, and Industrials, featuring deep-dives into companies of all sizes.</p>
         </div>
         <div style="flex-shrink:0;">
-          <a href="https://drive.google.com/uc?export=download&id=1M3_uEOvIkb5qdzMZXesy35_vrDBJ8AEW" target="_blank" rel="noopener noreferrer" class="btn-primary">Download PDF</a>
+          <a href="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/fall2025report.pdf" target="_blank" rel="noopener noreferrer" class="btn-primary">Download PDF</a>
         </div>
       </div>
-      <div style="margin-top:32px;width:100%;border-radius:12px;overflow:hidden;box-shadow:0 2px 16px rgba(0,0,0,0.10);">
-        <iframe src="https://drive.google.com/file/d/1M3_uEOvIkb5qdzMZXesy35_vrDBJ8AEW/preview" width="100%" height="500px" style="border:none;display:block;" title="UFA Fall 2025 Research Report" allow="autoplay"></iframe>
+      <!-- Interactive flipbook viewer. Built with PDF.js (renders each PDF
+           page to an image) + StPageFlip (displays two pages side by side
+           with a realistic page-turn animation). See initPubFlipbook() in
+           the JS section. Falls back to a plain link if the PDF can't be
+           fetched (e.g. Google Drive CORS blocking — see comment there). -->
+      <div style="margin-top:32px;width:100%;display:flex;flex-direction:column;align-items:center;">
+        <div id="pub-flipbook-loading" style="padding:80px 20px;text-align:center;color:var(--text-muted);font-size:14px;">
+          Loading pages…
+        </div>
+        <div id="pub-flipbook" style="display:none;width:100%;max-width:1000px;height:85vh;max-height:900px;"></div>
+        <div id="pub-flipbook-controls" style="display:none;margin-top:16px;gap:16px;align-items:center;">
+          <button onclick="pubFlipbookPrev()" class="btn-outline" style="padding:8px 18px;">← Prev</button>
+          <span id="pub-flipbook-pagenum" style="font-size:13px;color:var(--text-muted);"></span>
+          <button onclick="pubFlipbookNext()" class="btn-outline" style="padding:8px 18px;">Next →</button>
+        </div>
       </div>
     </div>
   </section>
@@ -3716,6 +3784,12 @@ nav .nav-links.open {
 
   <hr class="divider">
 </div>
+<!-- ══════════════════════════════════
+     CONTACT PAGE
+     Contact form, general email/social links, and the
+     "reach out any time" hero. Linked from the "Contact Us"
+     button in the nav bar.
+══════════════════════════════════ -->
 <div id="page-contact" class="page">
 
   
@@ -4571,6 +4645,36 @@ nav .nav-links.open {
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+/* ════════════════════════════════════════════════════════════════
+   MEMBER PORTAL — DATA & LOGIC
+   Everything related to Supabase auth, the member dashboard, the
+   resource library, check-ins, and admin/roster tools lives in this
+   script block. Search for any name below to jump to it.
+
+     Setup            SUPABASE_URL, SUPABASE_ANON_KEY, sb,
+                       currentUser, currentMember, allRosterData
+     Resource library  TYPE_COLORS, RESOURCES, filterResources(),
+                       renderResources(), loadResources(),
+                       loadWsjCreds(), downloadResource(),
+                       toggleIBMenu()
+     Portal tabs        switchPortalTab()
+     Login / session     fetchMember(), portalLogin(), showDashboard(),
+                       portalLogout()
+     Dashboard           updateStats(), renderBreakdown(), renderBadges(),
+                       renderHistory(), renderLeaderboard(),
+                       loadProfileBadges()
+     Check-in / events   checkIn(), renderUpcoming(), loadAdminSessions(),
+                       createSession(), editPoints(), deleteSession(),
+                       toggleSession()
+     Profile            renderProfile(), saveProfile(), changePassword(),
+                       requestRoleChange(), changeMemberRole()
+     Announcements       loadAnnouncement(), loadCurrentAnnouncement(),
+                       postAnnouncement(), clearAnnouncement()
+     Admin / roster       switchAdminTab(), loadApprovals(), approveMember(),
+                       denyMember(), loadRosterBadge(), loadRoster(),
+                       filterRoster(), renderRosterTable(), exportRoster()
+     Analytics          loadAnalytics()
+   ════════════════════════════════════════════════════════════════ */
 const SUPABASE_URL = 'https://pilbazpbicpuuupwalvh.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBpbGJhenBiaWNwdXV1cHdhbHZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwMzc0OTcsImV4cCI6MjA5MzYxMzQ5N30.47M2ToH3O8hsuiMc1OgcM3XA4K97KukAqEeF9BW0QYE';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { flowType: 'implicit', detectSessionInUrl: true, persistSession: true } });
@@ -5792,6 +5896,23 @@ async function loadAnalytics() {
 </footer>
 
 <script>
+  /* ════════════════════════════════════════════════════════════════
+     SITE NAVIGATION & UI BEHAVIOR
+     Page routing, the nav menu, scroll-reveal animations, portal
+     auth-panel switching, and small layout-sync helpers.
+
+       Scroll reveals     triggerReveals(), observer, boardObserver,
+                          blogObserver, reObserveReveals()
+       Page routing       showPage(), switchTab(), goToTeam(), toggleFaq()
+       Nav menu           toggleMenu(), closeMenu()
+       Portal auth panels showLogin(), showSignup(), showMagicLink(),
+                          showForgotPassword(), showResetPanel()
+       Auth actions       sendMagicLink(), sendPasswordReset(),
+                          submitNewPassword(), portalSignup()
+       Logo animation     initLogoAnimation()  (Why UFA page)
+       Hero fixes         applyMobileHeroFixes()
+       Misc UI sync       syncAnalystCardTitleWrap()
+     ════════════════════════════════════════════════════════════════ */
   /**
    * triggerReveals(container)
    * --------------------------
@@ -6564,7 +6685,7 @@ function applyMobileHeroFixes() {
   // Teams hero (inline style on element — must use JS)
   const teamHero = document.querySelector('.team-detail-hero');
   if (teamHero) {
-    teamHero.style.backgroundPosition = isMobile ? 'center 90%' : 'center 40%';
+    teamHero.style.backgroundPosition = isMobile ? 'center 90%' : 'center 20%';
   }
 
   // Home hero — handled by CSS media query
@@ -6659,8 +6780,120 @@ setTimeout(() => {
 
 
 </script>
+<!-- Publications flipbook libraries: PDF.js renders each PDF page to an
+     image; StPageFlip displays two pages side by side with a page-turn
+     animation. See initPubFlipbook() below. -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
+<script>
+  /* ════════════════════════════════════════════════════════════════
+     PUBLICATIONS — INTERACTIVE FLIPBOOK VIEWER
+       initPubFlipbook()   — fetches the PDF, renders every page to an
+                             image with PDF.js, then hands those images
+                             to StPageFlip for the two-page book view.
+                             Called once, the first time the Publications
+                             page is shown (see the showPage() hook below).
+       pubFlipbookPrev/Next() — wired to the ← Prev / Next → buttons.
+
+     ★ PDF SOURCE — change this one line to switch hosts:
+       If PUB_PDF_URL points at Google Drive, this may fail to load
+       (Drive usually doesn't send the CORS header PDF.js needs to
+       read the file cross-origin — that's a Google limitation, not
+       a bug here). If it fails, the viewer falls back to a plain
+       "open the PDF" link automatically. For a guaranteed-working
+       viewer, host the PDF on the same R2 bucket the site's photos
+       already use (R2 already proves out cross-origin loads fine)
+       and swap the URL below.
+     ════════════════════════════════════════════════════════════════ */
+  const PUB_PDF_URL = 'https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/fall2025report.pdf';
+
+  let pubFlipbookInstance = null;
+  let pubFlipbookStarted = false;
+
+  async function initPubFlipbook() {
+    if (pubFlipbookStarted) return;
+    pubFlipbookStarted = true;
+
+    const loadingEl = document.getElementById('pub-flipbook-loading');
+    const bookEl = document.getElementById('pub-flipbook');
+    const controlsEl = document.getElementById('pub-flipbook-controls');
+    if (!bookEl) return;
+
+    try {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+      const pdf = await pdfjsLib.getDocument(PUB_PDF_URL).promise;
+      const totalPages = pdf.numPages;
+      const pageImages = [];
+      const renderScale = 1.4;
+
+      for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
+        loadingEl.textContent = `Loading page ${pageNum} of ${totalPages}…`;
+        const page = await pdf.getPage(pageNum);
+        const viewport = page.getViewport({ scale: renderScale });
+        const canvas = document.createElement('canvas');
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
+        pageImages.push(canvas.toDataURL('image/jpeg', 0.85));
+      }
+
+      pubFlipbookInstance = new St.PageFlip(bookEl, {
+        width: 500,
+        height: 700,
+        size: 'stretch',
+        minWidth: 280,
+        maxWidth: 900,
+        minHeight: 400,
+        maxHeight: 1100,
+        maxShadowOpacity: 0.5,
+        showCover: false,
+        mobileScrollSupport: true,
+        usePortrait: true
+      });
+      pubFlipbookInstance.loadFromImages(pageImages);
+
+      const updatePageNum = () => {
+        const el = document.getElementById('pub-flipbook-pagenum');
+        if (el) el.textContent = `Page ${pubFlipbookInstance.getCurrentPageIndex() + 1} of ${totalPages}`;
+      };
+      pubFlipbookInstance.on('flip', updatePageNum);
+      updatePageNum();
+
+      loadingEl.style.display = 'none';
+      bookEl.style.display = 'block';
+      controlsEl.style.display = 'flex';
+    } catch (err) {
+      console.error('Publications flipbook failed to load:', err);
+      loadingEl.innerHTML = 'This viewer couldn\'t load the PDF directly. ' +
+        '<a href="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/fall2025report.pdf" target="_blank" rel="noopener noreferrer" style="color:var(--green-accent);text-decoration:underline;">Open it here instead →</a>';
+    }
+  }
+
+  function pubFlipbookPrev() {
+    if (pubFlipbookInstance) pubFlipbookInstance.flipPrev();
+  }
+  function pubFlipbookNext() {
+    if (pubFlipbookInstance) pubFlipbookInstance.flipNext();
+  }
+
+  // Start loading the flipbook the first time the Publications page is shown
+  // (not on initial page load) so we don't fetch/render a 60+ page PDF
+  // before the visitor has even asked to see it.
+  const _origShowPagePubHook = window.showPage;
+  window.showPage = function(id, updateHistory) {
+    _origShowPagePubHook(id, updateHistory);
+    if (id === 'publications') {
+      initPubFlipbook();
+    }
+  };
+</script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>
+  /* ════════════════════════════════════════════════════════════════
+     CONTACT FORM SUBMISSION (EmailJS)
+       sendContactForm()  — validates + sends the Contact page form
+     ════════════════════════════════════════════════════════════════ */
   emailjs.init('PxUtA58RXrKxmyCGh');
 
   /**
