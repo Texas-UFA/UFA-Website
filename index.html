@@ -1084,6 +1084,86 @@ align-items: flex-end;
   display: block !important;
 }
 
+  /* ── BLOG SHELF & LIGHTBOX ──
+     "Magazine shelf" browsing for the weekly blog. Each post is a single
+     page (unlike the multi-page Research Report), so instead of the
+     page-flip reader used for the Report, clicking a cover opens a
+     lightbox with that one page shown large. See BLOG_POSTS,
+     openBlogLightbox(), closeBlogLightbox() in the JS section. */
+  .blog-shelf {
+    display: flex;
+    gap: 28px;
+    overflow-x: auto;
+    padding: 28px 4px 36px;
+    margin-top: 40px;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+  }
+  .blog-shelf-item {
+    flex: 0 0 210px;
+    scroll-snap-align: start;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+    text-align: left;
+    font-family: inherit;
+    transition: transform 0.25s ease;
+  }
+  .blog-shelf-item:nth-child(odd)  { transform: rotate(-1.4deg); }
+  .blog-shelf-item:nth-child(even) { transform: rotate(1.4deg); }
+  .blog-shelf-item:hover { transform: translateY(-10px) rotate(0deg); z-index: 2; }
+  .blog-shelf-cover {
+    width: 100%;
+    aspect-ratio: 3/4;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 10px 24px rgba(20,36,20,0.18), 0 2px 6px rgba(20,36,20,0.10);
+    background: var(--green-wash);
+  }
+  .blog-shelf-cover img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }
+  .blog-shelf-date { font-size: 11px; color: var(--text-muted); letter-spacing: 0.06em; text-transform: uppercase; margin-top: 14px; }
+  .blog-shelf-title { font-family: var(--font-display); font-size: 16px; font-weight: 600; color: var(--text-dark); line-height: 1.3; margin-top: 4px; }
+  .blog-shelf-author { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+  .blog-lightbox-overlay {
+    position: fixed; inset: 0; z-index: 1000;
+    background: rgba(20,36,20,0.55);
+    display: none; align-items: center; justify-content: center;
+    padding: 40px 20px;
+  }
+  .blog-lightbox-overlay.active { display: flex; }
+  .blog-lightbox-content {
+    width: 100%; max-width: 640px; max-height: 90vh;
+    background: var(--white); border-radius: 12px; overflow: hidden;
+    display: flex; flex-direction: column;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.35);
+  }
+  .blog-lightbox-img-wrap { overflow-y: auto; background: var(--green-wash); flex: 1; min-height: 0; }
+  .blog-lightbox-img-wrap img { width: 100%; height: auto; display: block; }
+  .blog-lightbox-body { padding: 20px 24px; border-top: 1px solid var(--border); flex-shrink: 0; }
+  .blog-lightbox-title { font-family: var(--font-display); font-size: 20px; font-weight: 600; color: var(--text-dark); }
+  .blog-lightbox-meta { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+  .blog-lightbox-actions { display: flex; gap: 10px; margin-top: 16px; }
+  .blog-lightbox-actions a { opacity: 1 !important; transform: none !important; }
+  .blog-lightbox-actions .btn-outline { color: var(--green-dark) !important; border-color: var(--green-accent) !important; }
+  .blog-lightbox-close {
+    position: absolute; top: -44px; right: 0;
+    width: 36px; height: 36px; border-radius: 50%; border: none;
+    background: rgba(255,255,255,0.15); color: #fff; font-size: 20px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+  }
+  .blog-lightbox-nav {
+    display: flex; align-items: center; justify-content: center;
+    position: absolute; top: 50%; transform: translateY(-50%);
+    width: 52px; height: 52px; border-radius: 50%; border: none;
+    background: var(--green-dark); color: #fff; font-size: 22px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25); cursor: pointer; z-index: 5;
+  }
+  .blog-lightbox-nav-prev { left: -26px; }
+  .blog-lightbox-nav-next { right: -26px; }
+  .blog-lightbox-inner { position: relative; width: 100%; max-width: 640px; }
+
 .pub-hero {
   height: 60vh;
   min-height: 400px;
@@ -3598,9 +3678,9 @@ nav .nav-links.open {
           Loading pages…
         </div>
         <div id="pub-flipbook-wrap" style="display:none;position:relative;width:100%;max-width:1000px;">
-          <button onclick="pubFlipbookPrev()" aria-label="Previous page" style="display:flex;align-items:center;justify-content:center;position:absolute;left:-22px;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;border:1px solid var(--border);background:var(--white);box-shadow:0 2px 10px rgba(0,0,0,0.12);cursor:pointer;z-index:5;font-size:18px;color:var(--text-dark);">←</button>
+          <button onclick="pubFlipbookPrev()" aria-label="Previous page" style="display:flex;align-items:center;justify-content:center;position:absolute;left:-28px;top:50%;transform:translateY(-50%);width:56px;height:56px;border-radius:50%;border:none;background:var(--green-dark);box-shadow:0 4px 16px rgba(0,0,0,0.25);cursor:pointer;z-index:5;font-size:24px;color:#fff;">←</button>
           <div id="pub-flipbook" style="width:100%;height:85vh;max-height:900px;"></div>
-          <button onclick="pubFlipbookNext()" aria-label="Next page" style="display:flex;align-items:center;justify-content:center;position:absolute;right:-22px;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;border:1px solid var(--border);background:var(--white);box-shadow:0 2px 10px rgba(0,0,0,0.12);cursor:pointer;z-index:5;font-size:18px;color:var(--text-dark);">→</button>
+          <button onclick="pubFlipbookNext()" aria-label="Next page" style="display:flex;align-items:center;justify-content:center;position:absolute;right:-28px;top:50%;transform:translateY(-50%);width:56px;height:56px;border-radius:50%;border:none;background:var(--green-dark);box-shadow:0 4px 16px rgba(0,0,0,0.25);cursor:pointer;z-index:5;font-size:24px;color:#fff;">→</button>
         </div>
         <div id="pub-flipbook-controls" style="display:none;margin-top:16px;gap:16px;align-items:center;">
           <button onclick="pubFlipbookPrev()" class="btn-outline" style="padding:8px 18px;">← Prev</button>
@@ -3618,175 +3698,109 @@ nav .nav-links.open {
     <h2 class="section-title">Member-Authored Commentary</h2>
     <p class="section-subtitle">Every week, UFA Investment Team members write and publish original market commentary on the companies, deals, and macro trends they're actively following.</p>
 
-        <div class="blog-grid-3col" style="display:grid;gap:24px;margin-top:40px;">
+        <div class="blog-shelf" id="blog-shelf">
 
-      <div class="reveal blog-card-new">
-        <a href="https://drive.google.com/file/d/10exWdvRU1oTF6wOv9Ut7lmGiOjRGlHVw/view" target="_blank" rel="noopener noreferrer" class="blog-card-thumb" style="background:var(--green-wash);">
-          <img loading="lazy" src="https://drive.google.com/thumbnail?id=10exWdvRU1oTF6wOv9Ut7lmGiOjRGlHVw&sz=w800" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block;"  alt="The Looming Maturity Wall">
-        </a>
-        <div class="blog-card-body">
-          <div class="blog-card-date">03/30/2026 · Weekly Blog</div>
-          <div class="blog-card-title">The Looming Maturity Wall</div>
-          <p class="blog-card-author">Darya Chernyatin — Financial Institutions Group</p>
-          <div class="blog-card-actions">
-            <a href="https://drive.google.com/file/d/10exWdvRU1oTF6wOv9Ut7lmGiOjRGlHVw/view" target="_blank" rel="noopener noreferrer" class="btn-primary">Read</a>
-            <a href="https://drive.google.com/uc?export=download&id=10exWdvRU1oTF6wOv9Ut7lmGiOjRGlHVw" target="_blank" rel="noopener noreferrer" class="btn-outline">Download</a>
-          </div>
+          <button class="blog-shelf-item" onclick="openBlogLightbox(0)">
+            <div class="blog-shelf-cover"><img loading="lazy" src="https://drive.google.com/thumbnail?id=10exWdvRU1oTF6wOv9Ut7lmGiOjRGlHVw&sz=w500" alt="The Looming Maturity Wall"></div>
+            <div class="blog-shelf-date">03/30/2026</div>
+            <div class="blog-shelf-title">The Looming Maturity Wall</div>
+            <div class="blog-shelf-author">Darya Chernyatin</div>
+          </button>
+
+          <button class="blog-shelf-item" onclick="openBlogLightbox(1)">
+            <div class="blog-shelf-cover"><img loading="lazy" src="https://drive.google.com/thumbnail?id=1jcZI0aLiHr6F61tjTfs8HKjdMIpk8Ixv&sz=w500" alt="From Best to Worst"></div>
+            <div class="blog-shelf-date">03/09/2026</div>
+            <div class="blog-shelf-title">From Best to Worst: The Narrative for Technology</div>
+            <div class="blog-shelf-author">Arnav Goel</div>
+          </button>
+
+          <button class="blog-shelf-item" onclick="openBlogLightbox(2)">
+            <div class="blog-shelf-cover"><img loading="lazy" src="https://drive.google.com/thumbnail?id=1vb40r6FEqYKDYe8wIw_fWteyM5i5lSwd&sz=w500" alt="Panic at the Disco"></div>
+            <div class="blog-shelf-date">03/02/2026</div>
+            <div class="blog-shelf-title">Panic at the Disco!</div>
+            <div class="blog-shelf-author">Vivaan Shah</div>
+          </button>
+
+          <button class="blog-shelf-item" onclick="openBlogLightbox(3)">
+            <div class="blog-shelf-cover"><img loading="lazy" src="https://drive.google.com/thumbnail?id=1P4_u8vYzvvqVU-p-ziOr0max5_-q-W8B&sz=w500" alt="Is American Exceptionalism Fading"></div>
+            <div class="blog-shelf-date">02/19/2026</div>
+            <div class="blog-shelf-title">Is American Exceptionalism Fading?</div>
+            <div class="blog-shelf-author">Felipe Motta</div>
+          </button>
+
+          <button class="blog-shelf-item" onclick="openBlogLightbox(4)">
+            <div class="blog-shelf-cover"><img loading="lazy" src="https://drive.google.com/thumbnail?id=1PDV-3I0M8TM8p_iEhnt2eSWFrKWdeeVr&sz=w500" alt="The Illusion of Stability"></div>
+            <div class="blog-shelf-date">02/18/2026</div>
+            <div class="blog-shelf-title">The Illusion of Stability</div>
+            <div class="blog-shelf-author">Neil Kaushik</div>
+          </button>
+
+          <button class="blog-shelf-item" onclick="openBlogLightbox(5)">
+            <div class="blog-shelf-cover"><img loading="lazy" src="https://drive.google.com/thumbnail?id=1fBm3bNq7IcNGXoXtQFxCyM_TIjbwrZJV&sz=w500" alt="The Private Credit Takeover"></div>
+            <div class="blog-shelf-date">11/24/2025</div>
+            <div class="blog-shelf-title">The Private Credit Takeover</div>
+            <div class="blog-shelf-author">Joya Trivedi</div>
+          </button>
+
+          <button class="blog-shelf-item" onclick="openBlogLightbox(6)">
+            <div class="blog-shelf-cover"><img loading="lazy" src="https://drive.google.com/thumbnail?id=1x9ZDjMDJzaWFO1DKPZcqT6xgf-coDCZf&sz=w500" alt="Why AI Will Cause One of the Worst Crashes"></div>
+            <div class="blog-shelf-date">11/17/2025</div>
+            <div class="blog-shelf-title">Why AI Will Cause One of the Worst Crashes in History</div>
+            <div class="blog-shelf-author">Farzad Hussain</div>
+          </button>
+
+          <button class="blog-shelf-item" onclick="openBlogLightbox(7)">
+            <div class="blog-shelf-cover"><img loading="lazy" src="https://drive.google.com/thumbnail?id=13MHlsWXPnN934olg7zos26FT7hDWISHT&sz=w500" alt="The Lone Star Takes on Wall Street"></div>
+            <div class="blog-shelf-date">11/10/2025</div>
+            <div class="blog-shelf-title">The Lone Star Takes on Wall Street</div>
+            <div class="blog-shelf-author">Caden Warner</div>
+          </button>
+
+          <button class="blog-shelf-item" onclick="openBlogLightbox(8)">
+            <div class="blog-shelf-cover"><img loading="lazy" src="https://drive.google.com/thumbnail?id=1zN0JbTc6cR6drrZnFRR2N7M2Eto3bwO7&sz=w500" alt="The SPAC is Back"></div>
+            <div class="blog-shelf-date">10/27/2025</div>
+            <div class="blog-shelf-title">The SPAC is Back</div>
+            <div class="blog-shelf-author">Nathan Li</div>
+          </button>
+
+          <button class="blog-shelf-item" onclick="openBlogLightbox(9)">
+            <div class="blog-shelf-cover"><img loading="lazy" src="https://drive.google.com/thumbnail?id=1g1sUtSdg5kwIj7JGgoYMuviBTSNFIvKd&sz=w500" alt="UBS Under Siege"></div>
+            <div class="blog-shelf-date">10/03/2025</div>
+            <div class="blog-shelf-title">UBS Under Siege</div>
+            <div class="blog-shelf-author">Derek Flores</div>
+          </button>
+
+          <button class="blog-shelf-item" onclick="openBlogLightbox(10)">
+            <div class="blog-shelf-cover"><img loading="lazy" src="https://drive.google.com/thumbnail?id=1X0eSKyFIf9v7jQKVHihddA1wh_uT5Vkl&sz=w500" alt="The Brain Drain Campaign"></div>
+            <div class="blog-shelf-date">09/26/2025</div>
+            <div class="blog-shelf-title">The Brain Drain Campaign</div>
+            <div class="blog-shelf-author">Adam Ageeb</div>
+          </button>
+
         </div>
-      </div>
-
-      <div class="reveal blog-card-new">
-        <a href="https://drive.google.com/file/d/1jcZI0aLiHr6F61tjTfs8HKjdMIpk8Ixv/view" target="_blank" rel="noopener noreferrer" class="blog-card-thumb" style="background:var(--green-wash);">
-          <img loading="lazy" src="https://drive.google.com/thumbnail?id=1jcZI0aLiHr6F61tjTfs8HKjdMIpk8Ixv&sz=w800" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block;"  alt="From Best to Worst">
-        </a>
-        <div class="blog-card-body">
-          <div class="blog-card-date">03/09/2026 · Weekly Blog</div>
-          <div class="blog-card-title">From Best to Worst: The Narrative for Technology</div>
-          <p class="blog-card-author">Arnav Goel — Investment Team, TMT Industry</p>
-          <div class="blog-card-actions">
-            <a href="https://drive.google.com/file/d/1jcZI0aLiHr6F61tjTfs8HKjdMIpk8Ixv/view" target="_blank" rel="noopener noreferrer" class="btn-primary">Read</a>
-            <a href="https://drive.google.com/uc?export=download&id=1jcZI0aLiHr6F61tjTfs8HKjdMIpk8Ixv" target="_blank" rel="noopener noreferrer" class="btn-outline">Download</a>
-          </div>
-        </div>
-      </div>
-
-      <div class="reveal blog-card-new">
-        <a href="https://drive.google.com/file/d/1vb40r6FEqYKDYe8wIw_fWteyM5i5lSwd/view" target="_blank" rel="noopener noreferrer" class="blog-card-thumb" style="background:var(--green-wash);">
-          <img loading="lazy" src="https://drive.google.com/thumbnail?id=1vb40r6FEqYKDYe8wIw_fWteyM5i5lSwd&sz=w800" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block;"  alt="Panic at the Disco">
-        </a>
-        <div class="blog-card-body">
-          <div class="blog-card-date">03/02/2026 · Weekly Blog</div>
-          <div class="blog-card-title">Panic at the Disco!</div>
-          <p class="blog-card-author">Vivaan Shah — Co-Head of Energy Industry</p>
-          <div class="blog-card-actions">
-            <a href="https://drive.google.com/file/d/1vb40r6FEqYKDYe8wIw_fWteyM5i5lSwd/view" target="_blank" rel="noopener noreferrer" class="btn-primary">Read</a>
-            <a href="https://drive.google.com/uc?export=download&id=1vb40r6FEqYKDYe8wIw_fWteyM5i5lSwd" target="_blank" rel="noopener noreferrer" class="btn-outline">Download</a>
-          </div>
-        </div>
-      </div>
-
-      <div class="reveal blog-card-new">
-        <a href="https://drive.google.com/file/d/1P4_u8vYzvvqVU-p-ziOr0max5_-q-W8B/view" target="_blank" rel="noopener noreferrer" class="blog-card-thumb" style="background:var(--green-wash);">
-          <img loading="lazy" src="https://drive.google.com/thumbnail?id=1P4_u8vYzvvqVU-p-ziOr0max5_-q-W8B&sz=w800" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block;"  alt="Is American Exceptionalism Fading">
-        </a>
-        <div class="blog-card-body">
-          <div class="blog-card-date">02/19/2026 · Weekly Blog</div>
-          <div class="blog-card-title">Is American Exceptionalism Fading?</div>
-          <p class="blog-card-author">Felipe Motta — Investment Team, Healthcare Industry</p>
-          <div class="blog-card-actions">
-            <a href="https://drive.google.com/file/d/1P4_u8vYzvvqVU-p-ziOr0max5_-q-W8B/view" target="_blank" rel="noopener noreferrer" class="btn-primary">Read</a>
-            <a href="https://drive.google.com/uc?export=download&id=1P4_u8vYzvvqVU-p-ziOr0max5_-q-W8B" target="_blank" rel="noopener noreferrer" class="btn-outline">Download</a>
-          </div>
-        </div>
-      </div>
-
-      <div class="reveal blog-card-new">
-        <a href="https://drive.google.com/file/d/1PDV-3I0M8TM8p_iEhnt2eSWFrKWdeeVr/view" target="_blank" rel="noopener noreferrer" class="blog-card-thumb" style="background:var(--green-wash);">
-          <img loading="lazy" src="https://drive.google.com/thumbnail?id=1PDV-3I0M8TM8p_iEhnt2eSWFrKWdeeVr&sz=w800" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block;"  alt="The Illusion of Stability">
-        </a>
-        <div class="blog-card-body">
-          <div class="blog-card-date">02/18/2026 · Weekly Blog</div>
-          <div class="blog-card-title">The Illusion of Stability</div>
-          <p class="blog-card-author">Neil Kaushik — Investment Team, Energy Industry</p>
-          <div class="blog-card-actions">
-            <a href="https://drive.google.com/file/d/1PDV-3I0M8TM8p_iEhnt2eSWFrKWdeeVr/view" target="_blank" rel="noopener noreferrer" class="btn-primary">Read</a>
-            <a href="https://drive.google.com/uc?export=download&id=1PDV-3I0M8TM8p_iEhnt2eSWFrKWdeeVr" target="_blank" rel="noopener noreferrer" class="btn-outline">Download</a>
-          </div>
-        </div>
-      </div>
-
-      <div class="reveal blog-card-new">
-        <a href="https://drive.google.com/file/d/1fBm3bNq7IcNGXoXtQFxCyM_TIjbwrZJV/view" target="_blank" rel="noopener noreferrer" class="blog-card-thumb" style="background:var(--green-wash);">
-          <img loading="lazy" src="https://drive.google.com/thumbnail?id=1fBm3bNq7IcNGXoXtQFxCyM_TIjbwrZJV&sz=w800" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block;"  alt="The Private Credit Takeover">
-        </a>
-        <div class="blog-card-body">
-          <div class="blog-card-date">11/24/2025 · Weekly Blog</div>
-          <div class="blog-card-title">The Private Credit Takeover</div>
-          <p class="blog-card-author">Joya Trivedi — Head of Industrials Industry Group</p>
-          <div class="blog-card-actions">
-            <a href="https://drive.google.com/file/d/1fBm3bNq7IcNGXoXtQFxCyM_TIjbwrZJV/view" target="_blank" rel="noopener noreferrer" class="btn-primary">Read</a>
-            <a href="https://drive.google.com/uc?export=download&id=1fBm3bNq7IcNGXoXtQFxCyM_TIjbwrZJV" target="_blank" rel="noopener noreferrer" class="btn-outline">Download</a>
-          </div>
-        </div>
-      </div>
-
-      <div class="reveal blog-card-new">
-        <a href="https://drive.google.com/file/d/1x9ZDjMDJzaWFO1DKPZcqT6xgf-coDCZf/view" target="_blank" rel="noopener noreferrer" class="blog-card-thumb" style="background:var(--green-wash);">
-          <img loading="lazy" src="https://drive.google.com/thumbnail?id=1x9ZDjMDJzaWFO1DKPZcqT6xgf-coDCZf&sz=w800" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block;"  alt="Why AI Will Cause One of the Worst Crashes">
-        </a>
-        <div class="blog-card-body">
-          <div class="blog-card-date">11/17/2025 · Weekly Blog</div>
-          <div class="blog-card-title">Why AI Will Cause One of the Worst Crashes in History</div>
-          <p class="blog-card-author">Farzad Hussain — Investment Associate</p>
-          <div class="blog-card-actions">
-            <a href="https://drive.google.com/file/d/1x9ZDjMDJzaWFO1DKPZcqT6xgf-coDCZf/view" target="_blank" rel="noopener noreferrer" class="btn-primary">Read</a>
-            <a href="https://drive.google.com/uc?export=download&id=1x9ZDjMDJzaWFO1DKPZcqT6xgf-coDCZf" target="_blank" rel="noopener noreferrer" class="btn-outline">Download</a>
-          </div>
-        </div>
-      </div>
-
-      <div class="reveal blog-card-new">
-        <a href="https://drive.google.com/file/d/13MHlsWXPnN934olg7zos26FT7hDWISHT/view" target="_blank" rel="noopener noreferrer" class="blog-card-thumb" style="background:var(--green-wash);">
-          <img loading="lazy" src="https://drive.google.com/thumbnail?id=13MHlsWXPnN934olg7zos26FT7hDWISHT&sz=w800" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block;"  alt="The Lone Star Takes on Wall Street">
-        </a>
-        <div class="blog-card-body">
-          <div class="blog-card-date">11/10/2025 · Weekly Blog</div>
-          <div class="blog-card-title">The Lone Star Takes on Wall Street</div>
-          <p class="blog-card-author">Caden Warner — Director of Investments</p>
-          <div class="blog-card-actions">
-            <a href="https://drive.google.com/file/d/13MHlsWXPnN934olg7zos26FT7hDWISHT/view" target="_blank" rel="noopener noreferrer" class="btn-primary">Read</a>
-            <a href="https://drive.google.com/uc?export=download&id=13MHlsWXPnN934olg7zos26FT7hDWISHT" target="_blank" rel="noopener noreferrer" class="btn-outline">Download</a>
-          </div>
-        </div>
-      </div>
-
-      <div class="reveal blog-card-new">
-        <a href="https://drive.google.com/file/d/1zN0JbTc6cR6drrZnFRR2N7M2Eto3bwO7/view" target="_blank" rel="noopener noreferrer" class="blog-card-thumb" style="background:var(--green-wash);">
-          <img loading="lazy" src="https://drive.google.com/thumbnail?id=1zN0JbTc6cR6drrZnFRR2N7M2Eto3bwO7&sz=w800" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block;"  alt="The SPAC is Back">
-        </a>
-        <div class="blog-card-body">
-          <div class="blog-card-date">10/27/2025 · Weekly Blog</div>
-          <div class="blog-card-title">The SPAC is Back</div>
-          <p class="blog-card-author">Nathan Li — Director of Investments</p>
-          <div class="blog-card-actions">
-            <a href="https://drive.google.com/file/d/1zN0JbTc6cR6drrZnFRR2N7M2Eto3bwO7/view" target="_blank" rel="noopener noreferrer" class="btn-primary">Read</a>
-            <a href="https://drive.google.com/uc?export=download&id=1zN0JbTc6cR6drrZnFRR2N7M2Eto3bwO7" target="_blank" rel="noopener noreferrer" class="btn-outline">Download</a>
-          </div>
-        </div>
-      </div>
-
-      <div class="reveal blog-card-new">
-        <a href="https://drive.google.com/file/d/1g1sUtSdg5kwIj7JGgoYMuviBTSNFIvKd/view" target="_blank" rel="noopener noreferrer" class="blog-card-thumb" style="background:var(--green-wash);">
-          <img loading="lazy" src="https://drive.google.com/thumbnail?id=1g1sUtSdg5kwIj7JGgoYMuviBTSNFIvKd&sz=w800" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block;"  alt="UBS Under Siege">
-        </a>
-        <div class="blog-card-body">
-          <div class="blog-card-date">10/03/2025 · Weekly Blog</div>
-          <div class="blog-card-title">UBS Under Siege</div>
-          <p class="blog-card-author">Derek Flores — Head of Financial Industry Group</p>
-          <div class="blog-card-actions">
-            <a href="https://drive.google.com/file/d/1g1sUtSdg5kwIj7JGgoYMuviBTSNFIvKd/view" target="_blank" rel="noopener noreferrer" class="btn-primary">Read</a>
-            <a href="https://drive.google.com/uc?export=download&id=1g1sUtSdg5kwIj7JGgoYMuviBTSNFIvKd" target="_blank" rel="noopener noreferrer" class="btn-outline">Download</a>
-          </div>
-        </div>
-      </div>
-
-      <div class="reveal blog-card-new">
-        <a href="https://drive.google.com/file/d/1X0eSKyFIf9v7jQKVHihddA1wh_uT5Vkl/view" target="_blank" rel="noopener noreferrer" class="blog-card-thumb" style="background:var(--green-wash);">
-          <img loading="lazy" src="https://drive.google.com/thumbnail?id=1X0eSKyFIf9v7jQKVHihddA1wh_uT5Vkl&sz=w800" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block;"  alt="The Brain Drain Campaign">
-        </a>
-        <div class="blog-card-body">
-          <div class="blog-card-date">09/26/2025 · Weekly Blog</div>
-          <div class="blog-card-title">The Brain Drain Campaign</div>
-          <p class="blog-card-author">Adam Ageeb — Investment Associate</p>
-          <div class="blog-card-actions">
-            <a href="https://drive.google.com/file/d/1X0eSKyFIf9v7jQKVHihddA1wh_uT5Vkl/view" target="_blank" rel="noopener noreferrer" class="btn-primary">Read</a>
-            <a href="https://drive.google.com/uc?export=download&id=1X0eSKyFIf9v7jQKVHihddA1wh_uT5Vkl" target="_blank" rel="noopener noreferrer" class="btn-outline">Download</a>
-          </div>
-        </div>
-      </div>
-
-    </div>
   </section>
+
+  <!-- Blog post lightbox — see openBlogLightbox() in the JS section -->
+  <div class="blog-lightbox-overlay" id="blog-lightbox-overlay" onclick="if(event.target===this) closeBlogLightbox()">
+    <div class="blog-lightbox-inner">
+      <button class="blog-lightbox-close" onclick="closeBlogLightbox()" aria-label="Close">✕</button>
+      <button class="blog-lightbox-nav blog-lightbox-nav-prev" onclick="blogLightboxPrev()" aria-label="Previous post">←</button>
+      <button class="blog-lightbox-nav blog-lightbox-nav-next" onclick="blogLightboxNext()" aria-label="Next post">→</button>
+      <div class="blog-lightbox-content">
+        <div class="blog-lightbox-img-wrap">
+          <img id="blog-lightbox-img" src="" alt="">
+        </div>
+        <div class="blog-lightbox-body">
+          <div class="blog-lightbox-title" id="blog-lightbox-title"></div>
+          <div class="blog-lightbox-meta" id="blog-lightbox-meta"></div>
+          <div class="blog-lightbox-actions">
+            <a href="#" id="blog-lightbox-read" target="_blank" rel="noopener noreferrer" class="btn-primary" style="flex:1;text-align:center;">Read on Drive</a>
+            <a href="#" id="blog-lightbox-download" target="_blank" rel="noopener noreferrer" class="btn-outline" style="flex:1;text-align:center;">Download</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <hr class="divider">
 </div>
@@ -6587,6 +6601,7 @@ document.querySelectorAll('.page, .stats-bar').forEach(page => {
       el.closest('.board-card') ||
       el.closest('.blog-card-new') ||
       el.closest('.hero') ||
+      el.closest('#blog-lightbox-overlay') ||
       el.closest('footer') ||
       el.closest('nav')
     ) return;
@@ -6883,6 +6898,63 @@ setTimeout(() => {
   function pubFlipbookNext() {
     if (pubFlipbookInstance) pubFlipbookInstance.flipNext();
   }
+
+  /* ── BLOG SHELF LIGHTBOX ──
+     Weekly blog posts are single pages (unlike the multi-page Report),
+     so instead of a page-flip reader, clicking a shelf cover just opens
+     that one page large in a lightbox. Order here must match the
+     onclick="openBlogLightbox(N)" index on each .blog-shelf-item button
+     in the HTML above. */
+  const BLOG_POSTS = [
+    { id: '10exWdvRU1oTF6wOv9Ut7lmGiOjRGlHVw', title: 'The Looming Maturity Wall', author: 'Darya Chernyatin — Financial Institutions Group', date: '03/30/2026' },
+    { id: '1jcZI0aLiHr6F61tjTfs8HKjdMIpk8Ixv', title: 'From Best to Worst: The Narrative for Technology', author: 'Arnav Goel — Investment Team, TMT Industry', date: '03/09/2026' },
+    { id: '1vb40r6FEqYKDYe8wIw_fWteyM5i5lSwd', title: 'Panic at the Disco!', author: 'Vivaan Shah — Co-Head of Energy Industry', date: '03/02/2026' },
+    { id: '1P4_u8vYzvvqVU-p-ziOr0max5_-q-W8B', title: 'Is American Exceptionalism Fading?', author: 'Felipe Motta — Investment Team, Healthcare Industry', date: '02/19/2026' },
+    { id: '1PDV-3I0M8TM8p_iEhnt2eSWFrKWdeeVr', title: 'The Illusion of Stability', author: 'Neil Kaushik — Investment Team, Energy Industry', date: '02/18/2026' },
+    { id: '1fBm3bNq7IcNGXoXtQFxCyM_TIjbwrZJV', title: 'The Private Credit Takeover', author: 'Joya Trivedi — Head of Industrials Industry Group', date: '11/24/2025' },
+    { id: '1x9ZDjMDJzaWFO1DKPZcqT6xgf-coDCZf', title: 'Why AI Will Cause One of the Worst Crashes in History', author: 'Farzad Hussain — Investment Associate', date: '11/17/2025' },
+    { id: '13MHlsWXPnN934olg7zos26FT7hDWISHT', title: 'The Lone Star Takes on Wall Street', author: 'Caden Warner — Director of Investments', date: '11/10/2025' },
+    { id: '1zN0JbTc6cR6drrZnFRR2N7M2Eto3bwO7', title: 'The SPAC is Back', author: 'Nathan Li — Director of Investments', date: '10/27/2025' },
+    { id: '1g1sUtSdg5kwIj7JGgoYMuviBTSNFIvKd', title: 'UBS Under Siege', author: 'Derek Flores — Head of Financial Industry Group', date: '10/03/2025' },
+    { id: '1X0eSKyFIf9v7jQKVHihddA1wh_uT5Vkl', title: 'The Brain Drain Campaign', author: 'Adam Ageeb — Investment Associate', date: '09/26/2025' }
+  ];
+
+  let blogLightboxIndex = 0;
+
+  function openBlogLightbox(index) {
+    const post = BLOG_POSTS[index];
+    if (!post) return;
+    blogLightboxIndex = index;
+    document.getElementById('blog-lightbox-img').src = `https://drive.google.com/thumbnail?id=${post.id}&sz=w1600`;
+    document.getElementById('blog-lightbox-img').alt = post.title;
+    document.getElementById('blog-lightbox-title').textContent = post.title;
+    document.getElementById('blog-lightbox-meta').textContent = `${post.date} · ${post.author}`;
+    document.getElementById('blog-lightbox-read').href = `https://drive.google.com/file/d/${post.id}/view`;
+    document.getElementById('blog-lightbox-download').href = `https://drive.google.com/uc?export=download&id=${post.id}`;
+    document.getElementById('blog-lightbox-overlay').classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeBlogLightbox() {
+    document.getElementById('blog-lightbox-overlay').classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  // Wrap around at both ends (last → first, first → last) so Prev/Next
+  // always does something instead of dead-ending at the edges.
+  function blogLightboxPrev() {
+    openBlogLightbox((blogLightboxIndex - 1 + BLOG_POSTS.length) % BLOG_POSTS.length);
+  }
+  function blogLightboxNext() {
+    openBlogLightbox((blogLightboxIndex + 1) % BLOG_POSTS.length);
+  }
+
+  document.addEventListener('keydown', function(e) {
+    if (!document.getElementById('blog-lightbox-overlay').classList.contains('active')) return;
+    if (e.key === 'Escape') closeBlogLightbox();
+    if (e.key === 'ArrowLeft') blogLightboxPrev();
+    if (e.key === 'ArrowRight') blogLightboxNext();
+  });
 
   // Start loading the flipbook the first time the Publications page is shown
   // (not on initial page load) so we don't fetch/render a 60+ page PDF
