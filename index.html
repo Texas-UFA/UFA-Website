@@ -1154,7 +1154,14 @@ align-items: flex-end;
   .blog-lightbox-title { font-family: var(--font-display); font-size: 20px; font-weight: 600; color: var(--text-dark); }
   .blog-lightbox-meta { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
   .blog-lightbox-actions { display: flex; gap: 10px; margin-top: 16px; }
-  .blog-lightbox-actions a { opacity: 1 !important; transform: none !important; }
+  .blog-lightbox-actions a {
+    opacity: 1 !important; transform: none !important;
+    /* Default button padding (16px 36px) is sized for standalone buttons —
+       in this half-width flex pairing "Read on Drive" was nearly wrapping. */
+    padding: 13px 14px !important;
+    font-size: 14.5px !important;
+    white-space: nowrap;
+  }
   .blog-lightbox-actions .btn-outline { color: var(--green-dark) !important; border-color: var(--green-accent) !important; }
   .blog-lightbox-close {
     position: absolute; top: -44px; right: 0;
@@ -1206,6 +1213,9 @@ align-items: flex-end;
   color: var(--white);
   margin-top: 12px;
   line-height: 1.1;
+  /* Some hero photos (e.g. Contact) are bright behind the text with only a
+     light overlay, which made white text hard to read in places. */
+  text-shadow: 0 2px 12px rgba(0,0,0,0.45), 0 1px 3px rgba(0,0,0,0.35);
 }
 .pub-hero-subtitle {
   font-size: 16px;
@@ -1290,7 +1300,10 @@ align-items: flex-end;
     background-repeat: no-repeat;
     background-image: url('https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/B%20-%20.JPG');
 }
-  .contact-hero::after { content: ''; position: absolute; inset: 0; background: rgba(20,36,20,0.10); }
+  .contact-hero::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(15,28,15,0.55) 0%, rgba(20,36,20,0.10) 45%, rgba(20,36,20,0.10) 100%);
+  }
   .contact-hero-content { position: relative; z-index: 2; padding: 0 72px 56px; }
   .contact-list { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
   .contact-item { border-bottom: 1px solid var(--border); background: var(--white); }
@@ -1525,9 +1538,7 @@ align-items: flex-end;
     height: 260px;
     aspect-ratio: unset;
     overflow: hidden;
-    width: calc(100% + 144px);
-    margin-left: -72px;
-    margin-right: -72px;
+    border-radius: 8px;
   }
   .mission-band-img img {
     width: 100%;
@@ -2027,10 +2038,6 @@ nav .nav-links.open {
     background-position: center 55% !important;
     background-repeat: no-repeat !important;
   }
-  .team-detail-hero {
-    background-position: center 90% !important;
-  }
-
   /* Home hero — override full shorthand on mobile */
   .hero-img {
     background: url('https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/heroimg.jpg') 52% 55% / cover no-repeat !important;
@@ -2756,13 +2763,28 @@ nav .nav-links.open {
   .iv-journal { width: auto; }
   .iv-logos { height: auto; gap: 30px 16px; max-width: 100%; }
   .iv-flow { gap: 30px; }
-  /* Stacked layout: the rail runs vertically down from each badge. */
+  /* Stacked layout: badge in its own column, title+description indented
+     beside it, so the rail (which sits under the badge) doesn't run through
+     the text the way it did when everything was plain stacked blocks. */
+  .iv-step {
+    display: grid;
+    grid-template-columns: 38px 1fr;
+    column-gap: 16px;
+    row-gap: 4px;
+  }
+  .iv-step .n { grid-column: 1; grid-row: 1 / 3; margin-bottom: 0; }
+  .iv-step .t { grid-column: 2; grid-row: 1; }
+  .iv-step .d { grid-column: 2; grid-row: 2; }
   .iv-step:not(:last-child)::before {
-    left: 19px; right: auto; top: 46px; bottom: -30px;
+    left: 19px; right: auto; top: 38px; bottom: -30px;
     width: 1px; height: auto;
   }
   .iv-step:not(:last-child)::after { display: none; }
   .iv-row.iv-flip .iv-media { order: 0; }
+  .iv-social-friendship-photo {
+    transform: scale(1.08);
+    object-position: center 18% !important;
+  }
   .consult-split { grid-template-columns: 1fr; gap: 32px; }
   .consult-split-photo { min-height: 0; height: 280px; order: 0; }
 }
@@ -2803,6 +2825,12 @@ nav .nav-links.open {
 /* Slider thumb is 26px and overhangs both ends of the track, so without this
    inset the first/last positions were clipped by the container edge. */
 #pub-flipbook-controls { padding: 0 16px; box-sizing: border-box; }
+
+/* #pub-flipbook-card reuses .pub-card-embed-container (built for clipping an
+   iframe's rounded corners elsewhere). Its overflow:hidden isn't needed here
+   and was clipping the controls/slider below the book whenever real content
+   height came in even a few px taller than the container's auto height. */
+#pub-flipbook-card { overflow: visible !important; }
 
 /* ── PUBLICATIONS FLIPBOOK: bigger slider ── */
 .pub-flipbook-slider-big {  -webkit-appearance: none;
@@ -3500,7 +3528,7 @@ nav .nav-links.open {
           <p>Give back to the community that invested in you. Join a team built on mentorship, collaboration, and lasting friendships through team dinners, socials, alumni events, and shared experiences. Learn from those who came before you, support those who come after, and become part of a network that extends far beyond graduation.</p>
         </div>
         <div>
-          <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/82BC04DC-70C3-46CD-9F14-B697D37E44F2_1_105_c.jpg" alt="UFA Investment Team members at a social event" style="object-position:center 25%;">
+          <img loading="lazy" class="iv-social-friendship-photo" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/82BC04DC-70C3-46CD-9F14-B697D37E44F2_1_105_c.jpg" alt="UFA Investment Team members at a social event" style="object-position:center 25%;">
         </div>
       </div>
 
@@ -3774,7 +3802,7 @@ nav .nav-links.open {
     <p class="section-subtitle">In-depth equity research and market analysis written by our Investment Team members, covering public companies across industries.</p>
 
 
-    <div class="pub-card-embed-container">
+    <div class="pub-card-embed-container" id="pub-flipbook-card">
       <div class="pub-card-info" style="display:flex;align-items:flex-start;justify-content:space-between;gap:40px;">
         <div>
           <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px;">Fall 2025</div>
@@ -6834,7 +6862,10 @@ function applyMobileHeroFixes() {
   // Teams hero (inline style on element — must use JS)
   const teamHero = document.querySelector('.team-detail-hero');
   if (teamHero) {
-    teamHero.style.backgroundPosition = isMobile ? 'center 90%' : 'center 20%';
+    // Was 'center 90%' on mobile vs 'center 20%' on desktop — a jump from
+    // near-top to near-bottom of the photo that made the mobile crop look
+    // wrong. Same top-anchored framing at both sizes now.
+    teamHero.style.backgroundPosition = 'center 20%';
   }
 
   // Home hero — handled by CSS media query
@@ -7046,9 +7077,24 @@ setTimeout(() => {
       pubFlipbookInstance.on('flip', updatePageNum);
       const spineEl = document.getElementById('pub-flipbook-spine');
       const updateSpine = () => {
-        if (spineEl) spineEl.style.display = pubFlipbookInstance.getOrientation() === 'portrait' ? 'none' : 'block';
+        if (!spineEl) return;
+        if (pubFlipbookInstance.getOrientation() === 'portrait') {
+          spineEl.style.display = 'none';
+          return;
+        }
+        // 'stretch' sizing can letterbox the book inside #pub-flipbook when
+        // the container's aspect ratio doesn't match the pages' — the spine
+        // was previously sized to the full container, so it bled into that
+        // empty letterbox space above/below the actual pages.
+        const rect = pubFlipbookInstance.getBoundsRect();
+        spineEl.style.display = 'block';
+        spineEl.style.top = rect.top + 'px';
+        spineEl.style.height = rect.height + 'px';
+        spineEl.style.bottom = 'auto';
       };
       pubFlipbookInstance.on('changeOrientation', updateSpine);
+      pubFlipbookInstance.on('flip', updateSpine);
+      window.addEventListener('resize', updateSpine);
       updateSpine();
       updatePageNum();
 
@@ -7064,9 +7110,11 @@ setTimeout(() => {
 
   function pubFlipbookPrev() {
     if (pubFlipbookInstance) pubFlipbookInstance.flipPrev();
+    if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
   }
   function pubFlipbookNext() {
     if (pubFlipbookInstance) pubFlipbookInstance.flipNext();
+    if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
   }
   function pubFlipbookGoToPage() {
     if (!pubFlipbookInstance) return;
