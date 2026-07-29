@@ -227,9 +227,13 @@
   .hero-img {
     position: absolute; inset: 0;
     background-image: url('https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/heroimg.jpg');
-    background-position: 52% 55%;
+    background-position: 52% 52%;
     background-size: cover;
     background-repeat: no-repeat;
+  }
+
+  @media (min-width: 769px) and (max-width: 1150px) {
+    .hero { height: 100vh; }
   }
 
   .hero-overlay {
@@ -391,7 +395,7 @@
    get clipped at the edge of the window in that in-between range,
    collapse to the hamburger menu earlier. The true mobile breakpoint
    below still applies its own (more specific) sizing on top of this. */
-@media (max-width: 1180px) {
+@media (max-width: 1330px) {
   .hamburger {
     display: flex !important;
     flex-direction: column;
@@ -1134,7 +1138,7 @@ align-items: flex-end;
   }
   .blog-lightbox-overlay.active { display: flex; }
   .blog-lightbox-content {
-    width: 100%; max-width: 640px; max-height: 90vh;
+    width: 100%; max-width: 760px; max-height: 92vh;
     background: var(--white); border-radius: 12px; overflow: hidden;
     display: flex; flex-direction: column;
     box-shadow: 0 24px 64px rgba(0,0,0,0.35);
@@ -1162,7 +1166,7 @@ align-items: flex-end;
   }
   .blog-lightbox-nav-prev { left: -26px; }
   .blog-lightbox-nav-next { right: -26px; }
-  .blog-lightbox-inner { position: relative; width: 100%; max-width: 640px; }
+  .blog-lightbox-inner { position: relative; width: 100%; max-width: 760px; }
 
 .pub-hero {
   height: 60vh;
@@ -2206,7 +2210,7 @@ nav .nav-links.open {
 
 
   .hero-img {
-    background: url('https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/heroimg.jpg') 52% 55% / cover no-repeat !important;
+    background: url('https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/heroimg.jpg') 52% 52% / cover no-repeat !important;
   }
   .teams-hero-content {
     padding: 0 72px 56px !important;
@@ -2536,7 +2540,7 @@ nav .nav-links.open {
   line-height: 1.55;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .recruit-steps {
     flex-direction: column;
     align-items: flex-start;
@@ -3682,10 +3686,18 @@ nav .nav-links.open {
           <div id="pub-flipbook" style="width:100%;height:85vh;max-height:900px;"></div>
           <button onclick="pubFlipbookNext()" aria-label="Next page" style="display:flex;align-items:center;justify-content:center;position:absolute;right:-28px;top:50%;transform:translateY(-50%);width:56px;height:56px;border-radius:50%;border:none;background:var(--green-dark);box-shadow:0 4px 16px rgba(0,0,0,0.25);cursor:pointer;z-index:5;font-size:24px;color:#fff;">→</button>
         </div>
-        <div id="pub-flipbook-controls" style="display:none;margin-top:16px;gap:16px;align-items:center;">
-          <button onclick="pubFlipbookPrev()" class="btn-outline" style="padding:8px 18px;">← Prev</button>
-          <span id="pub-flipbook-pagenum" style="font-size:13px;color:var(--text-muted);"></span>
-          <button onclick="pubFlipbookNext()" class="btn-outline" style="padding:8px 18px;">Next →</button>
+        <div id="pub-flipbook-controls" style="display:none;flex-direction:column;gap:12px;align-items:center;margin-top:16px;width:100%;max-width:480px;">
+          <div style="display:flex;gap:16px;align-items:center;">
+            <button onclick="pubFlipbookPrev()" class="btn-outline" style="padding:8px 18px;">← Prev</button>
+            <span id="pub-flipbook-pagenum" style="font-size:13px;color:var(--text-muted);"></span>
+            <button onclick="pubFlipbookNext()" class="btn-outline" style="padding:8px 18px;">Next →</button>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <label for="pub-flipbook-pageinput" style="font-size:13px;color:var(--text-muted);">Go to page</label>
+            <input type="number" id="pub-flipbook-pageinput" min="1" style="width:64px;padding:6px 8px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:13px;box-sizing:border-box;" onkeydown="if(event.key==='Enter'){pubFlipbookGoToPage();}">
+            <button onclick="pubFlipbookGoToPage()" class="btn-outline" style="padding:6px 14px;">Go</button>
+          </div>
+          <input type="range" id="pub-flipbook-slider" min="1" value="1" step="1" style="width:100%;" oninput="pubFlipbookSliderChange(this.value)">
         </div>
       </div>
     </div>
@@ -6847,17 +6859,19 @@ setTimeout(() => {
       const pdf = await pdfjsLib.getDocument(PUB_PDF_URL).promise;
       const totalPages = pdf.numPages;
       const pageImages = [];
-      const renderScale = 1.4;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
       for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
         loadingEl.textContent = `Loading page ${pageNum} of ${totalPages}…`;
         const page = await pdf.getPage(pageNum);
+        const baseViewport = page.getViewport({ scale: 1 });
+        const renderScale = (900 * dpr) / baseViewport.width;
         const viewport = page.getViewport({ scale: renderScale });
         const canvas = document.createElement('canvas');
         canvas.width = viewport.width;
         canvas.height = viewport.height;
         await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
-        pageImages.push(canvas.toDataURL('image/jpeg', 0.85));
+        pageImages.push(canvas.toDataURL('image/jpeg', 0.92));
       }
 
       pubFlipbookInstance = new St.PageFlip(bookEl, {
@@ -6868,16 +6882,35 @@ setTimeout(() => {
         maxWidth: 900,
         minHeight: 400,
         maxHeight: 1100,
-        maxShadowOpacity: 0.5,
+        drawShadow: true,
+        maxShadowOpacity: 0.12,
+        flippingTime: 500,
         showCover: false,
         mobileScrollSupport: true,
         usePortrait: true
       });
-      pubFlipbookInstance.loadFromImages(pageImages);
+      pageImages.forEach(src => {
+        const pageDiv = document.createElement('div');
+        pageDiv.className = 'pub-flipbook-page';
+        const img = document.createElement('img');
+        img.src = src;
+        img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
+        pageDiv.appendChild(img);
+        bookEl.appendChild(pageDiv);
+      });
+      pubFlipbookInstance.loadFromHTML(bookEl.querySelectorAll('.pub-flipbook-page'));
+
+      const pageInputEl = document.getElementById('pub-flipbook-pageinput');
+      const sliderEl = document.getElementById('pub-flipbook-slider');
+      if (pageInputEl) pageInputEl.max = totalPages;
+      if (sliderEl) sliderEl.max = totalPages;
 
       const updatePageNum = () => {
+        const currentPage = pubFlipbookInstance.getCurrentPageIndex() + 1;
         const el = document.getElementById('pub-flipbook-pagenum');
-        if (el) el.textContent = `Page ${pubFlipbookInstance.getCurrentPageIndex() + 1} of ${totalPages}`;
+        if (el) el.textContent = `Page ${currentPage} of ${totalPages}`;
+        if (pageInputEl) pageInputEl.value = currentPage;
+        if (sliderEl) sliderEl.value = currentPage;
       };
       pubFlipbookInstance.on('flip', updatePageNum);
       updatePageNum();
@@ -6897,6 +6930,26 @@ setTimeout(() => {
   }
   function pubFlipbookNext() {
     if (pubFlipbookInstance) pubFlipbookInstance.flipNext();
+  }
+  function pubFlipbookGoToPage() {
+    if (!pubFlipbookInstance) return;
+    const input = document.getElementById('pub-flipbook-pageinput');
+    const totalPages = pubFlipbookInstance.getPageCount();
+    let target = parseInt(input.value, 10);
+    if (isNaN(target)) return;
+    target = Math.max(1, Math.min(totalPages, target));
+    input.value = target;
+    pubFlipbookInstance.turnToPage(target - 1);
+  }
+  function pubFlipbookSliderChange(value) {
+    if (!pubFlipbookInstance) return;
+    const totalPages = pubFlipbookInstance.getPageCount();
+    let target = Math.max(1, Math.min(totalPages, parseInt(value, 10)));
+    pubFlipbookInstance.turnToPage(target - 1);
+    const pageInputEl = document.getElementById('pub-flipbook-pageinput');
+    if (pageInputEl) pageInputEl.value = target;
+    const el = document.getElementById('pub-flipbook-pagenum');
+    if (el) el.textContent = `Page ${target} of ${totalPages}`;
   }
 
   /* ── BLOG SHELF LIGHTBOX ──
@@ -6925,7 +6978,7 @@ setTimeout(() => {
     const post = BLOG_POSTS[index];
     if (!post) return;
     blogLightboxIndex = index;
-    document.getElementById('blog-lightbox-img').src = `https://drive.google.com/thumbnail?id=${post.id}&sz=w1600`;
+    document.getElementById('blog-lightbox-img').src = `https://drive.google.com/thumbnail?id=${post.id}&sz=w2000`;
     document.getElementById('blog-lightbox-img').alt = post.title;
     document.getElementById('blog-lightbox-title').textContent = post.title;
     document.getElementById('blog-lightbox-meta').textContent = `${post.date} · ${post.author}`;
