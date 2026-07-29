@@ -1138,11 +1138,12 @@ align-items: flex-end;
     position: fixed; inset: 0; z-index: 1000;
     background: rgba(20,36,20,0.55);
     display: none; align-items: center; justify-content: center;
-    padding: 40px 20px;
+    /* Top pad clears the 80px fixed nav so the panel isn't jammed under it. */
+    padding: 104px 20px 40px;
   }
   .blog-lightbox-overlay.active { display: flex; }
   .blog-lightbox-content {
-    width: 100%; max-width: 760px; max-height: 92vh;
+    width: 100%; max-width: 760px; max-height: calc(100vh - 144px);
     background: var(--white); border-radius: 12px; overflow: hidden;
     display: flex; flex-direction: column;
     box-shadow: 0 24px 64px rgba(0,0,0,0.35);
@@ -2780,9 +2781,31 @@ nav .nav-links.open {
   .placement-logo-img { opacity: 1 !important; transform: none !important; }
 }
 
+/* ── PUBLICATIONS FLIPBOOK: page gutter ──
+   StPageFlip renders the two pages flush against each other, so there was no
+   visible binding. Insetting each page's contents away from the centre leaves
+   a real gap for the spine shadow to sit in. StPageFlip rewrites the page
+   element's own style attribute every frame, so the inset has to live on an
+   inner wrapper (and keys off the --left/--right classes it manages). */
+.pub-flipbook-page { background: transparent; }
+.pub-flipbook-page-inner {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  background: #fff;
+  overflow: hidden;
+}
+.pub-flipbook-page.--left  .pub-flipbook-page-inner { padding-right: 9px; background: transparent; }
+.pub-flipbook-page.--right .pub-flipbook-page-inner { padding-left: 9px;  background: transparent; }
+.pub-flipbook-page.--left  .pub-flipbook-page-inner img,
+.pub-flipbook-page.--right .pub-flipbook-page-inner img { background: #fff; }
+
+/* Slider thumb is 26px and overhangs both ends of the track, so without this
+   inset the first/last positions were clipped by the container edge. */
+#pub-flipbook-controls { padding: 0 16px; box-sizing: border-box; }
+
 /* ── PUBLICATIONS FLIPBOOK: bigger slider ── */
-.pub-flipbook-slider-big {
-  -webkit-appearance: none;
+.pub-flipbook-slider-big {  -webkit-appearance: none;
   appearance: none;
   height: 10px;
   border-radius: 6px;
@@ -2835,15 +2858,31 @@ nav .nav-links.open {
     height: 62vh !important;
     max-height: 560px !important;
   }
+  /* No room beside the book on a phone, so the arrows stop floating over the
+     page and become a normal row underneath it. */
+  #pub-flipbook-wrap { padding-bottom: 64px; }
   #pub-flipbook-wrap > button {
-    width: 42px !important;
-    height: 42px !important;
-    font-size: 19px !important;
-    opacity: 0.93;
+    position: absolute !important;
+    top: auto !important;
+    bottom: 0 !important;
+    transform: none !important;
+    width: 52px !important;
+    height: 52px !important;
+    font-size: 22px !important;
   }
-  #pub-flipbook-wrap > button[aria-label="Previous page"] { left: 4px !important; }
-  #pub-flipbook-wrap > button[aria-label="Next page"]     { right: 4px !important; }
-  #pub-flipbook-controls { max-width: 100% !important; }
+  #pub-flipbook-wrap > button[aria-label="Previous page"] {
+    left: 50% !important;
+    margin-left: -60px;
+  }
+  #pub-flipbook-wrap > button[aria-label="Next page"] {
+    right: 50% !important;
+    margin-right: -60px;
+  }
+  #pub-flipbook-controls { max-width: 100% !important; padding: 0 20px !important; }
+
+  /* Match the desktop fix, against the shorter 64px mobile nav. */
+  .blog-lightbox-overlay { padding: 88px 16px 28px !important; }
+  .blog-lightbox-content { max-height: calc(100vh - 116px) !important; }
 }
 
 </style>
@@ -6938,6 +6977,14 @@ setTimeout(() => {
       const pageImages = [];
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
+      // Derive the book's proportions from the PDF itself. Previously these
+      // were hardcoded 500x700, so any PDF with a different shape got its
+      // edges sliced off by object-fit: cover.
+      const firstViewport = (await pdf.getPage(1)).getViewport({ scale: 1 });
+      const pageAspect = firstViewport.width / firstViewport.height;
+      const BOOK_H = 700;
+      const BOOK_W = Math.round(BOOK_H * pageAspect);
+
       for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
         loadingEl.textContent = `Loading page ${pageNum} of ${totalPages}…`;
         const page = await pdf.getPage(pageNum);
@@ -6952,8 +6999,8 @@ setTimeout(() => {
       }
 
       pubFlipbookInstance = new St.PageFlip(bookEl, {
-        width: 500,
-        height: 700,
+        width: BOOK_W,
+        height: BOOK_H,
         size: 'stretch',
         minWidth: 280,
         maxWidth: 900,
@@ -6962,6 +7009,9 @@ setTimeout(() => {
         drawShadow: true,
         maxShadowOpacity: 0.35,
         flippingTime: 500,
+        // Stops the page lifting/curling on its own when the cursor passes a
+        // corner. Click-to-flip and finger-swipe both still work.
+        showPageCorners: false,
         showCover: false,
         mobileScrollSupport: true,
         usePortrait: true
@@ -6970,10 +7020,13 @@ setTimeout(() => {
         const pageDiv = document.createElement('div');
         pageDiv.className = 'pub-flipbook-page';
         pageDiv.setAttribute('data-density', 'hard');
+        const inner = document.createElement('div');
+        inner.className = 'pub-flipbook-page-inner';
         const img = document.createElement('img');
         img.src = src;
-        img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
-        pageDiv.appendChild(img);
+        img.style.cssText = 'width:100%;height:100%;object-fit:contain;display:block;';
+        inner.appendChild(img);
+        pageDiv.appendChild(inner);
         bookEl.appendChild(pageDiv);
       });
       pubFlipbookInstance.loadFromHTML(bookEl.querySelectorAll('.pub-flipbook-page'));
@@ -7069,12 +7122,38 @@ setTimeout(() => {
     document.getElementById('blog-lightbox-read').href = `https://drive.google.com/file/d/${post.id}/view`;
     document.getElementById('blog-lightbox-download').href = `https://drive.google.com/uc?export=download&id=${post.id}`;
     document.getElementById('blog-lightbox-overlay').classList.add('active');
-    document.body.style.overflow = 'hidden';
+    lockPageScroll();
   }
 
   function closeBlogLightbox() {
     document.getElementById('blog-lightbox-overlay').classList.remove('active');
+    unlockPageScroll();
+  }
+
+  /* Locking <body> alone did nothing here because <html> is the scrolling
+     element, so the page still scrolled behind the lightbox. Pinning the body
+     with position:fixed stops it everywhere (incl. iOS Safari); we stash and
+     restore scrollY so closing doesn't jump you back to the top. */
+  let _savedScrollY = 0;
+  function lockPageScroll() {
+    _savedScrollY = window.scrollY || document.documentElement.scrollTop || 0;
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${_savedScrollY}px`;
+    document.body.style.left = '0';
+    document.body.style.right = '0';
+    document.body.style.width = '100%';
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+  }
+  function unlockPageScroll() {
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+    document.body.style.right = '';
+    document.body.style.width = '';
     document.body.style.overflow = '';
+    document.documentElement.style.overflow = '';
+    window.scrollTo(0, _savedScrollY);
   }
 
   // Wrap around at both ends (last → first, first → last) so Prev/Next
