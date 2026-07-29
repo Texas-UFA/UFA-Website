@@ -7094,8 +7094,12 @@ setTimeout(() => {
       };
       pubFlipbookInstance.on('changeOrientation', updateSpine);
       pubFlipbookInstance.on('flip', updateSpine);
+      pubFlipbookInstance.on('update', updateSpine);
       window.addEventListener('resize', updateSpine);
       updateSpine();
+      // 'stretch' sizing can do a settling pass just after load; catch any
+      // late adjustment the synchronous measurement above missed.
+      setTimeout(updateSpine, 200);
       updatePageNum();
 
       loadingEl.style.display = 'none';
@@ -7183,7 +7187,13 @@ setTimeout(() => {
      with position:fixed stops it everywhere (incl. iOS Safari); we stash and
      restore scrollY so closing doesn't jump you back to the top. */
   let _savedScrollY = 0;
+  let _scrollLocked = false;
   function lockPageScroll() {
+    if (_scrollLocked) return; // Next/Prev call this again while already open —
+                                // re-capturing scrollY here would read 0 (since
+                                // the page is already pinned) and overwrite the
+                                // real position, landing back at the top on close.
+    _scrollLocked = true;
     _savedScrollY = window.scrollY || document.documentElement.scrollTop || 0;
     document.body.style.position = 'fixed';
     document.body.style.top = `-${_savedScrollY}px`;
@@ -7194,6 +7204,7 @@ setTimeout(() => {
     document.documentElement.style.overflow = 'hidden';
   }
   function unlockPageScroll() {
+    _scrollLocked = false;
     document.body.style.position = '';
     document.body.style.top = '';
     document.body.style.left = '';
