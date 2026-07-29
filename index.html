@@ -679,6 +679,10 @@
     background: var(--green-mid);
     padding: 72px 72px;
     display: flex; align-items: center; justify-content: space-between; gap: 32px;
+    /* The button group below sets flex-shrink:0, so without wrapping it
+       overflowed the viewport between 769px and ~900px — just above the
+       768px breakpoint where the stacked mobile layout kicks in. */
+    flex-wrap: wrap;
   }
  
   /* This targets the container you just added around the buttons */
@@ -2742,7 +2746,11 @@ nav .nav-links.open {
   .iv-fund { padding: 36px 26px; }
   .iv-fund h3 { font-size: 26px; }
   .iv-flow, .iv-row, .iv-social { grid-template-columns: 1fr; }
-  .iv-logos { grid-template-columns: repeat(3, 1fr); max-width: 100%; gap: 22px 12px; }
+  .iv-logos { grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: 100%; gap: 22px 12px; }
+  /* Grid items default to a min-content floor, which the 152px logo cap turns
+     into a hard 488px minimum for this row — that overflowed the viewport and
+     clipped the neighbouring paragraph text. Let the logos scale instead. */
+  .iv-logos img { max-width: 100%; height: auto; }
   .invest-lower { --iv-media-h: 260px; padding-bottom: 32px; }
   .iv-journal { width: auto; }
   .iv-logos { height: auto; gap: 30px 16px; max-width: 100%; }
@@ -2808,14 +2816,34 @@ nav .nav-links.open {
   background: var(--border);
 }
 
-/* ── BLOG SHELF: consistent card heights regardless of title length ── */
-.blog-shelf { align-items: flex-start; }
+/* ── BLOG SHELF: consistent card heights regardless of title length ── */.blog-shelf { align-items: flex-start; }
 .blog-shelf-title {
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   min-height: 2.6em;
+}
+
+/* ── PUBLICATIONS FLIPBOOK: mobile layout ──
+   The prev/next arrows are offset outside the wrapper on desktop, which works
+   because the section has side margins there. On phones the wrapper is full
+   bleed, so those offsets pushed the arrows off-screen and on top of the page
+   content — pull them inside and scale them down. */
+@media (max-width: 768px) {
+  #pub-flipbook {
+    height: 62vh !important;
+    max-height: 560px !important;
+  }
+  #pub-flipbook-wrap > button {
+    width: 42px !important;
+    height: 42px !important;
+    font-size: 19px !important;
+    opacity: 0.93;
+  }
+  #pub-flipbook-wrap > button[aria-label="Previous page"] { left: 4px !important; }
+  #pub-flipbook-wrap > button[aria-label="Next page"]     { right: 4px !important; }
+  #pub-flipbook-controls { max-width: 100% !important; }
 }
 
 </style>
@@ -3732,6 +3760,7 @@ nav .nav-links.open {
         <div id="pub-flipbook-wrap" style="display:none;position:relative;width:100%;max-width:1000px;">
           <button onclick="pubFlipbookPrev()" aria-label="Previous page" style="display:flex;align-items:center;justify-content:center;position:absolute;left:-28px;top:50%;transform:translateY(-50%);width:56px;height:56px;border-radius:50%;border:none;background:var(--green-dark);box-shadow:0 4px 16px rgba(0,0,0,0.25);cursor:pointer;z-index:5;font-size:24px;color:#fff;">←</button>
           <div id="pub-flipbook" style="width:100%;height:85vh;max-height:900px;"></div>
+          <div id="pub-flipbook-spine" style="position:absolute;left:50%;top:0;bottom:0;width:34px;margin-left:-17px;pointer-events:none;z-index:6;background:linear-gradient(to right, rgba(0,0,0,0) 0%, rgba(0,0,0,0.16) 42%, rgba(0,0,0,0.28) 50%, rgba(0,0,0,0.16) 58%, rgba(0,0,0,0) 100%);"></div>
           <button onclick="pubFlipbookNext()" aria-label="Next page" style="display:flex;align-items:center;justify-content:center;position:absolute;right:-28px;top:50%;transform:translateY(-50%);width:56px;height:56px;border-radius:50%;border:none;background:var(--green-dark);box-shadow:0 4px 16px rgba(0,0,0,0.25);cursor:pointer;z-index:5;font-size:24px;color:#fff;">→</button>
         </div>
         <div id="pub-flipbook-controls" style="display:none;flex-direction:column;gap:18px;align-items:center;margin-top:20px;width:100%;max-width:600px;">
@@ -6962,6 +6991,12 @@ setTimeout(() => {
         if (sliderEl) sliderEl.value = currentPage;
       };
       pubFlipbookInstance.on('flip', updatePageNum);
+      const spineEl = document.getElementById('pub-flipbook-spine');
+      const updateSpine = () => {
+        if (spineEl) spineEl.style.display = pubFlipbookInstance.getOrientation() === 'portrait' ? 'none' : 'block';
+      };
+      pubFlipbookInstance.on('changeOrientation', updateSpine);
+      updateSpine();
       updatePageNum();
 
       loadingEl.style.display = 'none';
@@ -7115,11 +7150,29 @@ setTimeout(() => {
       return;
     }
 
+    if (typeof emailjs === 'undefined' || !emailjs.send) {
+      status.style.display = 'block';
+      status.style.color = 'red';
+      status.textContent = 'Our message service failed to load (an ad blocker or privacy extension may be blocking it). Please email us directly at financeassociationtx@gmail.com.';
+      btn.disabled = false;
+      btn.textContent = 'Send message';
+      return;
+    }
+
     emailjs.send('service_ljdm2zl', 'template_48yta8e', {
       name: name,
       email: email,
       subject: subject,
-      message: message
+      message: message,
+      // Aliases: EmailJS templates commonly reference these names in their
+      // To/Reply-To fields. Sending all of them means the template works
+      // whether it uses {{name}}/{{email}} or {{from_name}}/{{reply_to}}.
+      from_name: name,
+      from_email: email,
+      reply_to: email,
+      user_name: name,
+      user_email: email,
+      title: subject
     }).then(() => {
       status.style.display = 'block';
       status.style.color = 'green';
@@ -7128,10 +7181,14 @@ setTimeout(() => {
       document.getElementById('contact-name').value = '';
       document.getElementById('contact-email').value = '';
       document.getElementById('contact-message').value = '';
-    }).catch(() => {
+    }).catch((err) => {
+      // Surface the real reason instead of hiding it — EmailJS returns
+      // { status, text } describing exactly what went wrong.
+      console.error('EmailJS send failed:', err);
+      const detail = (err && (err.text || err.message)) ? ' (' + (err.text || err.message) + ')' : '';
       status.style.display = 'block';
       status.style.color = 'red';
-      status.textContent = 'Something went wrong. Please email us directly at financeassociationtx@gmail.com.';
+      status.textContent = 'Something went wrong' + detail + '. Please email us directly at financeassociationtx@gmail.com.';
       btn.disabled = false;
       btn.textContent = 'Send message';
     });
