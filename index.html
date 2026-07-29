@@ -1545,7 +1545,8 @@ align-items: flex-end;
     height: 100%;
     object-fit: cover;
     display: block;
-    transform: scale(1.3);
+    /* Tighter zoom on phones so the group fills the frame */
+    transform: scale(1.6);
     object-position: center 60%;
   }
   .mission-quote {
@@ -2027,10 +2028,14 @@ nav .nav-links.open {
   background-position: 20% 55%;
 }
 
-  /* Fix desktop-zoomed heroes on mobile */
+  /* Fix desktop-zoomed heroes on mobile. cover always fills both
+     dimensions (no tan side gaps regardless of the hero's shape); the
+     taller min-height below crops the near-square photo in so the group
+     reads zoomed-in on a phone. */
   .pub-hero {
+    min-height: 460px !important;
     background-size: cover !important;
-    background-position: center top !important;
+    background-position: center 22% !important;
   }
   .join-hero {
     background-image: url('https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/62DF5A1F-FBEF-4063-BC8F-9A194F6BA46F_1_201_a.jpg') !important;
@@ -2038,9 +2043,11 @@ nav .nav-links.open {
     background-position: center 55% !important;
     background-repeat: no-repeat !important;
   }
-  /* Home hero — override full shorthand on mobile */
+  /* Home hero — override full shorthand on mobile.
+     47% horizontal shifts the narrow phone crop slightly left so the
+     girl at the left edge of the group isn't sliced in half. */
   .hero-img {
-    background: url('https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/heroimg.jpg') 52% 55% / cover no-repeat !important;
+    background: url('https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/heroimg.jpg') 47% 55% / cover no-repeat !important;
   }
 
   /* Analyst 01/02/03 steps grid → 1 column on mobile */
@@ -2823,8 +2830,9 @@ nav .nav-links.open {
 .pub-flipbook-page.--right .pub-flipbook-page-inner img { background: #fff; }
 
 /* Slider thumb is 26px and overhangs both ends of the track, so without this
-   inset the first/last positions were clipped by the container edge. */
-#pub-flipbook-controls { padding: 0 16px; box-sizing: border-box; }
+   inset the first/last positions were clipped by the container edge. The
+   bottom padding keeps the slider off the card's bottom border. */
+#pub-flipbook-controls { padding: 0 16px 32px; box-sizing: border-box; }
 
 /* #pub-flipbook-card reuses .pub-card-embed-container (built for clipping an
    iframe's rounded corners elsewhere). Its overflow:hidden isn't needed here
@@ -2832,12 +2840,19 @@ nav .nav-links.open {
    height came in even a few px taller than the container's auto height. */
 #pub-flipbook-card { overflow: visible !important; }
 
-/* ── PUBLICATIONS FLIPBOOK: bigger slider ── */
-.pub-flipbook-slider-big {  -webkit-appearance: none;
+/* ── PUBLICATIONS FLIPBOOK: page slider ──
+   The filled portion of the track (reading progress) is painted via the
+   --slider-fill custom property, updated from JS on every page change. */
+.pub-flipbook-slider-big {
+  -webkit-appearance: none;
   appearance: none;
-  height: 10px;
+  height: 8px;
   border-radius: 6px;
-  background: var(--border);
+  background: linear-gradient(to right,
+    var(--green-dark) 0%,
+    var(--green-dark) var(--slider-fill, 0%),
+    var(--border) var(--slider-fill, 0%),
+    var(--border) 100%);
   outline: none;
   cursor: pointer;
 }
@@ -2850,7 +2865,17 @@ nav .nav-links.open {
   background: var(--green-dark);
   border: 3px solid #fff;
   box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-  cursor: pointer;
+  cursor: grab;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.pub-flipbook-slider-big::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 3px 12px rgba(0,0,0,0.35);
+}
+.pub-flipbook-slider-big::-webkit-slider-thumb:active { cursor: grabbing; }
+.pub-flipbook-slider-big:focus-visible::-webkit-slider-thumb {
+  outline: 2px solid var(--green-light);
+  outline-offset: 2px;
 }
 .pub-flipbook-slider-big::-moz-range-thumb {
   width: 26px;
@@ -2859,12 +2884,27 @@ nav .nav-links.open {
   background: var(--green-dark);
   border: 3px solid #fff;
   box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-  cursor: pointer;
+  cursor: grab;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.pub-flipbook-slider-big::-moz-range-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 3px 12px rgba(0,0,0,0.35);
 }
 .pub-flipbook-slider-big::-moz-range-track {
-  height: 10px;
+  height: 8px;
   border-radius: 6px;
-  background: var(--border);
+  background: transparent;
+}
+/* .btn-outline is white-on-transparent (built for dark heroes), which is
+   invisible on this white card — recolor the flipbook's buttons dark. */
+#pub-flipbook-controls .btn-outline {
+  color: var(--green-dark);
+  border-color: rgba(46, 74, 46, 0.4);
+}
+#pub-flipbook-controls .btn-outline:hover {
+  background: rgba(46, 74, 46, 0.07);
+  border-color: var(--green-dark);
 }
 
 /* ── BLOG SHELF: consistent card heights regardless of title length ── */.blog-shelf { align-items: flex-start; }
@@ -2906,7 +2946,7 @@ nav .nav-links.open {
     right: 50% !important;
     margin-right: -60px;
   }
-  #pub-flipbook-controls { max-width: 100% !important; padding: 0 20px !important; }
+  #pub-flipbook-controls { max-width: 100% !important; padding: 0 20px 32px !important; }
 
   /* Match the desktop fix, against the shorter 64px mobile nav. */
   .blog-lightbox-overlay { padding: 88px 16px 28px !important; }
@@ -3831,17 +3871,13 @@ nav .nav-links.open {
           <button onclick="pubFlipbookNext()" aria-label="Next page" style="display:flex;align-items:center;justify-content:center;position:absolute;right:-28px;top:50%;transform:translateY(-50%);width:56px;height:56px;border-radius:50%;border:none;background:var(--green-dark);box-shadow:0 4px 16px rgba(0,0,0,0.25);cursor:pointer;z-index:5;font-size:24px;color:#fff;">→</button>
         </div>
         <div id="pub-flipbook-controls" style="display:none;flex-direction:column;gap:18px;align-items:center;margin-top:20px;width:100%;max-width:600px;">
-          <div style="display:flex;gap:20px;align-items:center;">
-            <button onclick="pubFlipbookPrev()" class="btn-outline" style="padding:12px 26px;font-size:16px;">← Prev</button>
-            <span id="pub-flipbook-pagenum" style="font-size:17px;font-weight:500;color:var(--text-dark);min-width:120px;text-align:center;"></span>
-            <button onclick="pubFlipbookNext()" class="btn-outline" style="padding:12px 26px;font-size:16px;">Next →</button>
-          </div>
+          <span id="pub-flipbook-pagenum" style="font-size:17px;font-weight:500;color:var(--text-dark);text-align:center;"></span>
           <div style="display:flex;gap:12px;align-items:center;">
             <label for="pub-flipbook-pageinput" style="font-size:16px;color:var(--text-muted);">Go to page</label>
             <input type="number" id="pub-flipbook-pageinput" min="1" style="width:90px;padding:12px 14px;border:1px solid rgba(46,74,46,0.25);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:16px;box-sizing:border-box;" onkeydown="if(event.key==='Enter'){pubFlipbookGoToPage();}">
             <button onclick="pubFlipbookGoToPage()" class="btn-outline" style="padding:12px 22px;font-size:16px;">Go</button>
           </div>
-          <input type="range" id="pub-flipbook-slider" class="pub-flipbook-slider-big" min="1" value="1" step="1" style="width:100%;" oninput="pubFlipbookSliderChange(this.value)">
+          <input type="range" id="pub-flipbook-slider" class="pub-flipbook-slider-big" min="1" value="1" step="1" style="width:100%;" aria-label="Jump to page" oninput="pubFlipbookSliderChange(this.value)">
         </div>
       </div>
     </div>
@@ -7072,7 +7108,7 @@ setTimeout(() => {
         const el = document.getElementById('pub-flipbook-pagenum');
         if (el) el.textContent = `Page ${currentPage} of ${totalPages}`;
         if (pageInputEl) pageInputEl.value = currentPage;
-        if (sliderEl) sliderEl.value = currentPage;
+        if (sliderEl) { sliderEl.value = currentPage; pubFlipbookSliderFill(sliderEl); }
       };
       pubFlipbookInstance.on('flip', updatePageNum);
       const spineEl = document.getElementById('pub-flipbook-spine');
@@ -7130,6 +7166,14 @@ setTimeout(() => {
     input.value = target;
     pubFlipbookInstance.turnToPage(target - 1);
   }
+  /* Paints the read-so-far portion of the slider track via the
+     --slider-fill custom property the track gradient keys off. */
+  function pubFlipbookSliderFill(slider) {
+    const min = parseInt(slider.min, 10) || 1;
+    const max = parseInt(slider.max, 10) || 1;
+    const pct = max > min ? ((slider.value - min) / (max - min)) * 100 : 0;
+    slider.style.setProperty('--slider-fill', pct + '%');
+  }
   function pubFlipbookSliderChange(value) {
     if (!pubFlipbookInstance) return;
     const totalPages = pubFlipbookInstance.getPageCount();
@@ -7139,6 +7183,8 @@ setTimeout(() => {
     if (pageInputEl) pageInputEl.value = target;
     const el = document.getElementById('pub-flipbook-pagenum');
     if (el) el.textContent = `Page ${target} of ${totalPages}`;
+    const sliderEl = document.getElementById('pub-flipbook-slider');
+    if (sliderEl) pubFlipbookSliderFill(sliderEl);
   }
 
   /* ── BLOG SHELF LIGHTBOX ──
