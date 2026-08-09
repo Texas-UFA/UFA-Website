@@ -827,17 +827,25 @@ background-position: center 95%;
     overflow: hidden;
     line-height: 0;
   }
-  /* cover already matches the frame's width, so object-position alone can't
-     zoom — the transform does. Origin sits low so the group's feet stay in
-     frame while the ceiling scales away. Raise the scale to push in further. */
   .why-photo img {
     width: 100%;
     height: 235px;
     object-fit: cover;
     object-position: center 58%;
+    display: block;
+  }
+  /* cover already matches the frame's width, so object-position alone can't
+     zoom — the transform does. Origin sits low so the group's feet stay in
+     frame while the ceiling scales away. Raise the scale to push in further.
+     The extra .reveal/.visible selectors are required: the JS tags every img
+     with .reveal, and `.reveal.visible { transform: none }` outranks a plain
+     `.why-photo img` rule and was cancelling this out. The parent .why-photo
+     still carries the reveal animation, so nothing is lost. */
+  .why-photo img,
+  .why-photo img.reveal,
+  .why-photo img.reveal.visible {
     transform: scale(1.4);
     transform-origin: center 72%;
-    display: block;
   }
   @media (max-width: 1024px) {
     .why-intro { grid-template-columns: 1fr; gap: 32px; margin-bottom: 32px; }
