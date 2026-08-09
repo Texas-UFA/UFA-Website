@@ -761,9 +761,11 @@
   .insta-card:hover img { transform: scale(1.07); }
   .insta-card .insta-meta { transition: background 0.25s ease; }
   .insta-card:hover .insta-meta { background: var(--green-wash); }
-  .insta-card:hover .insta-handle { color: var(--green-mid); }
+  .insta-card:hover .insta-handle, .insta-card:hover .insta-cap { color: var(--green-mid); }
   .insta-meta { padding: 16px 20px; display: flex; align-items: center; gap: 10px; }
   .insta-handle { font-size: 13px; color: var(--text-muted); }
+  .insta-cap { font-size: 13px; color: var(--text-muted); }
+  .insta-cap::before { content: '\00b7'; margin-right: 6px; }
   .insta-handle strong { color: var(--green-accent); font-weight: 500; }
 
   /* ── ABOUT PAGE ──
@@ -1945,15 +1947,33 @@ nav .nav-links.open {
   padding-bottom: 4px;
 }
 
+/* Mission quote reads better centred once it's full-width */
+.mission-quote {
+  justify-content: center !important;
+  text-align: center !important;
+  font-size: 1.4rem !important;
+}
+.mission-quote + .mission-attr { text-align: center !important; }
+.mission-quote ~ div { text-align: center !important; }
+
 /* Instagram grid: 1-col smaller on mobile */
 .insta-grid {
   grid-template-columns: 1fr !important;
   gap: 12px !important;
 }
+/* 16/5 letterboxed Instagram graphics in half. Square matches how the posts
+   were composed, so text in them survives the crop. */
 .insta-card img {
-  aspect-ratio: 16/5 !important;
+  aspect-ratio: 1/1 !important;
   object-fit: cover !important;
 }
+.insta-meta {
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 3px !important;
+  padding: 12px 16px !important;
+}
+.insta-cap::before { content: none !important; }
 .insta-card {
   border-radius: 6px !important;
 }
@@ -3240,15 +3260,15 @@ nav .nav-links.open {
     <div class="insta-grid">
       <a href="https://www.instagram.com/p/DXaJ42qglS5/" target="_blank" rel="noopener noreferrer" class="insta-card reveal">
         <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/instagram/1CC31E95-ED94-4053-9967-A140C497BCB7.png" alt="Metric Point Capital speaker">
-        <div class="insta-meta"><strong class="insta-handle" style="color:var(--green-accent)">@texasufa</strong> <span class="insta-handle">· Metric Point Capital speaker</span></div>
+        <div class="insta-meta"><strong class="insta-handle" style="color:var(--green-accent)">@texasufa</strong> <span class="insta-cap">Metric Point Capital speaker</span></div>
       </a>
       <a href="https://www.instagram.com/p/DXIEsPzklEe/" target="_blank" rel="noopener noreferrer" class="insta-card reveal">
         <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/instagram/B631CA5F-17C2-4144-8CA7-8CFAF1C83377.png" alt="Haveli Investments speaker">
-        <div class="insta-meta"><strong class="insta-handle" style="color:var(--green-accent)">@texasufa</strong> <span class="insta-handle">· Haveli Investments speaker</span></div>
+        <div class="insta-meta"><strong class="insta-handle" style="color:var(--green-accent)">@texasufa</strong> <span class="insta-cap">Haveli Investments speaker</span></div>
       </a>
       <a href="https://www.instagram.com/p/DXFrIVilJ6E/" target="_blank" rel="noopener noreferrer" class="insta-card reveal">
         <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/instagram/F77DE977-1361-474A-B485-5729A9CAAA09.png" alt="HBA x UFA Case Competition">
-        <div class="insta-meta"><strong class="insta-handle" style="color:var(--green-accent)">@texasufa</strong> <span class="insta-handle">· HBA × UFA Case Competition</span></div>
+        <div class="insta-meta"><strong class="insta-handle" style="color:var(--green-accent)">@texasufa</strong> <span class="insta-cap">HBA × UFA Case Competition</span></div>
       </a>
     </div>
   </section>
@@ -7599,7 +7619,7 @@ setTimeout(() => {
                  '<img loading="lazy" src="' + esc(img) + '" alt="' + esc(cap || 'UFA Instagram post') + '">' +
                  '<div class="insta-meta">' +
                    '<strong class="insta-handle" style="color:var(--green-accent)">@texasufa</strong>' +
-                   (cap ? ' <span class="insta-handle">\u00b7 ' + esc(cap) + '</span>' : '') +
+                   (cap ? '<span class="insta-cap">' + esc(cap) + '</span>' : '') +
                  '</div>' +
                '</a>';
       }).filter(Boolean);
