@@ -815,7 +815,7 @@ background-position: center 95%;
      stat card on the right. Collapses to one column under 1024px. */
   .why-intro {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 300px;
+    grid-template-columns: minmax(0, 1fr) 400px;
     gap: 64px;
     align-items: start;
     margin-bottom: 48px;
@@ -829,14 +829,14 @@ background-position: center 95%;
   }
   .why-photo img {
     width: 100%;
-    height: 230px;
+    height: 320px;
     object-fit: cover;
     display: block;
   }
   @media (max-width: 1024px) {
     .why-intro { grid-template-columns: 1fr; gap: 32px; margin-bottom: 32px; }
-    .why-photo { margin-top: 0; max-width: 460px; }
-    .why-photo img { height: 200px; }
+    .why-photo { margin-top: 0; max-width: 520px; }
+    .why-photo img { height: 240px; }
   }
 
   .story-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; }
@@ -1318,8 +1318,10 @@ align-items: flex-end;
   .faq-list { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
   .faq-item { border-bottom: 1px solid var(--border); background: var(--white); }
   .faq-item:last-child { border-bottom: none; }
-  .faq-q { width: 100%; background: none; border: none; cursor: pointer; text-align: left; cursor: pointer; padding: 24px 28px; display: flex; justify-content: space-between; align-items: center; gap: 16px; font-family: var(--font-body); font-size: 15px; font-weight: 500; color: var(--text-dark); }
-  .faq-q:hover { background: var(--cream); }
+  .faq-q { width: 100%; background: none; border: none; cursor: pointer; text-align: left; cursor: pointer; padding: 24px 28px; display: flex; justify-content: space-between; align-items: center; gap: 16px; font-family: var(--font-body); font-size: 15px; font-weight: 500; color: var(--text-dark); border-radius: 6px; transition: background 0.2s ease, color 0.2s ease; }
+  /* A faint green tint rather than var(--cream) — cream is the page
+     background, so on a white section it read as a hole, not a highlight. */
+  .faq-q:hover { background: rgba(46,74,46,0.05); color: var(--green-dark); }
   .faq-q svg { flex-shrink: 0; transition: transform 0.25s; stroke: var(--green-accent); }
   .faq-item.open .faq-q svg { transform: rotate(45deg); }
   .faq-a { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
@@ -2603,6 +2605,18 @@ nav .nav-links.open {
   color: rgba(255,255,255,0.55);
   line-height: 1.55;
 }
+/* Eligibility rule for step 07. Styled as a badge because it changes who the
+   step applies to — small italics read as decoration and got skipped. */
+.recruit-badge {
+  display: inline-block; margin-top: 10px;
+  font-size: 10px; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--green-pale); line-height: 1;
+  background: rgba(214,232,214,0.14);
+  border: 1px solid rgba(214,232,214,0.32);
+  border-radius: 100px; padding: 5px 11px;
+  white-space: nowrap;
+}
 
 @media (max-width: 900px) {
   .recruit-steps {
@@ -3761,42 +3775,42 @@ nav .nav-links.open {
 
         <div class="recruit-step reveal">
           <div class="recruit-dot"><span>01</span></div>
-          <div class="recruit-text"><div class="recruit-label">Info Session 1</div><div class="recruit-desc">Meet current members and learn about each program.</div></div>
+          <div class="recruit-text"><div class="recruit-label">Info Session 1</div><div class="recruit-desc">Meet members and learn each program.</div></div>
         </div>
 
         <div class="recruit-step reveal">
           <div class="recruit-dot"><span>02</span></div>
-          <div class="recruit-text"><div class="recruit-label">Applications Open</div><div class="recruit-desc">Complete the application form including your resume and headshot.</div></div>
+          <div class="recruit-text"><div class="recruit-label">Applications Open</div><div class="recruit-desc">Apply with your resume and headshot.</div></div>
         </div>
 
         <div class="recruit-step reveal">
           <div class="recruit-dot"><span>03</span></div>
-          <div class="recruit-text"><div class="recruit-label">Coffee Chat 1</div><div class="recruit-desc">An informal setting to connect with current members.</div></div>
+          <div class="recruit-text"><div class="recruit-label">Coffee Chat 1</div><div class="recruit-desc">Informal chats with current members.</div></div>
         </div>
 
         <div class="recruit-step reveal">
           <div class="recruit-dot"><span>04</span></div>
-          <div class="recruit-text"><div class="recruit-label">Info Session 2</div><div class="recruit-desc">A second chance to ask questions and connect with team leads.</div></div>
+          <div class="recruit-text"><div class="recruit-label">Info Session 2</div><div class="recruit-desc">Ask questions and meet team leads.</div></div>
         </div>
 
         <div class="recruit-step reveal">
           <div class="recruit-dot"><span>05</span></div>
-          <div class="recruit-text"><div class="recruit-label">Coffee Chat 2</div><div class="recruit-desc">Another opportunity to meet members and get a feel for each team.</div></div>
+          <div class="recruit-text"><div class="recruit-label">Coffee Chat 2</div><div class="recruit-desc">Another chance to get a feel for each team.</div></div>
         </div>
 
         <div class="recruit-step reveal">
           <div class="recruit-dot"><span>06</span></div>
-          <div class="recruit-text"><div class="recruit-label">Applications Close</div><div class="recruit-desc">Submit your completed application before the deadline.</div></div>
+          <div class="recruit-text"><div class="recruit-label">Applications Close</div><div class="recruit-desc">Final deadline to submit your application.</div></div>
         </div>
 
         <div class="recruit-step reveal">
           <div class="recruit-dot recruit-dot--highlight"><span>07</span></div>
-          <div class="recruit-text"><div class="recruit-label">Interviews</div><div class="recruit-desc">Technical, behavioral, and fit interviews.<br><em style="color:var(--green-pale);font-size:12px;">IA & CA only.</em></div></div>
+          <div class="recruit-text"><div class="recruit-label">Interviews</div><div class="recruit-desc">Technical, behavioral, and fit interviews.</div><span class="recruit-badge">IA &amp; CA only</span></div>
         </div>
 
         <div class="recruit-step reveal">
           <div class="recruit-dot"><span>08</span></div>
-          <div class="recruit-text"><div class="recruit-label">Decisions Released</div><div class="recruit-desc">Offers sent out to accepted applicants via email.</div></div>
+          <div class="recruit-text"><div class="recruit-label">Decisions Released</div><div class="recruit-desc">Offers sent to accepted applicants by email.</div></div>
         </div>
 
       </div>
