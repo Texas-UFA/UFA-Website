@@ -796,6 +796,56 @@ background-position: center 95%;
      at the top of each interior page. */
   .page-hero-title { font-family: var(--font-display); font-size: clamp(36px, 5vw, 56px); font-weight: 500; color: var(--white); line-height: 1.1; }
 
+  /* ── WHY UFA INTRO ROW ──
+     Two-column header for the "Start here. Go anywhere." section:
+     eyebrow + title + subtitle on the left, the "UFA at a glance"
+     stat card on the right. Collapses to one column under 1024px. */
+  .why-intro {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 64px;
+    align-items: start;
+    margin-bottom: 48px;
+  }
+  .why-intro .section-subtitle { margin-bottom: 0; }
+  .why-glance {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px 26px 22px;
+    margin-top: 6px;
+  }
+  .why-glance-label {
+    font-size: 11px; font-weight: 500;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--green-logo);
+    margin-bottom: 12px;
+  }
+  .why-glance-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    gap: 16px; padding: 11px 0;
+    border-top: 1px solid var(--border);
+  }
+  .why-glance-row span { font-size: 13px; color: var(--text-muted); }
+  .why-glance-row strong {
+    font-family: var(--font-display);
+    font-size: 20px; font-weight: 500;
+    color: var(--text-dark); line-height: 1;
+    white-space: nowrap;
+  }
+  .why-glance-link {
+    display: inline-block; margin-top: 16px;
+    font-size: 13px; font-weight: 500;
+    color: var(--green-accent); text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s;
+  }
+  .why-glance-link:hover { border-bottom-color: var(--green-accent); }
+  @media (max-width: 1024px) {
+    .why-intro { grid-template-columns: 1fr; gap: 32px; margin-bottom: 32px; }
+    .why-glance { margin-top: 0; max-width: 420px; }
+  }
+
   .story-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; }
   .story-text p { font-size: 16px; color: var(--text-mid); line-height: 1.8; margin-bottom: 20px; }
 
@@ -2632,6 +2682,15 @@ nav .nav-links.open {
 }
 .iv-step .t { font-weight: 500; font-size: 17px; margin-bottom: 6px; }
 .iv-step .d { font-size: 14.5px; color: rgba(255,255,255,.62); line-height: 1.55; }
+/* Footnote under the five steps. The oversight caveat lives here rather than
+   inside step 05 so the sequence ends on the payoff, not on a qualifier. */
+.iv-fund-note {
+  position: relative; z-index: 1;
+  margin: 34px 0 0; padding-top: 18px;
+  border-top: 1px solid rgba(214,232,214,.16);
+  font-size: 13px; color: rgba(255,255,255,.45);
+  line-height: 1.6;
+}
 /* the rail */
 .iv-step:not(:last-child)::before {
   content: ""; position: absolute; z-index: 1;
@@ -2734,6 +2793,9 @@ nav .nav-links.open {
   gap: 74px 24px; padding: 24px 0; max-width: none; margin: 0;
 }
 .iv-logos img { max-width: 152px; max-height: 54px; object-fit: contain; opacity: .85; mix-blend-mode: multiply; }
+/* Stacked logos (icon above wordmark) need more vertical room to read at
+   the same optical size as the horizontal ones. */
+.iv-logos img[alt="Houlihan Lokey"] { max-height: 80px; max-width: 130px; }
 
 .iv-social { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; margin-top: 0; padding-top: 44px; border-top: 1px solid var(--border); }
 .iv-social img { width: 100%; height: var(--iv-media-h); object-fit: cover; object-position: center 30%; border-radius: 12px; display: block; }
@@ -3387,18 +3449,18 @@ nav .nav-links.open {
       </div>
       <div class="reveal" style="border-top:1px solid var(--border);margin-top:8px;">
         <div class="analyst-steps-grid" style="display:grid;grid-template-columns:1fr 1fr 1fr;border-bottom:1px solid var(--border);">
-          <div style="padding:32px 28px 32px 0;border-right:1px solid var(--border);text-align:center;">
-            <div style="font-family:var(--font-display);font-size:48px;font-weight:500;color:var(--green-light);line-height:1;margin-bottom:12px;">01</div>
+          <div style="padding:32px 28px 32px 0;border-right:1px solid var(--border);">
+            <div style="font-family:var(--font-display);font-size:48px;font-weight:500;color:var(--green-accent);line-height:1;margin-bottom:12px;">01</div>
             <div style="font-family:var(--font-display);font-size:18px;font-weight:500;color:var(--text-dark);margin-bottom:10px;">Explore Both Paths</div>
             <p style="font-size:15px;color:var(--text-muted);line-height:1.7;">Gain exposure to high finance and consulting through weekly lectures and assignments that build knowledge from the ground up.</p>
           </div>
-          <div style="padding:32px 28px;border-right:1px solid var(--border);text-align:center;">
-            <div style="font-family:var(--font-display);font-size:48px;font-weight:500;color:var(--green-light);line-height:1;margin-bottom:12px;">02</div>
+          <div style="padding:32px 28px;border-right:1px solid var(--border);">
+            <div style="font-family:var(--font-display);font-size:48px;font-weight:500;color:var(--green-accent);line-height:1;margin-bottom:12px;">02</div>
             <div style="font-family:var(--font-display);font-size:18px;font-weight:500;color:var(--text-dark);margin-bottom:10px;">Engage and Apply</div>
             <p style="font-size:15px;color:var(--text-muted);line-height:1.7;">Participate in stock pitches, case-style exercises, and hands-on projects — turning technical concepts into practical experience.</p>
           </div>
-          <div style="padding:32px 0 32px 28px;text-align:center;">
-            <div style="font-family:var(--font-display);font-size:48px;font-weight:500;color:var(--green-light);line-height:1;margin-bottom:12px;">03</div>
+          <div style="padding:32px 0 32px 28px;">
+            <div style="font-family:var(--font-display);font-size:48px;font-weight:500;color:var(--green-accent);line-height:1;margin-bottom:12px;">03</div>
             <div style="font-family:var(--font-display);font-size:18px;font-weight:500;color:var(--text-dark);margin-bottom:10px;">Grow Your Network</div>
             <p style="font-size:15px;color:var(--text-muted);line-height:1.7;">Connect with a community of like-minded peers while receiving insights on recruiting, resume formatting, and networking.</p>
           </div>
@@ -3497,8 +3559,9 @@ nav .nav-links.open {
           <div class="iv-step"><div class="n">02</div><div class="t">Build the Model</div><div class="d">Build a discounted cash flow model and competitor analysis.</div></div>
           <div class="iv-step"><div class="n">03</div><div class="t">Pitch the Stock</div><div class="d">Present and defend your thesis.</div></div>
           <div class="iv-step"><div class="n">04</div><div class="t">Tally Votes</div><div class="d">Members decide if the pitch passes.</div></div>
-          <div class="iv-step"><div class="n">05</div><div class="t">Start the Position</div><div class="d">Winning ideas enter the portfolio, at the discretion of the fund team.</div></div>
+          <div class="iv-step"><div class="n">05</div><div class="t">Start the Position</div><div class="d">Winning ideas enter the portfolio.</div></div>
         </div>
+        <p class="iv-fund-note">Final allocation decisions rest with the fund team.</p>
       </div>
 
       <!-- Supporting skills: click a chip to reveal its description -->
@@ -3544,7 +3607,7 @@ nav .nav-links.open {
         <div>
           <div class="iv-idx">Where it leads</div>
           <h4>Recruit with support</h4>
-          <p>Technical bootcamps, resume reviews, mock interviews, and recruiting guidance from upperclassmen who've been through it. Members have gone on to IB, PE, and asset management roles at firms across the Street, with peers helping each other every step of the way.</p>
+          <p>Technical bootcamps, resume reviews, and mock interviews, run by upperclassmen who just went through recruiting themselves. Members go on to IB, PE, and asset management roles across the Street.</p>
           <a class="iv-link" href="/why-ufa" onclick="showPage('why-ufa');return false;">See where our members place &rarr;</a>
         </div>
         <div class="iv-media">
@@ -3565,7 +3628,7 @@ nav .nav-links.open {
         <div>
           <div class="iv-idx">Beyond career prep</div>
           <h4>Build lasting friendships</h4>
-          <p>Give back to the community that invested in you. Join a team built on mentorship, collaboration, and lasting friendships through team dinners, socials, alumni events, and shared experiences. Learn from those who came before you, support those who come after, and become part of a network that extends far beyond graduation.</p>
+          <p>Team dinners, socials, and alumni events build a network that outlasts graduation. Learn from the people who came before you, and show up for the ones who come after.</p>
         </div>
         <div>
           <img loading="lazy" class="iv-social-friendship-photo" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/82BC04DC-70C3-46CD-9F14-B697D37E44F2_1_105_c.jpg" alt="UFA Investment Team members at a social event" style="object-position:center 25%;">
@@ -3666,7 +3729,6 @@ nav .nav-links.open {
         <div class="membership-price">$90 / year</div>
         <div class="membership-price-note">or $55 per semester</div>
         <a href="https://utexas.campuslabs.com/engage/organization/texasufa" target="_blank" rel="noopener noreferrer" class="btn-primary">Join on HornsLink</a>
-        <p style="font-size:12px;color:var(--text-muted);margin-top:10px;">After joining HornsLink, pay dues via Venmo @TEXASUFA25</p>
       </div>
       <div class="membership-card">
         <div class="membership-badge closed">Applications currently closed</div>
@@ -3675,21 +3737,18 @@ nav .nav-links.open {
         <div class="membership-price">$25 / year (in addition to GM)</div>
         <div class="membership-price-note">or $15 per semester (in addition to GM)</div>
         <a href="https://docs.google.com/forms/d/e/1FAIpQLSednj-xoNhhCCvGKyAnP4W1m9p-CNeTw28Cag6ibZsy71G5_A/viewform" target="_blank" rel="noopener noreferrer" class="btn-primary" style="background:var(--green-mid);">View application form</a>
-        <a href="https://www.instagram.com/texasufa/" target="_blank" rel="noopener noreferrer" style="display:block;margin-top:10px;font-size:13px;color:var(--green-accent);text-decoration:none;">Follow @texasufa for updates →</a>
       </div>
       <div class="membership-card">
         <div class="membership-badge closed">Applications currently closed</div>
         <div class="membership-title">Investment Team</div>
         <p class="membership-desc">A selective, application-based track with deep technical training, one-on-one mentorship, and strong recruiting outcomes. Applications open each fall and spring semester.</p>
         <a href="https://docs.google.com/forms/d/e/1FAIpQLSfv0DWYxpYH4c7VQk0Rf-zPa3Y9Ou1uEn5SE3_vROkMRIrsqQ/viewform" target="_blank" rel="noopener noreferrer" class="btn-primary" style="background:var(--green-mid);">View application form</a>
-        <a href="https://www.instagram.com/texasufa/" target="_blank" rel="noopener noreferrer" style="display:block;margin-top:10px;font-size:13px;color:var(--green-accent);text-decoration:none;">Follow @texasufa for updates →</a>
       </div>
        <div class="membership-card">
         <div class="membership-badge closed">Applications currently closed</div>
         <div class="membership-title">Consulting Team</div>
         <p class="membership-desc">A selective, application-based track focused on real client engagements, case-study training, and developing the structured thinking top firms look for. Applications open each fall and spring semester.</p>
         <a href="https://docs.google.com/forms/d/e/1FAIpQLSedfQrjZSVGodbKUNOcViYNfYHsjWsRYBn-cCZ1YmUbU_1faw/viewform" target="_blank" rel="noopener noreferrer" class="btn-primary" style="background:var(--green-mid);">View application form</a>
-        <a href="https://www.instagram.com/texasufa/" target="_blank" rel="noopener noreferrer" style="display:block;margin-top:10px;font-size:13px;color:var(--green-accent);text-decoration:none;">Follow @texasufa for updates →</a>
       </div>
     </div>
   </section>
@@ -3860,7 +3919,7 @@ nav .nav-links.open {
            fetched (e.g. Google Drive CORS blocking — see comment there).
            The left/right arrow buttons are a more obvious affordance than
            StPageFlip's built-in corner-peel hint. -->
-      <div style="margin-top:32px;width:100%;display:flex;flex-direction:column;align-items:center;">
+      <div style="margin-top:32px;padding-bottom:40px;width:100%;display:flex;flex-direction:column;align-items:center;">
         <div id="pub-flipbook-loading" style="padding:80px 20px;text-align:center;color:var(--text-muted);font-size:14px;">
           Loading pages…
         </div>
@@ -4120,9 +4179,26 @@ nav .nav-links.open {
 
   <!-- Four pillars — OPTION 2: Editorial two-column -->
   <section class="section bg-cream" style="padding-bottom:40px;">
-    <div class="section-tag">What sets us apart</div>
-    <h2 class="section-title">Start here. Go anywhere.</h2>
-    <p class="section-subtitle">UFA is built around you. We offer the breadth, access, and community to explore every corner of finance on your own terms, without locking you into a single path before you're ready.</p>
+    <div class="why-intro">
+
+      <div>
+        <div class="section-tag">What sets us apart</div>
+        <h2 class="section-title">Start here. Go anywhere.</h2>
+        <p class="section-subtitle">UFA is built around you. We offer the breadth, access, and community to explore every corner of finance on your own terms, without locking you into a single path before you're ready.</p>
+      </div>
+
+      <!-- Top-right stat card. Edit the rows below to change the numbers. -->
+      <aside class="why-glance reveal">
+        <div class="why-glance-label">UFA at a glance</div>
+        <div class="why-glance-row"><span>Founded</span><strong>1951</strong></div>
+        <div class="why-glance-row"><span>Active members</span><strong>300+</strong></div>
+        <div class="why-glance-row"><span>Placement firms</span><strong>50+</strong></div>
+        <div class="why-glance-row"><span>Speakers per semester</span><strong>12+</strong></div>
+        <div class="why-glance-row"><span>We meet</span><strong>Wednesdays</strong></div>
+        <a class="why-glance-link" href="#placements-section" onclick="event.preventDefault();document.getElementById('placements-section').scrollIntoView({behavior:'smooth',block:'start'});">See where our members go &rarr;</a>
+      </aside>
+
+    </div>
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid var(--border);margin-top:8px;">
 
@@ -7416,6 +7492,109 @@ setTimeout(() => {
     if (!current) current = 'home';
     if (validPages.includes(current)) showPage(current, false);
   });
+</script>
+
+<script>
+/* ══════════════════════════════════════════════════════════════════
+   LIVE INSTAGRAM FEED  —  home page "Latest from Instagram" section
+
+   HOW TO TURN THIS ON
+   1. Make @texasufa a Professional account (Creator or Business).
+      Instagram > Settings > Account type. Free, ~30 seconds, the
+      account still looks identical to followers. Meta killed public /
+      personal-account API access on Dec 4 2024, so this step is
+      required no matter which service you use.
+   2. Sign up at behold.so (or feedframer.com), connect @texasufa,
+      and create a *JSON* feed (not the widget).
+   3. Paste the feed URL into IG_FEED_URL below.
+
+   Until IG_FEED_URL is filled in, this script does nothing and the
+   three hand-coded cards in the HTML stay exactly as they are.
+   If the feed ever fails to load, those same cards show as a
+   fallback, so the section never renders empty.
+   ══════════════════════════════════════════════════════════════════ */
+(function () {
+
+  const IG_FEED_URL  = 'https://feedframer.com/api/v1/me?api_key=49f2f3a72b922ac703b8961da7d955b8a00f362c7e085e2cac51f30a5ed758d9';
+  const IG_POST_COUNT = 3;   // how many posts to show
+
+  if (!IG_FEED_URL) return;
+
+  const grid = document.querySelector('#page-home .insta-grid');
+  if (!grid) return;
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+    });
+  }
+
+  // First sentence / line of the caption, trimmed to fit the card.
+  function shortCaption(post) {
+    const raw = String(post.caption || post.prunedCaption || '')
+      .replace(/#[^\s#]+/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+    if (!raw) return '';
+    const first = raw.split(/[.!?\u2022|\u2014]/)[0].trim();
+    return first.length > 58 ? first.slice(0, 55).trim() + '\u2026' : first;
+  }
+
+  // Videos have no usable mediaUrl for an <img>, so prefer the thumbnail.
+  // `sizes` is Premium-only on FeedFramer and is keyed by pixel width
+  // ("768"); Behold nests objects instead ({ medium: { mediaUrl } }).
+  // Handle both, and fall through to mediaUrl when neither is present.
+  function imageFor(post) {
+    const sz = post.sizes;
+    if (sz) {
+      const pick = sz['768'] || sz['960'] || sz['1200'] || sz['320'] ||
+                   sz.medium || sz.large || sz.full;
+      if (typeof pick === 'string') return pick;
+      if (pick && pick.mediaUrl) return pick.mediaUrl;
+    }
+    if (post.mediaType === 'VIDEO' || post.media_type === 'VIDEO' ||
+        post.mediaType === 'REELS' || post.media_type === 'REELS') {
+      const thumb = post.thumbnailUrl || post.thumbnail_url;
+      if (thumb) return thumb;
+    }
+    return post.mediaUrl || post.media_url || '';
+  }
+
+  // Only fetch what we render, newest first. Harmless on providers that
+  // ignore these params.
+  const url = IG_FEED_URL +
+    (IG_FEED_URL.indexOf('?') === -1 ? '?' : '&') +
+    'page[size]=' + IG_POST_COUNT + '&sort=-published_at';
+
+  fetch(url)
+    .then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .then(function (data) {
+      const posts = (Array.isArray(data) ? data : (data.posts || []))
+        .slice(0, IG_POST_COUNT);
+      const cards = posts.map(function (post) {
+        const img = imageFor(post);
+        if (!img) return '';
+        const cap = shortCaption(post);
+        return '<a href="' + esc(post.permalink) + '" target="_blank" rel="noopener noreferrer" class="insta-card reveal visible">' +
+                 '<img loading="lazy" src="' + esc(img) + '" alt="' + esc(cap || 'UFA Instagram post') + '">' +
+                 '<div class="insta-meta">' +
+                   '<strong class="insta-handle" style="color:var(--green-accent)">@texasufa</strong>' +
+                   (cap ? ' <span class="insta-handle">\u00b7 ' + esc(cap) + '</span>' : '') +
+                 '</div>' +
+               '</a>';
+      }).filter(Boolean);
+
+      if (cards.length) grid.innerHTML = cards.join('');
+    })
+    .catch(function (err) {
+      // Keep the hand-coded fallback cards on screen.
+      console.warn('Instagram feed unavailable, showing fallback posts.', err);
+    });
+
+})();
 </script>
 </body>
 </html>
