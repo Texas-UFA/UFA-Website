@@ -745,10 +745,23 @@
     border: 1px solid var(--border);
     text-decoration: none;
     display: block;
-    transition: box-shadow 0.2s, transform 0.2s;
+    transition: box-shadow 0.3s ease, transform 0.3s ease, border-color 0.3s ease;
   }
-  .insta-card:hover { box-shadow: 0 6px 24px rgba(0,0,0,0.08); transform: translateY(-2px); }
-  .insta-card img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; }
+  .insta-card:hover {
+    box-shadow: 0 14px 38px rgba(28,43,28,0.16);
+    transform: translateY(-6px);
+    border-color: rgba(61,107,61,0.35);
+  }
+  .insta-card img {
+    width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block;
+    transition: transform 0.55s cubic-bezier(.2,.7,.3,1);
+  }
+  /* Image zooms inside the card's clipped corners; the meta row lifts its
+     contrast so the whole tile reacts, not just the shadow. */
+  .insta-card:hover img { transform: scale(1.07); }
+  .insta-card .insta-meta { transition: background 0.25s ease; }
+  .insta-card:hover .insta-meta { background: var(--green-wash); }
+  .insta-card:hover .insta-handle { color: var(--green-mid); }
   .insta-meta { padding: 16px 20px; display: flex; align-items: center; gap: 10px; }
   .insta-handle { font-size: 13px; color: var(--text-muted); }
   .insta-handle strong { color: var(--green-accent); font-weight: 500; }
@@ -808,42 +821,22 @@ background-position: center 95%;
     margin-bottom: 48px;
   }
   .why-intro .section-subtitle { margin-bottom: 0; }
-  .why-glance {
-    background: var(--white);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 24px 26px 22px;
+  .why-photo {
     margin-top: 6px;
+    border-radius: 10px;
+    overflow: hidden;
+    line-height: 0;
   }
-  .why-glance-label {
-    font-size: 11px; font-weight: 500;
-    letter-spacing: 0.18em; text-transform: uppercase;
-    color: var(--green-logo);
-    margin-bottom: 12px;
+  .why-photo img {
+    width: 100%;
+    height: 230px;
+    object-fit: cover;
+    display: block;
   }
-  .why-glance-row {
-    display: flex; justify-content: space-between; align-items: baseline;
-    gap: 16px; padding: 11px 0;
-    border-top: 1px solid var(--border);
-  }
-  .why-glance-row span { font-size: 13px; color: var(--text-muted); }
-  .why-glance-row strong {
-    font-family: var(--font-display);
-    font-size: 20px; font-weight: 500;
-    color: var(--text-dark); line-height: 1;
-    white-space: nowrap;
-  }
-  .why-glance-link {
-    display: inline-block; margin-top: 16px;
-    font-size: 13px; font-weight: 500;
-    color: var(--green-accent); text-decoration: none;
-    border-bottom: 1px solid transparent;
-    transition: border-color 0.2s;
-  }
-  .why-glance-link:hover { border-bottom-color: var(--green-accent); }
   @media (max-width: 1024px) {
     .why-intro { grid-template-columns: 1fr; gap: 32px; margin-bottom: 32px; }
-    .why-glance { margin-top: 0; max-width: 420px; }
+    .why-photo { margin-top: 0; max-width: 460px; }
+    .why-photo img { height: 200px; }
   }
 
   .story-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; }
@@ -2686,9 +2679,9 @@ nav .nav-links.open {
    inside step 05 so the sequence ends on the payoff, not on a qualifier. */
 .iv-fund-note {
   position: relative; z-index: 1;
-  margin: 34px 0 0; padding-top: 18px;
-  border-top: 1px solid rgba(214,232,214,.16);
-  font-size: 13px; color: rgba(255,255,255,.45);
+  margin: 26px 0 0;
+  font-size: 12.5px; font-style: italic;
+  color: rgba(255,255,255,.38);
   line-height: 1.6;
 }
 /* the rail */
@@ -3555,10 +3548,10 @@ nav .nav-links.open {
         <div class="iv-eyebrow">A student-run fund</div>
         <h3>Pitch a stock. If the team's convinced, the fund actually buys it.</h3>
         <div class="iv-flow">
-          <div class="iv-step"><div class="n">01</div><div class="t">Research</div><div class="d">Pick a company, dig into the fundamentals.</div></div>
-          <div class="iv-step"><div class="n">02</div><div class="t">Build the Model</div><div class="d">Build a discounted cash flow model and competitor analysis.</div></div>
+          <div class="iv-step"><div class="n">01</div><div class="t">Research</div><div class="d">Pick a company and dig in.</div></div>
+          <div class="iv-step"><div class="n">02</div><div class="t">Build the Model</div><div class="d">Build a DCF and comps.</div></div>
           <div class="iv-step"><div class="n">03</div><div class="t">Pitch the Stock</div><div class="d">Present and defend your thesis.</div></div>
-          <div class="iv-step"><div class="n">04</div><div class="t">Tally Votes</div><div class="d">Members decide if the pitch passes.</div></div>
+          <div class="iv-step"><div class="n">04</div><div class="t">Tally Votes</div><div class="d">Members vote on the pitch.</div></div>
           <div class="iv-step"><div class="n">05</div><div class="t">Start the Position</div><div class="d">Winning ideas enter the portfolio.</div></div>
         </div>
         <p class="iv-fund-note">Final allocation decisions rest with the fund team.</p>
@@ -3581,7 +3574,7 @@ nav .nav-links.open {
         <div>
           <div class="iv-idx">What you'll produce</div>
           <h4>Publish tangible equity research</h4>
-          <p>Every member contributes to our annual equity research journal &mdash; in-depth analysis of public companies across TMT, healthcare, energy, financial, consumer, and industrial verticals. Researched, written, and defended the way an analyst would, it's a portfolio piece you can hand a recruiter.</p>
+          <p>Every member contributes to our annual equity research journal, covering public companies across six sectors. Researched and defended the way an analyst would &mdash; a portfolio piece you can hand a recruiter.</p>
           <a class="iv-link" href="/publications" onclick="showPage('publications');return false;">Read the 2025 journal &rarr;</a>
         </div>
         <div class="iv-media iv-media-cover">
@@ -3607,7 +3600,7 @@ nav .nav-links.open {
         <div>
           <div class="iv-idx">Where it leads</div>
           <h4>Recruit with support</h4>
-          <p>Technical bootcamps, resume reviews, and mock interviews, run by upperclassmen who just went through recruiting themselves. Members go on to IB, PE, and asset management roles across the Street.</p>
+          <p>Bootcamps, resume reviews, and mock interviews run by upperclassmen who just went through it. Members land IB, PE, and asset management roles across the Street.</p>
           <a class="iv-link" href="/why-ufa" onclick="showPage('why-ufa');return false;">See where our members place &rarr;</a>
         </div>
         <div class="iv-media">
@@ -3718,7 +3711,7 @@ nav .nav-links.open {
     <h2 class="section-title">Choose your level of involvement</h2>
     <p class="section-subtitle">All UT Austin students are welcome. No prior finance experience required.</p>
     <div class="membership-grid reveal">
-      <div style="grid-column:1/-1;background:var(--green-wash);border:2px solid var(--green-accent);border-radius:8px;padding:20px 28px;display:flex;align-items:center;gap:16px;margin-bottom:0;flex-wrap:wrap;">
+      <div style="grid-column:1/-1;background:var(--green-wash);border:1px solid var(--green-accent);border-radius:8px;padding:20px 28px;display:flex;align-items:center;gap:16px;margin-bottom:0;flex-wrap:wrap;">
         <span style="font-size:14px;font-weight:700;color:var(--green-accent);letter-spacing:0.08em;text-transform:uppercase;">Next Recruitment Cycle</span>
         <span style="font-size:15px;color:var(--text-dark);">Analyst, Investment Associate, and Consulting Associate applications open <strong>Fall 2026 (September)</strong>.</span>
       </div>
@@ -3871,7 +3864,7 @@ nav .nav-links.open {
     </div><!-- /faq-grid -->
       
 
-    <div class="reveal" style="margin-top:40px;padding:28px 32px;background:var(--green-wash);border-radius:8px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;">
+    <div class="reveal" style="margin:40px auto 0;max-width:720px;padding:28px 32px;background:var(--green-wash);border-radius:8px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;">
       <div>
         <div style="font-family:var(--font-display);font-size:18px;font-weight:500;margin-bottom:6px;">Still have questions?</div>
         <p style="font-size:14px;color:var(--text-muted);">Reach out directly — we're happy to chat.</p>
@@ -4187,16 +4180,12 @@ nav .nav-links.open {
         <p class="section-subtitle">UFA is built around you. We offer the breadth, access, and community to explore every corner of finance on your own terms, without locking you into a single path before you're ready.</p>
       </div>
 
-      <!-- Top-right stat card. Edit the rows below to change the numbers. -->
-      <aside class="why-glance reveal">
-        <div class="why-glance-label">UFA at a glance</div>
-        <div class="why-glance-row"><span>Founded</span><strong>1951</strong></div>
-        <div class="why-glance-row"><span>Active members</span><strong>300+</strong></div>
-        <div class="why-glance-row"><span>Placement firms</span><strong>50+</strong></div>
-        <div class="why-glance-row"><span>Speakers per semester</span><strong>12+</strong></div>
-        <div class="why-glance-row"><span>We meet</span><strong>Wednesdays</strong></div>
-        <a class="why-glance-link" href="#placements-section" onclick="event.preventDefault();document.getElementById('placements-section').scrollIntoView({behavior:'smooth',block:'start'});">See where our members go &rarr;</a>
-      </aside>
+      <!-- Top-right photo. Swap the src for any R2 image. -->
+      <div class="why-photo reveal">
+        <img loading="lazy"
+             src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/IMG_3346.JPG"
+             alt="UFA members at an intramural volleyball game">
+      </div>
 
     </div>
 
