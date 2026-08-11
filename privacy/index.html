@@ -816,6 +816,12 @@ background-position: center 95%;
   /* ── LEGAL PAGES ──
      Long-form prose (privacy policy). Narrow measure, generous leading —
      these are read rather than scanned. */
+  .legal-title {
+    font-family: var(--font-display);
+    font-size: clamp(32px, 4vw, 46px); font-weight: 500;
+    color: var(--text-dark); line-height: 1.1;
+    margin: 0 0 18px;
+  }
   .legal-updated { font-size: 13px; color: var(--text-muted); margin: 0 0 32px; }
   .legal-p { font-size: 15.5px; color: var(--text-mid); line-height: 1.8; margin: 0 0 18px; }
   .legal-h { font-family: var(--font-display); font-size: 24px; font-weight: 500; color: var(--text-dark); margin: 40px 0 14px; }
@@ -1036,8 +1042,6 @@ align-items: flex-end;
   .membership-badge.closed { background: #f4e6e6; color: #8b2e2e; }
   .membership-title { font-family: var(--font-display); font-size: 22px; font-weight: 500; margin-bottom: 12px; }
   .membership-desc { font-size: 14px; color: var(--text-muted); line-height: 1.7; margin-bottom: 20px; }
-  .membership-where { font-size: 13px; color: var(--text-muted); line-height: 1.6; margin: -8px 0 20px; }
-  .membership-where strong { color: var(--text-dark); font-weight: 500; }
   .membership-price { font-size: 22px; font-weight: 500; color: var(--green-dark); margin-bottom: 4px; }
   .membership-price-note { font-size: 12px; color: var(--text-muted); margin-bottom: 20px; }
 
@@ -3798,8 +3802,7 @@ footer { padding-bottom: 92px; }
       <div class="membership-card featured">
         <div class="membership-badge open">Open year-round</div>
         <div class="membership-title">General Membership</div>
-        <p class="membership-desc">Attend weekly Wednesday speaker meetings, access networking events, and get access to the full UFA community. Open to all UT students at any time — no application required.</p>
-        <p class="membership-where"><strong>Where:</strong> McCombs, 5th floor. Room is announced each week before the meeting.</p>
+        <p class="membership-desc">Attend weekly Wednesday speaker meetings on the 5th floor of McCombs, access networking events, and get access to the full UFA community. Open to all UT students at any time — no application required.</p>
         <div class="membership-price">$90 / year</div>
         <div class="membership-price-note">or $55 per semester</div>
         <a href="https://utexas.campuslabs.com/engage/organization/texasufa" target="_blank" rel="noopener noreferrer" class="btn-primary">Join on HornsLink</a>
@@ -4372,14 +4375,9 @@ footer { padding-bottom: 92px; }
      PRIVACY POLICY
 ══════════════════════════════════ -->
 <div id="page-privacy" class="page">
-  <div class="page-hero" style="min-height:280px;">
-    <div class="page-hero-content">
-      <div class="page-eyebrow">Legal</div>
-      <h1 class="page-hero-title">Privacy Policy</h1>
-    </div>
-  </div>
-
   <div class="section" style="max-width:820px;margin:0 auto;">
+    <div class="section-tag">Legal</div>
+    <h1 class="legal-title">Privacy Policy</h1>
     <p class="legal-updated">Last updated: August 2026</p>
 
     <p class="legal-p">The University Finance Association ("UFA," "we," "us") is a student organization at
