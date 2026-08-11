@@ -843,8 +843,6 @@ background-position: center 95%;
     display: grid;
     grid-template-columns: minmax(0, 1fr) 620px;
     gap: 56px;
-    /* The original height read better — the extra size comes from the wider
-       column above, not from stretching the photo down. */
     align-items: start;
     margin-bottom: 48px;
   }
@@ -872,9 +870,10 @@ background-position: center 95%;
   .why-photo img,
   .why-photo img.reveal,
   .why-photo img.reveal.visible {
-    /* Slightly less than the old 1.8 because the frame is wider now. */
-    transform: scale(1.65);
-    transform-origin: center 72%;
+    /* Frame is now ~320px+ tall rather than 235px, so it needs far less
+       scaling to fill. 1.8 on the taller frame would crop the group's heads. */
+    transform: scale(1.2);
+    transform-origin: center 60%;
   }
   @media (max-width: 1024px) {
     .why-intro { grid-template-columns: 1fr; gap: 32px; margin-bottom: 32px; }
@@ -2909,10 +2908,6 @@ footer { padding-bottom: 76px; }
 .iv-social { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; margin-top: 0; padding-top: 44px; border-top: 1px solid var(--border); }
 .iv-social img { width: 100%; height: var(--iv-media-h); object-fit: cover; object-position: center 30%; border-radius: 12px; display: block; }
 .iv-social-photo-frame { border-radius: 12px; overflow: hidden; line-height: 0; }
-/* Board-dinner photo (About page) — push in on the table on desktop too. */
-.about-dinner-photo,
-.about-dinner-photo.reveal,
-.about-dinner-photo.reveal.visible { transform: scale(1.18); transform-origin: center 62%; }
 /* Zoom onto the group — the skyline above them was taking up most of the frame.
    .reveal/.visible selectors are required: the JS tags every img with .reveal
    and `.reveal.visible { transform: none }` would otherwise cancel this out. */
@@ -2950,8 +2945,8 @@ footer { padding-bottom: 76px; }
      frame rather than pushing the people out of it. The .reveal/.visible
      selectors are needed because `.reveal.visible { transform: none }`
      outranks a plain element rule and would cancel this. */
-  transform: scale(1.18);
-  transform-origin: center 36%;
+  transform: scale(1.45);
+  transform-origin: center 34%;
 }
 
 /* ── CONSULTING BULLETS ──
@@ -3015,7 +3010,7 @@ footer { padding-bottom: 76px; }
   .iv-social-friendship-photo,
   .iv-social-friendship-photo.reveal,
   .iv-social-friendship-photo.reveal.visible {
-    transform: scale(1.28);
+    transform: scale(1.18);
     transform-origin: center 60%;
     object-position: center 18% !important;
   }
@@ -3289,8 +3284,6 @@ footer { padding-bottom: 76px; }
      column went full-width. */
   .about-join-cta { text-align: center !important; }
 
-  /* Analyst case-competition photo: anchored to the bottom of the frame where
-     the group stands, with only a light scale to trim the blank wall above. */
   .team-photo-tall.analyst-comp-photo img {
     object-position: center 100% !important;
     transform: scale(1.08) !important;
@@ -3309,54 +3302,14 @@ footer { padding-bottom: 76px; }
     object-position: center 22% !important;
   }
 
-  /* Board-dinner photo: push in so the group reads larger. */
-  .about-dinner-photo,
-  .about-dinner-photo.reveal,
-  .about-dinner-photo.reveal.visible {
-    transform: scale(1.35) !important;
-    transform-origin: center 65% !important;
-  }
+  .mission-band-img img { object-position: center 42% !important; }
+  .iv-social-friendship-photo { object-position: center 10% !important; }
 
-  .why-photo img,
-  .why-photo img.reveal,
-  .why-photo img.reveal.visible {
-    transform: scale(2) !important;
-    transform-origin: center 70% !important;
-  }
-
-  /* Home mission-band photo. Lives here (not in the earlier mobile block)
-     because the JS tags every img with .reveal, and `.reveal.visible
-     { transform: none }` (0,2,0) outranks `.mission-band-img img` (0,1,1)
-     and was silently cancelling it.
-     transform-origin sits high so the zoom grows downward — the back row's
-     heads stay in frame instead of being scaled off the top. */
-  .mission-band-img img,
-  .mission-band-img img.reveal,
-  .mission-band-img img.reveal.visible {
-    transform: scale(1.5) !important;
-    transform-origin: center 22% !important;
-    object-position: center 42% !important;
-  }
-
-  /* Ice-skating photo: the crouching person at the bottom kept ending up as a
-     stray head along the lower edge. Anchoring the zoom near the top of the
-     frame pushes the bottom of the photo out of view entirely. */
-  .iv-social-friendship-photo,
-  .iv-social-friendship-photo.reveal,
-  .iv-social-friendship-photo.reveal.visible {
-    transform: scale(1.38) !important;
-    transform-origin: center 18% !important;
-    object-position: center 10% !important;
-  }
-
-  /* Instagram cards were full-bleed squares and dominated the phone screen. */
   .insta-card { max-width: 290px; margin: 0 auto; width: 100%; }
 
-  /* Centred text in a tinted box read awkwardly on a narrow screen. */
   .faq-cta-card { flex-direction: column !important; align-items: stretch !important; text-align: left !important; }
   .faq-cta-card .btn-primary { width: 100%; text-align: center; }
 
-  /* Contact hero — gentle push-in only. */
   .contact-hero {
     background-size: 108% !important;
     background-position: center 45% !important;
@@ -7602,6 +7555,21 @@ setTimeout(() => {
       // recalculation can no longer affect page flow, so there is nothing
       // left to lock and nothing left to jump.
 
+      // Size the stage to the PDF's OWN proportions. The CSS aspect-ratio was
+      // a guess (US Letter); whenever it didn't match the real page shape,
+      // StPageFlip letterboxed the book inside the stage — and it re-centres
+      // that leftover slack partway through a turn, which is the vertical
+      // jiggle that survived on phones (portrait, one page) even after the
+      // wrapper height itself was pinned. Matching the ratio exactly leaves
+      // no slack to re-centre.
+      function sizePubFlipStage() {
+        if (!wrapEl) return;
+        const onePage = window.matchMedia('(max-width: 768px)').matches;
+        wrapEl.style.aspectRatio = String(onePage ? pageAspect : pageAspect * 2);
+      }
+      sizePubFlipStage();
+      window.addEventListener('resize', sizePubFlipStage);
+
       const pageInputEl = document.getElementById('pub-flipbook-pageinput');
       const sliderEl = document.getElementById('pub-flipbook-slider');
       if (pageInputEl) pageInputEl.max = totalPages;
@@ -8024,6 +7992,50 @@ setTimeout(() => {
 
 })();
 </script>
+
+<style>
+/* ══════════════════════════════════════════════════════════════════
+   ZOOM + SCROLL-REVEAL COMPOSITION
+   Several photos are zoomed with transform: scale(). The scroll-reveal
+   animation ALSO animates transform (translateY(24px) → 0). Two rules,
+   one property — whichever won simply erased the other. That's why every
+   zoomed photo faded in flat while untouched photos still slid up.
+   The zoom now lives in --z / --zo custom properties and the two rules
+   below compose it with the reveal offset, so both survive.
+   ══════════════════════════════════════════════════════════════════ */
+.why-photo img,
+.consult-split-photo img,
+.iv-social-friendship-photo,
+.about-dinner-photo,
+.mission-band-img img {
+  transform: translateY(0) scale(var(--z, 1)) !important;
+  transform-origin: var(--zo, center center) !important;
+}
+.why-photo img.reveal:not(.visible),
+.consult-split-photo img.reveal:not(.visible),
+.iv-social-friendship-photo.reveal:not(.visible),
+.about-dinner-photo.reveal:not(.visible),
+.mission-band-img img.reveal:not(.visible) {
+  transform: translateY(24px) scale(var(--z, 1)) !important;
+}
+
+/* Desktop zoom levels */
+.why-photo img              { --z: 1.65; --zo: center 72%; }
+.consult-split-photo img    { --z: 1.18; --zo: center 36%; }
+.iv-social-friendship-photo { --z: 1.32; --zo: center 62%; }
+.about-dinner-photo         { --z: 1.18; --zo: center 62%; }
+.mission-band-img img       { --z: 1.30; --zo: center center; }
+
+@media (max-width: 820px) {
+  .consult-split-photo img  { --z: 1.6;  --zo: center 32%; }
+}
+@media (max-width: 768px) {
+  .why-photo img              { --z: 2;    --zo: center 70%; }
+  .iv-social-friendship-photo { --z: 1.38; --zo: center 18%; }
+  .about-dinner-photo         { --z: 1.35; --zo: center 65%; }
+  .mission-band-img img       { --z: 1.5;  --zo: center 22%; }
+}
+</style>
 </body>
 </html>
 <!-- PORTAL_SCRIPT_MARKER -->
