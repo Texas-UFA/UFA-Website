@@ -850,7 +850,7 @@ background-position: center 95%;
     width: 100%;
     height: 235px;
     object-fit: cover;
-    object-position: center 58%;
+    object-position: center 35%;
     display: block;
   }
   /* cover already matches the frame's width, so object-position alone can't
@@ -863,7 +863,7 @@ background-position: center 95%;
   .why-photo img,
   .why-photo img.reveal,
   .why-photo img.reveal.visible {
-    transform: scale(1.4);
+    transform: scale(1.8);
     transform-origin: center 72%;
   }
   @media (max-width: 1024px) {
@@ -2814,9 +2814,13 @@ footer { padding-bottom: 92px; }
 
 .iv-row { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; padding: 44px 0; border-top: 1px solid var(--border); }
 .iv-row.iv-flip .iv-media { order: -1; }
-.iv-idx { font-family: var(--font-display); font-size: 15px; color: var(--green-accent); letter-spacing: .12em; margin-bottom: 14px; }
+.iv-idx {
+  font-family: var(--font-body); font-size: 12px; font-weight: 500;
+  letter-spacing: .18em; text-transform: uppercase;
+  color: var(--green-logo); margin-bottom: 14px;
+}
 .iv-row h4 { font-family: var(--font-display); font-size: 31px; font-weight: 500; margin-bottom: 16px; line-height: 1.2; color: var(--text-dark); }
-.iv-row p { font-size: 17px; color: var(--text-muted); line-height: 1.75; margin-bottom: 20px; }
+.iv-row p { font-size: 15px; color: var(--text-muted); line-height: 1.75; margin-bottom: 20px; }
 .iv-media > img { width: 100%; height: var(--iv-media-h); object-fit: cover; border-radius: 12px; }
 .iv-link { color: var(--green-accent); font-weight: 500; font-size: 16.5px; text-decoration: none; border-bottom: 1px solid currentColor; padding-bottom: 1px; }
 
@@ -2884,7 +2888,9 @@ footer { padding-bottom: 92px; }
   display: grid; grid-template-columns: 1fr 1fr; gap: 56px;
   align-items: stretch; margin-top: 56px; margin-bottom: 48px;
 }
-.consult-split-list { border-top: 1px solid var(--border); }
+/* align-self:center vertically centres the list against the photo column,
+   which is stretched to full row height. */
+.consult-split-list { border-top: 1px solid var(--border); align-self: center; }
 .consult-split-photo {
   border-radius: 12px; overflow: hidden;
   order: -1; position: relative;
@@ -3656,7 +3662,7 @@ footer { padding-bottom: 92px; }
       <!-- ROW: equity research journal -->
       <div class="iv-row reveal">
         <div>
-          <div class="iv-idx">What you'll produce</div>
+          <div class="section-tag">What you'll produce</div>
           <h4>Publish tangible equity research</h4>
           <p>Every member contributes to our annual equity research journal, covering public companies across six sectors. Researched and defended the way an analyst would &mdash; a portfolio piece you can hand a recruiter.</p>
           <a class="iv-link" href="/publications" onclick="showPage('publications');return false;">Read the 2025 journal &rarr;</a>
@@ -3682,7 +3688,7 @@ footer { padding-bottom: 92px; }
       <!-- ROW: recruiting outcomes -->
       <div class="iv-row iv-flip reveal">
         <div>
-          <div class="iv-idx">Where it leads</div>
+          <div class="section-tag">Where it leads</div>
           <h4>Recruit with support</h4>
           <p>Bootcamps, resume reviews, and mock interviews run by upperclassmen who just went through it. Members land IB, PE, and asset management roles across the Street.</p>
           <a class="iv-link" href="/why-ufa" onclick="showPage('why-ufa');return false;">See where our members place &rarr;</a>
@@ -3703,7 +3709,7 @@ footer { padding-bottom: 92px; }
            rows alternate: cover right → logos left → photo right. -->
       <div class="iv-social reveal">
         <div>
-          <div class="iv-idx">Beyond career prep</div>
+          <div class="section-tag">Beyond career prep</div>
           <h4>Build lasting friendships</h4>
           <p>Team dinners, socials, and alumni events build a network that outlasts graduation. Learn from the people who came before you, and show up for the ones who come after.</p>
         </div>
@@ -3874,7 +3880,7 @@ footer { padding-bottom: 92px; }
         </div>
 
         <div class="recruit-step reveal">
-          <div class="recruit-dot recruit-dot--highlight"><span>07</span></div>
+          <div class="recruit-dot"><span>07</span></div>
           <div class="recruit-text"><div class="recruit-label">Interviews</div><div class="recruit-desc">Technical, behavioral, and fit interviews.</div><span class="recruit-badge">IA &amp; CA only</span></div>
         </div>
 
