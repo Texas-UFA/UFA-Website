@@ -7324,6 +7324,24 @@ setTimeout(() => {
       });
       pubFlipbookInstance.loadFromHTML(bookEl.querySelectorAll('.pub-flipbook-page'));
 
+      // In 'stretch' mode StPageFlip recalculates its own block height while a
+      // page is turning. The wrapper has no height of its own, so that reflows
+      // everything below it and the whole card visibly jumps up and drops back.
+      // Pinning the wrapper to the rendered height absorbs the recalculation.
+      // The flip animation itself is untouched.
+      let pubFlipResizeTimer;
+      function lockPubFlipHeight() {
+        if (!wrapEl || !bookEl) return;
+        wrapEl.style.minHeight = '';
+        const h = bookEl.getBoundingClientRect().height;
+        if (h > 0) wrapEl.style.minHeight = Math.ceil(h) + 'px';
+      }
+      setTimeout(lockPubFlipHeight, 80);
+      window.addEventListener('resize', function () {
+        clearTimeout(pubFlipResizeTimer);
+        pubFlipResizeTimer = setTimeout(lockPubFlipHeight, 150);
+      });
+
       const pageInputEl = document.getElementById('pub-flipbook-pageinput');
       const sliderEl = document.getElementById('pub-flipbook-slider');
       if (pageInputEl) pageInputEl.max = totalPages;
