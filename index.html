@@ -564,12 +564,14 @@
     max-width: 240px;
     object-fit: contain;
     opacity: 0 !important;
-    transform: translateY(16px) !important;
-    transition: opacity 0.8s ease, transform 0.8s ease !important;
+    /* `translate`, matching .reveal — see the note on .reveal. Keeps this
+       second animation system from ever colliding with a transform. */
+    translate: 0 16px !important;
+    transition: opacity 0.8s ease, translate 0.8s ease !important;
   }
   .placement-logo-img.logo-visible {
     opacity: 1 !important;
-    transform: translateY(0) !important;
+    translate: 0 0 !important;
   }
   .placement-logo-img.logo-visible:hover { opacity: 0.6 !important; }
   @media (max-width: 768px) {
@@ -860,13 +862,10 @@ background-position: center 95%;
     object-position: center 35%;
     display: block;
   }
-  /* cover already matches the frame's width, so object-position alone can't
-     zoom — the transform does. Origin sits low so the group's feet stay in
-     frame while the ceiling scales away. Raise the scale to push in further.
-     The extra .reveal/.visible selectors are required: the JS tags every img
-     with .reveal, and `.reveal.visible { transform: none }` outranks a plain
-     `.why-photo img` rule and was cancelling this out. The parent .why-photo
-     still carries the reveal animation, so nothing is lost. */
+  /* Superseded by the PHOTO ZOOMS block at the end of the file, which is the
+     single source of truth for every photo zoom. The .reveal/.visible
+     selectors here are vestigial — the reveal animates `translate` now, so it
+     no longer collides with transform. */
   .why-photo img,
   .why-photo img.reveal,
   .why-photo img.reveal.visible {
@@ -996,22 +995,31 @@ background-position: center 95%;
 
 .sticky-cta { display: none; }
 
+/* The reveal slide uses the INDEPENDENT `translate` property rather than
+   `transform`. That is the whole fix for the inconsistent animations: many
+   photos are zoomed with `transform: scale()`, and when the reveal also used
+   `transform` the two rules fought over one property — whichever won erased
+   the other, so zoomed photos faded in flat while untouched ones slid up.
+   `translate` composes with `transform` automatically, so every element
+   animates identically no matter what else is transforming it.
+   (`.reveal.visible { transform: none }` is deliberately gone — it was what
+   silently cancelled the zooms.) */
 .reveal {
   opacity: 0;
-  transform: translateY(24px);
-  transition: opacity 0.4s ease, transform 0.4s ease;
+  translate: 0 24px;
+  transition: opacity 0.4s ease, translate 0.4s ease;
 }
 .reveal.visible {
   opacity: 1;
-  transform: translateY(0);
+  translate: 0 0;
 }
 
 .blog-card-new.reveal {
-  transition: opacity 0.4s ease, transform 0.4s ease;
+  transition: opacity 0.4s ease, translate 0.4s ease;
 }
 
 .member-card.reveal {
-  transition: opacity 0.8s ease, transform 0.8s ease;
+  transition: opacity 0.8s ease, translate 0.8s ease;
 }
   /* ── HOW TO JOIN PAGE ──
      Layout for the multi-step join process on the Join page. */
@@ -2908,9 +2916,7 @@ footer { padding-bottom: 76px; }
 .iv-social { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; margin-top: 0; padding-top: 44px; border-top: 1px solid var(--border); }
 .iv-social img { width: 100%; height: var(--iv-media-h); object-fit: cover; object-position: center 30%; border-radius: 12px; display: block; }
 .iv-social-photo-frame { border-radius: 12px; overflow: hidden; line-height: 0; }
-/* Zoom onto the group — the skyline above them was taking up most of the frame.
-   .reveal/.visible selectors are required: the JS tags every img with .reveal
-   and `.reveal.visible { transform: none }` would otherwise cancel this out. */
+/* Superseded by the PHOTO ZOOMS block at the end of the file. */
 .iv-social-friendship-photo,
 .iv-social-friendship-photo.reveal,
 .iv-social-friendship-photo.reveal.visible {
@@ -2939,12 +2945,7 @@ footer { padding-bottom: 76px; }
   position: absolute; inset: 0;
   width: 100%; height: 100%; object-fit: cover;
   object-position: 55% 40%; display: block;
-  /* The pool table filled the bottom half of the frame. cover already matches
-     the frame width so object-position alone can't zoom — the transform does.
-     Origin sits where the group stands, so scaling pushes the table out of
-     frame rather than pushing the people out of it. The .reveal/.visible
-     selectors are needed because `.reveal.visible { transform: none }`
-     outranks a plain element rule and would cancel this. */
+  /* Zoom superseded by the PHOTO ZOOMS block at the end of the file. */
   transform: scale(1.45);
   transform-origin: center 34%;
 }
@@ -3036,8 +3037,8 @@ footer { padding-bottom: 76px; }
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  .reveal { opacity: 1 !important; transform: none !important; }
-  .placement-logo-img { opacity: 1 !important; transform: none !important; }
+  .reveal { opacity: 1 !important; translate: none !important; }
+  .placement-logo-img { opacity: 1 !important; translate: none !important; }
 }
 
 /* ── PUBLICATIONS FLIPBOOK: page gutter ──
@@ -3284,11 +3285,7 @@ footer { padding-bottom: 76px; }
      column went full-width. */
   .about-join-cta { text-align: center !important; }
 
-  .team-photo-tall.analyst-comp-photo img {
-    object-position: center 100% !important;
-    transform: scale(1.08) !important;
-    transform-origin: center 90% !important;
-  }
+
 
   /* Investment team header photo: crop from the BOTTOM ONLY. Scaling the image
      up would zoom the bottom row out of frame but take the people on the left
@@ -3302,18 +3299,10 @@ footer { padding-bottom: 76px; }
     object-position: center 22% !important;
   }
 
-  .mission-band-img img { object-position: center 42% !important; }
-  .iv-social-friendship-photo { object-position: center 10% !important; }
-
   .insta-card { max-width: 290px; margin: 0 auto; width: 100%; }
-
   .faq-cta-card { flex-direction: column !important; align-items: stretch !important; text-align: left !important; }
   .faq-cta-card .btn-primary { width: 100%; text-align: center; }
-
-  .contact-hero {
-    background-size: 108% !important;
-    background-position: center 45% !important;
-  }
+  .contact-hero { background-size: 108% !important; background-position: center 45% !important; }
 
   /* Publications hero was the only one running taller than the shared
      30vh / 180px sizing every other hero uses — a leftover 460px min-height
@@ -7556,12 +7545,9 @@ setTimeout(() => {
       // left to lock and nothing left to jump.
 
       // Size the stage to the PDF's OWN proportions. The CSS aspect-ratio was
-      // a guess (US Letter); whenever it didn't match the real page shape,
-      // StPageFlip letterboxed the book inside the stage — and it re-centres
-      // that leftover slack partway through a turn, which is the vertical
-      // jiggle that survived on phones (portrait, one page) even after the
-      // wrapper height itself was pinned. Matching the ratio exactly leaves
-      // no slack to re-centre.
+      // a guess (US Letter); when it didn't match the real page shape StPageFlip
+      // letterboxed the book inside the stage and re-centred that slack partway
+      // through a turn — the vertical jiggle that survived on phones.
       function sizePubFlipStage() {
         if (!wrapEl) return;
         const onePage = window.matchMedia('(max-width: 768px)').matches;
@@ -7995,45 +7981,35 @@ setTimeout(() => {
 
 <style>
 /* ══════════════════════════════════════════════════════════════════
-   ZOOM + SCROLL-REVEAL COMPOSITION
-   Several photos are zoomed with transform: scale(). The scroll-reveal
-   animation ALSO animates transform (translateY(24px) → 0). Two rules,
-   one property — whichever won simply erased the other. That's why every
-   zoomed photo faded in flat while untouched photos still slid up.
-   The zoom now lives in --z / --zo custom properties and the two rules
-   below compose it with the reveal offset, so both survive.
+   PHOTO ZOOMS — single source of truth.
+   Every zoomed photo is declared here so desktop and mobile stay in
+   step. These are plain `transform: scale()` and no longer need the
+   .reveal/.reveal.visible duplicate selectors that used to be sprinkled
+   around: the scroll-reveal now animates `translate`, an independent
+   property, so it composes with these instead of fighting them.
+   Each of these photos sits in a container with overflow:hidden.
    ══════════════════════════════════════════════════════════════════ */
-.why-photo img,
-.consult-split-photo img,
-.iv-social-friendship-photo,
-.about-dinner-photo,
-.mission-band-img img {
-  transform: translateY(0) scale(var(--z, 1)) !important;
-  transform-origin: var(--zo, center center) !important;
-}
-.why-photo img.reveal:not(.visible),
-.consult-split-photo img.reveal:not(.visible),
-.iv-social-friendship-photo.reveal:not(.visible),
-.about-dinner-photo.reveal:not(.visible),
-.mission-band-img img.reveal:not(.visible) {
-  transform: translateY(24px) scale(var(--z, 1)) !important;
-}
-
-/* Desktop zoom levels */
-.why-photo img              { --z: 1.65; --zo: center 72%; }
-.consult-split-photo img    { --z: 1.18; --zo: center 36%; }
-.iv-social-friendship-photo { --z: 1.32; --zo: center 62%; }
-.about-dinner-photo         { --z: 1.18; --zo: center 62%; }
-.mission-band-img img       { --z: 1.30; --zo: center center; }
+.why-photo img              { transform: scale(1.65) !important; transform-origin: center 72% !important; }
+.consult-split-photo img    { transform: scale(1.18) !important; transform-origin: center 36% !important; }
+.iv-social-friendship-photo { transform: scale(1.32) !important; transform-origin: center 62% !important; }
+.about-dinner-photo         { transform: scale(1.18) !important; transform-origin: center 62% !important; }
+.mission-band-img img       { transform: scale(1.30) !important; transform-origin: center center !important; }
 
 @media (max-width: 820px) {
-  .consult-split-photo img  { --z: 1.6;  --zo: center 32%; }
+  .consult-split-photo img  { transform: scale(1.6) !important; transform-origin: center 32% !important; }
 }
+
 @media (max-width: 768px) {
-  .why-photo img              { --z: 2;    --zo: center 70%; }
-  .iv-social-friendship-photo { --z: 1.38; --zo: center 18%; }
-  .about-dinner-photo         { --z: 1.35; --zo: center 65%; }
-  .mission-band-img img       { --z: 1.5;  --zo: center 22%; }
+  .why-photo img              { transform: scale(2) !important;    transform-origin: center 70% !important; }
+  .about-dinner-photo         { transform: scale(1.35) !important; transform-origin: center 65% !important; }
+  /* transform-origin sits high on these two so the zoom grows downward,
+     keeping the back row's heads in frame and pushing the crouching person
+     at the bottom of the skating photo fully out of view. */
+  .mission-band-img img       { transform: scale(1.5) !important;  transform-origin: center 22% !important; object-position: center 42% !important; }
+  .iv-social-friendship-photo { transform: scale(1.38) !important; transform-origin: center 18% !important; object-position: center 10% !important; }
+  .team-photo-tall.analyst-comp-photo img {
+    transform: scale(1.08) !important; transform-origin: center 90% !important; object-position: center 100% !important;
+  }
 }
 </style>
 </body>
