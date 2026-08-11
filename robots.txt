@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# Member-only area — nothing here is useful in search results.
+Disallow: /portal
+
+Sitemap: https://texasufa.org/sitemap.xml

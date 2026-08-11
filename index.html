@@ -5,7 +5,9 @@
     
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Texas UFA</title>
+    <!-- Full title matters: crawlers and social previews read this static tag,
+     not the one showPage() sets later in JS. -->
+<title>University Finance Association</title>
 
     <!-- SEO -->
     <meta name="description" content="UT Austin's oldest and largest finance organization, connecting ambitious students to Wall Street, private equity, and consulting since 1951.">
@@ -811,6 +813,15 @@ background-position: center 95%;
      at the top of each interior page. */
   .page-hero-title { font-family: var(--font-display); font-size: clamp(36px, 5vw, 56px); font-weight: 500; color: var(--white); line-height: 1.1; }
 
+  /* ── LEGAL PAGES ──
+     Long-form prose (privacy policy). Narrow measure, generous leading —
+     these are read rather than scanned. */
+  .legal-updated { font-size: 13px; color: var(--text-muted); margin: 0 0 32px; }
+  .legal-p { font-size: 15.5px; color: var(--text-mid); line-height: 1.8; margin: 0 0 18px; }
+  .legal-h { font-family: var(--font-display); font-size: 24px; font-weight: 500; color: var(--text-dark); margin: 40px 0 14px; }
+  .legal-h3 { font-size: 15px; font-weight: 600; color: var(--text-dark); margin: 26px 0 10px; }
+  .legal-link { color: var(--green-accent); text-decoration: underline; }
+
   /* ── WHY UFA INTRO ROW ──
      Two-column header for the "Start here. Go anywhere." section:
      eyebrow + title + subtitle on the left, the "UFA at a glance"
@@ -968,6 +979,8 @@ background-position: center 95%;
   transform: translateY(0);
 }
 
+.sticky-cta { display: none; }
+
 .reveal {
   opacity: 0;
   transform: translateY(24px);
@@ -1023,6 +1036,8 @@ align-items: flex-end;
   .membership-badge.closed { background: #f4e6e6; color: #8b2e2e; }
   .membership-title { font-family: var(--font-display); font-size: 22px; font-weight: 500; margin-bottom: 12px; }
   .membership-desc { font-size: 14px; color: var(--text-muted); line-height: 1.7; margin-bottom: 20px; }
+  .membership-where { font-size: 13px; color: var(--text-muted); line-height: 1.6; margin: -8px 0 20px; }
+  .membership-where strong { color: var(--text-dark); font-weight: 500; }
   .membership-price { font-size: 22px; font-weight: 500; color: var(--green-dark); margin-bottom: 4px; }
   .membership-price-note { font-size: 12px; color: var(--text-muted); margin-bottom: 20px; }
 
@@ -1946,6 +1961,23 @@ nav .nav-links.open {
   flex-wrap: nowrap;
   padding-bottom: 4px;
 }
+
+/* Sticky mobile CTA — Join is the conversion point, and on a phone it is
+   otherwise only reachable back up through the hamburger menu. */
+.sticky-cta {
+  display: block !important;
+  position: fixed; left: 16px; right: 16px; bottom: 16px; z-index: 900;
+  text-align: center;
+  padding: 15px 20px; border-radius: 8px;
+  background: var(--green-accent); color: #fff;
+  font-family: var(--font-body); font-size: 15px; font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 6px 24px rgba(28,43,28,0.28);
+}
+body[data-page="join"] .sticky-cta,
+body[data-page="portal"] .sticky-cta,
+body[data-page="contact"] .sticky-cta { display: none !important; }
+footer { padding-bottom: 92px; }
 
 /* Mission quote reads better centred once it's full-width */
 .mission-quote {
@@ -3767,6 +3799,7 @@ nav .nav-links.open {
         <div class="membership-badge open">Open year-round</div>
         <div class="membership-title">General Membership</div>
         <p class="membership-desc">Attend weekly Wednesday speaker meetings, access networking events, and get access to the full UFA community. Open to all UT students at any time — no application required.</p>
+        <p class="membership-where"><strong>Where:</strong> McCombs, 5th floor. Room is announced each week before the meeting.</p>
         <div class="membership-price">$90 / year</div>
         <div class="membership-price-note">or $55 per semester</div>
         <a href="https://utexas.campuslabs.com/engage/organization/texasufa" target="_blank" rel="noopener noreferrer" class="btn-primary">Join on HornsLink</a>
@@ -4260,7 +4293,7 @@ nav .nav-links.open {
       <div class="reveal" style="padding:48px 0 48px 48px;border-left:1px solid var(--border);">
         <div style="font-size:11px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-muted);margin-bottom:16px;">04</div>
         <h3 style="font-family:var(--font-display);font-size:28px;font-weight:400;color:var(--text-dark);line-height:1.2;margin:0 0 16px;">A community every week</h3>
-        <p style="font-size:15px;color:var(--text-muted);line-height:1.75;margin:0;">Every Wednesday we feed you. Showing up is easy when there is a meal waiting, and it is part of what makes UFA feel like a community rather than just another club.</p>
+        <p style="font-size:15px;color:var(--text-muted);line-height:1.75;margin:0;">Every Wednesday we feed you, on the 5th floor of McCombs. Showing up is easy when there is a meal waiting, and it is part of what makes UFA feel like a community rather than just another club.</p>
       </div>
 
     </div>
@@ -4334,6 +4367,78 @@ nav .nav-links.open {
 
 
 </div><!-- /why-ufa -->
+
+<!-- ══════════════════════════════════
+     PRIVACY POLICY
+══════════════════════════════════ -->
+<div id="page-privacy" class="page">
+  <div class="page-hero" style="min-height:280px;">
+    <div class="page-hero-content">
+      <div class="page-eyebrow">Legal</div>
+      <h1 class="page-hero-title">Privacy Policy</h1>
+    </div>
+  </div>
+
+  <div class="section" style="max-width:820px;margin:0 auto;">
+    <p class="legal-updated">Last updated: August 2026</p>
+
+    <p class="legal-p">The University Finance Association ("UFA," "we," "us") is a student organization at
+    The University of Texas at Austin. This policy explains what we collect through texasufa.org, why,
+    and who can see it.</p>
+
+    <h2 class="legal-h">What we collect</h2>
+
+    <h3 class="legal-h3">If you just browse the site</h3>
+    <p class="legal-p">We use Google Analytics, which collects standard usage data such as pages viewed,
+    approximate location derived from your IP address, referring site, and device and browser type. We use
+    this only to understand which pages people find useful. We do not try to identify individual visitors
+    from it.</p>
+
+    <h3 class="legal-h3">If you use the contact form</h3>
+    <p class="legal-p">We collect the name, email address, and message you submit. Messages are delivered to
+    our board inbox through EmailJS, a third-party email service. We use this only to reply to you.</p>
+
+    <h3 class="legal-h3">If you have a member portal account</h3>
+    <p class="legal-p">The portal stores your name, UT EID, email address, expected graduation year, your
+    role in UFA, and your account password. It also stores a record of your event attendance &mdash; which
+    meetings and events you checked into, on what dates, and the participation points you earned. Your name
+    and point total are visible to other signed-in members on the portal leaderboard.</p>
+
+    <h2 class="legal-h">Where your information is stored</h2>
+    <p class="legal-p">Member portal data is stored with Supabase, a third-party database provider. The site
+    itself is served through Cloudflare. Both providers process data on our behalf and are subject to their
+    own security and privacy practices.</p>
+
+    <h2 class="legal-h">Who can see it</h2>
+    <p class="legal-p">Member information is accessible only to the UFA executive board. <strong>We do not sell
+    your information, and we do not share it with sponsors, recruiters, employers, or any other outside
+    party.</strong> We may disclose information if required to by law or by university policy.</p>
+
+    <h2 class="legal-h">How long we keep it</h2>
+    <p class="legal-p">We retain member records for as long as you are a member and for a reasonable period
+    afterward so the board can maintain organizational history. You may ask us to delete your account at any
+    time.</p>
+
+    <h2 class="legal-h">Your choices</h2>
+    <p class="legal-p">You can view and update your name, email, and graduation year yourself on the Profile
+    tab of the member portal. You can ask us to correct or delete your information, or ask what we hold about
+    you, by emailing us. Most browsers also let you block analytics cookies, and doing so will not affect your
+    ability to use the site.</p>
+
+    <h2 class="legal-h">Students under 18</h2>
+    <p class="legal-p">This site is intended for university students. We do not knowingly collect information
+    from children under 13. If you believe a child under 13 has given us information, email us and we will
+    delete it.</p>
+
+    <h2 class="legal-h">Changes</h2>
+    <p class="legal-p">If we change this policy we will update the date at the top of this page.</p>
+
+    <h2 class="legal-h">Contact</h2>
+    <p class="legal-p">Questions about this policy, or requests about your data, can go to
+    <a href="mailto:financeassociationtx@gmail.com" class="legal-link">financeassociationtx@gmail.com</a>.</p>
+  </div>
+</div><!-- /privacy -->
+
 
 
 <!-- ══════════════════════════════════
@@ -6199,6 +6304,7 @@ async function loadAnalytics() {
         <li><a href="/join" onclick="showPage('join');return false;">FAQs</a></li>
         <li><a href="/contact" onclick="showPage('contact');return false;">Contact Us</a></li>
         <li><a href="/portal" onclick="showPage('portal');return false;">Member Portal</a></li>
+        <li><a href="/privacy" onclick="showPage('privacy');return false;">Privacy Policy</a></li>
       </ul>
     </div>
     <div>
@@ -6219,6 +6325,9 @@ async function loadAnalytics() {
     </div>
   </div>
 </footer>
+
+<!-- Sticky mobile CTA. Hidden on desktop and on pages where it's redundant. -->
+<a href="/join" class="sticky-cta" onclick="showPage('join');return false;">Join UFA</a>
 
 <script>
   /* ════════════════════════════════════════════════════════════════
@@ -6294,16 +6403,21 @@ async function loadAnalytics() {
 
   // Dynamic page titles
   const pageTitles = {
-    'home':         'Texas UFA — University Finance Association at UT Austin',
+    'home':         'University Finance Association',
     'why-ufa':      'Why UFA — Texas UFA',
     'about':        'Board — Texas UFA',
     'teams':        'Teams — Texas UFA',
     'join':         'Join — Texas UFA',
     'publications': 'Publications — Texas UFA',
     'contact':      'Contact — Texas UFA',
-    'portal':       'Member Portal — Texas UFA'
+    'portal':       'Member Portal — Texas UFA',
+    'privacy':      'Privacy Policy — Texas UFA'
   };
-  document.title = pageTitles[id] || 'Texas UFA — University Finance Association at UT Austin';
+  // Lets CSS know which page is showing, so the sticky mobile CTA can hide
+  // itself on pages where it would be redundant.
+  document.body.dataset.page = id;
+
+  document.title = pageTitles[id] || 'University Finance Association';
 
   // Dynamic meta descriptions — gives each page its own unique snippet in
   // search results instead of one generic description for the whole site.
@@ -6315,7 +6429,8 @@ async function loadAnalytics() {
     'join':         'Learn how to join the University Finance Association at UT Austin — recruitment timelines, requirements, and application info.',
     'publications': 'Read research, market analysis, and student publications from the University Finance Association at UT Austin.',
     'contact':      'Get in touch with the University Finance Association at UT Austin.',
-    'portal':       'Member portal for the University Finance Association at UT Austin.'
+    'portal':       'Member portal for the University Finance Association at UT Austin.',
+    'privacy':      'How the University Finance Association collects, stores, and uses information on texasufa.org.'
   };
   const descTag = document.querySelector('meta[name="description"]');
   if (descTag) descTag.setAttribute('content', pageDescriptions[id] || pageDescriptions['home']);
@@ -6710,7 +6825,7 @@ document.addEventListener('DOMContentLoaded', initLogoAnimation);
 // On load, restore page from the URL path — runs immediately, before
 // any other rendering, so there's no flash of the home page first.
 (function() {
-  const validPages = ['home','about','teams','join','publications','why-ufa','contact','portal'];
+  const validPages = ['home','about','teams','join','publications','why-ufa','contact','portal','privacy'];
   // Real path first (e.g. /about) — this is the primary, crawlable routing scheme.
   let current = window.location.pathname.replace(/^\/|\/$/g, '');
   if (!current) current = 'home';
@@ -7498,7 +7613,7 @@ setTimeout(() => {
   // restore the real-looking URL with history.replaceState so the
   // address bar still reads e.g. /publications, not /index.html.)
   (function() {
-    const validPages = ['home','about','teams','join','publications','why-ufa','contact','portal'];
+    const validPages = ['home','about','teams','join','publications','why-ufa','contact','portal','privacy'];
     const redirected = sessionStorage.getItem('ufa-redirect-path');
     let current;
     if (redirected) {
@@ -7524,7 +7639,7 @@ setTimeout(() => {
 
   // ── Browser back/forward button support ──
   window.addEventListener('popstate', function() {
-    const validPages = ['home','about','teams','join','publications','why-ufa','contact','portal'];
+    const validPages = ['home','about','teams','join','publications','why-ufa','contact','portal','privacy'];
     let current = window.location.pathname.replace(/^\/|\/$/g, '');
     if (!current) current = 'home';
     if (validPages.includes(current)) showPage(current, false);
