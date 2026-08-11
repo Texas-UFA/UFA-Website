@@ -746,7 +746,12 @@
     background: var(--white);
     border: 1px solid var(--border);
     text-decoration: none;
-    display: block;
+    /* Flex column (not block) so the meta row can grow into whatever height
+       the grid stretches the card to. As a block, a short one-line caption
+       left bare white card background below the meta — invisible normally,
+       but obvious on hover once the meta tinted green. */
+    display: flex;
+    flex-direction: column;
     transition: box-shadow 0.3s ease, transform 0.3s ease, border-color 0.3s ease;
   }
   .insta-card:hover {
@@ -764,7 +769,9 @@
   .insta-card .insta-meta { transition: background 0.25s ease; }
   .insta-card:hover .insta-meta { background: var(--green-wash); }
   .insta-card:hover .insta-handle, .insta-card:hover .insta-cap { color: var(--green-mid); }
-  .insta-meta { padding: 16px 20px; display: flex; align-items: center; gap: 10px; }
+  /* flex:1 makes the meta row absorb the card's leftover height, so its
+     hover tint covers the full block with no white strip beneath it. */
+  .insta-meta { padding: 16px 20px; display: flex; align-items: center; gap: 10px; flex: 1; }
   .insta-handle { font-size: 13px; color: var(--text-muted); }
   .insta-cap { font-size: 13px; color: var(--text-muted); }
   .insta-cap::before { content: '\00b7'; margin-right: 6px; }
@@ -834,8 +841,10 @@ background-position: center 95%;
      stat card on the right. Collapses to one column under 1024px. */
   .why-intro {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 520px;
+    grid-template-columns: minmax(0, 1fr) 620px;
     gap: 56px;
+    /* The original height read better — the extra size comes from the wider
+       column above, not from stretching the photo down. */
     align-items: start;
     margin-bottom: 48px;
   }
@@ -863,7 +872,8 @@ background-position: center 95%;
   .why-photo img,
   .why-photo img.reveal,
   .why-photo img.reveal.visible {
-    transform: scale(1.8);
+    /* Slightly less than the old 1.8 because the frame is wider now. */
+    transform: scale(1.65);
     transform-origin: center 72%;
   }
   @media (max-width: 1024px) {
@@ -1241,12 +1251,18 @@ align-items: flex-end;
     white-space: nowrap;
   }
   .blog-lightbox-actions .btn-outline { color: var(--green-dark) !important; border-color: var(--green-accent) !important; }
+  /* Sits INSIDE the panel's top-right corner. It used to float 44px above
+     the panel, which put it underneath the fixed nav on mobile and clipped
+     the ✕ entirely. Inside the panel it can never collide with the nav. */
   .blog-lightbox-close {
-    position: absolute; top: -44px; right: 0;
+    position: absolute; top: 12px; right: 12px; z-index: 10;
     width: 36px; height: 36px; border-radius: 50%; border: none;
-    background: rgba(255,255,255,0.15); color: #fff; font-size: 20px;
+    background: rgba(20,36,20,0.55); color: #fff; font-size: 18px; line-height: 1;
     cursor: pointer; display: flex; align-items: center; justify-content: center;
+    backdrop-filter: blur(4px);
+    transition: background 0.2s ease;
   }
+  .blog-lightbox-close:hover { background: rgba(20,36,20,0.8); }
   .blog-lightbox-nav {
     display: flex; align-items: center; justify-content: center;
     position: absolute; top: 50%; transform: translateY(-50%);
@@ -1967,21 +1983,33 @@ nav .nav-links.open {
 }
 
 /* Sticky mobile CTA — Join is the conversion point, and on a phone it is
-   otherwise only reachable back up through the hamburger menu. */
+   otherwise only reachable back up through the hamburger menu.
+
+   Styled as a compact centred pill rather than a full-bleed bar: the
+   edge-to-edge version read as a second chrome bar competing with the nav and
+   covered a full line of content. Auto width + a translucent border keeps it
+   present without dominating the viewport. */
 .sticky-cta {
-  display: block !important;
-  position: fixed; left: 16px; right: 16px; bottom: 16px; z-index: 900;
+  display: inline-block !important;
+  position: fixed; left: 50%; bottom: 20px; z-index: 900;
+  transform: translateX(-50%);
+  right: auto;
+  width: auto; max-width: calc(100% - 48px);
+  white-space: nowrap;
   text-align: center;
-  padding: 15px 20px; border-radius: 8px;
+  padding: 12px 30px; border-radius: 999px;
   background: var(--green-accent); color: #fff;
-  font-family: var(--font-body); font-size: 15px; font-weight: 600;
+  border: 1px solid rgba(255,255,255,0.22);
+  font-family: var(--font-body); font-size: 14.5px; font-weight: 600;
   text-decoration: none;
-  box-shadow: 0 6px 24px rgba(28,43,28,0.28);
+  box-shadow: 0 8px 28px rgba(28,43,28,0.34);
 }
 body[data-page="join"] .sticky-cta,
 body[data-page="portal"] .sticky-cta,
 body[data-page="contact"] .sticky-cta { display: none !important; }
-footer { padding-bottom: 92px; }
+/* Was 92px for the full-width bar; the pill is shorter so the footer needs
+   less clearance to keep its last row tappable. */
+footer { padding-bottom: 76px; }
 
 /* Mission quote reads better centred once it's full-width */
 .mission-quote {
@@ -2880,6 +2908,20 @@ footer { padding-bottom: 92px; }
 
 .iv-social { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; margin-top: 0; padding-top: 44px; border-top: 1px solid var(--border); }
 .iv-social img { width: 100%; height: var(--iv-media-h); object-fit: cover; object-position: center 30%; border-radius: 12px; display: block; }
+.iv-social-photo-frame { border-radius: 12px; overflow: hidden; line-height: 0; }
+/* Board-dinner photo (About page) — push in on the table on desktop too. */
+.about-dinner-photo,
+.about-dinner-photo.reveal,
+.about-dinner-photo.reveal.visible { transform: scale(1.18); transform-origin: center 62%; }
+/* Zoom onto the group — the skyline above them was taking up most of the frame.
+   .reveal/.visible selectors are required: the JS tags every img with .reveal
+   and `.reveal.visible { transform: none }` would otherwise cancel this out. */
+.iv-social-friendship-photo,
+.iv-social-friendship-photo.reveal,
+.iv-social-friendship-photo.reveal.visible {
+  transform: scale(1.32);
+  transform-origin: center 62%;
+}
 .iv-social h4 { font-family: var(--font-display); font-size: 31px; font-weight: 500; line-height: 1.2; margin-bottom: 16px; color: var(--text-dark); }
 .iv-social p { font-size: 17px; color: var(--text-muted); line-height: 1.75; }
 
@@ -2896,10 +2938,47 @@ footer { padding-bottom: 92px; }
   order: -1; position: relative;
   align-self: stretch; min-height: 0; height: 100%;
 }
-.consult-split-photo img {
+.consult-split-photo img,
+.consult-split-photo img.reveal,
+.consult-split-photo img.reveal.visible {
   position: absolute; inset: 0;
   width: 100%; height: 100%; object-fit: cover;
   object-position: 55% 40%; display: block;
+  /* The pool table filled the bottom half of the frame. cover already matches
+     the frame width so object-position alone can't zoom — the transform does.
+     Origin sits where the group stands, so scaling pushes the table out of
+     frame rather than pushing the people out of it. The .reveal/.visible
+     selectors are needed because `.reveal.visible { transform: none }`
+     outranks a plain element rule and would cancel this. */
+  transform: scale(1.18);
+  transform-origin: center 36%;
+}
+
+/* ── CONSULTING BULLETS ──
+   The dot is a flex sibling of the title+description block, so it used to be
+   pinned with a hand-tuned margin-top that drifted from the title's optical
+   centre. Instead the dot's box is exactly as tall as the title's line box
+   and centres the dot inside it — it tracks the title automatically. */
+.consult-bullet-dot {
+  flex-shrink: 0;
+  font-size: 17px;      /* resolves the em below against the title's size */
+  height: 1.3em;        /* == .consult-bullet-title line-height */
+  display: flex;
+  align-items: center;
+}
+.consult-bullet-dot::before {
+  content: '';
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--green-light);
+}
+.consult-bullet-title {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--text-dark);
+  margin-bottom: 6px;
 }
 
 @media (max-width: 820px) {
@@ -2933,12 +3012,23 @@ footer { padding-bottom: 92px; }
   }
   .iv-step:not(:last-child)::after { display: none; }
   .iv-row.iv-flip .iv-media { order: 0; }
-  .iv-social-friendship-photo {
-    transform: scale(1.08);
+  .iv-social-friendship-photo,
+  .iv-social-friendship-photo.reveal,
+  .iv-social-friendship-photo.reveal.visible {
+    transform: scale(1.28);
+    transform-origin: center 60%;
     object-position: center 18% !important;
   }
   .consult-split { grid-template-columns: 1fr; gap: 32px; }
   .consult-split-photo { min-height: 0; height: 280px; order: 0; }
+  /* The phone frame is much squarer than the desktop one, so cover keeps more
+     of the photo's height — i.e. more pool table. Push in a little harder. */
+  .consult-split-photo img,
+  .consult-split-photo img.reveal,
+  .consult-split-photo img.reveal.visible {
+    transform: scale(1.6);
+    transform-origin: center 32%;
+  }
 }
 
 /* ── REDUCED MOTION ──
@@ -2961,6 +3051,32 @@ footer { padding-bottom: 92px; }
    a real gap for the spine shadow to sit in. StPageFlip rewrites the page
    element's own style attribute every frame, so the inset has to live on an
    inner wrapper (and keys off the --left/--right classes it manages). */
+/* ── FLIPBOOK STAGE SIZING ──
+   StPageFlip in 'stretch' mode recalculates its own block height partway
+   through a page turn. While #pub-flipbook sat in normal flow that reflowed
+   everything below it, so the whole card visibly jumped up and dropped back
+   on every forward/backward click. (A JS height-lock used to paper over this
+   and lost the race.)
+
+   Now the wrapper owns the height via a fixed aspect ratio — two US-Letter
+   pages side by side, 17:11 — and the book is taken out of flow entirely.
+   There is no flow height left for the library to change, so the turn
+   animation runs against a stage that cannot move.
+
+   content-box keeps the mobile padding-bottom (which reserves room for the
+   arrow row) outside the ratio calculation. */
+#pub-flipbook-wrap {
+  box-sizing: content-box;
+  aspect-ratio: 17 / 11;
+  max-height: 85vh;
+}
+#pub-flipbook {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  width: 100% !important;
+  height: 100% !important;
+  max-height: none !important;
+}
 .pub-flipbook-page { background: transparent; }
 .pub-flipbook-page-inner {
   width: 100%;
@@ -3067,10 +3183,9 @@ footer { padding-bottom: 92px; }
    bleed, so those offsets pushed the arrows off-screen and on top of the page
    content — pull them inside and scale them down. */
 @media (max-width: 768px) {
-  #pub-flipbook {
-    height: 62vh !important;
-    max-height: 560px !important;
-  }
+  /* Portrait on a phone — StPageFlip shows one page, so the stage ratio
+     becomes a single US-Letter page rather than a two-page spread. */
+  #pub-flipbook-wrap { aspect-ratio: 8.5 / 11; max-height: 62vh; }
   /* No room beside the book on a phone, so the arrows stop floating over the
      page and become a normal row underneath it. */
   #pub-flipbook-wrap { padding-bottom: 64px; }
@@ -3115,6 +3230,146 @@ footer { padding-bottom: 92px; }
     display: block !important;
     width: 100% !important;
     box-sizing: border-box !important;
+  }
+}
+</style>
+
+<style>
+/* ══════════════════════════════════════════════════════════════════
+   LATE OVERRIDES
+   Loaded last on purpose — several of these neutralise earlier rules
+   of equal specificity and rely on source order to win.
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ── TOUCH: NO STICKY HOVER ──
+   A tap on a touch screen leaves the element in :hover until something else
+   is tapped. In the mobile drawer that meant the last item you opened stayed
+   highlighted forever — navigate to Publications and "Why UFA" still looked
+   selected. Neutralise hover wherever there's no real pointer; .active (set
+   by showPage) now provides the genuine current-page indicator instead. */
+/* Scoped to the drawer breakpoint too — above 1330px the nav is a horizontal
+   bar with its own padding, and a touch laptop/tablet shouldn't inherit the
+   drawer's 28px indent. */
+@media (hover: none) and (max-width: 1330px) {
+  .nav-links a:hover {
+    background: transparent;
+    padding-left: 28px;
+  }
+}
+@media (hover: none) {
+  .insta-card:hover { box-shadow: none; transform: none; }
+  .insta-card:hover .insta-meta { background: transparent; }
+  .insta-card:hover .insta-handle, .insta-card:hover .insta-cap { color: var(--text-muted); }
+}
+
+/* Current-page marker in the mobile drawer. Scoped to the drawer breakpoint so
+   the desktop nav keeps its existing, subtler treatment. */
+@media (max-width: 1330px) {
+  .nav-links a.active {
+    color: #fff;
+    background: rgba(255,255,255,0.10);
+    box-shadow: inset 3px 0 0 var(--green-light);
+  }
+}
+
+/* ── CONTACT: "Send us a message" panel ──
+   Was a flat white card on a near-white page, so its edges barely registered.
+   A soft vertical wash plus a deeper shadow lifts it off the background. */
+.contact-form-area {
+  background: var(--white) !important;
+  box-shadow: 0 18px 44px rgba(28,43,28,0.10) !important;
+  border-color: rgba(61,107,61,0.22) !important;
+}
+/* Inputs default to --cream, which now reads muddy against the wash at the top
+   of the card. White keeps them crisp; focus already swaps to white anyway. */
+.contact-form-area .form-input { background: var(--white); }
+
+@media (max-width: 768px) {
+  /* Centre the About page CTA — left-aligned it looked stranded once the
+     column went full-width. */
+  .about-join-cta { text-align: center !important; }
+
+  /* Analyst case-competition photo: anchored to the bottom of the frame where
+     the group stands, with only a light scale to trim the blank wall above. */
+  .team-photo-tall.analyst-comp-photo img {
+    object-position: center 100% !important;
+    transform: scale(1.08) !important;
+    transform-origin: center 90% !important;
+  }
+
+  /* Investment team header photo: crop from the BOTTOM ONLY. Scaling the image
+     up would zoom the bottom row out of frame but take the people on the left
+     and right edges with it, so instead the frame gets shorter and the image
+     is anchored to the top — the bottom is trimmed away and every side stays
+     exactly where it was. */
+  .invest-header-photo {
+    height: 250px !important;
+    max-height: 250px !important;
+    object-fit: cover !important;
+    object-position: center 22% !important;
+  }
+
+  /* Board-dinner photo: push in so the group reads larger. */
+  .about-dinner-photo,
+  .about-dinner-photo.reveal,
+  .about-dinner-photo.reveal.visible {
+    transform: scale(1.35) !important;
+    transform-origin: center 65% !important;
+  }
+
+  .why-photo img,
+  .why-photo img.reveal,
+  .why-photo img.reveal.visible {
+    transform: scale(2) !important;
+    transform-origin: center 70% !important;
+  }
+
+  /* Home mission-band photo. Lives here (not in the earlier mobile block)
+     because the JS tags every img with .reveal, and `.reveal.visible
+     { transform: none }` (0,2,0) outranks `.mission-band-img img` (0,1,1)
+     and was silently cancelling it.
+     transform-origin sits high so the zoom grows downward — the back row's
+     heads stay in frame instead of being scaled off the top. */
+  .mission-band-img img,
+  .mission-band-img img.reveal,
+  .mission-band-img img.reveal.visible {
+    transform: scale(1.5) !important;
+    transform-origin: center 22% !important;
+    object-position: center 42% !important;
+  }
+
+  /* Ice-skating photo: the crouching person at the bottom kept ending up as a
+     stray head along the lower edge. Anchoring the zoom near the top of the
+     frame pushes the bottom of the photo out of view entirely. */
+  .iv-social-friendship-photo,
+  .iv-social-friendship-photo.reveal,
+  .iv-social-friendship-photo.reveal.visible {
+    transform: scale(1.38) !important;
+    transform-origin: center 18% !important;
+    object-position: center 10% !important;
+  }
+
+  /* Instagram cards were full-bleed squares and dominated the phone screen. */
+  .insta-card { max-width: 290px; margin: 0 auto; width: 100%; }
+
+  /* Centred text in a tinted box read awkwardly on a narrow screen. */
+  .faq-cta-card { flex-direction: column !important; align-items: stretch !important; text-align: left !important; }
+  .faq-cta-card .btn-primary { width: 100%; text-align: center; }
+
+  /* Contact hero — gentle push-in only. */
+  .contact-hero {
+    background-size: 108% !important;
+    background-position: center 45% !important;
+  }
+
+  /* Publications hero was the only one running taller than the shared
+     30vh / 180px sizing every other hero uses — a leftover 460px min-height
+     override. Match the rest and get the zoom from the crop position instead. */
+  .pub-hero {
+    height: 30vh !important;
+    min-height: 180px !important;
+    background-size: 165% !important;
+    background-position: center 20% !important;
   }
 }
 </style>
@@ -3344,14 +3599,14 @@ footer { padding-bottom: 92px; }
         <h2 class="section-title" style="margin-bottom:24px;">The oldest McCombs-affiliated finance organization on campus</h2>
         <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">Founded in 1951, what started as a small group of students passionate about finance has grown into a community of 300+ members with alumni at the world's top firms.</p>
         <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:32px;">Our mission remains unchanged: to provide a welcoming, high-impact environment where any student &mdash; regardless of background or experience &mdash; can explore their curiosity about finance and build the skills to act on it.</p>
-        <div style="margin-top:32px;">
+        <div class="about-join-cta" style="margin-top:32px;">
           <a href="/join" onclick="showPage('join');return false;" class="btn-primary" style="padding:16px 36px;font-size:15px;">Join UFA today</a>
         </div>
       </div>
       <div>
         <div style="overflow:hidden; border-radius:8px; max-height:450px;">
           <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/B60389D4-5F02-434C-BC14-1B40E0A680C1_1_105_c.jpeg"
-  alt="UFA Board dinner" style="width:100%; height:100%; object-fit:cover; object-position:center 100%; display:block;">
+  alt="UFA Board dinner" class="about-dinner-photo" style="width:100%; height:100%; object-fit:cover; object-position:center 100%; display:block;">
         </div>
       </div>
     </div>
@@ -3627,7 +3882,7 @@ footer { padding-bottom: 92px; }
           <a href="/contact" onclick="showPage('contact');return false;" class="btn-outline work-with-us-btn" style="color:var(--green-dark);border-color:var(--green-accent);text-align:center;">Work with us</a>
           </div>
         </div>
-        <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/imgur%20photos/SZntCtT%20(1).jpeg"
+        <img loading="lazy" class="invest-header-photo" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/imgur%20photos/SZntCtT%20(1).jpeg"
         alt="UFA Investment Team members"
         style="width: 100%; max-height: 400px; object-fit: cover; object-position: center 20%; border-radius: 12px;">
       </div>
@@ -3663,7 +3918,7 @@ footer { padding-bottom: 92px; }
       <div class="iv-row reveal">
         <div>
           <div class="section-tag">What you'll produce</div>
-          <h4>Publish tangible equity research</h4>
+          <h4>Publish Tangible Equity Research</h4>
           <p>Every member contributes to our annual equity research journal, covering public companies across six sectors. Researched and defended the way an analyst would &mdash; a portfolio piece you can hand a recruiter.</p>
           <a class="iv-link" href="/publications" onclick="showPage('publications');return false;">Read the 2025 journal &rarr;</a>
         </div>
@@ -3689,7 +3944,7 @@ footer { padding-bottom: 92px; }
       <div class="iv-row iv-flip reveal">
         <div>
           <div class="section-tag">Where it leads</div>
-          <h4>Recruit with support</h4>
+          <h4>Recruit With Support</h4>
           <p>Bootcamps, resume reviews, and mock interviews run by upperclassmen who just went through it. Members land IB, PE, and asset management roles across the Street.</p>
           <a class="iv-link" href="/why-ufa" onclick="showPage('why-ufa');return false;">See where our members place &rarr;</a>
         </div>
@@ -3710,10 +3965,12 @@ footer { padding-bottom: 92px; }
       <div class="iv-social reveal">
         <div>
           <div class="section-tag">Beyond career prep</div>
-          <h4>Build lasting friendships</h4>
+          <h4>Build Lasting Friendships</h4>
           <p>Team dinners, socials, and alumni events build a network that outlasts graduation. Learn from the people who came before you, and show up for the ones who come after.</p>
         </div>
-        <div>
+        <!-- The frame clips the photo's zoom transform — without it the scaled
+             image spills past its rounded corners. -->
+        <div class="iv-social-photo-frame">
           <img loading="lazy" class="iv-social-friendship-photo" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/82BC04DC-70C3-46CD-9F14-B697D37E44F2_1_105_c.jpg" alt="UFA Investment Team members at a social event" style="object-position:center 25%;">
         </div>
       </div>
@@ -3748,23 +4005,23 @@ footer { padding-bottom: 92px; }
 
   <div class="consult-split-list">
     <div style="display:flex;align-items:flex-start;gap:16px;padding:24px 0;border-bottom:1px solid var(--border);">
-      <div style="width:8px;height:8px;border-radius:50%;background:var(--green-light);flex-shrink:0;margin-top:6px;"></div>
+      <div class="consult-bullet-dot"></div>
       <div>
-        <div style="font-family:var(--font-display);font-size:17px;font-weight:500;color:var(--text-dark);margin-bottom:6px;">Case Coaching</div>
+        <div class="consult-bullet-title">Case Coaching</div>
         <p style="font-size:15px;color:var(--text-muted);line-height:1.7;margin:0;">Practice live case interviews. Sharpen your structured thinking and communication under realistic interview conditions.</p>
       </div>
     </div>
     <div style="display:flex;align-items:flex-start;gap:16px;padding:24px 0;border-bottom:1px solid var(--border);">
-      <div style="width:8px;height:8px;border-radius:50%;background:var(--green-light);flex-shrink:0;margin-top:6px;"></div>
+      <div class="consult-bullet-dot"></div>
       <div>
-        <div style="font-family:var(--font-display);font-size:17px;font-weight:500;color:var(--text-dark);margin-bottom:6px;">Industry Deep Dives</div>
+        <div class="consult-bullet-title">Industry Deep Dives</div>
         <p style="font-size:15px;color:var(--text-muted);line-height:1.7;margin:0;">Explore consulting frameworks applied to real industries. Sessions cover market sizing, competitive analysis, and strategic recommendations.</p>
       </div>
     </div>
     <div style="display:flex;align-items:flex-start;gap:16px;padding:24px 0;border-bottom:1px solid var(--border);">
-      <div style="width:8px;height:8px;border-radius:50%;background:var(--green-light);flex-shrink:0;margin-top:6px;"></div>
+      <div class="consult-bullet-dot"></div>
       <div>
-        <div style="font-family:var(--font-display);font-size:17px;font-weight:500;color:var(--text-dark);margin-bottom:6px;">Client Simulations</div>
+        <div class="consult-bullet-title">Client Simulations</div>
         <p style="font-size:15px;color:var(--text-muted);line-height:1.7;margin:0;">Build and present consulting deliverables to simulated clients. Develop slide decks, synthesize findings, and defend your recommendations.</p>
       </div>
     </div>
@@ -3954,7 +4211,7 @@ footer { padding-bottom: 92px; }
     </div><!-- /faq-grid -->
       
 
-    <div class="reveal" style="margin:40px auto 0;max-width:720px;padding:28px 32px;background:var(--green-wash);border-radius:8px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;">
+    <div class="reveal faq-cta-card" style="margin:40px auto 0;max-width:720px;padding:28px 32px;background:var(--green-wash);border-radius:8px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;">
       <div>
         <div style="font-family:var(--font-display);font-size:18px;font-weight:500;margin-bottom:6px;">Still have questions?</div>
         <p style="font-size:14px;color:var(--text-muted);">Reach out directly — we're happy to chat.</p>
@@ -3987,7 +4244,6 @@ footer { padding-bottom: 92px; }
     <div class="pub-card-embed-container" id="pub-flipbook-card">
       <div class="pub-card-info" style="display:flex;align-items:flex-start;justify-content:space-between;gap:40px;">
         <div>
-          <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px;">Fall 2025</div>
           <div class="pub-title">Fall 2025 Research Report</div>
           <p class="pub-desc">Our inaugural Equity Research Journal, a collection of equity research and macro analysis produced by the UFA Investment Team. This edition covers TMT, Healthcare, Energy, Financials, Consumer, and Industrials, featuring deep-dives into companies of all sizes.</p>
         </div>
@@ -4008,7 +4264,9 @@ footer { padding-bottom: 92px; }
         </div>
         <div id="pub-flipbook-wrap" style="display:none;position:relative;width:100%;max-width:1000px;">
           <button onclick="pubFlipbookPrev()" aria-label="Previous page" style="display:flex;align-items:center;justify-content:center;position:absolute;left:-28px;top:50%;transform:translateY(-50%);width:56px;height:56px;border-radius:50%;border:none;background:var(--green-dark);box-shadow:0 4px 16px rgba(0,0,0,0.25);cursor:pointer;z-index:5;font-size:24px;color:#fff;">←</button>
-          <div id="pub-flipbook" style="width:100%;height:85vh;max-height:900px;"></div>
+          <!-- Sizing lives in CSS (#pub-flipbook / #pub-flipbook-wrap) — the
+               book is absolutely positioned inside an aspect-ratio stage. -->
+          <div id="pub-flipbook"></div>
           <div id="pub-flipbook-spine" style="position:absolute;left:50%;top:0;bottom:0;width:34px;margin-left:-17px;pointer-events:none;z-index:6;background:linear-gradient(to right, rgba(0,0,0,0) 0%, rgba(0,0,0,0.16) 42%, rgba(0,0,0,0.28) 50%, rgba(0,0,0,0.16) 58%, rgba(0,0,0,0) 100%);"></div>
           <button onclick="pubFlipbookNext()" aria-label="Next page" style="display:flex;align-items:center;justify-content:center;position:absolute;right:-28px;top:50%;transform:translateY(-50%);width:56px;height:56px;border-radius:50%;border:none;background:var(--green-dark);box-shadow:0 4px 16px rgba(0,0,0,0.25);cursor:pointer;z-index:5;font-size:24px;color:#fff;">→</button>
         </div>
@@ -6522,6 +6780,14 @@ async function loadAnalytics() {
     });
   }, 50);
   document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+  // ...then re-mark the link for the page we just navigated to. This used to
+  // only ever clear .active and never set it, so the nav had no current-page
+  // indicator. On mobile the stuck :hover state was standing in for one, which
+  // is why "Why UFA" looked selected no matter which page you were on.
+  document.querySelectorAll('.nav-links a[onclick]').forEach(a => {
+    const m = a.getAttribute('onclick').match(/showPage\('([^']+)'\)/);
+    if (m && m[1] === id) a.classList.add('active');
+  });
 
   // If navigating to portal and already logged in, show dashboard
   if (id === 'portal' && currentUser && currentMember) {
@@ -7330,23 +7596,11 @@ setTimeout(() => {
       });
       pubFlipbookInstance.loadFromHTML(bookEl.querySelectorAll('.pub-flipbook-page'));
 
-      // In 'stretch' mode StPageFlip recalculates its own block height while a
-      // page is turning. The wrapper has no height of its own, so that reflows
-      // everything below it and the whole card visibly jumps up and drops back.
-      // Pinning the wrapper to the rendered height absorbs the recalculation.
-      // The flip animation itself is untouched.
-      let pubFlipResizeTimer;
-      function lockPubFlipHeight() {
-        if (!wrapEl || !bookEl) return;
-        wrapEl.style.minHeight = '';
-        const h = bookEl.getBoundingClientRect().height;
-        if (h > 0) wrapEl.style.minHeight = Math.ceil(h) + 'px';
-      }
-      setTimeout(lockPubFlipHeight, 80);
-      window.addEventListener('resize', function () {
-        clearTimeout(pubFlipResizeTimer);
-        pubFlipResizeTimer = setTimeout(lockPubFlipHeight, 150);
-      });
+      // The old JS height-lock that used to live here is gone. The stage is
+      // now sized in CSS by aspect-ratio on #pub-flipbook-wrap, with the book
+      // absolutely positioned inside it — StPageFlip's mid-turn height
+      // recalculation can no longer affect page flow, so there is nothing
+      // left to lock and nothing left to jump.
 
       const pageInputEl = document.getElementById('pub-flipbook-pageinput');
       const sliderEl = document.getElementById('pub-flipbook-slider');
