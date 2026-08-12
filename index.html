@@ -1479,6 +1479,15 @@ align-items: flex-end;
      Media queries for screens under 768px (phones and small tablets).
      Stacks grid layouts, adjusts font sizes, and shows the hamburger menu. */
 @media (max-width: 768px) {
+  /* Scales rendered text only — images, spacing and layout are untouched.
+     Works regardless of whether a size came from CSS or an inline style,
+     which matters here: 326 font-sizes are declared inline. */
+  html {
+    -webkit-text-size-adjust: 80%;
+    text-size-adjust: 80%;
+  }
+
+  .two-col { display: grid; ... }
 
   body { padding-top: 64px; }
 
