@@ -1016,14 +1016,41 @@ align-items: flex-end;
   .join-hero::after { content: ''; position: absolute; inset: 0; background: rgba(20,36,20,0.25); }
   .join-hero-content { position: relative; z-index: 2; padding: 0 72px 56px; }
 
-  .membership-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 24px; align-items: start; }
+  .membership-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 24px; align-items: stretch; }
   .membership-card {
     background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 36px 32px;
     display: flex; flex-direction: column;
   }
+  /* Cards in a row stretch to a shared height, so push the button to the
+     bottom edge — otherwise it floats mid-card on the shorter ones. */
   .membership-card .btn-primary {
     align-self: flex-start;
+    margin-top: auto;
     padding-top: 14px; padding-bottom: 14px;
+  }
+  /* When a card has two actions, the ROW owns the auto margin instead of
+     the button, or the two buttons bottom-align independently and split. */
+  .membership-actions {
+    margin-top: auto;
+    display: flex; flex-wrap: wrap; align-items: stretch; gap: 10px;
+  }
+  .membership-actions .btn-primary { margin-top: 0; }
+  .btn-venmo {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: transparent;
+    color: var(--green-accent);
+    border: 1px solid var(--green-accent);
+    font-family: var(--font-body);
+    font-size: 15px; font-weight: 500;
+    padding: 14px 22px;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .btn-venmo:hover {
+    background: var(--green-wash);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(46,74,46,0.14);
   }
   /* The card isn't a link, so the BUTTON is what animates — reinforces the
      one clear action per card. */
@@ -1234,6 +1261,19 @@ align-items: flex-end;
     padding: 13px 14px !important;
     font-size: 14.5px !important;
     white-space: nowrap;
+    /* inline-block + text-align:center left "Read on Drive" looking
+       off-center once flex:1 gave the two buttons uneven widths — flex
+       + justify-content:center centers the label regardless of box width,
+       matching the .hero-btns pattern used elsewhere on the site. */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+    text-align: center;
+    /* Even 50/50 split regardless of label length — flex-basis:0 with
+       equal grow means both buttons end up the same width. */
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
   }
   .blog-lightbox-actions .btn-outline { color: var(--green-dark) !important; border-color: var(--green-accent) !important; }
   /* Sits INSIDE the panel's top-right corner. It used to float 44px above
@@ -1880,6 +1920,25 @@ align-items: flex-end;
   }
   .membership-card {
     padding: 20px 20px !important;
+  }
+  /* Every membership-card button (Join on HornsLink, Pay dues on Venmo,
+     and each "View application form") gets the same box on mobile. Left
+     alone, .btn-primary defaults to content-width with a larger font/
+     padding than .btn-venmo, so cards looked inconsistent depending on
+     how long each button's label happened to be — some nearly full width
+     by coincidence, others visibly smaller. Forcing one shared size makes
+     every card's action read as the same weight. */
+  .membership-actions {
+    flex-direction: column !important;
+  }
+  .membership-card .btn-primary,
+  .membership-actions .btn-venmo {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    justify-content: center !important;
+    text-align: center !important;
+    font-size: 15px !important;
+    padding: 14px 22px !important;
   }
 
   /* Two-col with inline style override */
@@ -3218,7 +3277,11 @@ footer { padding-bottom: 32px; }
     display: flex !important;
     flex-direction: column !important;
   }
-  #tab-analysts .btn-primary {
+  /* Was scoped to #tab-analysts only, so "Apply to Analyst Program" went
+     full-width on mobile while the identical Investment Team and Consulting
+     Team buttons stayed content-width — same layout, three different
+     button sizes. Scoping to .team-btn-group instead covers all three. */
+  .team-btn-group .btn-primary {
     display: block !important;
     width: 100% !important;
     box-sizing: border-box !important;
@@ -3278,8 +3341,15 @@ footer { padding-bottom: 32px; }
 
 @media (max-width: 768px) {
   /* Centre the About page CTA — left-aligned it looked stranded once the
-     column went full-width. */
+     column went full-width. Every other solo CTA on the site (Contact us,
+     Download PDF, Send message, the team Apply buttons) goes full-width
+     on mobile — this one was the one left as a content-width pill. */
   .about-join-cta { text-align: center !important; }
+  .about-join-cta .btn-primary {
+    display: block !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
 
 
 
@@ -3293,6 +3363,27 @@ footer { padding-bottom: 32px; }
   .insta-card { max-width: 290px; margin: 0 auto; width: 100%; }
   .faq-cta-card { flex-direction: column !important; align-items: stretch !important; text-align: left !important; }
   .faq-cta-card .btn-primary { width: 100%; text-align: center; }
+
+  /* "Learn our story" — the mission-band CTA on the home page was the
+     one solo button left as a content-width pill; every other solo CTA
+     goes full-width on mobile. */
+  .mission-band .btn-outline {
+    display: flex !important;
+    width: 100% !important;
+    justify-content: center !important;
+    align-items: center !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Mobile-only bump: the html-wide text-size-adjust:80% (meant for the
+     hero) shrinks these along with everything else, so they end up
+     smaller than intended for a tappable CTA / a field a member has
+     to actually read. Values below are the post-shrink target size. */
+  .blog-lightbox-actions a { font-size: 17px !important; }
+  .portal-field-label { font-size: 13px !important; }
+  .portal-field-note { font-size: 13px !important; }
+
+
   .contact-hero { background-size: 108% !important; background-position: center 45% !important; }
 
   /* Publications hero was the only one running taller than the shared
@@ -3417,11 +3508,11 @@ footer { padding-bottom: 32px; }
     <div>
       <div class="section-tag" style="color:var(--green-pale)">Our mission</div>
 <p class="mission-quote" style="margin-top:16px; display: flex; align-items: flex-start; color: white; font-size: 1.9rem; line-height: 1.45; position: relative;">
-  <span style="font-size: 4rem; font-family: serif; line-height: 1; margin-top: -10px; margin-right: 10px; flex-shrink: 0;">&ldquo;</span>
+  <span style="font-size: 4rem; font-family: var(--font-display); line-height: 1; margin-top: -10px; margin-right: 10px; flex-shrink: 0;">&ldquo;</span>
   
   <span>
     To develop the next generation of finance professionals at UT Austin, meeting students where they are, fostering a welcoming community, and empowering them to excel through hands-on experience, technical education, and meaningful industry relationships.
-    <span style="font-size: 4rem; font-family: serif; line-height: 0; vertical-align: -0.4em; margin-left: 4px;">&rdquo;</span>
+    <span style="font-size: 4rem; font-family: var(--font-display); line-height: 0; vertical-align: -0.4em; margin-left: 4px;">&rdquo;</span>
   </span>
 
   <style>.mission-quote::before, .mission-quote::after { content: none !important; }</style>
@@ -3991,17 +4082,29 @@ footer { padding-bottom: 32px; }
     <h2 class="section-title">Choose your level of involvement</h2>
     <p class="section-subtitle">All UT Austin students are welcome. No prior finance experience required.</p>
     <div class="membership-grid reveal">
-      <div style="grid-column:1/-1;background:var(--green-wash);border:1px solid var(--green-accent);border-radius:8px;padding:20px 28px;display:flex;align-items:center;gap:16px;margin-bottom:0;flex-wrap:wrap;">
-        <span style="font-size:14px;font-weight:700;color:var(--green-accent);letter-spacing:0.08em;text-transform:uppercase;">Next Recruitment Cycle</span>
-        <span style="font-size:15px;color:var(--text-dark);">Analyst, Investment Associate, and Consulting Associate applications open <strong>Fall 2026 (September)</strong>.</span>
+      <div id="dues-banner" style="grid-column:1/-1;background:var(--green-wash);border:1px solid var(--green-accent);border-radius:8px;padding:20px 28px;margin-bottom:0;">
+        <div style="display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;">
+          <span id="dues-banner-label" style="font-size:14px;font-weight:700;color:var(--green-accent);letter-spacing:0.08em;text-transform:uppercase;white-space:nowrap;">Early rate</span>
+          <span id="dues-banner-text" style="font-size:15px;color:var(--text-dark);">General membership is <strong>$90 / year or $60 / semester</strong> through <strong>Wednesday, September 16</strong> — $120 / year or $75 / semester after.</span>
+        </div>
+        <div style="font-size:13px;color:var(--text-muted);margin-top:10px;padding-top:10px;border-top:1px solid rgba(61,107,61,0.18);">Analyst, Investment Associate, and Consulting Associate applications open <strong>Fall 2026 (September)</strong>.</div>
       </div>
       <div class="membership-card featured">
         <div class="membership-badge open">Open year-round</div>
         <div class="membership-title">General Membership</div>
         <p class="membership-desc">Attend weekly Wednesday speaker meetings on the 5th floor of McCombs, access networking events, and get access to the full UFA community. Open to all UT students at any time — no application required.</p>
-        <div class="membership-price">$90 / year</div>
-        <div class="membership-price-note">or $55 per semester</div>
-        <a href="https://utexas.campuslabs.com/engage/organization/texasufa" target="_blank" rel="noopener noreferrer" class="btn-primary">Join on HornsLink</a>
+        <div class="membership-price" id="dues-price-year">$90 / year</div>
+        <div class="membership-price-note" id="dues-price-sem" style="margin-bottom:14px;">or $60 per semester</div>
+        <div style="font-size:12px;color:var(--text-muted);margin-bottom:20px;line-height:1.6;">
+          Include your <strong>full name and UT EID</strong> in the Venmo note so we can match your payment to your account.
+        </div>
+        <div class="membership-actions">
+          <a href="https://utexas.campuslabs.com/engage/organization/texasufa" target="_blank" rel="noopener noreferrer" class="btn-primary">Join on HornsLink</a>
+          <a href="https://venmo.com/u/UT-UFA" target="_blank" rel="noopener noreferrer" class="btn-venmo">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.3 3c.66 1.09.96 2.21.96 3.63 0 4.52-3.86 10.39-6.99 14.52H5.13L2.27 4.32l6.25-.59 1.51 12.16c1.41-2.3 3.15-5.9 3.15-8.36 0-1.35-.23-2.27-.6-3.02L18.3 3z"/></svg>
+            Pay dues on Venmo — @UT-UFA
+          </a>
+        </div>
       </div>
       <div class="membership-card">
         <div class="membership-badge closed">Applications currently closed</div>
@@ -4103,10 +4206,15 @@ footer { padding-bottom: 32px; }
         </div>
         <div class="faq-item reveal">
           <button class="faq-q" onclick="toggleFaq(this)">
-            Can I attend weekly events if I am not a general member?
+            Do I have to pay dues, and how do I pay?
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           </button>
-          <div class="faq-a"><div class="faq-a-inner">No, you must be a general member and pay dues to attend regular UFA events. General membership is open year-round with no application required.</div></div>
+          <div class="faq-a"><div class="faq-a-inner">
+            <p>Yes — you must be a dues-paying general member to attend weekly meetings and events. Membership is open year-round with no application required, and your first meeting is free, so you can see what UFA is like before you pay.</p>
+            <p style="margin-top:12px;">Dues are paid by Venmo to <a href="https://venmo.com/u/UT-UFA" target="_blank" rel="noopener noreferrer" style="color:var(--green-accent);font-weight:600;">@UT-UFA</a>. Please include your <strong>full name and UT EID</strong> in the payment note — that is how the board matches your payment to your member portal account.</p>
+            <p style="margin-top:12px;" id="dues-faq-rates">The early rate is <strong>$90 for the year or $60 for the semester</strong>, available through <strong>Wednesday, September 16</strong>. After that, dues are $120 for the year or $75 for the semester. You can join at any point in the year, but the early rate is not extended.</p>
+            <p style="margin-top:12px;">Dues assistance is available to any student for whom cost is a barrier — email <a href="mailto:financeassociationtx@gmail.com" style="color:var(--green-accent);font-weight:600;">financeassociationtx@gmail.com</a> and it will be handled privately by the treasurer.</p>
+          </div></div>
         </div>
         
         <div class="faq-item reveal">
@@ -4377,6 +4485,14 @@ footer { padding-bottom: 32px; }
 
           <div class="contact-row reveal">
             <div>
+              <div class="contact-row-label">Dues payments</div>
+              <div class="contact-row-val"><a href="https://venmo.com/u/UT-UFA" target="_blank" rel="noopener noreferrer">Venmo @UT-UFA</a></div>
+              <div style="font-size:13px;color:var(--text-muted);margin-top:6px;">Include your full name and UT EID in the note.</div>
+            </div>
+          </div>
+
+          <div class="contact-row reveal">
+            <div>
               <div class="contact-row-label">Instagram</div>
               <div class="contact-row-val"><a href="https://www.instagram.com/texasufa/" target="_blank" rel="noopener noreferrer">@texasufa</a></div>
             </div>
@@ -4557,6 +4673,7 @@ footer { padding-bottom: 32px; }
     <div>
       <div class="cta-band-title">Ready to find your place?</div>
       <p class="cta-band-sub">General membership is always open. Analyst and team recruitment cycles launch at the start of every fall and spring semester.</p>
+      <p class="cta-band-sub" id="dues-cta-note" style="margin-top:10px;opacity:0.85;">Early rate of $90/year or $60/semester runs through September 16.</p>
     </div>
     <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center;">
       <a href="https://utexas.campuslabs.com/engage/organization/texasufa" target="_blank" rel="noopener noreferrer" class="btn-white" style="padding:16px 36px;font-size:15px;text-align:center;display:flex;align-items:center;justify-content:center;">Become a General Member</a>
@@ -4950,20 +5067,20 @@ footer { padding-bottom: 32px; }
               <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:32px;">
                 <div style="display:grid;gap:16px;">
                   <div>
-                    <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:4px;">Full Name</div>
+                    <div class="portal-field-label" style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:4px;">Full Name</div>
                     <input id="profile-name" type="text" style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;">
                   </div>
                   <div>
-                    <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:4px;">UT EID</div>
+                    <div class="portal-field-label" style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:4px;">UT EID</div>
                     <input id="profile-eid" type="text" readonly style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#6B7D6B;background:#efefef;box-sizing:border-box;cursor:not-allowed;">
                   </div>
                   <div>
-                    <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:4px;">Email</div>
+                    <div class="portal-field-label" style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:4px;">Email</div>
                     <input id="profile-email" type="email" style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;">
-                    <div style="font-size:11px;color:#6B7D6B;margin-top:4px;">Changing your email will require you to sign in again.</div>
+                    <div class="portal-field-note" style="font-size:11px;color:#6B7D6B;margin-top:4px;">Changing your email will require you to sign in again.</div>
                   </div>
                   <div>
-                    <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:4px;">Role</div>
+                    <div class="portal-field-label" style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:4px;">Role</div>
                     <select id="profile-role" style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;appearance:none;-webkit-appearance:none;background-image:url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2712%27 height=%278%27 viewBox=%270 0 12 8%27%3E%3Cpath d=%27M1 1l5 5 5-5%27 stroke=%27%236B7D6B%27 stroke-width=%271.5%27 fill=%27none%27 stroke-linecap=%27round%27/%3E%3C/svg%3E');background-repeat:no-repeat;background-position:right 14px center;">
                       <option value="General Member">General Member</option>
                       <option value="Analyst">Analyst</option>
@@ -6542,6 +6659,76 @@ async function loadAnalytics() {
        Hero fixes         applyMobileHeroFixes()
        Misc UI sync       syncAnalystCardTitleWrap()
      ════════════════════════════════════════════════════════════════ */
+
+  /* ════════════════════════════════════════════════════════════════
+     DUES PRICING  —  EDIT THIS BLOCK ONCE PER SEMESTER
+     ────────────────────────────────────────────────────────────────
+     Every dues figure and deadline shown anywhere on the site is
+     generated from DUES below. Change it here and it updates the
+     General Membership card, the join-page FAQ, the homepage hero,
+     and the Why UFA call-to-action band.
+
+     After `deadline` passes, the site stops advertising the early
+     rate on its own and switches to the regular prices — no edit
+     needed on the day, and no expired offer left sitting on the
+     join page in October.
+
+     Analyst dues ($25/yr, $15/semester on top of GM) are unchanged
+     and stay hardcoded in the Analyst card.
+     ════════════════════════════════════════════════════════════════ */
+  const DUES = {
+    // Local time, end of day. -05:00 is US Central Daylight Time (CDT).
+    // Use -06:00 for a deadline falling after DST ends in November.
+    deadline:      '2026-09-16T23:59:59-05:00',
+    deadlineShort: 'September 16',            // inline prose
+    deadlineLong:  'Wednesday, September 16', // emphasized / standalone
+    early:   { year: 90,  semester: 60 },
+    regular: { year: 120, semester: 75 }
+  };
+
+  function renderDuesPricing() {
+    const now     = new Date();
+    const cutoff  = new Date(DUES.deadline);
+    // If `deadline` is malformed, fail safe to the early rate rather
+    // than silently charging everyone the higher price.
+    const isEarly = isNaN(cutoff) ? true : now <= cutoff;
+    const rate    = isEarly ? DUES.early : DUES.regular;
+    const set     = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html; };
+
+    set('dues-price-year', '$' + rate.year + ' / year');
+    set('dues-price-sem',  'or $' + rate.semester + ' per semester');
+
+    if (isEarly) {
+      set('dues-banner-label', 'Early rate');
+      set('dues-banner-text',
+        'General membership is <strong>$' + DUES.early.year + ' / year or $' + DUES.early.semester +
+        ' / semester</strong> through <strong>' + DUES.deadlineLong + '</strong> — $' +
+        DUES.regular.year + ' / year or $' + DUES.regular.semester + ' / semester after.');
+      set('dues-faq-rates',
+        'The early rate is <strong>$' + DUES.early.year + ' for the year or $' + DUES.early.semester +
+        ' for the semester</strong>, available through <strong>' + DUES.deadlineLong + '</strong>. ' +
+        'After that, dues are $' + DUES.regular.year + ' for the year or $' + DUES.regular.semester +
+        ' for the semester. You can join at any point in the year, but the early rate is not extended.');
+      set('dues-cta-note',
+        'Early rate of $' + DUES.early.year + '/year or $' + DUES.early.semester +
+        '/semester runs through ' + DUES.deadlineShort + '.');
+    } else {
+      // Window closed — the banner stops advertising a dead deadline and
+      // just states the standing rate.
+      set('dues-banner-label', 'Membership dues');
+      set('dues-banner-text',
+        'General membership is <strong>$' + DUES.regular.year + ' / year or $' + DUES.regular.semester +
+        ' / semester</strong>. Open year-round — your first meeting is free.');
+      set('dues-faq-rates',
+        'Dues are <strong>$' + DUES.regular.year + ' for the year or $' + DUES.regular.semester +
+        ' for the semester</strong>. An early rate of $' + DUES.early.year + ' / $' + DUES.early.semester +
+        ' is offered through the second general meeting of each semester.');
+      set('dues-cta-note',
+        'Dues are $' + DUES.regular.year + '/year or $' + DUES.regular.semester + '/semester.');
+    }
+  }
+  document.addEventListener('DOMContentLoaded', renderDuesPricing);
+
   /**
    * triggerReveals(container)
    * --------------------------
