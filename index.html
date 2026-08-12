@@ -2176,7 +2176,7 @@ footer { padding-bottom: 76px; }
      girl at the left edge of the group isn't sliced in half. */
   .hero-img {
     /* Y raised from 55% so the group's faces sit above the headline. */
-    background: url('https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/heroimg.jpg') 47% 72% / cover no-repeat !important;
+    background: url('https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/heroimg.jpg') 47% 100% / cover no-repeat !important;
   }
 
   /* Analyst 01/02/03 steps grid → 1 column on mobile */
@@ -7968,36 +7968,37 @@ setTimeout(() => {
    SE and a 440px Pro Max. Fixed pixel heights used to make the frame a
    different SHAPE on every handset, which is why side-cropping varied. */
 @media (max-width: 768px) {
+  /* The container only clips. It gets NO height of its own — it simply wraps
+     the image. Sizing the container and then giving the image height:100%
+     depended on the container having a definite height, which it does not
+     when it is a stretched grid item (.consult-split-photo is exactly that,
+     which is why the pool-table photo collapsed while the others survived). */
   .mission-band-img, .team-photo-tall, .consult-split-photo,
   .team-card-img, .why-photo, .iv-social-photo-frame {
-    /* CRITICAL fallback. These images are loading="lazy", and a frame whose
-       height comes only from the decoded image deadlocks: no height -> never
-       scrolls into view -> never loads -> naturalWidth stays 0 -> never gets
-       a height, so the photo silently vanishes. This guarantees the frame
-       always occupies space; the script below refines it once decoded. */
-    aspect-ratio: 3 / 2;
     height: auto !important;
     min-height: 0 !important;
     max-height: none !important;
+    aspect-ratio: auto !important;
+    align-self: start !important;
     overflow: hidden !important;
   }
+  /* The IMAGE carries the ratio. height:auto + aspect-ratio always resolves,
+     with no dependency on any ancestor. The 3/2 fallback matters because these
+     are loading="lazy": a frame sized only from the decoded image deadlocks —
+     no height -> never scrolls into view -> never loads -> no height. */
   .mission-band-img img, .team-photo-tall img, .consult-split-photo img,
   .team-card-img img, .why-photo img, .iv-social img,
   .invest-header-photo, .about-dinner-photo {
-    /* static: .consult-split-photo img is absolute on desktop and must
-       rejoin normal flow so the frame's aspect-ratio governs it. */
-    position: static !important;
+    position: static !important;     /* .consult-split-photo img is absolute on desktop */
+    inset: auto !important;
+    display: block !important;
     width: 100% !important;
-    height: 100% !important;
+    height: auto !important;
+    aspect-ratio: 3 / 2;             /* fallback — refined by the script below */
     max-height: none !important;
     min-height: 0 !important;
     object-fit: cover !important;
   }
-}
-
-@media (max-width: 768px) {
-  /* Same lazy-load fallback for the two photos that are the frame themselves. */
-  .invest-header-photo, .about-dinner-photo { aspect-ratio: 3 / 2; }
 }
 
 @media (min-width: 769px) {
@@ -8031,12 +8032,12 @@ setTimeout(() => {
   var FRAMES = [
     // [ selector, keep, object-position Y, frame IS the <img>, zoom ]
     ['.mission-band-img',                         .85, '38%', false, 1.42],
-    ['.team-photo-tall.analyst-comp-photo',       0.78, '28%', false, 1.02],
+    ['.team-photo-tall.analyst-comp-photo',       0.78, '98%', false, 1.02],
     ['.team-photo-tall:not(.analyst-comp-photo)', 0.82, '45%', false, 1.00],
     ['.consult-split-photo',                      0.80, '44%', false, 1.15],
     ['.team-card-img',                            0.90, '45%', false, 1.00],
     ['.why-photo',                                .80, '48%', false, 1.85],
-    ['.iv-social-photo-frame',                    0.83, '38%', false, 1.30],
+    ['.iv-social-photo-frame',                    0.83, '18%', false, 1.30],
     ['.invest-header-photo',                      0.84, '40%', true,  1.00],
     ['.about-dinner-photo',                       0.84, '55%', true,  1.20]
   ];
@@ -8050,6 +8051,7 @@ setTimeout(() => {
         if (!img) return;
         if (!mobile) {
           el.style.removeProperty('aspect-ratio');
+          img.style.removeProperty('aspect-ratio');
           img.style.removeProperty('object-position');
           img.style.removeProperty('transform');
           img.style.removeProperty('transform-origin');
@@ -8057,7 +8059,6 @@ setTimeout(() => {
         }
         // Framing that does NOT depend on the image having decoded, so it is
         // already correct while the CSS fallback ratio is in force.
-        // setProperty with priority: the mobile CSS above is !important.
         img.style.setProperty('object-position', 'center ' + y, 'important');
         img.style.setProperty('transform', 'scale(' + zoom + ')', 'important');
         img.style.setProperty('transform-origin', 'center ' + y, 'important');
@@ -8067,7 +8068,8 @@ setTimeout(() => {
           img.addEventListener('load', apply, { once: true });
           return;
         }
-        el.style.setProperty('aspect-ratio', String((w / h) / keep), 'important');
+        // Ratio goes on the IMAGE, not the container — see the CSS note above.
+        img.style.setProperty('aspect-ratio', String((w / h) / keep), 'important');
       });
     });
   }
