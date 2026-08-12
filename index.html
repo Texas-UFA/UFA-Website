@@ -7970,6 +7970,12 @@ setTimeout(() => {
 @media (max-width: 768px) {
   .mission-band-img, .team-photo-tall, .consult-split-photo,
   .team-card-img, .why-photo, .iv-social-photo-frame {
+    /* CRITICAL fallback. These images are loading="lazy", and a frame whose
+       height comes only from the decoded image deadlocks: no height -> never
+       scrolls into view -> never loads -> naturalWidth stays 0 -> never gets
+       a height, so the photo silently vanishes. This guarantees the frame
+       always occupies space; the script below refines it once decoded. */
+    aspect-ratio: 3 / 2;
     height: auto !important;
     min-height: 0 !important;
     max-height: none !important;
@@ -7987,6 +7993,11 @@ setTimeout(() => {
     min-height: 0 !important;
     object-fit: cover !important;
   }
+}
+
+@media (max-width: 768px) {
+  /* Same lazy-load fallback for the two photos that are the frame themselves. */
+  .invest-header-photo, .about-dinner-photo { aspect-ratio: 3 / 2; }
 }
 
 @media (min-width: 769px) {
@@ -8038,22 +8049,25 @@ setTimeout(() => {
         var img = bare ? el : el.querySelector('img');
         if (!img) return;
         if (!mobile) {
-          el.style.aspectRatio = '';
-          img.style.objectPosition = '';
+          el.style.removeProperty('aspect-ratio');
+          img.style.removeProperty('object-position');
           img.style.removeProperty('transform');
           img.style.removeProperty('transform-origin');
           return;
         }
+        // Framing that does NOT depend on the image having decoded, so it is
+        // already correct while the CSS fallback ratio is in force.
+        // setProperty with priority: the mobile CSS above is !important.
+        img.style.setProperty('object-position', 'center ' + y, 'important');
+        img.style.setProperty('transform', 'scale(' + zoom + ')', 'important');
+        img.style.setProperty('transform-origin', 'center ' + y, 'important');
+
         var w = img.naturalWidth, h = img.naturalHeight;
-        if (!w || !h) {                       // not decoded yet — retry on load
+        if (!w || !h) {                 // still loading — keep the fallback ratio
           img.addEventListener('load', apply, { once: true });
           return;
         }
-        el.style.aspectRatio = (w / h) / keep;
-        img.style.objectPosition = 'center ' + y;
-        // setProperty with priority: the mobile CSS above is !important.
-        img.style.setProperty('transform', 'scale(' + zoom + ')', 'important');
-        img.style.setProperty('transform-origin', 'center ' + y, 'important');
+        el.style.setProperty('aspect-ratio', String((w / h) / keep), 'important');
       });
     });
   }
