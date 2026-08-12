@@ -1038,14 +1038,41 @@ align-items: flex-end;
   .join-hero::after { content: ''; position: absolute; inset: 0; background: rgba(20,36,20,0.25); }
   .join-hero-content { position: relative; z-index: 2; padding: 0 72px 56px; }
 
-  .membership-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 24px; align-items: start; }
+  .membership-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 24px; align-items: stretch; }
   .membership-card {
     background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 36px 32px;
     display: flex; flex-direction: column;
   }
+  /* Cards in a row stretch to a shared height, so push the button to the
+     bottom edge — otherwise it floats mid-card on the shorter ones. */
   .membership-card .btn-primary {
     align-self: flex-start;
+    margin-top: auto;
     padding-top: 14px; padding-bottom: 14px;
+  }
+  /* When a card has two actions, the ROW owns the auto margin instead of
+     the button, or the two buttons bottom-align independently and split. */
+  .membership-actions {
+    margin-top: auto;
+    display: flex; flex-wrap: wrap; align-items: stretch; gap: 10px;
+  }
+  .membership-actions .btn-primary { margin-top: 0; }
+  .btn-venmo {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: transparent;
+    color: var(--green-accent);
+    border: 1px solid var(--green-accent);
+    font-family: var(--font-body);
+    font-size: 15px; font-weight: 500;
+    padding: 14px 22px;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .btn-venmo:hover {
+    background: var(--green-wash);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(46,74,46,0.14);
   }
   /* The card isn't a link, so the BUTTON is what animates — reinforces the
      one clear action per card. */
@@ -3386,6 +3413,7 @@ footer { padding-bottom: 76px; }
           <a href="https://utexas.campuslabs.com/engage/organization/texasufa" target="_blank" rel="noopener noreferrer" class="btn-primary">Become a General Member</a>
           <a href="/teams" onclick="showPage('teams');return false;" class="btn-outline">Explore Teams</a>
         </div>
+        <p id="dues-hero-note" style="font-size:13px;color:rgba(255,255,255,0.82);margin-top:18px;letter-spacing:0.01em;">Early rate: $90/year or $60/semester through <strong style="color:#fff;">September 16</strong>. First meeting is free.</p>
       </div>
     </div>
   </section>
@@ -4000,17 +4028,29 @@ footer { padding-bottom: 76px; }
     <h2 class="section-title">Choose your level of involvement</h2>
     <p class="section-subtitle">All UT Austin students are welcome. No prior finance experience required.</p>
     <div class="membership-grid reveal">
-      <div style="grid-column:1/-1;background:var(--green-wash);border:1px solid var(--green-accent);border-radius:8px;padding:20px 28px;display:flex;align-items:center;gap:16px;margin-bottom:0;flex-wrap:wrap;">
-        <span style="font-size:14px;font-weight:700;color:var(--green-accent);letter-spacing:0.08em;text-transform:uppercase;">Next Recruitment Cycle</span>
-        <span style="font-size:15px;color:var(--text-dark);">Analyst, Investment Associate, and Consulting Associate applications open <strong>Fall 2026 (September)</strong>.</span>
+      <div id="dues-banner" style="grid-column:1/-1;background:var(--green-wash);border:1px solid var(--green-accent);border-radius:8px;padding:20px 28px;margin-bottom:0;">
+        <div style="display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;">
+          <span id="dues-banner-label" style="font-size:14px;font-weight:700;color:var(--green-accent);letter-spacing:0.08em;text-transform:uppercase;white-space:nowrap;">Early rate</span>
+          <span id="dues-banner-text" style="font-size:15px;color:var(--text-dark);">General membership is <strong>$90 / year or $60 / semester</strong> through <strong>Wednesday, September 16</strong> — $120 / year or $75 / semester after.</span>
+        </div>
+        <div style="font-size:13px;color:var(--text-muted);margin-top:10px;padding-top:10px;border-top:1px solid rgba(61,107,61,0.18);">Analyst, Investment Associate, and Consulting Associate applications open <strong>Fall 2026 (September)</strong>.</div>
       </div>
       <div class="membership-card featured">
         <div class="membership-badge open">Open year-round</div>
         <div class="membership-title">General Membership</div>
         <p class="membership-desc">Attend weekly Wednesday speaker meetings on the 5th floor of McCombs, access networking events, and get access to the full UFA community. Open to all UT students at any time — no application required.</p>
-        <div class="membership-price">$90 / year</div>
-        <div class="membership-price-note">or $55 per semester</div>
-        <a href="https://utexas.campuslabs.com/engage/organization/texasufa" target="_blank" rel="noopener noreferrer" class="btn-primary">Join on HornsLink</a>
+        <div class="membership-price" id="dues-price-year">$90 / year</div>
+        <div class="membership-price-note" id="dues-price-sem" style="margin-bottom:14px;">or $60 per semester</div>
+        <div style="font-size:12px;color:var(--text-muted);margin-bottom:20px;line-height:1.6;">
+          Include your <strong>full name and UT EID</strong> in the Venmo note so we can match your payment to your account.
+        </div>
+        <div class="membership-actions">
+          <a href="https://utexas.campuslabs.com/engage/organization/texasufa" target="_blank" rel="noopener noreferrer" class="btn-primary">Join on HornsLink</a>
+          <a href="https://venmo.com/u/UT-UFA" target="_blank" rel="noopener noreferrer" class="btn-venmo">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.3 3c.66 1.09.96 2.21.96 3.63 0 4.52-3.86 10.39-6.99 14.52H5.13L2.27 4.32l6.25-.59 1.51 12.16c1.41-2.3 3.15-5.9 3.15-8.36 0-1.35-.23-2.27-.6-3.02L18.3 3z"/></svg>
+            Pay dues on Venmo — @UT-UFA
+          </a>
+        </div>
       </div>
       <div class="membership-card">
         <div class="membership-badge closed">Applications currently closed</div>
@@ -4112,10 +4152,15 @@ footer { padding-bottom: 76px; }
         </div>
         <div class="faq-item reveal">
           <button class="faq-q" onclick="toggleFaq(this)">
-            Can I attend weekly events if I am not a general member?
+            Do I have to pay dues, and how do I pay?
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           </button>
-          <div class="faq-a"><div class="faq-a-inner">No, you must be a general member and pay dues to attend regular UFA events. General membership is open year-round with no application required.</div></div>
+          <div class="faq-a"><div class="faq-a-inner">
+            <p>Yes — you must be a dues-paying general member to attend weekly meetings and events. Membership is open year-round with no application required, and your first meeting is free, so you can see what UFA is like before you pay.</p>
+            <p style="margin-top:12px;">Dues are paid by Venmo to <a href="https://venmo.com/u/UT-UFA" target="_blank" rel="noopener noreferrer" style="color:var(--green-accent);font-weight:600;">@UT-UFA</a>. Please include your <strong>full name and UT EID</strong> in the payment note — that is how the board matches your payment to your member portal account.</p>
+            <p style="margin-top:12px;" id="dues-faq-rates">The early rate is <strong>$90 for the year or $60 for the semester</strong>, available through <strong>Wednesday, September 16</strong>. After that, dues are $120 for the year or $75 for the semester. You can join at any point in the year, but the early rate is not extended.</p>
+            <p style="margin-top:12px;">Dues assistance is available to any student for whom cost is a barrier — email <a href="mailto:financeassociationtx@gmail.com" style="color:var(--green-accent);font-weight:600;">financeassociationtx@gmail.com</a> and it will be handled privately by the treasurer.</p>
+          </div></div>
         </div>
         
         <div class="faq-item reveal">
@@ -4386,6 +4431,14 @@ footer { padding-bottom: 76px; }
 
           <div class="contact-row reveal">
             <div>
+              <div class="contact-row-label">Dues payments</div>
+              <div class="contact-row-val"><a href="https://venmo.com/u/UT-UFA" target="_blank" rel="noopener noreferrer">Venmo @UT-UFA</a></div>
+              <div style="font-size:13px;color:var(--text-muted);margin-top:6px;">Include your full name and UT EID in the note.</div>
+            </div>
+          </div>
+
+          <div class="contact-row reveal">
+            <div>
               <div class="contact-row-label">Instagram</div>
               <div class="contact-row-val"><a href="https://www.instagram.com/texasufa/" target="_blank" rel="noopener noreferrer">@texasufa</a></div>
             </div>
@@ -4566,6 +4619,7 @@ footer { padding-bottom: 76px; }
     <div>
       <div class="cta-band-title">Ready to find your place?</div>
       <p class="cta-band-sub">General membership is always open. Analyst and team recruitment cycles launch at the start of every fall and spring semester.</p>
+      <p class="cta-band-sub" id="dues-cta-note" style="margin-top:10px;opacity:0.85;">Early rate of $90/year or $60/semester runs through September 16.</p>
     </div>
     <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center;">
       <a href="https://utexas.campuslabs.com/engage/organization/texasufa" target="_blank" rel="noopener noreferrer" class="btn-white" style="padding:16px 36px;font-size:15px;text-align:center;display:flex;align-items:center;justify-content:center;">Become a General Member</a>
@@ -6551,6 +6605,81 @@ async function loadAnalytics() {
        Hero fixes         applyMobileHeroFixes()
        Misc UI sync       syncAnalystCardTitleWrap()
      ════════════════════════════════════════════════════════════════ */
+
+  /* ════════════════════════════════════════════════════════════════
+     DUES PRICING  —  EDIT THIS BLOCK ONCE PER SEMESTER
+     ────────────────────────────────────────────────────────────────
+     Every dues figure and deadline shown anywhere on the site is
+     generated from DUES below. Change it here and it updates the
+     General Membership card, the join-page FAQ, the homepage hero,
+     and the Why UFA call-to-action band.
+
+     After `deadline` passes, the site stops advertising the early
+     rate on its own and switches to the regular prices — no edit
+     needed on the day, and no expired offer left sitting on the
+     join page in October.
+
+     Analyst dues ($25/yr, $15/semester on top of GM) are unchanged
+     and stay hardcoded in the Analyst card.
+     ════════════════════════════════════════════════════════════════ */
+  const DUES = {
+    // Local time, end of day. -05:00 is US Central Daylight Time (CDT).
+    // Use -06:00 for a deadline falling after DST ends in November.
+    deadline:      '2026-09-16T23:59:59-05:00',
+    deadlineShort: 'September 16',            // inline prose
+    deadlineLong:  'Wednesday, September 16', // emphasized / standalone
+    early:   { year: 90,  semester: 60 },
+    regular: { year: 120, semester: 75 }
+  };
+
+  function renderDuesPricing() {
+    const now     = new Date();
+    const cutoff  = new Date(DUES.deadline);
+    // If `deadline` is malformed, fail safe to the early rate rather
+    // than silently charging everyone the higher price.
+    const isEarly = isNaN(cutoff) ? true : now <= cutoff;
+    const rate    = isEarly ? DUES.early : DUES.regular;
+    const set     = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html; };
+
+    set('dues-price-year', '$' + rate.year + ' / year');
+    set('dues-price-sem',  'or $' + rate.semester + ' per semester');
+
+    if (isEarly) {
+      set('dues-banner-label', 'Early rate');
+      set('dues-banner-text',
+        'General membership is <strong>$' + DUES.early.year + ' / year or $' + DUES.early.semester +
+        ' / semester</strong> through <strong>' + DUES.deadlineLong + '</strong> — $' +
+        DUES.regular.year + ' / year or $' + DUES.regular.semester + ' / semester after.');
+      set('dues-faq-rates',
+        'The early rate is <strong>$' + DUES.early.year + ' for the year or $' + DUES.early.semester +
+        ' for the semester</strong>, available through <strong>' + DUES.deadlineLong + '</strong>. ' +
+        'After that, dues are $' + DUES.regular.year + ' for the year or $' + DUES.regular.semester +
+        ' for the semester. You can join at any point in the year, but the early rate is not extended.');
+      set('dues-hero-note',
+        'Early rate: $' + DUES.early.year + '/year or $' + DUES.early.semester +
+        '/semester through <strong style="color:#fff;">' + DUES.deadlineShort + '</strong>. First meeting is free.');
+      set('dues-cta-note',
+        'Early rate of $' + DUES.early.year + '/year or $' + DUES.early.semester +
+        '/semester runs through ' + DUES.deadlineShort + '.');
+    } else {
+      // Window closed — the banner stops advertising a dead deadline and
+      // just states the standing rate.
+      set('dues-banner-label', 'Membership dues');
+      set('dues-banner-text',
+        'General membership is <strong>$' + DUES.regular.year + ' / year or $' + DUES.regular.semester +
+        ' / semester</strong>. Open year-round — your first meeting is free.');
+      set('dues-faq-rates',
+        'Dues are <strong>$' + DUES.regular.year + ' for the year or $' + DUES.regular.semester +
+        ' for the semester</strong>. An early rate of $' + DUES.early.year + ' / $' + DUES.early.semester +
+        ' is offered through the second general meeting of each semester.');
+      set('dues-hero-note',
+        '$' + DUES.regular.year + '/year or $' + DUES.regular.semester +
+        '/semester. First meeting is free.');
+      set('dues-cta-note',
+        'Dues are $' + DUES.regular.year + '/year or $' + DUES.regular.semester + '/semester.');
+    }
+  }
+  document.addEventListener('DOMContentLoaded', renderDuesPricing);
   /**
    * triggerReveals(container)
    * --------------------------
