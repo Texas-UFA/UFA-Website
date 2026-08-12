@@ -1512,8 +1512,9 @@ align-items: flex-end;
   .nav-logo-abbr { display: none; }
 
   /* Hero */
-  .hero {
-    height: 80vh;
+.hero {
+    height: 50vh;
+    min-height: 0;      ← add this
     align-items: flex-end;
   }
   .hero-overlay {
@@ -1975,7 +1976,7 @@ nav .nav-links.open {
    covered a full line of content. Auto width + a translucent border keeps it
    present without dominating the viewport. */
 .sticky-cta {
-  display: inline-block !important;
+  display: none !important;
   position: fixed; left: 50%; bottom: 20px; z-index: 900;
   transform: translateX(-50%);
   right: auto;
@@ -1994,7 +1995,7 @@ body[data-page="portal"] .sticky-cta,
 body[data-page="contact"] .sticky-cta { display: none !important; }
 /* Was 92px for the full-width bar; the pill is shorter so the footer needs
    less clearance to keep its last row tappable. */
-footer { padding-bottom: 76px; }
+footer { padding-bottom: 32px; }
 
 /* Mission quote reads better centred once it's full-width */
 .mission-quote {
@@ -2176,7 +2177,7 @@ footer { padding-bottom: 76px; }
      girl at the left edge of the group isn't sliced in half. */
   .hero-img {
     /* Y raised from 55% so the group's faces sit above the headline. */
-    background: url('https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/heroimg.jpg') 47% 100% / cover no-repeat !important;
+    background: url('https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/heroimg.jpg') 48% 102% / cover no-repeat !important;
   }
 
   /* Analyst 01/02/03 steps grid → 1 column on mobile */
@@ -8063,6 +8064,18 @@ setTimeout(() => {
         img.style.setProperty('transform', 'scale(' + zoom + ')', 'important');
         img.style.setProperty('transform-origin', 'center ' + y, 'important');
 
+// Animate the FRAME, not the image. The image is scaled inside an
+        // overflow:hidden frame, so translating it 24px moves content that is
+        // already outside the clip — fade only, no slide. Moving .reveal up to
+        // the frame makes the whole framed block move, matching desktop.
+        if (!bare) {
+          img.classList.remove('reveal');
+          img.classList.remove('visible');
+          if (!el.classList.contains('reveal')) {
+            el.classList.add('reveal');
+            if (typeof observer !== 'undefined') observer.observe(el);
+          }
+        }
         var w = img.naturalWidth, h = img.naturalHeight;
         if (!w || !h) {                 // still loading — keep the fallback ratio
           img.addEventListener('load', apply, { once: true });
