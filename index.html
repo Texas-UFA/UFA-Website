@@ -294,7 +294,7 @@
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     border: none; cursor: pointer;
   }
-  .btn-primary:hover { background: #5a9e5a; }
+  .btn-primary:hover { background: #5a9e5a; transform: translateY(-2px); box-shadow: 0 6px 18px rgba(46,74,46,0.20); }
   .btn-outline {
     display: inline-block;
     background: transparent;
@@ -309,7 +309,7 @@
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
   }
-  .btn-outline:hover { border-color: rgba(255,255,255,0.8); background: rgba(255,255,255,0.08); }
+  .btn-outline:hover { border-color: rgba(255,255,255,0.8); background: rgba(255,255,255,0.08); transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.15); }
   .hero-badge {
     position: absolute; top: 40px; right: 60px; z-index: 2;
     background: rgba(255,255,255,0.08);
@@ -652,6 +652,8 @@
 .team-card-desc { font-size: 15px; color: var(--text-muted); line-height: 1.65; }
 .team-card-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 16px; font-size: 16px; font-weight: 500; color: var(--green-accent); text-decoration: none; }
 .team-card-link:hover { color: var(--green-dark); }
+.team-card:hover .team-card-link { color: var(--green-dark); }
+.team-card:hover .team-card-link .iv-link-arrow { transform: translateX(4px); }
   /* ── HOW TO JOIN ──
      Step-by-step cards on the Join page explaining the application process. */
   .steps-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 0; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
@@ -733,7 +735,7 @@
      White filled button. Used on dark green backgrounds
      where .btn-primary would not have enough contrast. */
   .btn-white { background: var(--white); color: var(--green-dark); font-family: var(--font-body); font-size: 14px; font-weight: 500; padding: 13px 28px; border-radius: 4px; text-decoration: none; display: inline-block; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); border: none; cursor: pointer; }
-  .btn-white:hover { opacity: 0.9; }
+  .btn-white:hover { background: var(--green-pale); transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.18); }
 
   /* ── INSTAGRAM ──
      Photo grid used to display Instagram-style image strips. */
@@ -830,7 +832,8 @@ background-position: center 95%;
   .legal-p { font-size: 15.5px; color: var(--text-mid); line-height: 1.8; margin: 0 0 18px; }
   .legal-h { font-family: var(--font-display); font-size: 24px; font-weight: 500; color: var(--text-dark); margin: 40px 0 14px; }
   .legal-h3 { font-size: 15px; font-weight: 600; color: var(--text-dark); margin: 26px 0 10px; }
-  .legal-link { color: var(--green-accent); text-decoration: underline; }
+  .legal-link { color: var(--green-accent); text-decoration: underline; transition: color 0.2s ease; }
+  .legal-link:hover { color: var(--green-dark); }
 
   /* ── WHY UFA INTRO ROW ──
      Two-column header for the "Start here. Go anywhere." section:
@@ -840,7 +843,7 @@ background-position: center 95%;
     display: grid;
     grid-template-columns: minmax(0, 1fr) 620px;
     gap: 56px;
-    align-items: start;
+    align-items: center;
     margin-bottom: 48px;
   }
   .why-intro .section-subtitle { margin-bottom: 0; }
@@ -864,13 +867,14 @@ background-position: center 95%;
      with .reveal, and `.reveal.visible { transform: none }` outranks a plain
      `.why-photo img` rule and was cancelling this out. The parent .why-photo
      still carries the reveal animation, so nothing is lost. */
+  /* This rule, not the one in the min-width:769px block, is what renders:
+     `.why-photo img.reveal.visible` (0-3-1) outranks `.why-photo img` (0-2-1)
+     and specificity beats source order. Both now carry the same value. */
   .why-photo img,
   .why-photo img.reveal,
   .why-photo img.reveal.visible {
-    /* Frame is now ~320px+ tall rather than 235px, so it needs far less
-       scaling to fill. 1.8 on the taller frame would crop the group's heads. */
-    transform: scale(1.2);
-    transform-origin: center 60%;
+    transform: scale(1.85);
+    transform-origin: center 72%;
   }
   @media (max-width: 1024px) {
     .why-intro { grid-template-columns: 1fr; gap: 32px; margin-bottom: 32px; }
@@ -1255,7 +1259,7 @@ align-items: flex-end;
   .blog-lightbox-meta { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
   .blog-lightbox-actions { display: flex; gap: 10px; margin-top: 16px; }
   .blog-lightbox-actions a {
-    opacity: 1 !important; transform: none !important;
+    opacity: 1 !important;
     /* Default button padding (16px 36px) is sized for standalone buttons —
        in this half-width flex pairing "Read on Drive" was nearly wrapping. */
     padding: 13px 14px !important;
@@ -1445,8 +1449,8 @@ align-items: flex-end;
   .contact-row-icon svg { width: 16px; height: 16px; stroke: var(--green-accent); fill: none; stroke-width: 1.5; }
   .contact-row-label { font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 4px; }
   .contact-row-val { font-size: 16px; color: var(--text-dark); }
-  .contact-row-val a { color: var(--green-accent); text-decoration: none; }
-  .contact-row-val a:hover { text-decoration: underline; }
+  .contact-row-val a { color: var(--green-accent); text-decoration: none; transition: color 0.2s ease; }
+  .contact-row-val a:hover { text-decoration: underline; color: var(--green-dark); }
   .contact-form-area { background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 36px; }
   .form-group { margin-bottom: 20px; }
   .form-label { display: block; font-size: 13px; font-weight: 500; color: var(--text-mid); margin-bottom: 6px; }
@@ -1455,7 +1459,7 @@ align-items: flex-end;
   textarea.form-input { resize: vertical; min-height: 120px; }
   .social-links { display: flex; gap: 12px; margin-top: 24px; }
   .social-link { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border: 1px solid var(--border); border-radius: 4px; font-size: 13px; font-weight: 500; color: var(--text-mid); text-decoration: none; background: var(--white); transition: all 0.15s; }
-  .social-link:hover { border-color: var(--green-accent); color: var(--green-accent); }
+  .social-link:hover { border-color: var(--green-accent); color: var(--green-accent); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.25); }
   .social-link svg { width: 15px; height: 15px; }
 
   /* ── FOOTER ──
@@ -1483,7 +1487,7 @@ align-items: flex-end;
   .photo-strip { display: grid; grid-template-columns: repeat(4,1fr); gap: 0; height: 220px; }
   .photo-strip-img { overflow: hidden; }
   .photo-strip-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
-  .photo-strip-img:hover img { transform: scale(1.06); }
+  /* photo strip is decorative (not links) — no hover zoom */
 
   /* ── MISC ──
      Miscellaneous utility styles and overrides used across the site. */
@@ -1527,7 +1531,6 @@ align-items: flex-end;
     text-size-adjust: 80%;
   }
 
-  .two-col { display: grid; ... }
 
   body { padding-top: 64px; }
 
@@ -1563,7 +1566,7 @@ align-items: flex-end;
   /* Hero */
 .hero {
     height: 54vh;
-    min-height: 0;      ← add this
+    min-height: 0;
     align-items: flex-end;
   }
   .hero-overlay {
@@ -2905,7 +2908,10 @@ footer { padding-bottom: 32px; }
 .iv-row h4 { font-family: var(--font-display); font-size: 31px; font-weight: 500; margin-bottom: 16px; line-height: 1.2; color: var(--text-dark); }
 .iv-row p { font-size: 15px; color: var(--text-muted); line-height: 1.75; margin-bottom: 20px; }
 .iv-media > img { width: 100%; height: var(--iv-media-h); object-fit: cover; border-radius: 12px; }
-.iv-link { color: var(--green-accent); font-weight: 500; font-size: 16.5px; text-decoration: none; border-bottom: 1px solid currentColor; padding-bottom: 1px; }
+.iv-link { color: var(--green-accent); font-weight: 500; font-size: 16.5px; text-decoration: none; border-bottom: 1px solid currentColor; padding-bottom: 1px; transition: color 0.2s ease; }
+.iv-link-arrow { display: inline-block; transition: transform 0.2s ease; }
+.iv-link:hover { color: var(--green-dark); }
+.iv-link:hover .iv-link-arrow { transform: translateX(4px); }
 
 
 /* Report cover. The <img> sits on top of .iv-journal; if the image loads it
@@ -3260,7 +3266,14 @@ footer { padding-bottom: 32px; }
   #pub-flipbook-controls { max-width: 100% !important; padding: 0 20px 32px !important; }
 
   /* Match the desktop fix, against the shorter 64px mobile nav. */
-  .blog-lightbox-overlay { padding: 88px 16px 28px !important; }
+  .blog-lightbox-overlay {
+    padding: 88px 16px 28px !important;
+    /* align-items:center lets a panel taller than the available space overflow
+       in BOTH directions — padding cannot contain an overflowing flex item —
+       so the top slid under the fixed nav and clipped the close button. */
+    align-items: flex-start !important;
+    overflow-y: auto !important;
+  }
   .blog-lightbox-content { max-height: calc(100vh - 116px) !important; }
 }
 
@@ -3295,6 +3308,38 @@ footer { padding-bottom: 32px; }
    Loaded last on purpose — several of these neutralise earlier rules
    of equal specificity and rely on source order to win.
    ══════════════════════════════════════════════════════════════════ */
+
+/* ── UNIVERSAL BUTTON HOVER (member portal + admin panel) ──
+   Gives every plain action button in the portal/admin areas (sign in,
+   save, approve, delete, export, etc.) the same lift + color-change
+   feedback as the main-site buttons above. Deliberately excludes tabs,
+   filter chips, and icon controls, which already have their own tuned
+   hover states — a lift would make those jump around unexpectedly. */
+button:not(.tab-btn):not(.portal-tab):not(.admin-tab):not(.res-filter):not(.iv-chip):not(.faq-q):not(.blog-shelf-item):not(.blog-lightbox-close):not(.hamburger):not(.btn-primary):not(.btn-outline):not(.btn-white):not(.btn-venmo):not(.blog-lightbox-nav) {
+  transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+}
+button:not(.tab-btn):not(.portal-tab):not(.admin-tab):not(.res-filter):not(.iv-chip):not(.faq-q):not(.blog-shelf-item):not(.blog-lightbox-close):not(.hamburger):not(.btn-primary):not(.btn-outline):not(.btn-white):not(.btn-venmo):not(.blog-lightbox-nav):hover {
+  transform: translateY(-2px);
+  filter: brightness(0.95);
+  box-shadow: 0 6px 16px rgba(28,43,28,0.18);
+}
+/* The lightbox prev/next arrows and flipbook prev/next arrows are
+   absolutely positioned and vertically centered via a resting transform,
+   so the rule above can't move them without breaking that centering —
+   give them their own hover that keeps translateY(-50%) and adds a scale. */
+.blog-lightbox-nav:hover {
+  background: var(--green-mid);
+  transform: translateY(-50%) scale(1.08);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+}
+/* The flipbook prev/next arrows are absolutely positioned and vertically
+   centered via an inline transform, so the rule above can't move them —
+   give them their own hover that keeps the centering and adds a scale. */
+button[onclick="pubFlipbookPrev()"]:hover,
+button[onclick="pubFlipbookNext()"]:hover {
+  background: var(--green-mid) !important;
+  transform: translateY(-50%) scale(1.08) !important;
+}
 
 /* ── TOUCH: NO STICKY HOVER ──
    A tap on a touch screen leaves the element in :hover until something else
@@ -3384,7 +3429,7 @@ footer { padding-bottom: 32px; }
   .portal-field-note { font-size: 13px !important; }
 
 
-  .contact-hero { background-size: 108% !important; background-position: center 45% !important; }
+  .contact-hero { background-size: 118% !important; background-position: center 58% !important; }
 
   /* Publications hero was the only one running taller than the shared
      30vh / 180px sizing every other hero uses — a leftover 460px min-height
@@ -3538,7 +3583,7 @@ footer { padding-bottom: 32px; }
           <div class="team-card-tag">Entry level</div>
           <div class="team-card-title" id="analyst-card-title">Analyst Program</div>
           <p class="team-card-desc">The perfect starting point for new members to build foundational finance and consulting knowledge in a collaborative, lecture-based environment.</p>
-          <span class="team-card-link">Explore the program →</span>
+          <span class="team-card-link">Explore the program <span class="iv-link-arrow">→</span></span>
         </div>
       </a>
       <a href="/teams" onclick="goToTeam('investment');return false;" class="team-card reveal">
@@ -3549,7 +3594,7 @@ footer { padding-bottom: 32px; }
           <div class="team-card-tag">Selective</div>
           <div class="team-card-title" id="investment-card-title">Investment Team</div>
           <p class="team-card-desc">Portfolio management, equity research, stock pitches, market watches, professional blogs, and financial modeling — with mentorship from alumni who've landed at top firms.</p>
-          <span class="team-card-link">Explore the team →</span>
+          <span class="team-card-link">Explore the team <span class="iv-link-arrow">→</span></span>
         </div>
       </a>
       <a href="/teams" onclick="goToTeam('consulting');return false;" class="team-card reveal">
@@ -3560,7 +3605,7 @@ footer { padding-bottom: 32px; }
           <div class="team-card-tag">Selective</div>
           <div class="team-card-title">Consulting Team</div>
           <p class="team-card-desc">Pro bono consulting for real local businesses. Apply strategic frameworks, build client-ready deliverables, and develop the problem-solving skills top firms look for.</p>
-          <span class="team-card-link">Explore the team →</span>
+          <span class="team-card-link">Explore the team <span class="iv-link-arrow">→</span></span>
         </div>
       </a>
     </div>
@@ -3628,7 +3673,7 @@ footer { padding-bottom: 32px; }
         </div>
       </div>
       <div>
-        <div style="overflow:hidden; border-radius:8px; max-height:450px;">
+        <div style="overflow:hidden; border-radius:8px; max-height:380px;">
           <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/B60389D4-5F02-434C-BC14-1B40E0A680C1_1_105_c.jpeg"
   alt="UFA Board dinner" class="about-dinner-photo" style="width:100%; height:100%; object-fit:cover; object-position:center 100%; display:block;">
         </div>
@@ -3944,7 +3989,7 @@ footer { padding-bottom: 32px; }
           <div class="section-tag">What you'll produce</div>
           <h4>Publish Tangible Equity Research</h4>
           <p>Every member contributes to our annual equity research journal, covering public companies across six sectors. Researched and defended the way an analyst would &mdash; a portfolio piece you can hand a recruiter.</p>
-          <a class="iv-link" href="/publications" onclick="showPage('publications');return false;">Read the 2025 journal &rarr;</a>
+          <a class="iv-link" href="/publications" onclick="showPage('publications');return false;">Read the 2025 journal <span class="iv-link-arrow">&rarr;</span></a>
         </div>
         <div class="iv-media iv-media-cover">
           <!-- Real Fall 2025 Research Report cover. If the image fails to load,
@@ -3970,7 +4015,7 @@ footer { padding-bottom: 32px; }
           <div class="section-tag">Where it leads</div>
           <h4>Recruit With Support</h4>
           <p>Bootcamps, resume reviews, and mock interviews run by upperclassmen who just went through it. Members land IB, PE, and asset management roles across the Street.</p>
-          <a class="iv-link" href="/why-ufa" onclick="showPage('why-ufa');return false;">See where our members place &rarr;</a>
+          <a class="iv-link" href="/why-ufa" onclick="showPage('why-ufa');return false;">See where our members place <span class="iv-link-arrow">&rarr;</span></a>
         </div>
         <div class="iv-media">
           <div class="iv-logos">
@@ -8201,7 +8246,7 @@ setTimeout(() => {
 @media (min-width: 769px) {
   .why-photo img              { transform: scale(1.65); transform-origin: center 72%; }
   .iv-social-friendship-photo { transform: scale(1.32); transform-origin: center 62%; }
-  .about-dinner-photo         { transform: scale(1.18); transform-origin: center 62%; }
+  .about-dinner-photo         { transform: scale(1.18); transform-origin: center 100%; }
   .mission-band-img img       { transform: scale(1.30); transform-origin: center center; }
 }
 @media (min-width: 821px) {
