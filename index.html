@@ -1441,7 +1441,7 @@ align-items: flex-end;
   .contact-item.open .faq-a { max-height: 400px; }
   .contact-a-inner { padding: 0 28px 24px; font-size: 14px; color: var(--text-muted); line-height: 1.75; }
   .contact-a-inner strong { color: var(--text-dark); font-weight: 500; }
-  .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; }
+  .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; }
   .contact-info p { font-size: 15px; color: var(--text-mid); line-height: 1.8; margin-bottom: 28px; }
   .contact-detail { display: flex; flex-direction: column; gap: 16px; }
   .contact-row { display: flex; align-items: flex-start; gap: 14px; }
@@ -2098,6 +2098,10 @@ footer { padding-bottom: 32px; }
 .insta-card {
   border-radius: 6px !important;
 }
+/* Dues banner — let the sentence wrap on narrow screens instead of
+   forcing horizontal overflow (desktop keeps it on one line). */
+#dues-banner-text { white-space: normal !important; }
+
 /* Why UFA mobile */
 #page-why-ufa .section > div[style*="grid-template-columns:1fr 1fr"] {
   grid-template-columns: 1fr !important;
@@ -2106,6 +2110,10 @@ footer { padding-bottom: 32px; }
   padding: 32px 0 !important;
   border-left: none !important;
   border-right: none !important;
+  border-bottom: 1px solid var(--border) !important;
+}
+#page-why-ufa .section > div[style*="grid-template-columns:1fr 1fr"] > div:last-child {
+  border-bottom: none !important;
 }
 #page-why-ufa div[style*="grid-template-columns:repeat(4"] {
   grid-template-columns: repeat(2, minmax(0,1fr)) !important;
@@ -3572,7 +3580,7 @@ button[onclick="pubFlipbookNext()"]:hover {
   <!-- Teams preview -->
   <section class="section bg-cream">
     <div class="section-tag">Our programs</div>
-    <h2 class="section-title">Pick Your Path</h2>
+    <h2 class="section-title">Pick your path</h2>
     <p class="section-subtitle">Two tracks in three programs designed to build technical knowledge, practice real skills, and prepare you for the career path that excites you.</p>
     <div class="teams-grid">
       <a href="/teams" onclick="goToTeam('analysts');return false;" class="team-card reveal">
@@ -3667,7 +3675,7 @@ button[onclick="pubFlipbookNext()"]:hover {
         <div class="section-tag">About UFA</div>
         <h2 class="section-title" style="margin-bottom:24px;">The oldest McCombs-affiliated finance organization on campus</h2>
         <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">Founded in 1951, what started as a small group of students passionate about finance has grown into a community of 300+ members with alumni at the world's top firms.</p>
-        <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:32px;">Our mission remains unchanged: to provide a welcoming, high-impact environment where any student &mdash; regardless of background or experience &mdash; can explore their curiosity about finance and build the skills to act on it.</p>
+        <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:32px;">Our mission remains unchanged: to provide a welcoming, high-impact environment where any student — regardless of background or experience — can explore their curiosity about finance and build the skills to act on it.</p>
         <div class="about-join-cta" style="margin-top:32px;">
           <a href="/join" onclick="showPage('join');return false;" class="btn-primary" style="padding:16px 36px;font-size:15px;">Join UFA today</a>
         </div>
@@ -3841,10 +3849,10 @@ button[onclick="pubFlipbookNext()"]:hover {
     <div id="tab-analysts" class="tab-pane active">
       <div class="two-col tab-two-col" style="margin-bottom:28px;">
         <div>
-          <div class="section-tag">No Experience Required · One Round of Applications</div>
+          <div class="section-tag">No experience required · one round of applications</div>
            <div class="iv-open-note">Applications open September 2026</div>
           <h2 class="section-title">Analyst Program</h2>
-          <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:20px;">The Analyst Program is designed for underclassmen and new members with no prior finance experience. In addition to the general member meeting, analysts meet weekly for dedicated training sessions to build the skills needed to succeed in UFA and beyond.</p>
+          <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:20px;">The Analyst Program is designed for underclassmen and new members with no prior finance experience. In addition to the General Member meeting, analysts meet weekly for dedicated training sessions to build the skills needed to succeed in UFA and beyond.</p>
           <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:32px;">Each week, our Directors of Investments and Consulting lead sessions covering accounting, valuation, financial modeling, and market analysis: everything you need to hit the ground running in UFA and in recruiting.</p>
           <div class="team-btn-group"><a href="https://docs.google.com/forms/d/e/1FAIpQLSednj-xoNhhCCvGKyAnP4W1m9p-CNeTw28Cag6ibZsy71G5_A/viewform" target="_blank" rel="noopener noreferrer" class="btn-primary reveal" style="text-align:center;">Apply to Analyst Program</a></div>
         </div>
@@ -3886,7 +3894,7 @@ button[onclick="pubFlipbookNext()"]:hover {
         <div class="reveal" style="background:var(--green-dark);border-radius:8px;padding:28px 28px;">
           <div style="font-size:11px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:var(--green-pale);opacity:0.7;margin-bottom:16px;">Fall Semester</div>
           <h3 style="font-family:var(--font-display);font-size:26px;font-weight:500;color:var(--white);margin-bottom:16px;">Stock Pitch Competition</h3>
-          <p style="font-size:15px;color:rgba(255,255,255,0.65);line-height:1.75;margin-bottom:28px;">Analyst teams select any publicly traded stock on a U.S. exchange, build their investment thesis, and defend it in front of a room. Top teams advance to a final round.</p>
+          <p style="font-size:15px;color:rgba(255,255,255,0.65);line-height:1.75;margin-bottom:28px;">Analyst teams select any publicly traded stock on a U.S. exchange, build their investment thesis, and defend it in front of a panel. Top teams advance to a final round.</p>
           <div style="display:flex;flex-direction:column;gap:14px;">
             <div style="display:flex;align-items:flex-start;gap:12px;">
               <div style="width:6px;height:6px;border-radius:50%;background:var(--green-pale);flex-shrink:0;margin-top:8px;"></div>
@@ -3941,7 +3949,7 @@ button[onclick="pubFlipbookNext()"]:hover {
     <div id="tab-investment" class="tab-pane">
       <div class="two-col tab-two-col" style="margin-bottom:28px;">
         <div>
-          <div class="section-tag">Experience Required · Application + Interview</div>
+          <div class="section-tag">Experience required · application + interview</div>
           <div class="iv-open-note">Applications open September 2026</div>
           <h2 class="section-title">Investment Team</h2>
           <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">The Investment Team is where serious finance preparation meets a tight-knit community. You'll build the technical skills recruiters want and the relationships that last long after graduation.</p>
@@ -3963,7 +3971,7 @@ button[onclick="pubFlipbookNext()"]:hover {
         <h3>Pitch a stock. If the team's convinced, the fund actually buys it.</h3>
         <div class="iv-flow">
           <div class="iv-step"><div class="n">01</div><div class="t">Research</div><div class="d">Pick a company and dig in.</div></div>
-          <div class="iv-step"><div class="n">02</div><div class="t">Build the Model</div><div class="d">Build a DCF and comps.</div></div>
+          <div class="iv-step"><div class="n">02</div><div class="t">Build the Model</div><div class="d">Compare cash flows to competitors.</div></div>
           <div class="iv-step"><div class="n">03</div><div class="t">Pitch the Stock</div><div class="d">Present and defend your thesis.</div></div>
           <div class="iv-step"><div class="n">04</div><div class="t">Tally Votes</div><div class="d">Members vote on the pitch.</div></div>
           <div class="iv-step"><div class="n">05</div><div class="t">Start the Position</div><div class="d">Winning ideas enter the portfolio.</div></div>
@@ -3974,13 +3982,13 @@ button[onclick="pubFlipbookNext()"]:hover {
       <!-- Supporting skills: click a chip to reveal its description -->
       <div class="reveal iv-chips-block">
         <div class="iv-chips" id="iv-chips">
-          <button type="button" class="iv-chip is-active" data-desc="Build DCFs, comps, and LBOs in Excel from a blank sheet &mdash; the same workups you'll be asked to walk through in a technical interview.">Financial Modeling</button>
+          <button type="button" class="iv-chip is-active" data-desc="Build DCFs, comps, and LBOs in Excel from a blank sheet — the same workups you'll be asked to walk through in a technical interview.">Financial Modeling</button>
           <button type="button" class="iv-chip" data-desc="Work through real transactions and company situations, then defend your reasoning the way you would in front of an interviewer or a client.">Case Studies</button>
           <button type="button" class="iv-chip" data-desc="Weekly sessions breaking down market-moving news, earnings, and macro trends so you can speak to what's happening and why it matters.">Market Watch</button>
           <button type="button" class="iv-chip" data-desc="Upperclassmen who've been through recruiting guide you one-on-one, offering technical expertise, resume reviews, mock interviews, and timeline advice.">Mentorship</button>
           <button type="button" class="iv-chip" data-desc="Step up as an industry head, fund manager, or social lead and take real ownership over the team's research, portfolio, and culture.">Leadership Roles</button>
         </div>
-        <p class="iv-chip-desc" id="iv-chip-desc" aria-live="polite">Build DCFs, comps, and LBOs in Excel from a blank sheet &mdash; the same workups you'll be asked to walk through in a technical interview.</p>
+        <p class="iv-chip-desc" id="iv-chip-desc" aria-live="polite">Build DCFs, comps, and LBOs in Excel from a blank sheet — the same workups you'll be asked to walk through in a technical interview.</p>
       </div>
 
       <!-- ROW: equity research journal -->
@@ -3988,7 +3996,7 @@ button[onclick="pubFlipbookNext()"]:hover {
         <div>
           <div class="section-tag">What you'll produce</div>
           <h4>Publish Tangible Equity Research</h4>
-          <p>Every member contributes to our annual equity research journal, covering public companies across six sectors. Researched and defended the way an analyst would &mdash; a portfolio piece you can hand a recruiter.</p>
+          <p>Every member contributes to our annual equity research journal, covering public companies across six sectors. Researched and defended the way an analyst would — a portfolio piece you can hand a recruiter.</p>
           <a class="iv-link" href="/publications" onclick="showPage('publications');return false;">Read the 2025 journal <span class="iv-link-arrow">&rarr;</span></a>
         </div>
         <div class="iv-media iv-media-cover">
@@ -4051,7 +4059,7 @@ button[onclick="pubFlipbookNext()"]:hover {
     <div id="tab-consulting" class="tab-pane">
       <div class="two-col tab-two-col" style="margin-bottom:28px;">
         <div>
-          <div class="section-tag">Experience Required · Application + Interview</div>
+          <div class="section-tag">Experience required · application + interview</div>
           <div class="iv-open-note">Applications open September 2026</div>
       <h2 class="section-title">Consulting Team</h2>
       <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">
@@ -4127,12 +4135,11 @@ button[onclick="pubFlipbookNext()"]:hover {
     <h2 class="section-title">Choose your level of involvement</h2>
     <p class="section-subtitle">All UT Austin students are welcome. No prior finance experience required.</p>
     <div class="membership-grid reveal">
-      <div id="dues-banner" style="grid-column:1/-1;background:var(--green-wash);border:1px solid var(--green-accent);border-radius:8px;padding:20px 28px;margin-bottom:0;">
-        <div style="display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;">
-          <span id="dues-banner-label" style="font-size:14px;font-weight:700;color:var(--green-accent);letter-spacing:0.08em;text-transform:uppercase;white-space:nowrap;">Early rate</span>
-          <span id="dues-banner-text" style="font-size:15px;color:var(--text-dark);">General membership is <strong>$90 / year or $60 / semester</strong> through <strong>Wednesday, September 16</strong> — $120 / year or $75 / semester after.</span>
+      <div id="dues-banner" style="grid-column:1/-1;background:var(--green-wash);border:1px solid var(--green-accent);border-radius:8px;padding:18px 28px;margin-bottom:0;">
+        <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+          <span id="dues-banner-label" style="display:inline-block;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;background:var(--green-accent);color:#fff;padding:5px 12px;border-radius:20px;white-space:nowrap;flex-shrink:0;">Early rate</span>
+          <span id="dues-banner-text" style="font-size:15px;color:var(--text-dark);white-space:nowrap;">General membership is <strong>$90 / year or $60 / semester</strong> through <strong>Wednesday, September 16</strong>.</span>
         </div>
-        <div style="font-size:13px;color:var(--text-muted);margin-top:10px;padding-top:10px;border-top:1px solid rgba(61,107,61,0.18);">Analyst, Investment Associate, and Consulting Associate applications open <strong>Fall 2026 (September)</strong>.</div>
       </div>
       <div class="membership-card featured">
         <div class="membership-badge open">Open year-round</div>
@@ -4178,8 +4185,8 @@ button[onclick="pubFlipbookNext()"]:hover {
 
   <!-- Recruiting Timeline -->
   <section class="section" style="background:var(--green-dark);padding-top:80px;padding-bottom:80px;">
-    <div class="section-tag" style="color:var(--green-pale);">How It Works</div>
-    <h2 class="section-title" style="color:var(--white);margin-bottom:12px;">Recruitment Timeline</h2>
+    <div class="section-tag" style="color:var(--green-pale);">How it works</div>
+    <h2 class="section-title" style="color:var(--white);margin-bottom:12px;">Recruitment timeline</h2>
     <p style="font-size:16px;color:rgba(255,255,255,0.65);line-height:1.8;margin-bottom:56px;">Applications open each fall and spring semester. Follow <a href="https://www.instagram.com/texasufa/" target="_blank" rel="noopener noreferrer" style="color:var(--green-pale);text-decoration:none;font-weight:500;">@texasufa</a> for exact dates each cycle.</p>
 
     <!-- Horizontal timeline (desktop) / vertical (mobile) -->
@@ -4236,7 +4243,7 @@ button[onclick="pubFlipbookNext()"]:hover {
 <section class="section" style="background:var(--white);">
   <div style="width:100%;">
     <div class="section-tag">Everything you need to know</div>
-    <h2 class="section-title" style="margin-bottom:40px;">Frequently Asked Questions</h2>
+    <h2 class="section-title" style="margin-bottom:40px;">Frequently asked questions</h2>
     <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 0 32px; max-width:100%;" id="faq-grid">
       <div>
         <div class="faq-item reveal">
@@ -4255,7 +4262,7 @@ button[onclick="pubFlipbookNext()"]:hover {
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           </button>
           <div class="faq-a"><div class="faq-a-inner">
-            <p>Yes — you must be a dues-paying general member to attend weekly meetings and events. Membership is open year-round with no application required, and your first meeting is free, so you can see what UFA is like before you pay.</p>
+            <p>Yes — you must be a dues-paying General Member to attend weekly meetings and events. Membership is open year-round with no application required, and your first meeting is free, so you can see what UFA is like before you pay.</p>
             <p style="margin-top:12px;">Dues are paid by Venmo to <a href="https://venmo.com/u/UT-UFA" target="_blank" rel="noopener noreferrer" style="color:var(--green-accent);font-weight:600;">@UT-UFA</a>. Please include your <strong>full name and UT EID</strong> in the payment note — that is how the board matches your payment to your member portal account.</p>
             <p style="margin-top:12px;" id="dues-faq-rates">The early rate is <strong>$90 for the year or $60 for the semester</strong>, available through <strong>Wednesday, September 16</strong>. After that, dues are $120 for the year or $75 for the semester. You can join at any point in the year, but the early rate is not extended.</p>
             <p style="margin-top:12px;">Dues assistance is available to any student for whom cost is a barrier — email <a href="mailto:financeassociationtx@gmail.com" style="color:var(--green-accent);font-weight:600;">financeassociationtx@gmail.com</a> and it will be handled privately by the treasurer.</p>
@@ -4264,7 +4271,7 @@ button[onclick="pubFlipbookNext()"]:hover {
         
         <div class="faq-item reveal">
           <button class="faq-q" onclick="toggleFaq(this)">
-            How do I get into the associate or analyst program?
+            How do I get into the analyst or associate program?
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           </button>
           <div class="faq-a"><div class="faq-a-inner">Show up to info sessions, meet the team, and be genuine in your application. We look for drive and curiosity, not a perfect GPA or prior finance experience.</div></div>
@@ -4284,14 +4291,14 @@ button[onclick="pubFlipbookNext()"]:hover {
             Do you host social events?
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           </button>
-          <div class="faq-a"><div class="faq-a-inner">Yes, we offer socials for both the Analyst and Associate programs throughout the year. General members are invited to select events as well.</div></div>
+          <div class="faq-a"><div class="faq-a-inner">Yes, we offer socials for both the Analyst and Associate programs throughout the year. General Members are invited to select events as well.</div></div>
         </div>
         <div class="faq-item reveal">
           <button class="faq-q" onclick="toggleFaq(this)">
             What is the time commitment?
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           </button>
-          <div class="faq-a"><div class="faq-a-inner">General members attend one weekly meeting on Wednesdays from 5–6 PM. Analysts and Associates have additional meetings and work outside of that time.</div></div>
+          <div class="faq-a"><div class="faq-a-inner">General Members attend one weekly meeting on Wednesdays from 5–6 PM. Analysts and Associates have additional meetings and work outside of that time.</div></div>
         </div>
       </div>
     </div><!-- /faq-grid -->
@@ -4323,7 +4330,7 @@ button[onclick="pubFlipbookNext()"]:hover {
 
   <section class="pub-section bg-cream">
     <div class="section-tag">Equity Research Journal</div>
-    <h2 class="section-title">Member-Authored Company Analysis</h2>
+    <h2 class="section-title">Member-authored company analysis</h2>
     <p class="section-subtitle">In-depth equity research and market analysis written by our Investment Team members, covering public companies across industries.</p>
 
 
@@ -4372,8 +4379,8 @@ button[onclick="pubFlipbookNext()"]:hover {
   <hr class="divider">
 
   <section class="pub-section bg-cream">
-    <div class="section-tag">Weekly Blog</div>
-    <h2 class="section-title">Member-Authored Commentary</h2>
+    <div class="section-tag">Weekly blog</div>
+    <h2 class="section-title">Member-authored commentary</h2>
     <p class="section-subtitle">Every week, UFA Investment Team members write and publish original market commentary on the companies, deals, and macro trends they're actively following.</p>
 
         <div class="blog-shelf" id="blog-shelf">
@@ -4393,14 +4400,14 @@ button[onclick="pubFlipbookNext()"]:hover {
           </button>
 
           <button class="blog-shelf-item" onclick="openBlogLightbox(2)">
-            <div class="blog-shelf-cover"><img loading="lazy" src="https://drive.google.com/thumbnail?id=1vb40r6FEqYKDYe8wIw_fWteyM5i5lSwd&sz=w500" alt="Panic at the Disco"></div>
+            <div class="blog-shelf-cover"><img loading="lazy" src="https://drive.google.com/thumbnail?id=1vb40r6FEqYKDYe8wIw_fWteyM5i5lSwd&sz=w500" alt="Panic at the Disco!"></div>
             <div class="blog-shelf-date">03/02/2026</div>
             <div class="blog-shelf-title">Panic at the Disco!</div>
             <div class="blog-shelf-author">Vivaan Shah</div>
           </button>
 
           <button class="blog-shelf-item" onclick="openBlogLightbox(3)">
-            <div class="blog-shelf-cover"><img loading="lazy" src="https://drive.google.com/thumbnail?id=1P4_u8vYzvvqVU-p-ziOr0max5_-q-W8B&sz=w500" alt="Is American Exceptionalism Fading"></div>
+            <div class="blog-shelf-cover"><img loading="lazy" src="https://drive.google.com/thumbnail?id=1P4_u8vYzvvqVU-p-ziOr0max5_-q-W8B&sz=w500" alt="Is American Exceptionalism Fading?"></div>
             <div class="blog-shelf-date">02/19/2026</div>
             <div class="blog-shelf-title">Is American Exceptionalism Fading?</div>
             <div class="blog-shelf-author">Felipe Motta</div>
@@ -4421,7 +4428,7 @@ button[onclick="pubFlipbookNext()"]:hover {
           </button>
 
           <button class="blog-shelf-item" onclick="openBlogLightbox(6)">
-            <div class="blog-shelf-cover"><img loading="lazy" src="https://drive.google.com/thumbnail?id=1x9ZDjMDJzaWFO1DKPZcqT6xgf-coDCZf&sz=w500" alt="Why AI Will Cause One of the Worst Crashes"></div>
+            <div class="blog-shelf-cover"><img loading="lazy" src="https://drive.google.com/thumbnail?id=1x9ZDjMDJzaWFO1DKPZcqT6xgf-coDCZf&sz=w500" alt="Why AI Will Cause One of the Worst Crashes in History"></div>
             <div class="blog-shelf-date">11/17/2025</div>
             <div class="blog-shelf-title">Why AI Will Cause One of the Worst Crashes in History</div>
             <div class="blog-shelf-author">Farzad Hussain</div>
@@ -4585,7 +4592,7 @@ button[onclick="pubFlipbookNext()"]:hover {
         </div>
         <div class="form-group">
           <label class="form-label" for="contact-message">Message</label>
-          <textarea id="contact-message" class="form-input" placeholder="Tell us a bit about yourself or what you're looking for..."></textarea>
+          <textarea id="contact-message" class="form-input" placeholder="Tell us a bit about yourself or what you're looking for…"></textarea>
         </div>
         <button class="btn-primary" id="contact-submit" style="width:100%;" onclick="sendContactForm()">Send message</button>
         <p id="contact-status" style="margin-top:12px;font-size:14px;text-align:center;display:none;"></p>
@@ -4673,7 +4680,7 @@ button[onclick="pubFlipbookNext()"]:hover {
   <!-- Placements collage -->
   <section class="bg-white" style="padding:40px 72px 60px;" id="placements-section">
     <div class="section-tag">Where our members go</div>
-    <h2 class="section-title">Our Recent Placements</h2>
+    <h2 class="section-title">Our recent placements</h2>
     <p class="section-subtitle">UFA members have landed internships and full-time roles at the most respected firms in finance, from Wall Street banks to Texas-based institutions.</p>
 
     <!-- Logo collage — 4 col forced -->
@@ -4696,17 +4703,17 @@ button[onclick="pubFlipbookNext()"]:hover {
       <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/logos/morgan-stanley-cropped.png" alt="Morgan Stanley investment banking placement - UFA alumni" class="placement-logo-img">
       <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/logos/oliver-wyman.png" alt="Oliver Wyman management consulting placement - UFA alumni" class="placement-logo-img">
       <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/logos/orion-cropped.png" alt="Orion Group finance placement - UFA alumni" class="placement-logo-img">
-      <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/logos/pgim.png" alt="PGIM" class="placement-logo-img">
-      <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/logos/point72.png" alt="Point72" class="placement-logo-img">
-      <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/logos/raine.png" alt="Raine Group" class="placement-logo-img">
-      <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/logos/raymond-james.png" alt="Raymond James" class="placement-logo-img">
-      <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/logos/rbc-cropped.png" alt="RBC" class="placement-logo-img">
-      <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/logos/scotiabank.png" alt="Scotiabank" class="placement-logo-img">
-      <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/logos/solomon.png" alt="Solomon Partners" class="placement-logo-img">
-      <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/logos/stellex.png" alt="Stellex Capital" class="placement-logo-img">
-      <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/logos/td-securities.png" alt="TD Securities" class="placement-logo-img">
-      <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/logos/tpg.png" alt="TPG" class="placement-logo-img">
-      <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/logos/Wells-Fargo-Emblem.png" alt="Wells Fargo" class="placement-logo-img">
+      <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/logos/pgim.png" alt="PGIM investment management placement - UFA alumni" class="placement-logo-img">
+      <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/logos/point72.png" alt="Point72 hedge fund placement - UFA alumni" class="placement-logo-img">
+      <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/logos/raine.png" alt="Raine Group investment banking placement - UFA alumni" class="placement-logo-img">
+      <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/logos/raymond-james.png" alt="Raymond James investment banking placement - UFA alumni" class="placement-logo-img">
+      <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/logos/rbc-cropped.png" alt="RBC Capital Markets investment banking placement - UFA alumni" class="placement-logo-img">
+      <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/logos/scotiabank.png" alt="Scotiabank investment banking placement - UFA alumni" class="placement-logo-img">
+      <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/logos/solomon.png" alt="Solomon Partners investment banking placement - UFA alumni" class="placement-logo-img">
+      <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/logos/stellex.png" alt="Stellex Capital private equity placement - UFA alumni" class="placement-logo-img">
+      <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/logos/td-securities.png" alt="TD Securities investment banking placement - UFA alumni" class="placement-logo-img">
+      <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/logos/tpg.png" alt="TPG private equity placement - UFA alumni" class="placement-logo-img">
+      <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/logos/Wells-Fargo-Emblem.png" alt="Wells Fargo investment banking placement - UFA alumni" class="placement-logo-img">
 
     </div>
 
@@ -4718,7 +4725,7 @@ button[onclick="pubFlipbookNext()"]:hover {
     <div>
       <div class="cta-band-title">Ready to find your place?</div>
       <p class="cta-band-sub">General membership is always open. Analyst and team recruitment cycles launch at the start of every fall and spring semester.</p>
-      <p class="cta-band-sub" id="dues-cta-note" style="margin-top:10px;opacity:0.85;">Early rate of $90/year or $60/semester runs through September 16.</p>
+      <p class="cta-band-sub" id="dues-cta-note" style="margin-top:10px;opacity:0.85;">Early rate of $90 / year or $60 / semester runs through September 16.</p>
     </div>
     <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center;">
       <a href="https://utexas.campuslabs.com/engage/organization/texasufa" target="_blank" rel="noopener noreferrer" class="btn-white" style="padding:16px 36px;font-size:15px;text-align:center;display:flex;align-items:center;justify-content:center;">Become a General Member</a>
@@ -5203,7 +5210,7 @@ button[onclick="pubFlipbookNext()"]:hover {
           </div>
 
           <div id="resources-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;"></div>
-          <div id="resources-loading" style="text-align:center;padding:40px;color:#6B7D6B;font-size:14px;">Loading resources...</div>
+          <div id="resources-loading" style="text-align:center;padding:40px;color:#6B7D6B;font-size:14px;">Loading resources…</div>
         </div>
 
         
@@ -5709,7 +5716,7 @@ async function portalLogin() {
   const err   = document.getElementById('login-error');
   const btn   = document.getElementById('login-btn');
   if (!email || !pw) { err.style.display='block'; err.textContent='Please enter your UT email and password.'; return; }
-  if (btn) { btn.textContent = 'Signing in...'; btn.disabled = true; }
+  if (btn) { btn.textContent = 'Signing in…'; btn.disabled = true; }
   try {
     const { data, error } = await sb.auth.signInWithPassword({ email, password: pw });
     if (error) { let msg = 'Something went wrong. Please try again.'; if (error.message.includes('Invalid login credentials')) msg = 'Incorrect email or password. Please try again.'; else if (error.message.includes('Email not confirmed')) msg = 'Please confirm your email before signing in.'; else if (error.message.includes('Too many requests')) msg = 'Too many attempts. Please wait a few minutes and try again.'; err.style.display='block'; err.textContent=msg; if (btn) { btn.textContent='Sign in'; btn.disabled=false; } return; }
@@ -5929,7 +5936,7 @@ async function checkIn() {
   var succ = document.getElementById('checkin-success');
   var btn  = document.getElementById('checkin-btn');
   if (!code) { err.style.display='block'; err.textContent='Enter the session code.'; return; }
-  btn.textContent='Checking in...'; btn.disabled=true;
+  btn.textContent='Checking in…'; btn.disabled=true;
 
   var sessRes = await sb.from('sessions').select('*').eq('code',code).eq('active','true').single();
   var session = sessRes.data;
@@ -6747,8 +6754,7 @@ async function loadAnalytics() {
       set('dues-banner-label', 'Early rate');
       set('dues-banner-text',
         'General membership is <strong>$' + DUES.early.year + ' / year or $' + DUES.early.semester +
-        ' / semester</strong> through <strong>' + DUES.deadlineLong + '</strong> — $' +
-        DUES.regular.year + ' / year or $' + DUES.regular.semester + ' / semester after.');
+        ' / semester</strong> through <strong>' + DUES.deadlineLong + '</strong>.');
       set('dues-faq-rates',
         'The early rate is <strong>$' + DUES.early.year + ' for the year or $' + DUES.early.semester +
         ' for the semester</strong>, available through <strong>' + DUES.deadlineLong + '</strong>. ' +
