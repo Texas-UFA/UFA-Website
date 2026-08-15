@@ -3249,8 +3249,16 @@ footer { padding-bottom: 32px; }
    content — pull them inside and scale them down. */
 @media (max-width: 768px) {
   /* Portrait on a phone — StPageFlip shows one page, so the stage ratio
-     becomes a single US-Letter page rather than a two-page spread. */
-  #pub-flipbook-wrap { aspect-ratio: 8.5 / 11; max-height: 62vh; }
+     becomes a single US-Letter page rather than a two-page spread.
+     max-height uses svh (small viewport height), not plain vh: mobile
+     browsers resize the viewport as the address bar collapses/expands
+     during scroll or a touch flip gesture, so plain vh recalculates and
+     the whole card visibly grows/shrinks — the "page jumps" bug. svh
+     pins to the viewport height with browser chrome fully shown, which
+     doesn't change, so the box stays put. Falls back to vh on browsers
+     that don't support svh (a slightly-wrong-but-stable height beats
+     nothing there). */
+  #pub-flipbook-wrap { aspect-ratio: 8.5 / 11; max-height: 62vh; max-height: 62svh; }
   /* No room beside the book on a phone, so the arrows stop floating over the
      page and become a normal row underneath it. */
   #pub-flipbook-wrap { padding-bottom: 64px; }
@@ -4350,18 +4358,22 @@ button[onclick="pubFlipbookNext()"]:hover {
            the JS section. Falls back to a plain link if the PDF can't be
            fetched (e.g. Google Drive CORS blocking — see comment there).
            The left/right arrow buttons are a more obvious affordance than
-           StPageFlip's built-in corner-peel hint. -->
+           StPageFlip's built-in corner-peel hint. Desktop offset is -64px
+           (56px button + 8px clear gap) so the button sits fully outside
+           the book instead of overlapping its edge — the section has 72px
+           of side padding, so there's room. Mobile repositions these
+           entirely; see the @media block in the CSS. -->
       <div style="margin-top:32px;padding-bottom:40px;width:100%;display:flex;flex-direction:column;align-items:center;">
         <div id="pub-flipbook-loading" style="padding:80px 20px;text-align:center;color:var(--text-muted);font-size:14px;">
           Loading pages…
         </div>
         <div id="pub-flipbook-wrap" style="display:none;position:relative;width:100%;max-width:1000px;">
-          <button onclick="pubFlipbookPrev()" aria-label="Previous page" style="display:flex;align-items:center;justify-content:center;position:absolute;left:-28px;top:50%;transform:translateY(-50%);width:56px;height:56px;border-radius:50%;border:none;background:var(--green-dark);box-shadow:0 4px 16px rgba(0,0,0,0.25);cursor:pointer;z-index:5;font-size:24px;color:#fff;">←</button>
+          <button onclick="pubFlipbookPrev()" aria-label="Previous page" style="display:flex;align-items:center;justify-content:center;position:absolute;left:-64px;top:50%;transform:translateY(-50%);width:56px;height:56px;border-radius:50%;border:none;background:var(--green-dark);box-shadow:0 4px 16px rgba(0,0,0,0.25);cursor:pointer;z-index:5;font-size:24px;color:#fff;">←</button>
           <!-- Sizing lives in CSS (#pub-flipbook / #pub-flipbook-wrap) — the
                book is absolutely positioned inside an aspect-ratio stage. -->
           <div id="pub-flipbook"></div>
           <div id="pub-flipbook-spine" style="position:absolute;left:50%;top:0;bottom:0;width:34px;margin-left:-17px;pointer-events:none;z-index:6;background:linear-gradient(to right, rgba(0,0,0,0) 0%, rgba(0,0,0,0.16) 42%, rgba(0,0,0,0.28) 50%, rgba(0,0,0,0.16) 58%, rgba(0,0,0,0) 100%);"></div>
-          <button onclick="pubFlipbookNext()" aria-label="Next page" style="display:flex;align-items:center;justify-content:center;position:absolute;right:-28px;top:50%;transform:translateY(-50%);width:56px;height:56px;border-radius:50%;border:none;background:var(--green-dark);box-shadow:0 4px 16px rgba(0,0,0,0.25);cursor:pointer;z-index:5;font-size:24px;color:#fff;">→</button>
+          <button onclick="pubFlipbookNext()" aria-label="Next page" style="display:flex;align-items:center;justify-content:center;position:absolute;right:-64px;top:50%;transform:translateY(-50%);width:56px;height:56px;border-radius:50%;border:none;background:var(--green-dark);box-shadow:0 4px 16px rgba(0,0,0,0.25);cursor:pointer;z-index:5;font-size:24px;color:#fff;">→</button>
         </div>
         <div id="pub-flipbook-controls" style="display:none;flex-direction:column;gap:18px;align-items:center;margin-top:20px;width:100%;max-width:600px;">
           <span id="pub-flipbook-pagenum" style="font-size:17px;font-weight:500;color:var(--text-dark);text-align:center;"></span>
