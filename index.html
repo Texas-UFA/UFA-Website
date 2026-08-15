@@ -3279,6 +3279,13 @@ footer { padding-bottom: 32px; }
     right: 50% !important;
     margin-right: -60px;
   }
+  /* The book's height:100% (set in the base #pub-flipbook rule) resolves
+     against the wrapper's full padding box, which includes the 64px
+     reserved above for the button row — so without this override the book
+     quietly grows into that space and its bottom edge covers the arrows.
+     Subtracting the same 64px here keeps the book inside the aspect-ratio
+     area only, leaving the reserved strip actually empty. */
+  #pub-flipbook { height: calc(100% - 64px) !important; }
   #pub-flipbook-controls { max-width: 100% !important; padding: 0 20px 32px !important; }
 
   /* Match the desktop fix, against the shorter 64px mobile nav. */
@@ -4518,7 +4525,7 @@ button[onclick="pubFlipbookNext()"]:hover {
   </div>
 
 
-  <section class="section" style="background:var(--white);">
+  <section class="section" style="background:var(--cream);">
     <div class="contact-grid">
       <div class="contact-info">
         <div class="section-tag">Contact details</div>
