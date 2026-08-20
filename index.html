@@ -7070,7 +7070,17 @@ async function loadAnalytics() {
     const item = btn.closest('.faq-item');
     const isOpen = item.classList.contains('open');
     document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
-    if (!isOpen) item.classList.add('open');
+    if (!isOpen) {
+      item.classList.add('open');
+      // Belt-and-suspenders: whatever this item's answer contains (even
+      // individually reveal-tagged <p> tags) should just be visible the
+      // moment the accordion opens, not wait on scroll-based observation
+      // that may never fire for content that started out clipped.
+      item.querySelectorAll('.reveal').forEach(el => {
+        el.classList.add('visible');
+        observer.unobserve(el);
+      });
+    }
   }
 
 /**
@@ -7480,6 +7490,7 @@ document.querySelectorAll('.page, .stats-bar').forEach(page => {
     if (
       el.closest('.board-card') ||
       el.closest('.blog-card-new') ||
+      el.closest('.blog-shelf') ||
       el.closest('.hero') ||
       el.closest('#blog-lightbox-overlay') ||
       el.closest('footer') ||
@@ -7493,11 +7504,12 @@ document.querySelectorAll('.page, .stats-bar').forEach(page => {
     } else if (!activePage) {
       // outside a page (e.g. stats-bar) — showPage handles it
     } else {
-      // active page — observe for scroll-triggered reveals below the fold only
-      const rect = el.getBoundingClientRect();
-      if (rect.top >= window.innerHeight) {
-        observer.observe(el);
-      }
+      // active page — observe every reveal element. IntersectionObserver
+      // fires immediately for elements already in view (e.g. above-the-fold
+      // content on a fresh home-page load, where showPage() never runs),
+      // so this reveals them right away instead of leaving them stuck at
+      // opacity:0 forever. Elements below the fold still animate on scroll.
+      observer.observe(el);
     }
   });
 });
@@ -7669,6 +7681,11 @@ setTimeout(() => {
     if (rect.top < window.innerHeight && rect.bottom > 0) {
       setTimeout(() => el.classList.add('visible'), idx * (window.innerWidth <= 768 ? 50 : 80));
       idx++;
+    } else {
+      // Below the fold right now — make sure it's being watched so it still
+      // reveals on scroll even if layout shifted (font swap, late-loading
+      // image, etc.) between this check and the earlier tagging pass.
+      observer.observe(el);
     }
   });
   // Stats via reveal system — staggered fade-in when scrolled into view
