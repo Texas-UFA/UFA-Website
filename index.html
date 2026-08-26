@@ -17,7 +17,7 @@
     <!-- Open Graph -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://texasufa.org">
-    <meta property="og:title" content="Texas UFA — University Finance Association at UT Austin">
+    <meta property="og:title" content="Texas UFA: University Finance Association at UT Austin">
     <meta property="og:description" content="UT Austin's oldest and largest finance organization, connecting ambitious students to Wall Street, private equity, and consulting since 1951.">
     <meta property="og:image" content="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/heroimg.jpg">
     <meta property="og:site_name" content="Texas UFA">
@@ -50,7 +50,7 @@
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="https://texasufa.org">
-    <meta name="twitter:title" content="Texas UFA — University Finance Association at UT Austin">
+    <meta name="twitter:title" content="Texas UFA: University Finance Association at UT Austin">
     <meta name="twitter:description" content="UT Austin's oldest and largest finance organization, connecting ambitious students to Wall Street, private equity, and consulting since 1951.">
     <meta name="twitter:image" content="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/heroimg.jpg">
 
@@ -730,7 +730,6 @@
   gap: 16px;           /* The space between the buttons */
 }
   .cta-band-title { font-family: var(--font-display); font-size: 30px; font-weight: 500; color: var(--white); margin-bottom: 8px; }
-  .cta-band-sub { font-size: 18px; color: rgba(255,255,255,0.7); }
   /* .btn-white
      White filled button. Used on dark green backgrounds
      where .btn-primary would not have enough contrast. */
@@ -1231,6 +1230,9 @@ align-items: flex-end;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   margin-bottom: 6px;
+  min-height: 44.8px; /* reserves space for 2 lines (16px * 1.4 * 2) so 1-line
+                          and 2-line titles keep the author/actions row aligned
+                          across cards in the same grid row */
 }
 .blog-card-new .blog-card-author {
   font-size: 13px;
@@ -2420,6 +2422,7 @@ footer { padding-bottom: 32px; }
   /* Remove fixed heights on blog card elements on mobile so no extra gap */
   .blog-card-new .blog-card-title {
     height: auto !important;
+    min-height: 0 !important;
     -webkit-line-clamp: unset !important;
   }
   .blog-card-new .blog-card-author {
@@ -3657,7 +3660,7 @@ button[onclick="pubFlipbookNext()"]:hover {
 
   <style>.mission-quote::before, .mission-quote::after { content: none !important; }</style>
 </p>
-<p class="mission-attr">University Finance Association — Est. 1951</p>
+<p class="mission-attr">University Finance Association, Est. 1951</p>
       <div style="margin-top:32px;">
         <a href="/about" onclick="showPage('about');return false;" class="btn-outline">Learn our story →</a>
       </div>
@@ -3688,7 +3691,7 @@ button[onclick="pubFlipbookNext()"]:hover {
         <div class="team-card-body">
           <div class="team-card-tag">Selective</div>
           <div class="team-card-title" id="investment-card-title">Investment Team</div>
-          <p class="team-card-desc">Portfolio management, equity research, stock pitches, market watches, professional blogs, and financial modeling — with mentorship from alumni who've landed at top firms.</p>
+          <p class="team-card-desc">Portfolio management, equity research, stock pitches, market watches, professional blogs, and financial modeling, with mentorship from alumni who've landed at top firms.</p>
           <span class="team-card-link">Explore the team <span class="iv-link-arrow">→</span></span>
         </div>
       </a>
@@ -3762,7 +3765,7 @@ button[onclick="pubFlipbookNext()"]:hover {
         <div class="section-tag">About UFA</div>
         <h2 class="section-title" style="margin-bottom:24px;">The oldest McCombs-affiliated finance organization on campus</h2>
         <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">Founded in 1951, what started as a small group of students passionate about finance has grown into a community of 300+ members with alumni at the world's top firms.</p>
-        <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:32px;">Our mission remains unchanged: to provide a welcoming, high-impact environment where any student — regardless of background or experience — can explore their curiosity about finance and build the skills to act on it.</p>
+        <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:32px;">Our mission remains unchanged: to provide a welcoming, high-impact environment where any student, regardless of background or experience, can explore their curiosity about finance and build the skills to act on it.</p>
         <div class="about-join-cta" style="margin-top:32px;">
           <a href="/join" onclick="showPage('join');return false;" class="btn-primary" style="padding:16px 36px;font-size:15px;">Join UFA today</a>
         </div>
@@ -3922,7 +3925,7 @@ button[onclick="pubFlipbookNext()"]:hover {
           <div style="padding:32px 28px;border-right:1px solid var(--border);">
             <div style="font-family:var(--font-display);font-size:48px;font-weight:500;color:var(--green-accent);line-height:1;margin-bottom:12px;">02</div>
             <div style="font-family:var(--font-display);font-size:18px;font-weight:500;color:var(--text-dark);margin-bottom:10px;">Engage and Apply</div>
-            <p style="font-size:15px;color:var(--text-muted);line-height:1.7;">Participate in stock pitches, case-style exercises, and hands-on projects — turning technical concepts into practical experience.</p>
+            <p style="font-size:15px;color:var(--text-muted);line-height:1.7;">Participate in stock pitches, case-style exercises, and hands-on projects, turning technical concepts into practical experience.</p>
           </div>
           <div style="padding:32px 0 32px 28px;">
             <div style="font-family:var(--font-display);font-size:48px;font-weight:500;color:var(--green-accent);line-height:1;margin-bottom:12px;">03</div>
@@ -3948,19 +3951,19 @@ button[onclick="pubFlipbookNext()"]:hover {
           <div style="display:flex;flex-direction:column;gap:14px;">
             <div style="display:flex;align-items:flex-start;gap:12px;">
               <div style="width:6px;height:6px;border-radius:50%;background:var(--green-pale);flex-shrink:0;margin-top:8px;"></div>
-              <div style="font-size:14px;color:rgba(255,255,255,0.75);line-height:1.65;"><span style="font-weight:500;color:var(--white);">Format —</span> Round 1 open to all analyst teams. Top 6 advance to finals.</div>
+              <div style="font-size:14px;color:rgba(255,255,255,0.75);line-height:1.65;"><span style="font-weight:500;color:var(--white);">Format:</span> Round 1 open to all analyst teams. Top 6 advance to finals.</div>
             </div>
             <div style="display:flex;align-items:flex-start;gap:12px;">
               <div style="width:6px;height:6px;border-radius:50%;background:var(--green-pale);flex-shrink:0;margin-top:8px;"></div>
-              <div style="font-size:14px;color:rgba(255,255,255,0.75);line-height:1.65;"><span style="font-weight:500;color:var(--white);">Universe —</span> Any stock listed on a U.S. exchange. Team selects the company.</div>
+              <div style="font-size:14px;color:rgba(255,255,255,0.75);line-height:1.65;"><span style="font-weight:500;color:var(--white);">Universe:</span> Any stock listed on a U.S. exchange. Team selects the company.</div>
             </div>
             <div style="display:flex;align-items:flex-start;gap:12px;">
               <div style="width:6px;height:6px;border-radius:50%;background:var(--green-pale);flex-shrink:0;margin-top:8px;"></div>
-              <div style="font-size:14px;color:rgba(255,255,255,0.75);line-height:1.65;"><span style="font-weight:500;color:var(--white);">Judges —</span> UFA upperclassmen and finance alumni.</div>
+              <div style="font-size:14px;color:rgba(255,255,255,0.75);line-height:1.65;"><span style="font-weight:500;color:var(--white);">Judges:</span> UFA upperclassmen and finance alumni.</div>
             </div>
             <div style="display:flex;align-items:flex-start;gap:12px;">
               <div style="width:6px;height:6px;border-radius:50%;background:var(--green-pale);flex-shrink:0;margin-top:8px;"></div>
-              <div style="font-size:14px;color:rgba(255,255,255,0.75);line-height:1.65;"><span style="font-weight:500;color:var(--white);">Prize pool —</span> $1,000 split across 1st, 2nd, and 3rd place.</div>
+              <div style="font-size:14px;color:rgba(255,255,255,0.75);line-height:1.65;"><span style="font-weight:500;color:var(--white);">Prize pool:</span> $1,000 split across 1st, 2nd, and 3rd place.</div>
             </div>
           </div>
         </div>
@@ -3972,19 +3975,19 @@ button[onclick="pubFlipbookNext()"]:hover {
           <div style="display:flex;flex-direction:column;gap:14px;">
             <div style="display:flex;align-items:flex-start;gap:12px;">
               <div style="width:6px;height:6px;border-radius:50%;background:var(--green-pale);flex-shrink:0;margin-top:8px;"></div>
-              <div style="font-size:14px;color:rgba(255,255,255,0.75);line-height:1.65;"><span style="font-weight:500;color:var(--white);">Format —</span> Round 1 open to all analyst teams. Top 6 advance to finals.</div>
+              <div style="font-size:14px;color:rgba(255,255,255,0.75);line-height:1.65;"><span style="font-weight:500;color:var(--white);">Format:</span> Round 1 open to all analyst teams. Top 6 advance to finals.</div>
             </div>
             <div style="display:flex;align-items:flex-start;gap:12px;">
               <div style="width:6px;height:6px;border-radius:50%;background:var(--green-pale);flex-shrink:0;margin-top:8px;"></div>
-              <div style="font-size:14px;color:rgba(255,255,255,0.75);line-height:1.65;"><span style="font-weight:500;color:var(--white);">Client —</span> A real corporation. Case details released one week before presentations.</div>
+              <div style="font-size:14px;color:rgba(255,255,255,0.75);line-height:1.65;"><span style="font-weight:500;color:var(--white);">Client:</span> A real corporation. Case details released one week before presentations.</div>
             </div>
             <div style="display:flex;align-items:flex-start;gap:12px;">
               <div style="width:6px;height:6px;border-radius:50%;background:var(--green-pale);flex-shrink:0;margin-top:8px;"></div>
-              <div style="font-size:14px;color:rgba(255,255,255,0.75);line-height:1.65;"><span style="font-weight:500;color:var(--white);">Judges —</span> Active industry professionals from the finance and business community.</div>
+              <div style="font-size:14px;color:rgba(255,255,255,0.75);line-height:1.65;"><span style="font-weight:500;color:var(--white);">Judges:</span> Active industry professionals from the finance and business community.</div>
             </div>
             <div style="display:flex;align-items:flex-start;gap:12px;">
               <div style="width:6px;height:6px;border-radius:50%;background:var(--green-pale);flex-shrink:0;margin-top:8px;"></div>
-              <div style="font-size:14px;color:rgba(255,255,255,0.75);line-height:1.65;"><span style="font-weight:500;color:var(--white);">Prize pool —</span> $1,000 split across 1st, 2nd, and 3rd place.</div>
+              <div style="font-size:14px;color:rgba(255,255,255,0.75);line-height:1.65;"><span style="font-weight:500;color:var(--white);">Prize pool:</span> $1,000 split across 1st, 2nd, and 3rd place.</div>
             </div>
           </div>
         </div>
@@ -4032,13 +4035,13 @@ button[onclick="pubFlipbookNext()"]:hover {
       <!-- Supporting skills: click a chip to reveal its description -->
       <div class="reveal iv-chips-block">
         <div class="iv-chips" id="iv-chips">
-          <button type="button" class="iv-chip is-active" data-desc="Build DCFs, comps, and LBOs in Excel from a blank sheet — the same workups you'll be asked to walk through in a technical interview.">Financial Modeling</button>
+          <button type="button" class="iv-chip is-active" data-desc="Build DCFs, comps, and LBOs in Excel from a blank sheet, the same workups you'll be asked to walk through in a technical interview.">Financial Modeling</button>
           <button type="button" class="iv-chip" data-desc="Work through real transactions and company situations, then defend your reasoning the way you would in front of an interviewer or a client.">Case Studies</button>
           <button type="button" class="iv-chip" data-desc="Weekly sessions breaking down market-moving news, earnings, and macro trends so you can speak to what's happening and why it matters.">Market Watch</button>
           <button type="button" class="iv-chip" data-desc="Upperclassmen who've been through recruiting guide you one-on-one, offering technical expertise, resume reviews, mock interviews, and timeline advice.">Mentorship</button>
           <button type="button" class="iv-chip" data-desc="Step up as an industry head, fund manager, or social lead and take real ownership over the team's research, portfolio, and culture.">Leadership Roles</button>
         </div>
-        <p class="iv-chip-desc" id="iv-chip-desc" aria-live="polite">Build DCFs, comps, and LBOs in Excel from a blank sheet — the same workups you'll be asked to walk through in a technical interview.</p>
+        <p class="iv-chip-desc" id="iv-chip-desc" aria-live="polite">Build DCFs, comps, and LBOs in Excel from a blank sheet, the same workups you'll be asked to walk through in a technical interview.</p>
       </div>
 
       <!-- ROW: equity research journal -->
@@ -4046,7 +4049,7 @@ button[onclick="pubFlipbookNext()"]:hover {
         <div>
           <div class="section-tag">What you'll produce</div>
           <h4>Publish Tangible Equity Research</h4>
-          <p>Every member contributes to our annual equity research journal, covering public companies across six sectors. Researched and defended the way an analyst would — a portfolio piece you can hand a recruiter.</p>
+          <p>Every member contributes to our annual equity research journal, covering public companies across six sectors. Researched and defended the way an analyst would: a portfolio piece you can hand a recruiter.</p>
           <a class="iv-link" href="/publications" onclick="showPage('publications');return false;">Read the 2025 journal <span class="iv-link-arrow">&rarr;</span></a>
         </div>
         <div class="iv-media iv-media-cover">
@@ -4188,15 +4191,15 @@ button[onclick="pubFlipbookNext()"]:hover {
       <div id="dues-banner" style="grid-column:1/-1;background:var(--green-wash);border:1px solid var(--green-accent);border-radius:8px;padding:18px 28px;margin-bottom:0;">
         <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
           <span id="dues-banner-label" style="display:inline-block;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;background:var(--green-accent);color:#fff;padding:5px 12px;border-radius:20px;white-space:nowrap;flex-shrink:0;">Early rate</span>
-          <span id="dues-banner-text" style="font-size:15px;color:var(--text-dark);white-space:nowrap;">General membership is <strong>$90 / year or $60 / semester</strong> through <strong>Wednesday, September 16</strong>.</span>
+          <span id="dues-banner-text" style="font-size:15px;color:var(--text-dark);white-space:nowrap;">General membership is <strong>$85 / year or $55 / semester</strong> through <strong>Wednesday, September 16</strong>.</span>
         </div>
       </div>
       <div class="membership-card featured">
         <div class="membership-badge open">Open year-round</div>
         <div class="membership-title">General Membership</div>
-        <p class="membership-desc">Attend weekly Wednesday speaker meetings on the 5th floor of McCombs, access networking events, and get access to the full UFA community. Open to all UT students at any time — no application required.</p>
-        <div class="membership-price" id="dues-price-year">$90 / year</div>
-        <div class="membership-price-note" id="dues-price-sem" style="margin-bottom:14px;">or $60 per semester</div>
+        <p class="membership-desc">Attend weekly Wednesday speaker meetings on the 5th floor of McCombs, access networking events, and get access to the full UFA community. Open to all UT students at any time, no application required.</p>
+        <div class="membership-price" id="dues-price-year">$85 / year</div>
+        <div class="membership-price-note" id="dues-price-sem" style="margin-bottom:14px;">or $55 per semester</div>
         <div style="font-size:12px;color:var(--text-muted);margin-bottom:20px;line-height:1.6;">
           Include your <strong>full name and UT EID</strong> in the Venmo note so we can match your payment to your account.
         </div>
@@ -4204,7 +4207,7 @@ button[onclick="pubFlipbookNext()"]:hover {
           <a href="https://utexas.campuslabs.com/engage/organization/texasufa" target="_blank" rel="noopener noreferrer" class="btn-primary">Join on HornsLink</a>
           <a href="https://venmo.com/u/UT-UFA" target="_blank" rel="noopener noreferrer" class="btn-venmo">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.3 3c.66 1.09.96 2.21.96 3.63 0 4.52-3.86 10.39-6.99 14.52H5.13L2.27 4.32l6.25-.59 1.51 12.16c1.41-2.3 3.15-5.9 3.15-8.36 0-1.35-.23-2.27-.6-3.02L18.3 3z"/></svg>
-            Pay dues on Venmo — @UT-UFA
+            Pay dues on Venmo: @UT-UFA
           </a>
         </div>
       </div>
@@ -4312,10 +4315,10 @@ button[onclick="pubFlipbookNext()"]:hover {
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           </button>
           <div class="faq-a"><div class="faq-a-inner">
-            <p>Yes — you must be a dues-paying General Member to attend weekly meetings and events. Membership is open year-round with no application required, and your first meeting is free, so you can see what UFA is like before you pay.</p>
-            <p style="margin-top:12px;">Dues are paid by Venmo to <a href="https://venmo.com/u/UT-UFA" target="_blank" rel="noopener noreferrer" style="color:var(--green-accent);font-weight:600;">@UT-UFA</a>. Please include your <strong>full name and UT EID</strong> in the payment note — that is how the board matches your payment to your member portal account.</p>
-            <p style="margin-top:12px;" id="dues-faq-rates">The early rate is <strong>$90 for the year or $60 for the semester</strong>, available through <strong>Wednesday, September 16</strong>. After that, dues are $120 for the year or $75 for the semester. You can join at any point in the year, but the early rate is not extended.</p>
-            <p style="margin-top:12px;">Dues assistance is available to any student for whom cost is a barrier — email <a href="mailto:financeassociationtx@gmail.com" style="color:var(--green-accent);font-weight:600;">financeassociationtx@gmail.com</a> and it will be handled privately by the treasurer.</p>
+            <p>Yes, you must be a dues-paying General Member to attend weekly meetings and events. Membership is open year-round with no application required, and your first meeting is free, so you can see what UFA is like before you pay.</p>
+            <p style="margin-top:12px;">Dues are paid by Venmo to <a href="https://venmo.com/u/UT-UFA" target="_blank" rel="noopener noreferrer" style="color:var(--green-accent);font-weight:600;">@UT-UFA</a>. Please include your <strong>full name and UT EID</strong> in the payment note. That is how the board matches your payment to your member portal account.</p>
+            <p style="margin-top:12px;" id="dues-faq-rates">The early rate is <strong>$85 for the year or $55 for the semester</strong>, available through <strong>Wednesday, September 16</strong>. After that, dues are $95 for the year or $55 for the semester. You can join at any point in the year, but the early rate is not extended.</p>
+            <p style="margin-top:12px;">Dues assistance is available to any student for whom cost is a barrier: email <a href="mailto:financeassociationtx@gmail.com" style="color:var(--green-accent);font-weight:600;">financeassociationtx@gmail.com</a> and it will be handled privately by the treasurer.</p>
           </div></div>
         </div>
         
@@ -4357,7 +4360,7 @@ button[onclick="pubFlipbookNext()"]:hover {
     <div class="reveal faq-cta-card" style="margin:40px auto 0;max-width:720px;padding:28px 32px;background:var(--green-wash);border-radius:8px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;">
       <div>
         <div style="font-family:var(--font-display);font-size:18px;font-weight:500;margin-bottom:6px;">Still have questions?</div>
-        <p style="font-size:14px;color:var(--text-muted);">Reach out directly — we're happy to chat.</p>
+        <p style="font-size:14px;color:var(--text-muted);">Reach out directly: we're happy to chat.</p>
       </div>
       <a href="/contact" onclick="showPage('contact');return false;" class="btn-primary">Contact us</a>
     </div>
@@ -4779,7 +4782,7 @@ button[onclick="pubFlipbookNext()"]:hover {
     <div>
       <div class="cta-band-title">Ready to find your place?</div>
       <p class="cta-band-sub">General membership is always open. Analyst and team recruitment cycles launch at the start of every fall and spring semester.</p>
-      <p class="cta-band-sub" id="dues-cta-note" style="margin-top:10px;opacity:0.85;">Early rate of $90 / year or $60 / semester runs through September 16.</p>
+      <p class="cta-band-sub" id="dues-cta-note" style="margin-top:10px;opacity:0.85;">Early rate of $85 / year or $55 / semester runs through September 16.</p>
     </div>
     <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center;">
       <a href="https://utexas.campuslabs.com/engage/organization/texasufa" target="_blank" rel="noopener noreferrer" class="btn-white" style="padding:16px 36px;font-size:15px;text-align:center;display:flex;align-items:center;justify-content:center;">Become a General Member</a>
@@ -4977,7 +4980,7 @@ button[onclick="pubFlipbookNext()"]:hover {
             <div style="text-align:center;margin-bottom:28px;">
               <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/logos/37f350-a0a7dee58b1d498989fc2317c1b89ce1-mv2-(1).png" alt="UFA" style="width:52px;height:52px;margin:0 auto 16px;display:block;object-fit:contain;" onerror="this.style.display='none'">
               <div style="font-family:'Playfair Display',Georgia,serif;font-size:26px;font-weight:500;color:#1C2B1C;margin-bottom:8px;">Magic Link</div>
-              <p style="font-size:13px;color:#6B7D6B;line-height:1.6;">Enter your UT email and we'll send you a sign-in link — no password needed.</p>
+              <p style="font-size:13px;color:#6B7D6B;line-height:1.6;">Enter your UT email and we'll send you a sign-in link, no password needed.</p>
             </div>
             <div style="margin-bottom:24px;">
               <label style="display:block;font-size:12px;font-weight:600;color:#3A4A3A;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;">UT Email</label>
@@ -5389,8 +5392,8 @@ button[onclick="pubFlipbookNext()"]:hover {
                 <div>
                   <label style="font-size:12px;font-weight:500;color:#3A4A3A;display:block;margin-bottom:4px;">Active</label>
                   <select id="new-active" style="width:100%;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;background:#F7F4EE;box-sizing:border-box;">
-                    <option value="true">Yes — live now</option>
-                    <option value="false">No — scheduled</option>
+                    <option value="true">Yes, live now</option>
+                    <option value="false">No, scheduled</option>
                   </select>
                 </div>
               </div>
@@ -5595,7 +5598,7 @@ const RESOURCES = [
 
   // IB Other
   { name: 'WSP M&A Guide', url: 'https://www.wallstreetprep.com/knowledge/the-ultimate-guide-to-mergers-acquisitions/', category: 'ib-other', desc: 'Free M&A concepts guide', type: 'link' },
-  { name: 'Vanderbilt IB Guide', url: 'https://cdn.vanderbilt.edu/vu-URL/wp-content/uploads/sites/269/2020/08/19222742/Investment-Banking-Guide-Final.pdf', category: 'ib-other', desc: 'Complete IB guide — no signup needed', type: 'pdf-link' },
+  { name: 'Vanderbilt IB Guide', url: 'https://cdn.vanderbilt.edu/vu-URL/wp-content/uploads/sites/269/2020/08/19222742/Investment-Banking-Guide-Final.pdf', category: 'ib-other', desc: 'Complete IB guide, no signup needed', type: 'pdf-link' },
   { name: 'BIWS YouTube Channel', url: 'https://www.youtube.com/channel/UC4LeewYWZ3ruS3Bc64ldXuw', category: 'ib-other', desc: 'Free financial modeling video tutorials', type: 'link' },
 
   // Consulting
@@ -6169,7 +6172,7 @@ async function saveProfile() {
 
   if (roleToSave.indexOf('-Pending') !== -1) {
     msg.style.display='block'; msg.style.color='#856404';
-    msg.textContent = '⏳ Role change requested — pending board approval.';
+    msg.textContent = '⏳ Role change requested, pending board approval.';
     document.getElementById('profile-role').value = selectedRole;
   } else {
     msg.style.display='block'; msg.style.color='#2e6b2e'; msg.textContent='Profile saved!';
@@ -6788,8 +6791,8 @@ async function loadAnalytics() {
     deadline:      '2026-09-16T23:59:59-05:00',
     deadlineShort: 'September 16',            // inline prose
     deadlineLong:  'Wednesday, September 16', // emphasized / standalone
-    early:   { year: 90,  semester: 60 },
-    regular: { year: 120, semester: 75 }
+    early:   { year: 85,  semester: 55 },
+    regular: { year: 95,  semester: 55 }
   };
 
   function renderDuesPricing() {
@@ -6823,7 +6826,7 @@ async function loadAnalytics() {
       set('dues-banner-label', 'Membership dues');
       set('dues-banner-text',
         'General membership is <strong>$' + DUES.regular.year + ' / year or $' + DUES.regular.semester +
-        ' / semester</strong>. Open year-round — your first meeting is free.');
+        ' / semester</strong>. Open year-round. Your first meeting is free.');
       set('dues-faq-rates',
         'Dues are <strong>$' + DUES.regular.year + ' for the year or $' + DUES.regular.semester +
         ' for the semester</strong>. An early rate of $' + DUES.early.year + ' / $' + DUES.early.semester +
@@ -6891,14 +6894,14 @@ async function loadAnalytics() {
   // Dynamic page titles
   const pageTitles = {
     'home':         'University Finance Association',
-    'why-ufa':      'Why UFA — Texas UFA',
-    'about':        'Board — Texas UFA',
-    'teams':        'Teams — Texas UFA',
-    'join':         'Join — Texas UFA',
-    'publications': 'Publications — Texas UFA',
-    'contact':      'Contact — Texas UFA',
-    'portal':       'Member Portal — Texas UFA',
-    'privacy':      'Privacy Policy — Texas UFA'
+    'why-ufa':      'Why UFA | Texas UFA',
+    'about':        'Board | Texas UFA',
+    'teams':        'Teams | Texas UFA',
+    'join':         'Join | Texas UFA',
+    'publications': 'Publications | Texas UFA',
+    'contact':      'Contact | Texas UFA',
+    'portal':       'Member Portal | Texas UFA',
+    'privacy':      'Privacy Policy | Texas UFA'
   };
   // Lets CSS know which page is showing, so the sticky mobile CTA can hide
   // itself on pages where it would be redundant.
@@ -6913,7 +6916,7 @@ async function loadAnalytics() {
     'why-ufa':      'Learn why the University Finance Association is UT Austin\'s premier destination for students pursuing careers in finance.',
     'about':        'Meet the board members leading the University Finance Association at UT Austin.',
     'teams':        'Explore the Analyst, Investment, and Consulting teams within the University Finance Association at UT Austin.',
-    'join':         'Learn how to join the University Finance Association at UT Austin — recruitment timelines, requirements, and application info.',
+    'join':         'Learn how to join the University Finance Association at UT Austin: recruitment timelines, requirements, and application info.',
     'publications': 'Read research, market analysis, and student publications from the University Finance Association at UT Austin.',
     'contact':      'Get in touch with the University Finance Association at UT Austin.',
     'portal':       'Member portal for the University Finance Association at UT Austin.',
@@ -7954,17 +7957,17 @@ setTimeout(() => {
      onclick="openBlogLightbox(N)" index on each .blog-shelf-item button
      in the HTML above. */
   const BLOG_POSTS = [
-    { id: '10exWdvRU1oTF6wOv9Ut7lmGiOjRGlHVw', title: 'The Looming Maturity Wall', author: 'Darya Chernyatin — Financial Institutions Group', date: '03/30/2026' },
-    { id: '1jcZI0aLiHr6F61tjTfs8HKjdMIpk8Ixv', title: 'From Best to Worst: The Narrative for Technology', author: 'Arnav Goel — Investment Team, TMT Industry', date: '03/09/2026' },
-    { id: '1vb40r6FEqYKDYe8wIw_fWteyM5i5lSwd', title: 'Panic at the Disco!', author: 'Vivaan Shah — Co-Head of Energy Industry', date: '03/02/2026' },
-    { id: '1P4_u8vYzvvqVU-p-ziOr0max5_-q-W8B', title: 'Is American Exceptionalism Fading?', author: 'Felipe Motta — Investment Team, Healthcare Industry', date: '02/19/2026' },
-    { id: '1PDV-3I0M8TM8p_iEhnt2eSWFrKWdeeVr', title: 'The Illusion of Stability', author: 'Neil Kaushik — Investment Team, Energy Industry', date: '02/18/2026' },
-    { id: '1fBm3bNq7IcNGXoXtQFxCyM_TIjbwrZJV', title: 'The Private Credit Takeover', author: 'Joya Trivedi — Head of Industrials Industry Group', date: '11/24/2025' },
-    { id: '1x9ZDjMDJzaWFO1DKPZcqT6xgf-coDCZf', title: 'Why AI Will Cause One of the Worst Crashes in History', author: 'Farzad Hussain — Investment Associate', date: '11/17/2025' },
-    { id: '13MHlsWXPnN934olg7zos26FT7hDWISHT', title: 'The Lone Star Takes on Wall Street', author: 'Caden Warner — Director of Investments', date: '11/10/2025' },
-    { id: '1zN0JbTc6cR6drrZnFRR2N7M2Eto3bwO7', title: 'The SPAC is Back', author: 'Nathan Li — Director of Investments', date: '10/27/2025' },
-    { id: '1g1sUtSdg5kwIj7JGgoYMuviBTSNFIvKd', title: 'UBS Under Siege', author: 'Derek Flores — Head of Financial Industry Group', date: '10/03/2025' },
-    { id: '1X0eSKyFIf9v7jQKVHihddA1wh_uT5Vkl', title: 'The Brain Drain Campaign', author: 'Adam Ageeb — Investment Associate', date: '09/26/2025' }
+    { id: '10exWdvRU1oTF6wOv9Ut7lmGiOjRGlHVw', title: 'The Looming Maturity Wall', author: 'Darya Chernyatin, Financial Institutions Group', date: '03/30/2026' },
+    { id: '1jcZI0aLiHr6F61tjTfs8HKjdMIpk8Ixv', title: 'From Best to Worst: The Narrative for Technology', author: 'Arnav Goel, Investment Team, TMT Industry', date: '03/09/2026' },
+    { id: '1vb40r6FEqYKDYe8wIw_fWteyM5i5lSwd', title: 'Panic at the Disco!', author: 'Vivaan Shah, Co-Head of Energy Industry', date: '03/02/2026' },
+    { id: '1P4_u8vYzvvqVU-p-ziOr0max5_-q-W8B', title: 'Is American Exceptionalism Fading?', author: 'Felipe Motta, Investment Team, Healthcare Industry', date: '02/19/2026' },
+    { id: '1PDV-3I0M8TM8p_iEhnt2eSWFrKWdeeVr', title: 'The Illusion of Stability', author: 'Neil Kaushik, Investment Team, Energy Industry', date: '02/18/2026' },
+    { id: '1fBm3bNq7IcNGXoXtQFxCyM_TIjbwrZJV', title: 'The Private Credit Takeover', author: 'Joya Trivedi, Head of Industrials Industry Group', date: '11/24/2025' },
+    { id: '1x9ZDjMDJzaWFO1DKPZcqT6xgf-coDCZf', title: 'Why AI Will Cause One of the Worst Crashes in History', author: 'Farzad Hussain, Investment Associate', date: '11/17/2025' },
+    { id: '13MHlsWXPnN934olg7zos26FT7hDWISHT', title: 'The Lone Star Takes on Wall Street', author: 'Caden Warner, Director of Investments', date: '11/10/2025' },
+    { id: '1zN0JbTc6cR6drrZnFRR2N7M2Eto3bwO7', title: 'The SPAC is Back', author: 'Nathan Li, Director of Investments', date: '10/27/2025' },
+    { id: '1g1sUtSdg5kwIj7JGgoYMuviBTSNFIvKd', title: 'UBS Under Siege', author: 'Derek Flores, Head of Financial Industry Group', date: '10/03/2025' },
+    { id: '1X0eSKyFIf9v7jQKVHihddA1wh_uT5Vkl', title: 'The Brain Drain Campaign', author: 'Adam Ageeb, Investment Associate', date: '09/26/2025' }
   ];
 
   let blogLightboxIndex = 0;
