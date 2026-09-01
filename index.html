@@ -951,42 +951,38 @@ background-position: center 95%;
   .board-name:hover { color: var(--green-dark); }
   .board-name:hover svg { color: var(--green-dark); }
   .board-role { font-size: 12px; color: var(--text-muted); line-height: 1.45; }
-  /* Seven across needs ~1500px. Below that, step down — but NOT by keeping
-     two separate fixed-column grids (one sized for 6 cards, one for 7). A
-     hard column count that doesn't evenly divide 6 or 7 stranded the
-     remainder (1 card, then 2 cards) alone on a near-empty row — exactly the
-     "photos go onto another line with one overflowing" look on ~1100-1450px
-     laptop screens (a 13" MacBook included).
-
-     Fix: below 1500px both .board-row wrappers become display:contents, so
-     their cards stop being two separate grids and instead flow as ONE
-     sequence inside .board-rows (now a wrapping flexbox) — BUT each
-     .board-group heading becomes a full-width flex item (flex-basis:100%),
-     which forces a line break right before it. That splits the flow back
-     into its original small clusters (2-3 people per heading) automatically,
-     with no column-count math at all: a 2- or 3-card group always fits on
-     one line by itself at any width, so there's never an orphan card AND
-     the section titles (Leadership, Investment, etc.) no longer have to
-     disappear just because the screen got narrower. */
+  /* .board-cluster / .board-cluster-cards exist only so the 1500px-and-below
+     layout (below) can treat "heading + its own cards" as one flowable unit.
+     On the desktop grid, they must be invisible: display:contents removes a
+     wrapper from the box tree entirely, so its children re-attach directly to
+     .board-row as real grid items — .board-group keeps grid-row:1, each
+     .board-card keeps grid-row:2, and the --bd-card percentage math (which
+     depends on cards being direct children of .board-row) is unaffected. */
+  .board-cluster, .board-cluster-cards { display: contents; }
+  /* Below 1500px, .board-row becomes display:contents so its clusters flow
+     as one sequence inside .board-rows (now a wrapping flexbox). Each
+     .board-cluster turns back on (heading stacked over its own cards) and
+     becomes the thing that wraps — not the individual card — so a team's
+     photos never split across two lines. Because clusters size to their own
+     content (2-3 fixed-width cards + gaps), two small teams naturally sit
+     side by side whenever there's room, and only drop to a new line together
+     when they don't fit; there's no column-count math to keep in sync with
+     however many people happen to be on the board. */
   @media (max-width: 1500px) {
     .board-rows {
       flex-direction: row; flex-wrap: wrap; justify-content: flex-start;
-      gap: 20px var(--bd-gap);
+      align-items: flex-start;
+      gap: 32px var(--bd-gap);
     }
     .board-row, .board-row--last { display: contents; }
-    .board-group {
-      display: block; flex-basis: 100%; width: 100%;
-      margin: 32px 0 0;
+    .board-cluster {
+      display: flex; flex-direction: column;
     }
-    .board-group:first-of-type { margin-top: 0; }
-    .board-card {
-      flex: 0 0 calc((100% - 4 * var(--bd-gap)) / 5); /* 5 per row max — groups themselves are only 2-3 wide */
+    .board-cluster-cards {
+      display: flex; flex-direction: row; flex-wrap: nowrap;
+      gap: var(--bd-gap);
     }
-  }
-  @media (max-width: 1100px) {
-    .board-card {
-      flex-basis: calc((100% - 3 * var(--bd-gap)) / 4); /* 4 per row max */
-    }
+    .board-card { flex: 0 0 180px; }
   }
   .board-photo img {
       width: 100%;
@@ -1798,10 +1794,15 @@ align-items: flex-end;
     grid-template-columns: 1fr;
   }
 
-  /* Board — 2 across on phones. .board-rows is now the flex container the
-     cards sit in directly (see the 1500px breakpoint above), so its own gap
-     IS the card-to-card gap — it must match --bd-gap, which is what the
-     flex-basis calc below assumes as the column-gap. */
+  /* Board — 2 across on phones. Clusters exist so 769-1500px can let two
+     small teams share a row (see that breakpoint above); on a phone there's
+     only room for one team's photos at a time anyway, so clusters go back to
+     display:contents and .board-group is forced onto its own full-width line
+     again — that lets .board-card fall back to being a direct flex child of
+     .board-rows, which is what the 2-per-row percentage below assumes. */
+  .board-cluster, .board-cluster-cards { display: contents; }
+  .board-group { flex-basis: 100%; width: 100%; margin: 32px 0 0; }
+  .board-group:first-of-type { margin-top: 0; }
   .board-rows { gap: 28px var(--bd-gap); --bd-gap: 12px; }
   .board-card {
     flex-basis: calc((100% - 1 * var(--bd-gap)) / 2); /* 2 per row */
@@ -3807,7 +3808,9 @@ button[onclick="pubFlipbookNext()"]:hover {
 
       <div class="board-row">
 
+        <div class="board-cluster">
         <h3 class="board-group board-group--a">Leadership</h3>
+        <div class="board-cluster-cards">
         <div class="board-card reveal">
           <div class="board-photo"><a href="https://www.linkedin.com/in/caden-warner/" target="_blank" rel="noopener noreferrer" class="board-photo-link" tabindex="-1" aria-hidden="true"><img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1759765238227%20(2).jpeg" alt="Caden Warner" onerror="this.style.display='none'"></a></div>
           <a class="board-name" href="https://www.linkedin.com/in/caden-warner/" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg><span>Caden Warner</span></a>
@@ -3818,8 +3821,12 @@ button[onclick="pubFlipbookNext()"]:hover {
           <a class="board-name" href="https://www.linkedin.com/in/alikafrankovska/" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg><span>Alika Frankovska</span></a>
           <div class="board-role">Vice President</div>
         </div>
+        </div>
+        </div>
 
+        <div class="board-cluster">
         <h3 class="board-group board-group--b">Investment</h3>
+        <div class="board-cluster-cards">
         <div class="board-card reveal">
           <div class="board-photo"><a href="https://www.linkedin.com/in/nathanyuxianli/" target="_blank" rel="noopener noreferrer" class="board-photo-link" tabindex="-1" aria-hidden="true"><img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/Headshot.jpg" alt="Nathan Li" onerror="this.style.display='none'"></a></div>
           <a class="board-name" href="https://www.linkedin.com/in/nathanyuxianli/" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg><span>Nathan Li</span></a>
@@ -3830,8 +3837,12 @@ button[onclick="pubFlipbookNext()"]:hover {
           <a class="board-name" href="https://www.linkedin.com/in/emily-liu07/" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg><span>Emily Liu</span></a>
           <div class="board-role">Director of Investment</div>
         </div>
+        </div>
+        </div>
 
+        <div class="board-cluster">
         <h3 class="board-group board-group--c">Consulting</h3>
+        <div class="board-cluster-cards">
         <div class="board-card reveal">
           <div class="board-photo"><a href="https://www.linkedin.com/in/shreyas-sri/" target="_blank" rel="noopener noreferrer" class="board-photo-link" tabindex="-1" aria-hidden="true"><img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1726811705179.jpeg" alt="Shreyas Sripurushottam" onerror="this.style.display='none'"></a></div>
           <a class="board-name" href="https://www.linkedin.com/in/shreyas-sri/" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg><span>Shreyas Sripurushottam</span></a>
@@ -3842,11 +3853,15 @@ button[onclick="pubFlipbookNext()"]:hover {
           <a class="board-name" href="https://www.linkedin.com/in/sam-jung-b5ab261ba/" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg><span>Seyoon (Sam) Jung</span></a>
           <div class="board-role">Director of Consulting</div>
         </div>
+        </div>
+        </div>
       </div>
 
       <div class="board-row board-row--last">
 
+        <div class="board-cluster">
         <h3 class="board-group board-group--a">Corporate Relations</h3>
+        <div class="board-cluster-cards">
         <div class="board-card reveal">
           <div class="board-photo"><a href="https://www.linkedin.com/in/varsha-ravi108/" target="_blank" rel="noopener noreferrer" class="board-photo-link" tabindex="-1" aria-hidden="true"><img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1763951935507.jpeg" alt="Varsha Ravi" onerror="this.style.display='none'"></a></div>
           <a class="board-name" href="https://www.linkedin.com/in/varsha-ravi108/" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg><span>Varsha Ravi</span></a>
@@ -3857,8 +3872,12 @@ button[onclick="pubFlipbookNext()"]:hover {
           <a class="board-name" href="https://www.linkedin.com/in/gracemiller219/" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg><span>Grace Miller</span></a>
           <div class="board-role">Director of Corporate Relations</div>
         </div>
+        </div>
+        </div>
 
+        <div class="board-cluster">
         <h3 class="board-group board-group--b">Marketing</h3>
+        <div class="board-cluster-cards">
         <div class="board-card reveal">
           <div class="board-photo"><a href="https://www.linkedin.com/in/laynenguyen/" target="_blank" rel="noopener noreferrer" class="board-photo-link" tabindex="-1" aria-hidden="true"><img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1770835392157.jpeg" alt="Layne Nguyen" onerror="this.style.display='none'"></a></div>
           <a class="board-name" href="https://www.linkedin.com/in/laynenguyen/" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg><span>Layne Nguyen</span></a>
@@ -3869,8 +3888,12 @@ button[onclick="pubFlipbookNext()"]:hover {
           <a class="board-name" href="https://www.linkedin.com/in/emmanowotny/" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg><span>Emma Nowotny</span></a>
           <div class="board-role">Director of Marketing</div>
         </div>
+        </div>
+        </div>
 
+        <div class="board-cluster">
         <h3 class="board-group board-group--c">Operations</h3>
+        <div class="board-cluster-cards">
         <div class="board-card reveal">
           <div class="board-photo"><a href="https://www.linkedin.com/in/nikhilparida/" target="_blank" rel="noopener noreferrer" class="board-photo-link" tabindex="-1" aria-hidden="true"><img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1759271799751.png" alt="Nikhil Parida" onerror="this.style.display='none'"></a></div>
           <a class="board-name" href="https://www.linkedin.com/in/nikhilparida/" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg><span>Nikhil Parida</span></a>
@@ -3885,6 +3908,8 @@ button[onclick="pubFlipbookNext()"]:hover {
           <div class="board-photo"><a href="https://www.linkedin.com/in/aryanjhaveri07/" target="_blank" rel="noopener noreferrer" class="board-photo-link" tabindex="-1" aria-hidden="true"><img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1773078471094.jpeg" alt="Aryan Jhaveri" onerror="this.style.display='none'"></a></div>
           <a class="board-name" href="https://www.linkedin.com/in/aryanjhaveri07/" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg><span>Aryan Jhaveri</span></a>
           <div class="board-role">Treasurer</div>
+        </div>
+        </div>
         </div>
       </div>
 
