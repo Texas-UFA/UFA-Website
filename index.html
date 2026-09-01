@@ -951,26 +951,42 @@ background-position: center 95%;
   .board-name:hover { color: var(--green-dark); }
   .board-name:hover svg { color: var(--green-dark); }
   .board-role { font-size: 12px; color: var(--text-muted); line-height: 1.45; }
-  /* Seven across needs ~1500px. Step down rather than letting cards shrink into
-     thumbnails; `1fr` columns take over so they fill each narrower row.
+  /* Seven across needs ~1500px. Below that, step down — but NOT by keeping
+     two separate fixed-column grids (one sized for 6 cards, one for 7). A
+     hard column count that doesn't evenly divide 6 or 7 stranded the
+     remainder (1 card, then 2 cards) alone on a near-empty row — exactly the
+     "photos go onto another line with one overflowing" look on ~1100-1450px
+     laptop screens (a 13" MacBook included).
 
-     The group headings drop out below this width. They span fixed column pairs
-     (cols 5-7 for the third group), so on a 5- or 4-column grid they'd generate
-     implicit columns and blow the row out past the container — and `grid-row: 2`
-     would jam all 6-7 cards onto one 5-column row. Letting each heading become a
-     full-width band instead would leave 2-3 empty columns under every group,
-     which is the sparse look we moved away from. Since every card states its own
-     title, hiding them here loses no information. */
+     Fix: below 1500px both .board-row wrappers become display:contents, so
+     their cards stop being two separate grids and instead flow as ONE
+     sequence inside .board-rows (now a wrapping flexbox) — BUT each
+     .board-group heading becomes a full-width flex item (flex-basis:100%),
+     which forces a line break right before it. That splits the flow back
+     into its original small clusters (2-3 people per heading) automatically,
+     with no column-count math at all: a 2- or 3-card group always fits on
+     one line by itself at any width, so there's never an orphan card AND
+     the section titles (Leadership, Investment, etc.) no longer have to
+     disappear just because the screen got narrower. */
   @media (max-width: 1500px) {
-    .board-row, .board-row--last {
-      grid-template-columns: repeat(5, 1fr);
-      justify-content: stretch; gap: 32px var(--bd-gap);
+    .board-rows {
+      flex-direction: row; flex-wrap: wrap; justify-content: flex-start;
+      gap: 20px var(--bd-gap);
     }
-    .board-card { grid-row: auto; }
-    .board-group { display: none; }
+    .board-row, .board-row--last { display: contents; }
+    .board-group {
+      display: block; flex-basis: 100%; width: 100%;
+      margin: 32px 0 0;
+    }
+    .board-group:first-of-type { margin-top: 0; }
+    .board-card {
+      flex: 0 0 calc((100% - 4 * var(--bd-gap)) / 5); /* 5 per row max — groups themselves are only 2-3 wide */
+    }
   }
   @media (max-width: 1100px) {
-    .board-row, .board-row--last { grid-template-columns: repeat(4, 1fr); }
+    .board-card {
+      flex-basis: calc((100% - 3 * var(--bd-gap)) / 4); /* 4 per row max */
+    }
   }
   .board-photo img {
       width: 100%;
@@ -1782,11 +1798,13 @@ align-items: flex-end;
     grid-template-columns: 1fr;
   }
 
-  /* Board — 2 across on phones. */
-  .board-rows { gap: 28px; --bd-gap: 12px; }
-  .board-row, .board-row--last {
-    grid-template-columns: repeat(2, 1fr);
-    row-gap: 28px;
+  /* Board — 2 across on phones. .board-rows is now the flex container the
+     cards sit in directly (see the 1500px breakpoint above), so its own gap
+     IS the card-to-card gap — it must match --bd-gap, which is what the
+     flex-basis calc below assumes as the column-gap. */
+  .board-rows { gap: 28px var(--bd-gap); --bd-gap: 12px; }
+  .board-card {
+    flex-basis: calc((100% - 1 * var(--bd-gap)) / 2); /* 2 per row */
   }
   .board-photo {
     aspect-ratio: 1 !important;
@@ -3903,7 +3921,7 @@ button[onclick="pubFlipbookNext()"]:hover {
       <div class="two-col tab-two-col" style="margin-bottom:28px;">
         <div>
           <div class="section-tag">No experience required · one round of applications</div>
-           <div class="iv-open-note">Applications open September 2026</div>
+           <div class="iv-open-note">Applications open now</div>
           <h2 class="section-title">Analyst Program</h2>
           <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:20px;">The Analyst Program is designed for underclassmen and new members with no prior finance experience. In addition to the General Member meeting, analysts meet weekly for dedicated training sessions to build the skills needed to succeed in UFA and beyond.</p>
           <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:32px;">Each week, our Directors of Investments and Consulting lead sessions covering accounting, valuation, financial modeling, and market analysis: everything you need to hit the ground running in UFA and in recruiting.</p>
@@ -4003,7 +4021,7 @@ button[onclick="pubFlipbookNext()"]:hover {
       <div class="two-col tab-two-col" style="margin-bottom:28px;">
         <div>
           <div class="section-tag">Experience required · application + interview</div>
-          <div class="iv-open-note">Applications open September 2026</div>
+          <div class="iv-open-note">Applications open now</div>
           <h2 class="section-title">Investment Team</h2>
           <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">The Investment Team is where serious finance preparation meets a tight-knit community. You'll build the technical skills recruiters want and the relationships that last long after graduation.</p>
           <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:32px;">The technical training is rigorous. But ask any Investment Team member what they remember most, and they'll tell you it's the people.</p>
@@ -4113,7 +4131,7 @@ button[onclick="pubFlipbookNext()"]:hover {
       <div class="two-col tab-two-col" style="margin-bottom:28px;">
         <div>
           <div class="section-tag">Experience required · application + interview</div>
-          <div class="iv-open-note">Applications open September 2026</div>
+          <div class="iv-open-note">Applications open now</div>
       <h2 class="section-title">Consulting Team</h2>
       <p style="font-size:16px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">
         UFA's Consulting Team members tackle real business problems, build client-ready deliverables, and develop the structured thinking that top firms look for.
@@ -4212,20 +4230,20 @@ button[onclick="pubFlipbookNext()"]:hover {
         </div>
       </div>
       <div class="membership-card">
-        <div class="membership-badge closed">Applications currently closed</div>
+        <div class="membership-badge open">Applications open</div>
         <div class="membership-title">Analyst</div>
         <p class="membership-desc">An introductory program covering finance fundamentals, stock pitches, and market discussions. Welcoming of all UT students with no experience required. Applications open each fall and spring semester.</p>
-        <div class="membership-price">$30 / year (in addition to GM)</div>
+        <div class="membership-price">$30 / semester (in addition to GM)</div>
         <a href="https://forms.gle/1DUi5se6x87MSEji8" target="_blank" rel="noopener noreferrer" class="btn-primary" style="background:var(--green-mid);">View application form</a>
       </div>
       <div class="membership-card">
-        <div class="membership-badge closed">Applications currently closed</div>
+        <div class="membership-badge open">Applications open</div>
         <div class="membership-title">Investment Team</div>
         <p class="membership-desc">A selective, application-based track with deep technical training, one-on-one mentorship, and strong recruiting outcomes. Applications open each fall and spring semester.</p>
         <a href="https://forms.gle/yfxsPRAuQdX2CteSA" target="_blank" rel="noopener noreferrer" class="btn-primary" style="background:var(--green-mid);">View application form</a>
       </div>
        <div class="membership-card">
-        <div class="membership-badge closed">Applications currently closed</div>
+        <div class="membership-badge open">Applications open</div>
         <div class="membership-title">Consulting Team</div>
         <p class="membership-desc">A selective, application-based track focused on real client engagements, case-study training, and developing the structured thinking top firms look for. Applications open each fall and spring semester.</p>
         <a href="https://forms.gle/kXm4KZMKZagMknRF7" target="_blank" rel="noopener noreferrer" class="btn-primary" style="background:var(--green-mid);">View application form</a>
