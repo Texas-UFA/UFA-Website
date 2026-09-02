@@ -8462,6 +8462,89 @@ setTimeout(() => {
   window.addEventListener('orientationchange', apply);
 })();
 </script>
+
+<style>
+/* ── NAV DRAWER: KILL THE INHERITED FLEX GAP (authoritative; keep last) ──
+   Symptom this fixes: in the collapsed drawer, the highlighted row for the
+   current page (.active) covered only the lower ~3/4 of the space between
+   two separator lines, leaving a dead strip along the TOP. The label looked
+   centred in the highlight but not in the row.
+
+   Root cause: `.nav-links` sets `gap: 16px` for the HORIZONTAL desktop nav,
+   where it spaces the links left-to-right. The drawer media queries flip the
+   same list to `flex-direction: column` but never reset that gap, so the
+   16px silently becomes a VERTICAL gap BETWEEN rows.
+
+   The separator lines are `border-bottom` on each <a>, so the band a reader
+   perceives as "the row" is actually [16px gap][47.5px link] = 64.5px, with
+   the gap stranded above the link. The highlight paints on the <a>, so it
+   could never cover that leading 16px. Measured on the live site: gap 16px,
+   link 47.5px, perceived row 64.5px — the numbers match exactly.
+
+   Fix: zero the gap at the drawer breakpoints. Each <a> then sits flush
+   against the previous one's border, so the highlight fills the full band
+   between two separator lines. Vertical rhythm is unchanged because the
+   links already carry 14px of their own top/bottom padding.
+
+   The desktop bar (>1330px) keeps its 16px gap and is untouched. --------- */
+@media (max-width: 1330px) {
+  nav .nav-links {
+    gap: 0 !important;
+    row-gap: 0 !important;
+    column-gap: 0 !important;
+  }
+  /* Belt-and-braces: guarantee the link's painted box IS the row box, so the
+     highlight can't fall short even if font metrics differ across devices. */
+  nav .nav-links > li {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    width: 100%;
+  }
+  nav .nav-links > li > a {
+    flex: 1 1 auto !important;
+    display: flex !important;
+    align-items: center !important;
+    min-height: 0 !important;
+    line-height: 1.3 !important;
+    box-sizing: border-box !important;
+  }
+  /* The two CTA buttons are deliberately inset by their own margins, so they
+     must NOT be stretched flush to the row edges like the plain links. */
+  nav .nav-links > li > a.nav-cta {
+    flex: 0 0 auto !important;
+    justify-content: center;
+  }
+  /* Current-page state on the two CTAs: deliberately NO special treatment.
+
+     The generic .active rule would otherwise hit these buttons and wreck them
+     — it sets `background: rgba(255,255,255,0.10)`, which REPLACES Member
+     Portal's green fill, and translucent white over the dark drawer reads as
+     muddy dark grey. It also adds an `inset 3px 0 0` left bar that looks like
+     a stray sliver beside a standalone button. So these rules exist to hold
+     each CTA at its RESTING look regardless of .active.
+
+     Why no indicator at all: the six links above are destinations, where
+     marking the current one genuinely helps. These two are actions, and they
+     already sit in their own visually separate button group. A "you are here"
+     cue on a button adds noise without telling the reader much, and every
+     added treatment (left bar, outer ring, brighter fill, pale inversion)
+     either fought the button's own styling or collided with its hover state.
+     Hover and focus still respond normally, so the buttons never feel dead. */
+  nav .nav-links > li > a.nav-cta.active {
+    background: var(--green-light) !important;
+    color: var(--white) !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+  nav .nav-links > li > a.nav-cta.outline.active {
+    background: transparent !important;
+    color: var(--white) !important;
+    border: 1px solid rgba(255,255,255,0.5) !important;
+    box-shadow: none !important;
+  }
+}
+</style>
 </body>
 </html>
 <!-- PORTAL_SCRIPT_MARKER -->
