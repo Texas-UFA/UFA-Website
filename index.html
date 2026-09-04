@@ -5422,6 +5422,7 @@ button[onclick="pubFlipbookNext()"]:hover {
             <div class="ufa-pane-sub">Upload your resume once and it goes into the book we send to recruiting firms.</div>
           </div>
 
+          <div id="resume-visibility"></div>
           <div id="resume-alert" style="display:none;"></div>
 
           <div class="ufa-card">
@@ -5471,6 +5472,7 @@ button[onclick="pubFlipbookNext()"]:hover {
             <div class="ufa-pane-sub">Reach out directly, or book a 15 or 30 minute slot with any board member.</div>
           </div>
 
+          <div id="board-visibility"></div>
           <div id="board-alert" style="display:none;"></div>
 
           <!-- Member's own upcoming meetings -->
@@ -5524,6 +5526,9 @@ button[onclick="pubFlipbookNext()"]:hover {
             <div class="ufa-pane-title">Mock Interview</div>
             <div class="ufa-pane-sub">Practice against a timer the way you'll actually be interviewed. Say your answer out loud &mdash; reading it silently is not the same skill.</div>
           </div>
+
+          <div id="mock-visibility"></div>
+          <div id="mock-alert" style="display:none;"></div>
 
           <!-- Setup screen -->
           <div id="mock-setup">
@@ -7422,6 +7427,7 @@ async function showDashboard() {
 
   loadAnnouncement();
   loadEmailConfig();
+  applyFeatureVisibility();
 
   const { data: records } = await sb.from('attendance').select('*').eq('email', currentUser.email);
   const attended = records || [];
@@ -9469,14 +9475,35 @@ function switchRecruitTab(tab) {
  * is cosmetic — RLS is what actually protects the data — but leaving a
  * tab that returns nothing for members is just confusing.
  */
+const GATED_RECRUIT_TABS = [
+  ['resume',  'visibility_resume'],
+  ['mock',    'visibility_mock'],
+  ['alumni',  'visibility_alumni'],
+  ['pitches', 'visibility_pitches']
+];
+
 async function applyRecruitVisibility() {
   if (ufaIsBoard()) return;   // board always sees everything
-  var pairs = [['alumni', 'visibility_alumni'], ['pitches', 'visibility_pitches']];
-  for (var i = 0; i < pairs.length; i++) {
-    var cur = await ufaGetSetting(pairs[i][1]);
-    var btn = document.getElementById('rtab-' + pairs[i][0]);
+  for (var i = 0; i < GATED_RECRUIT_TABS.length; i++) {
+    var cur = await ufaGetSetting(GATED_RECRUIT_TABS[i][1]);
+    var btn = document.getElementById('rtab-' + GATED_RECRUIT_TABS[i][0]);
     if (btn) btn.style.display = (cur && cur.members) ? '' : 'none';
   }
+  // If the member landed on a tab that is now hidden, move them somewhere
+  // real rather than leaving them staring at an empty pane.
+  var active = document.getElementById('rtab-' + recruitTab);
+  if (active && active.style.display === 'none') switchRecruitTab('timeline');
+}
+
+/**
+ * Hides the top-level Board Hours tab from members until it is published.
+ * Called once when the dashboard opens.
+ */
+async function applyFeatureVisibility() {
+  if (ufaIsBoard()) return;
+  var cur = await ufaGetSetting('visibility_board_hours');
+  var btn = document.getElementById('ptab-board');
+  if (btn) btn.style.display = (cur && cur.members) ? '' : 'none';
 }
 
 
@@ -9740,6 +9767,7 @@ function ufaResumeFileName(name, gradYear) {
 async function loadResumeTab() {
   ufaWireDrop('resume-dropzone', handleResumePick);
   if (!resumeLoaded) { resumeLoaded = true; loadDriveConfig(); }
+  if (ufaIsBoard()) await renderVisibilityToggle('resume', 'visibility_resume');
   await renderMyResume();
 }
 
@@ -10170,6 +10198,7 @@ const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Frid
 const DAY_ABBR = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 
 async function loadBoardTab() {
+  if (ufaIsBoard()) await renderVisibilityToggle('board', 'visibility_board_hours');
   var dir = document.getElementById('board-directory');
   if (dir) dir.innerHTML = '<div class="ufa-empty">Loading the board…</div>';
 
@@ -12296,6 +12325,7 @@ var MOCK = {
 };
 
 async function loadMockTab() {
+  if (ufaIsBoard()) await renderVisibilityToggle('mock', 'visibility_mock');
   renderMockTracks();
   var r = await sb.from('mock_progress').select('*').eq('email', ufaEmail());
   MOCK.progress = {};
@@ -12951,19 +12981,32 @@ async function deletePitch(id) {
    SHARED: publish / unpublish a feature to members
    ══════════════════════════════════════════════════════════════════ */
 
+/* Features whose hidden state is enforced by RLS, not just by hiding a
+   menu item. Mock Interview is not on this list on purpose: the only data
+   behind it is a member's own practice history, so a database policy would
+   be theatre. Saying so plainly beats implying protection that is not there. */
+const DB_ENFORCED_FEATURES = [
+  'visibility_alumni', 'visibility_pitches',
+  'visibility_board_hours', 'visibility_resume'
+];
+
 async function renderVisibilityToggle(uiKey, settingKey) {
   var box = document.getElementById(uiKey + '-visibility');
   if (!box) return;
   var cur = await ufaGetSetting(settingKey);
   var on = !!(cur && cur.members);
+  var enforced = DB_ENFORCED_FEATURES.indexOf(settingKey) !== -1;
+
+  var hiddenNote = enforced
+    ? 'Members cannot see this yet — not just hidden in the menu, the database refuses to return it. Publish when you are ready.'
+    : 'Hidden from the members menu. There is no sensitive data behind this one, so the tab is simply not shown. Publish when you are ready.';
+
   box.innerHTML =
     '<div class="ufa-alert ' + (on ? 'ufa-alert-ok' : 'ufa-alert-info') + '" style="display:flex;' +
       'align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;">' +
       '<div>' +
         '<strong>' + (on ? 'Visible to all members' : 'Board only') + '</strong><br>' +
-        (on
-          ? 'Every signed-in member can see this.'
-          : 'Members cannot see this yet — not just hidden in the menu, the database refuses to return it. Publish when you are ready.') +
+        (on ? 'Every signed-in member can see this.' : hiddenNote) +
       '</div>' +
       '<button class="ufa-btn' + (on ? '-ghost' : '') + '" onclick="toggleVisibility(\'' + uiKey + '\',\'' + settingKey + '\',' + (!on) + ')">' +
         (on ? 'Make board only' : 'Publish to members') +
