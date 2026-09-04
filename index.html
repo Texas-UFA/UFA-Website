@@ -5400,8 +5400,8 @@ button[onclick="pubFlipbookNext()"]:hover {
             <div class="ufa-pane-sub">Everything for landing the internship: guides, job boards, your resume, and practice.</div>
           </div>
           <div class="admin-tab-nav" id="recruit-tab-nav">
-            <button onclick="switchRecruitTab('timeline')" class="admin-tab active" id="rtab-timeline">Timeline</button>
-            <button onclick="switchRecruitTab('resources')" class="admin-tab" id="rtab-resources">Resources</button>
+            <button onclick="switchRecruitTab('resources')" class="admin-tab active" id="rtab-resources">Resources</button>
+            <button onclick="switchRecruitTab('timeline')" class="admin-tab" id="rtab-timeline">Timeline</button>
             <button onclick="switchRecruitTab('internships')" class="admin-tab" id="rtab-internships">Internships</button>
             <button onclick="switchRecruitTab('resume')" class="admin-tab" id="rtab-resume">Resume Book</button>
             <button onclick="switchRecruitTab('mock')" class="admin-tab" id="rtab-mock">Mock Interview</button>
@@ -5632,7 +5632,11 @@ button[onclick="pubFlipbookNext()"]:hover {
             <div class="ufa-pane-sub">When applications open and close. Sophomore banking recruiting starts earlier than anyone expects &mdash; check this before you assume you have time.</div>
           </div>
 
+          <div id="timeline-visibility"></div>
           <div id="timeline-alert" style="display:none;"></div>
+
+          <!-- Board-only: pending member submissions -->
+          <div id="timeline-queue" style="display:none;"></div>
 
           <div class="ufa-card ufa-card-tight">
             <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
@@ -5660,6 +5664,30 @@ button[onclick="pubFlipbookNext()"]:hover {
           </div>
 
           <div id="timeline-list"></div>
+
+          <!-- Anyone can suggest a deadline they found -->
+          <div class="ufa-card">
+            <div class="ufa-label">Found a deadline we are missing?</div>
+            <div class="ufa-pane-sub" style="margin-bottom:14px;">
+              Add it here and a board member will review it. The people applying are the
+              ones who find these first, so this is how the list stays current.
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;" id="ts-grid">
+              <div><div class="ufa-label">Firm</div><input id="ts-firm" class="ufa-input" placeholder="Evercore"></div>
+              <div><div class="ufa-label">Program</div><input id="ts-program" class="ufa-input" placeholder="Summer Analyst 2028"></div>
+              <div><div class="ufa-label">Category</div>
+                <select id="ts-category" class="ufa-select">
+                  <option>Investment Banking</option><option>Consulting</option>
+                  <option>Private Equity</option><option>Hedge Fund</option>
+                  <option>Asset Management</option><option>Other</option>
+                </select>
+              </div>
+              <div><div class="ufa-label">Deadline</div><input type="date" id="ts-deadline" class="ufa-input"></div>
+              <div><div class="ufa-label">Link</div><input type="url" id="ts-url" class="ufa-input" placeholder="https://…"></div>
+              <div><div class="ufa-label">Anything else</div><input id="ts-notes" class="ufa-input" placeholder="Optional"></div>
+            </div>
+            <div style="margin-top:16px;"><button class="ufa-btn" onclick="submitTimelineSuggestion()">Submit for review</button></div>
+          </div>
 
           <!-- Board only -->
           <div id="timeline-admin" style="display:none;">
@@ -7043,7 +7071,7 @@ button[onclick="pubFlipbookNext()"]:hover {
      columns of inputs get unusably narrow on a small laptop or a split
      window long before the 768px breakpoint. */
   #bp-grid, #bp-grid2, #drive-grid, #mock-config-grid,
-  #tl-grid, #al-grid, #pi-grid, #email-grid {
+  #tl-grid, #ts-grid, #al-grid, #pi-grid, #email-grid {
     grid-template-columns: 1fr !important;
   }
 }
@@ -9430,7 +9458,7 @@ cases: [
    ══════════════════════════════════════════════════════════════════ */
 
 var recruitGrouped = false;
-var recruitTab = 'timeline';
+var recruitTab = 'resources';
 
 const RECRUIT_PANES = {
   timeline:    'ptab-content-timeline',
@@ -9476,6 +9504,7 @@ function switchRecruitTab(tab) {
  * tab that returns nothing for members is just confusing.
  */
 const GATED_RECRUIT_TABS = [
+  ['timeline','visibility_timeline'],
   ['resume',  'visibility_resume'],
   ['mock',    'visibility_mock'],
   ['alumni',  'visibility_alumni'],
@@ -9492,7 +9521,7 @@ async function applyRecruitVisibility() {
   // If the member landed on a tab that is now hidden, move them somewhere
   // real rather than leaving them staring at an empty pane.
   var active = document.getElementById('rtab-' + recruitTab);
-  if (active && active.style.display === 'none') switchRecruitTab('timeline');
+  if (active && active.style.display === 'none') switchRecruitTab('resources');
 }
 
 /**
@@ -12592,7 +12621,83 @@ async function loadTimeline() {
   timelineRows = r.data || [];
   var admin = document.getElementById('timeline-admin');
   if (admin) admin.style.display = ufaIsBoard() ? '' : 'none';
+  if (ufaIsBoard()) {
+    await renderVisibilityToggle('timeline', 'visibility_timeline');
+    await loadTimelineQueue();
+  }
   renderTimeline();
+}
+
+/* ── Member submissions ──────────────────────────────────────────── */
+
+async function submitTimelineSuggestion() {
+  var firm = (document.getElementById('ts-firm').value || '').trim();
+  if (!firm) { ufaAlert('timeline-alert', 'err', 'Which firm?'); return; }
+  var res = await sb.from('timeline_submissions').insert({
+    firm: firm,
+    program: (document.getElementById('ts-program').value || '').trim() || null,
+    category: document.getElementById('ts-category').value,
+    deadline: document.getElementById('ts-deadline').value || null,
+    url: (document.getElementById('ts-url').value || '').trim() || null,
+    notes: (document.getElementById('ts-notes').value || '').trim() || null,
+    submitted_by: ufaEmail(),
+    submitted_name: (currentMember && currentMember.name) || ''
+  });
+  if (res.error) { ufaAlert('timeline-alert', 'err', 'Could not submit: ' + res.error.message); return; }
+  ['ts-firm', 'ts-program', 'ts-url', 'ts-notes', 'ts-deadline'].forEach(function (id) {
+    var el = document.getElementById(id); if (el) el.value = '';
+  });
+  ufaAlert('timeline-alert', 'ok', 'Thanks — sent to the board for review.');
+  if (ufaIsBoard()) await loadTimelineQueue();
+}
+
+/** Board view of everything waiting for approval. */
+async function loadTimelineQueue() {
+  var box = document.getElementById('timeline-queue');
+  if (!box) return;
+  var r = await sb.from('timeline_submissions').select('*')
+    .eq('status', 'pending').order('created_at', { ascending: true });
+  var rows = r.data || [];
+  if (!rows.length) { box.style.display = 'none'; return; }
+
+  box.style.display = '';
+  box.innerHTML = '<div class="ufa-card" style="border-color:#E4C98A;">' +
+    '<div class="ufa-label">Member submissions waiting — ' + rows.length + '</div>' +
+    rows.map(function (t) {
+      return '<div class="ufa-booking-row">' +
+        '<div style="flex:1;min-width:200px;">' +
+          '<div style="font-size:14px;font-weight:600;color:#1C2B1C;">' + ufaEsc(t.firm) +
+            (t.program ? ' <span style="font-weight:400;color:#6B7D6B;">— ' + ufaEsc(t.program) + '</span>' : '') + '</div>' +
+          '<div style="font-size:12px;color:#6B7D6B;margin-top:3px;">' +
+            ufaEsc([t.category, t.deadline ? 'due ' + ufaDate(t.deadline) : 'no date'].filter(Boolean).join(' · ')) +
+            ' · from ' + ufaEsc(t.submitted_name || t.submitted_by) + '</div>' +
+          (t.url ? '<a href="' + ufaEsc(t.url) + '" target="_blank" rel="noopener" style="font-size:12px;color:#3D6B3D;">Check the link</a>' : '') +
+        '</div>' +
+        '<button class="ufa-btn ufa-btn-sm" onclick="approveTimelineSubmission(\'' + t.id + '\')">Add it</button>' +
+        '<button class="ufa-btn-ghost ufa-btn-sm ufa-btn-danger" onclick="rejectTimelineSubmission(\'' + t.id + '\')">Discard</button>' +
+      '</div>';
+    }).join('') +
+  '</div>';
+}
+
+async function approveTimelineSubmission(id) {
+  var r = await sb.from('timeline_submissions').select('*').eq('id', id).maybeSingle();
+  if (!r.data) return;
+  var t = r.data;
+  var ins = await sb.from('recruiting_timeline').insert({
+    firm: t.firm, program: t.program, category: t.category || 'Other',
+    target_year: t.target_year, opens_on: t.opens_on, deadline: t.deadline,
+    url: t.url, notes: t.notes
+  });
+  if (ins.error) { ufaAlert('timeline-alert', 'err', 'Could not add: ' + ins.error.message); return; }
+  await sb.from('timeline_submissions').update({ status: 'approved' }).eq('id', id);
+  await loadTimeline();
+  ufaAlert('timeline-alert', 'ok', 'Added ' + t.firm + ' to the timeline.');
+}
+
+async function rejectTimelineSubmission(id) {
+  await sb.from('timeline_submissions').update({ status: 'rejected' }).eq('id', id);
+  await loadTimelineQueue();
 }
 
 function ufaDaysUntil(d) {
@@ -12987,7 +13092,8 @@ async function deletePitch(id) {
    be theatre. Saying so plainly beats implying protection that is not there. */
 const DB_ENFORCED_FEATURES = [
   'visibility_alumni', 'visibility_pitches',
-  'visibility_board_hours', 'visibility_resume'
+  'visibility_board_hours', 'visibility_resume',
+  'visibility_timeline'
 ];
 
 async function renderVisibilityToggle(uiKey, settingKey) {
