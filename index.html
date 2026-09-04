@@ -5129,11 +5129,8 @@ button[onclick="pubFlipbookNext()"]:hover {
           <button onclick="switchPortalTab('leaderboard')" class="portal-tab" id="ptab-leaderboard">Leaderboard</button>
           <button onclick="switchPortalTab('events')" class="portal-tab" id="ptab-events">Events</button>
           <button onclick="switchPortalTab('profile')" class="portal-tab" id="ptab-profile">Profile</button>
-          <button onclick="switchPortalTab('resources')" class="portal-tab" id="ptab-resources">Resources</button>
-          <button onclick="switchPortalTab('internships')" class="portal-tab" id="ptab-internships">Internships</button>
-          <button onclick="switchPortalTab('resume')" class="portal-tab" id="ptab-resume">Resume Book</button>
+          <button onclick="switchPortalTab('recruiting')" class="portal-tab" id="ptab-recruiting">Recruiting</button>
           <button onclick="switchPortalTab('board')" class="portal-tab" id="ptab-board">Board Hours</button>
-          <button onclick="switchPortalTab('mock')" class="portal-tab" id="ptab-mock">Mock Interview</button>
           <button onclick="switchPortalTab('admin')" class="portal-tab" id="ptab-admin" style="display:none;">Admin</button>
         </div>
       </div>
@@ -5392,6 +5389,29 @@ button[onclick="pubFlipbookNext()"]:hover {
         </div>
 
         <!-- ── ADMIN TAB ── -->
+        <!-- ── RECRUITING GROUP ──
+             Wrapper for the four recruiting surfaces. The panes themselves
+             are moved in here by JS on first load (see groupRecruitingTabs)
+             rather than being duplicated in the markup, so Resources and
+             Internships keep their original ids and existing code. -->
+        <div id="ptab-content-recruiting" style="display:none;">
+          <div class="ufa-pane-head">
+            <div class="ufa-pane-title">Recruiting</div>
+            <div class="ufa-pane-sub">Everything for landing the internship: guides, job boards, your resume, and practice.</div>
+          </div>
+          <div class="admin-tab-nav" id="recruit-tab-nav">
+            <button onclick="switchRecruitTab('timeline')" class="admin-tab active" id="rtab-timeline">Timeline</button>
+            <button onclick="switchRecruitTab('resources')" class="admin-tab" id="rtab-resources">Resources</button>
+            <button onclick="switchRecruitTab('internships')" class="admin-tab" id="rtab-internships">Internships</button>
+            <button onclick="switchRecruitTab('resume')" class="admin-tab" id="rtab-resume">Resume Book</button>
+            <button onclick="switchRecruitTab('mock')" class="admin-tab" id="rtab-mock">Mock Interview</button>
+            <button onclick="switchRecruitTab('alumni')" class="admin-tab" id="rtab-alumni">Alumni</button>
+            <button onclick="switchRecruitTab('pitches')" class="admin-tab" id="rtab-pitches">Pitch Archive</button>
+          </div>
+          <div id="recruit-slot"></div>
+        </div>
+
+
         <!-- ── RESUME BOOK TAB ──
              Members drop in a PDF; it lands in the private `resumes`
              storage bucket under their own email folder. Only the
@@ -5598,6 +5618,211 @@ button[onclick="pubFlipbookNext()"]:hover {
           </div>
         </div>
 
+        <!-- ── RECRUITING TIMELINE ──
+             Visible to every member. Board add/delete controls appear
+             inline for board accounts. -->
+        <div id="ptab-content-timeline" style="display:none;">
+          <div class="ufa-pane-head">
+            <div class="ufa-pane-title">Recruiting Timeline</div>
+            <div class="ufa-pane-sub">When applications open and close. Sophomore banking recruiting starts earlier than anyone expects &mdash; check this before you assume you have time.</div>
+          </div>
+
+          <div id="timeline-alert" style="display:none;"></div>
+
+          <div class="ufa-card ufa-card-tight">
+            <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+              <select id="tl-filter-cat" class="ufa-select" style="max-width:200px;" onchange="renderTimeline()">
+                <option value="">All categories</option>
+                <option>Investment Banking</option>
+                <option>Consulting</option>
+                <option>Private Equity</option>
+                <option>Hedge Fund</option>
+                <option>Asset Management</option>
+                <option>Other</option>
+              </select>
+              <select id="tl-filter-year" class="ufa-select" style="max-width:180px;" onchange="renderTimeline()">
+                <option value="">All years</option>
+                <option>Freshman</option>
+                <option>Sophomore</option>
+                <option>Junior</option>
+                <option>Senior</option>
+              </select>
+              <label style="display:flex;align-items:center;gap:7px;font-size:13px;color:#3A4A3A;cursor:pointer;">
+                <input type="checkbox" id="tl-hide-past" checked style="width:15px;height:15px;cursor:pointer;" onchange="renderTimeline()">
+                Hide closed
+              </label>
+            </div>
+          </div>
+
+          <div id="timeline-list"></div>
+
+          <!-- Board only -->
+          <div id="timeline-admin" style="display:none;">
+            <div class="ufa-card">
+              <div class="ufa-label">Add a deadline</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;" id="tl-grid">
+                <div><div class="ufa-label">Firm</div><input id="tl-firm" class="ufa-input" placeholder="Evercore"></div>
+                <div><div class="ufa-label">Program</div><input id="tl-program" class="ufa-input" placeholder="Summer Analyst 2028"></div>
+                <div><div class="ufa-label">Category</div>
+                  <select id="tl-category" class="ufa-select">
+                    <option>Investment Banking</option><option>Consulting</option>
+                    <option>Private Equity</option><option>Hedge Fund</option>
+                    <option>Asset Management</option><option>Other</option>
+                  </select>
+                </div>
+                <div><div class="ufa-label">Who it is for</div>
+                  <select id="tl-year" class="ufa-select">
+                    <option value="">Anyone</option><option>Freshman</option>
+                    <option>Sophomore</option><option>Junior</option><option>Senior</option>
+                  </select>
+                </div>
+                <div><div class="ufa-label">Opens</div><input type="date" id="tl-opens" class="ufa-input"></div>
+                <div><div class="ufa-label">Deadline</div><input type="date" id="tl-deadline" class="ufa-input"></div>
+                <div><div class="ufa-label">Application link</div><input type="url" id="tl-url" class="ufa-input" placeholder="https://…"></div>
+                <div><div class="ufa-label">Notes</div><input id="tl-notes" class="ufa-input" placeholder="Requires a cover letter"></div>
+              </div>
+              <div style="margin-top:16px;"><button class="ufa-btn" onclick="addTimelineRow()">Add to timeline</button></div>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- ── ALUMNI DIRECTORY ──
+             Board-only until published. The gate is enforced by RLS, so
+             an unpublished directory is unreadable rather than just
+             unlinked. -->
+        <div id="ptab-content-alumni" style="display:none;">
+          <div class="ufa-pane-head">
+            <div class="ufa-pane-title">Alumni Directory</div>
+            <div class="ufa-pane-sub">UFA alumni and where they landed. If someone is open to a coffee chat, reach out &mdash; be specific about what you want to ask, and keep it to fifteen minutes.</div>
+          </div>
+
+          <div id="alumni-visibility"></div>
+          <div id="alumni-alert" style="display:none;"></div>
+
+          <div class="ufa-card ufa-card-tight">
+            <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+              <input type="text" id="al-search" class="ufa-input" placeholder="Search by name, firm, role, or city" style="max-width:300px;" oninput="renderAlumni()">
+              <select id="al-industry" class="ufa-select" style="max-width:200px;" onchange="renderAlumni()">
+                <option value="">All industries</option>
+                <option>Investment Banking</option><option>Consulting</option>
+                <option>Private Equity</option><option>Hedge Fund</option>
+                <option>Asset Management</option><option>Corporate Finance</option>
+                <option>Technology</option><option>Other</option>
+              </select>
+              <label style="display:flex;align-items:center;gap:7px;font-size:13px;color:#3A4A3A;cursor:pointer;">
+                <input type="checkbox" id="al-chat-only" style="width:15px;height:15px;cursor:pointer;" onchange="renderAlumni()">
+                Open to chats only
+              </label>
+              <div style="margin-left:auto;font-size:13px;color:#6B7D6B;" id="alumni-count"></div>
+            </div>
+          </div>
+
+          <div id="alumni-list"></div>
+
+          <!-- Board only -->
+          <div id="alumni-admin" style="display:none;">
+            <div class="ufa-card">
+              <div class="ufa-label">Add an alum</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;" id="al-grid">
+                <div><div class="ufa-label">Name</div><input id="al-name" class="ufa-input"></div>
+                <div><div class="ufa-label">Grad year</div><input id="al-grad" class="ufa-input" placeholder="2022"></div>
+                <div><div class="ufa-label">Firm</div><input id="al-firm" class="ufa-input"></div>
+                <div><div class="ufa-label">Role</div><input id="al-role" class="ufa-input" placeholder="Investment Banking Analyst"></div>
+                <div><div class="ufa-label">Industry</div>
+                  <select id="al-ind-new" class="ufa-select">
+                    <option>Investment Banking</option><option>Consulting</option>
+                    <option>Private Equity</option><option>Hedge Fund</option>
+                    <option>Asset Management</option><option>Corporate Finance</option>
+                    <option>Technology</option><option>Other</option>
+                  </select>
+                </div>
+                <div><div class="ufa-label">City</div><input id="al-city" class="ufa-input" placeholder="New York"></div>
+                <div><div class="ufa-label">Email</div><input type="email" id="al-email" class="ufa-input"></div>
+                <div><div class="ufa-label">LinkedIn</div><input type="url" id="al-linkedin" class="ufa-input"></div>
+                <div><div class="ufa-label">What they did in UFA</div><input id="al-ufarole" class="ufa-input" placeholder="VP of Investments"></div>
+                <div><div class="ufa-label">Board note <span style="text-transform:none;letter-spacing:0;font-weight:400;">(members never see this)</span></div><input id="al-notes" class="ufa-input" placeholder="Responds fast, prefers email"></div>
+              </div>
+              <div style="margin-top:14px;">
+                <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:#3A4A3A;cursor:pointer;">
+                  <input type="checkbox" id="al-open" checked style="width:15px;height:15px;cursor:pointer;">
+                  Open to coffee chats
+                </label>
+              </div>
+              <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+                <button class="ufa-btn" onclick="addAlumni()">Add alum</button>
+                <button class="ufa-btn-ghost" onclick="document.getElementById('al-csv').click()">Import CSV</button>
+                <input type="file" id="al-csv" accept=".csv,text/csv" style="display:none;" onchange="handleAlumniCsv(this.files)">
+                <span style="font-size:12px;color:#6B7D6B;">CSV needs a name column; firm, role, grad year, email, LinkedIn, city and industry are matched if present.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- ── STOCK PITCH ARCHIVE ──
+             Board-only until published. -->
+        <div id="ptab-content-pitches" style="display:none;">
+          <div class="ufa-pane-head">
+            <div class="ufa-pane-title">Pitch Archive</div>
+            <div class="ufa-pane-sub">Every stock pitch the investment team has made, with what actually happened afterward. Read a few before writing your own.</div>
+          </div>
+
+          <div id="pitches-visibility"></div>
+          <div id="pitch-alert" style="display:none;"></div>
+
+          <div class="ufa-card ufa-card-tight">
+            <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+              <input type="text" id="pi-search" class="ufa-input" placeholder="Search by ticker, company, or author" style="max-width:300px;" oninput="renderPitches()">
+              <select id="pi-direction" class="ufa-select" style="max-width:160px;" onchange="renderPitches()">
+                <option value="">Long and short</option>
+                <option value="long">Long only</option>
+                <option value="short">Short only</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="pitch-list"></div>
+
+          <!-- Board only -->
+          <div id="pitch-admin" style="display:none;">
+            <div class="ufa-card">
+              <div class="ufa-label">Archive a pitch</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;" id="pi-grid">
+                <div><div class="ufa-label">Ticker</div><input id="pi-ticker" class="ufa-input" placeholder="AAPL"></div>
+                <div><div class="ufa-label">Company</div><input id="pi-company" class="ufa-input" placeholder="Apple Inc."></div>
+                <div><div class="ufa-label">Direction</div>
+                  <select id="pi-dir-new" class="ufa-select"><option value="long">Long</option><option value="short">Short</option></select>
+                </div>
+                <div><div class="ufa-label">Date pitched</div><input type="date" id="pi-date" class="ufa-input"></div>
+                <div><div class="ufa-label">Author</div><input id="pi-author" class="ufa-input"></div>
+                <div><div class="ufa-label">Team</div><input id="pi-team" class="ufa-input" placeholder="Investment Team"></div>
+                <div><div class="ufa-label">Price when pitched</div><input type="number" step="0.01" id="pi-price" class="ufa-input" placeholder="182.50"></div>
+                <div><div class="ufa-label">Target price</div><input type="number" step="0.01" id="pi-target" class="ufa-input" placeholder="215.00"></div>
+              </div>
+              <div style="margin-top:14px;">
+                <div class="ufa-label">Thesis in a sentence or two</div>
+                <textarea id="pi-thesis" class="ufa-textarea" placeholder="What the market is missing, and why it corrects."></textarea>
+              </div>
+              <div style="margin-top:14px;">
+                <div class="ufa-label">What happened <span style="text-transform:none;letter-spacing:0;font-weight:400;">(fill in later)</span></div>
+                <input id="pi-outcome" class="ufa-input" placeholder="Up 22% over eight months; thesis played out on margins, not volume.">
+              </div>
+
+              <div id="pitch-dropzone" class="ufa-drop" style="margin-top:16px;padding:26px 20px;"
+                   onclick="document.getElementById('pitch-file').click()">
+                <div class="ufa-drop-icon">📊</div>
+                <div class="ufa-drop-title">Attach the deck or memo</div>
+                <div class="ufa-drop-sub">Optional &middot; PDF, PowerPoint, or Excel &middot; 25 MB max</div>
+              </div>
+              <input type="file" id="pitch-file" style="display:none;" onchange="handlePitchFile(this.files)">
+              <div class="ufa-note" id="pitch-file-label"></div>
+
+              <div style="margin-top:16px;"><button class="ufa-btn" onclick="addPitch()">Archive pitch</button></div>
+            </div>
+          </div>
+        </div>
+
 
         <div id="ptab-content-admin" style="display:none;">
           <div style="margin-bottom:24px;">
@@ -5727,12 +5952,64 @@ button[onclick="pubFlipbookNext()"]:hover {
                   <button onclick="postAnnouncement()" style="background:#3D6B3D;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;padding:10px 24px;border-radius:4px;border:none;cursor:pointer;">Post</button>
                   <button onclick="clearAnnouncement()" style="background:#fff;border:1px solid rgba(46,74,46,0.2);color:#6B7D6B;font-family:'DM Sans',sans-serif;font-size:13px;padding:10px 24px;border-radius:4px;cursor:pointer;">Clear banner</button>
                 </div>
-                <div id="announce-msg" style="display:none;margin-top:10px;font-size:13px;color:#2e6b2e;"></div>
+                <div id="announce-msg" style="display:none;margin-top:10px;font-size:13px;color:#2e6b2e;"></div>                <div id="announce-msg" style="display:none;margin-top:10px;font-size:13px;color:#2e6b2e;"></div>
+                <div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(46,74,46,0.1);display:flex;gap:10px;flex-wrap:wrap;">
+                  <button class="ufa-btn-ghost ufa-btn-sm" onclick="emailAnnouncementToAll()" id="announce-email-btn">Also email all members</button>
+                  <button class="ufa-btn-ghost ufa-btn-sm" onclick="copyAllMemberEmails()">Copy emails for BCC</button>
+                </div>
               </div>
               <div>
                 <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:10px;">Current Announcement</div>
                 <div id="current-announce" style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:20px;font-size:14px;color:#3A4A3A;line-height:1.6;">None active</div>
                 <div style="font-size:12px;color:#6B7D6B;margin-top:10px;">This message appears as a banner at the top of every member's dashboard.</div>
+              </div>
+            </div>
+
+            <div id="announce-alert" style="display:none;margin-top:20px;"></div>
+
+            <!-- ── EMAIL NOTIFICATIONS ── -->
+            <div class="ufa-card" style="margin-top:20px;">
+              <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px;">
+                <div class="ufa-label" style="margin-bottom:0;">Email notifications</div>
+                <span id="email-status"></span>
+              </div>
+              <div class="ufa-pane-sub" style="margin-bottom:14px;line-height:1.7;">
+                Sends booking confirmations to both sides, tells the board when someone is waiting for
+                approval, and tells a member when they are approved. Setup is one EmailJS template &mdash;
+                see the handoff doc. Leave <strong>Public key</strong> blank if these run on the same
+                EmailJS account as the contact form; fill it in if you made a new account.
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;" id="email-grid">
+                <div>
+                  <div class="ufa-label">Service ID</div>
+                  <input type="text" id="email-service" class="ufa-input" placeholder="service_ljdm2zl">
+                </div>
+                <div>
+                  <div class="ufa-label">Template ID</div>
+                  <input type="text" id="email-template" class="ufa-input" placeholder="template_xxxxxxx">
+                </div>
+                <div>
+                  <div class="ufa-label">From name</div>
+                  <input type="text" id="email-from" class="ufa-input" placeholder="UFA">
+                </div>
+                <div>
+                  <div class="ufa-label">Public key</div>
+                  <input type="text" id="email-key" class="ufa-input" placeholder="Leave blank if same account as contact form">
+                </div>
+              </div>
+              <div style="margin-top:14px;">
+                <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:#3A4A3A;cursor:pointer;">
+                  <input type="checkbox" id="email-enabled" style="width:15px;height:15px;cursor:pointer;">
+                  Send notifications
+                </label>
+              </div>
+              <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;">
+                <button class="ufa-btn" onclick="saveEmailSettings()">Save</button>
+                <button class="ufa-btn-ghost" onclick="sendTestEmail()" id="email-test-btn">Send me a test</button>
+              </div>
+              <div class="ufa-note">
+                The EmailJS free plan allows 200 emails a month. Bookings and approvals use a handful;
+                emailing the whole membership does not fit, which is why the BCC button exists.
               </div>
             </div>
           </div>
@@ -5776,6 +6053,38 @@ button[onclick="pubFlipbookNext()"]:hover {
                 <table class="ufa-table" id="resume-admin-table"></table>
               </div>
             </div>
+
+            <div class="ufa-card">
+              <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px;">
+                <div class="ufa-label" style="margin-bottom:0;">Google Drive mirror</div>
+                <span id="drive-status"></span>
+              </div>
+              <div class="ufa-pane-sub" style="margin-bottom:14px;line-height:1.7;">
+                Copies every resume into a Drive folder you own, so you can share the book with firms and
+                with board members who have no Supabase login. Supabase stays the source of truth &mdash;
+                this is a mirror, not a move. Setup instructions are in the handoff doc; you paste the
+                deployed Apps Script URL below.
+              </div>
+              <div style="display:grid;grid-template-columns:2fr 1fr;gap:12px;" id="drive-grid">
+                <div>
+                  <div class="ufa-label">Apps Script URL</div>
+                  <input type="url" id="drive-url" class="ufa-input" placeholder="https://script.google.com/macros/s/…/exec">
+                </div>
+                <div>
+                  <div class="ufa-label">Shared token</div>
+                  <input type="text" id="drive-token" class="ufa-input" placeholder="Must match the script">
+                </div>
+              </div>
+              <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;">
+                <button class="ufa-btn" onclick="saveDriveConfig()">Save</button>
+                <button class="ufa-btn-ghost" onclick="testDriveConnection()" id="drive-test-btn">Test connection</button>
+                <button class="ufa-btn-ghost" onclick="backfillDriveMirror()" id="drive-backfill-btn">Push all to Drive</button>
+              </div>
+              <div class="ufa-note">
+                Use <strong>Push all to Drive</strong> once after setup to send everything already uploaded.
+                It is safe to run more than once. Leave the URL blank to turn mirroring off.
+              </div>
+            </div>
           </div>
 
 
@@ -5803,11 +6112,8 @@ button[onclick="pubFlipbookNext()"]:hover {
                 </div>
                 <div>
                   <div class="ufa-label">Phone</div>
-                  <input type="tel" id="bp-phone" class="ufa-input" placeholder="(512) 555-0134">
-                </div>
-                <div>
-                  <div class="ufa-label">Photo URL <span style="text-transform:none;letter-spacing:0;font-weight:400;">(optional)</span></div>
-                  <input type="url" id="bp-photo" class="ufa-input" placeholder="https://…">
+                  <input type="tel" id="bp-phone" class="ufa-input" placeholder="(512) 555-0134"
+                         onblur="this.value=ufaFormatPhone(this.value)">
                 </div>
               </div>
 
@@ -5855,7 +6161,9 @@ button[onclick="pubFlipbookNext()"]:hover {
             <div class="ufa-card">
               <div class="ufa-label">Weekly availability</div>
               <div class="ufa-pane-sub" style="margin-bottom:14px;">
-                Recurring windows. Members can book any open slot inside these, up to three weeks out.
+                Recurring windows that repeat every week. Members can book any open slot inside these,
+                up to three weeks out. <strong>These save as soon as you add them</strong> &mdash; the
+                Save card button above is only for your contact details.
               </div>
               <div id="bp-availability"></div>
               <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;">
@@ -5884,9 +6192,11 @@ button[onclick="pubFlipbookNext()"]:hover {
             </div>
 
             <div class="ufa-card">
-              <div class="ufa-label">Blackout dates</div>
+              <div class="ufa-label">Blackout dates <span style="text-transform:none;letter-spacing:0;font-weight:400;color:#9AA69A;">— optional</span></div>
               <div class="ufa-pane-sub" style="margin-bottom:14px;">
-                Travel, exams, anything that overrides your weekly windows for a specific stretch of time.
+                Your weekly windows above repeat forever. A blackout cancels them for one specific stretch
+                &mdash; a week of travel, finals, an interview trip &mdash; without you having to delete and
+                re-add the window afterward. If you are never away, you will never need this.
               </div>
               <div id="bp-blackouts"></div>
               <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;">
@@ -6702,7 +7012,36 @@ button[onclick="pubFlipbookNext()"]:hover {
 .ufa-gate-icon { font-size: 34px; margin-bottom: 14px; opacity: 0.7; }
 
 
+/* ── Tab rows: horizontal scroll with an edge cue ──────────────────
+   Both tab rows can outgrow their container. Rather than wrapping into
+   a ragged second line, they scroll sideways, with a soft fade on the
+   right edge so it is visible that more exists. The fade is a pseudo
+   element on the wrapper so it does not scroll away with the content. */
+
+#portal-tab-nav, .admin-tab-nav {
+  position: relative;
+  scrollbar-width: none;
+  scroll-behavior: smooth;
+}
+#portal-tab-nav::-webkit-scrollbar,
+.admin-tab-nav::-webkit-scrollbar { display: none; }
+
+/* Two-level nesting: the recruiting sub-nav sits inside a pane, so give
+   it a little more separation from the heading above it. */
+#recruit-tab-nav { margin-bottom: 24px; }
+
+
 /* ── Mobile ───────────────────────────────────────────────────── */
+
+@media (max-width: 900px) {
+  /* Form grids collapse to one column well before phone width — two
+     columns of inputs get unusably narrow on a small laptop or a split
+     window long before the 768px breakpoint. */
+  #bp-grid, #bp-grid2, #drive-grid, #mock-config-grid,
+  #tl-grid, #al-grid, #pi-grid, #email-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
 
 @media (max-width: 768px) {
   .ufa-card { padding: 18px; }
@@ -6727,6 +7066,12 @@ button[onclick="pubFlipbookNext()"]:hover {
   .ufa-score-btn { width: 38px; height: 38px; font-size: 14px; }
   .ufa-chat { height: 300px; }
   .ufa-booking-when { min-width: 100%; }
+  /* Buttons in a booking row go full width rather than crushing together. */
+  .ufa-booking-row > .ufa-btn-ghost,
+  .ufa-booking-row > a.ufa-btn-ghost { flex: 1 1 auto; text-align: center; }
+  /* Filter bars stack instead of squeezing four dropdowns onto one line. */
+  .ufa-card-tight .ufa-input,
+  .ufa-card-tight .ufa-select { max-width: 100% !important; }
   /* Week grid scrolls sideways rather than crushing seven columns. */
   .ufa-week-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
   .ufa-week-scroll > div { min-width: 620px; }
@@ -6792,7 +7137,7 @@ const TYPE_COLORS = {
 
 // ── Tab switching ──
 async function switchPortalTab(tab) {
-  ['overview','leaderboard','events','profile','resources','internships','resume','board','mock','admin'].forEach(t => {
+  ['overview','leaderboard','events','profile','recruiting','board','admin'].forEach(t => {
     const btn = document.getElementById('ptab-' + t);
     const content = document.getElementById('ptab-content-' + t);
     if (btn) btn.classList.toggle('active', t === tab);
@@ -6809,10 +7154,8 @@ async function switchPortalTab(tab) {
     loadProfileBadges();
   }
   if (tab === 'admin') { switchAdminTab('sessions'); loadAdminSessions(); loadRosterBadge(); }
-  if (tab === 'resources') { loadResources(); }
-  if (tab === 'resume') { loadResumeTab(); }
-  if (tab === 'board')  { loadBoardTab(); }
-  if (tab === 'mock')   { loadMockTab(); }
+  if (tab === 'recruiting') { groupRecruitingTabs(); switchRecruitTab(recruitTab); }
+  if (tab === 'board')      { loadBoardTab(); }
 }
 
 // ── Resources ──
@@ -6991,7 +7334,7 @@ function switchAdminTab(tab) {
   });
   if (tab === 'roster') loadRoster();
   if (tab === 'analytics') loadAnalytics();
-  if (tab === 'announce') loadCurrentAnnouncement();
+  if (tab === 'announce') { loadCurrentAnnouncement(); loadEmailSettings(); }
   if (tab === 'approvals') loadApprovals();
   if (tab === 'resumes') loadResumeAdmin();
   if (tab === 'boardhours') loadBoardHoursAdmin();
@@ -7078,6 +7421,7 @@ async function showDashboard() {
   if (isBoard) loadApprovals(); // populate badge count on login
 
   loadAnnouncement();
+  loadEmailConfig();
 
   const { data: records } = await sb.from('attendance').select('*').eq('email', currentUser.email);
   const attended = records || [];
@@ -7627,8 +7971,23 @@ async function loadApprovals() {
 }
 
 async function approveMember(email) {
+  // Grab the name before the row leaves the pending list, so the welcome
+  // email can address them properly.
+  let approvedName = '';
+  try {
+    const who = await sb.from('members').select('name').eq('email', email).maybeSingle();
+    if (who && who.data) approvedName = who.data.name || '';
+  } catch (e) {}
+
   const { error } = await sb.from('members').update({ status: 'approved' }).eq('email', email);
   if (error) { alert('Error approving member: ' + error.message); return; }
+
+  // Tell them they are in. Fire-and-forget: the approval already saved.
+  try {
+    const m = ufaApprovalEmail(approvedName);
+    ufaSendEmail(email, m.subject, m.message);
+  } catch (e) {}
+
   loadApprovals();
 }
 
@@ -8021,41 +8380,59 @@ const IV_BANK = {
 
   // ── Technical ──
   { id:'si-t1', s:'technical', d:'easy', q:'Which of the three financial statements would you pick if you could only see one, and why?',
-    n:'Cash flow statement. The reasoning matters more than the pick — cash is harder to manipulate and reconciles to the other two.' },
+    n:'Cash flow statement. The reasoning matters more than the pick — cash is harder to manipulate and reconciles to the other two.',
+    a:"Cash flow statement. It shows what the business actually generated and spent, it is the hardest of the three to manipulate, and you can partly reconstruct the other two from it. A candidate who picks the income statement can still score well if they defend it on profitability and margin trends. What you do not want is a pick with no reason attached." },
   { id:'si-t2', s:'technical', d:'easy', q:'Walk me through how the three statements connect.',
-    n:'Net income to top of cash flow, and to retained earnings. Ending cash to the balance sheet. Should be automatic by sophomore year.' },
+    n:'Net income to top of cash flow, and to retained earnings. Ending cash to the balance sheet. Should be automatic by sophomore year.',
+    a:"Net income flows from the bottom of the income statement to the top of the cash flow statement, and into retained earnings on the balance sheet. Non-cash items get added back and working capital changes get applied on the cash flow statement. Ending cash from the bottom of the cash flow statement becomes the cash line on the balance sheet. Debt and equity issuance flow through financing and update those balance sheet lines." },
   { id:'si-t3', s:'technical', d:'medium', q:'Inventory is written down by forty dollars. Walk me through all three statements, assuming a twenty-five percent tax rate.',
-    n:'IS: pretax down 40, tax shield 10, net income down 30. CF: net income down 30, add back the 40 non-cash writedown, cash up 10. BS: inventory down 40, cash up 10, retained earnings down 30. One nudge is fine.' },
+    n:'IS: pretax down 40, tax shield 10, net income down 30. CF: net income down 30, add back the 40 non-cash writedown, cash up 10. BS: inventory down 40, cash up 10, retained earnings down 30. One nudge is fine.',
+    a:"Income statement: pretax income falls 40, taxes fall 10 at a 25 percent rate, net income falls 30. Cash flow statement: start from net income down 30, add back the 40 writedown because it is non-cash, so cash rises 10. Balance sheet: inventory down 40, cash up 10, so assets fall 30; retained earnings fall 30 and it balances. The cash actually goes UP because of the tax shield, which is the part candidates most often miss." },
   { id:'si-t4', s:'technical', d:'medium', q:'Walk me through a DCF.',
-    n:'Project free cash flow, discount at WACC, terminal value, sum to enterprise value, bridge to equity value. Listen for whether the bridge is understood or recited.' },
+    n:'Project free cash flow, discount at WACC, terminal value, sum to enterprise value, bridge to equity value. Listen for whether the bridge is understood or recited.',
+    a:"Project unlevered free cash flow for five to ten years. Discount each year back at WACC. Calculate a terminal value using either perpetuity growth or an exit multiple, and discount that back too. Add it all up for enterprise value. Subtract net debt to bridge to equity value. Divide by diluted shares for value per share. A strong answer mentions that terminal value usually carries most of the total." },
   { id:'si-t5', s:'technical', d:'medium', q:'What is the difference between enterprise value and equity value, and when would you use each?',
-    n:'Follow-up: why is cash subtracted? If they say because you get it back when you buy the company, they understand it.' },
+    n:'Follow-up: why is cash subtracted? If they say because you get it back when you buy the company, they understand it.',
+    a:"Equity value is what the shareholders own — share price times diluted shares. Enterprise value is what the whole operating business is worth regardless of how it was financed: equity value plus debt, minus cash, plus preferred and minority interest. Use enterprise value when comparing companies with different capital structures, and for anything paired with EBITDA or EBIT. Use equity value for P/E. On the cash question: you subtract it because buying the company hands you its cash back, which lowers your effective price." },
   { id:'si-t6', s:'technical', d:'medium', q:'Why do we add back depreciation and amortization in a DCF if it is a real economic cost?',
-    n:'Non-cash in the period. Follow-up: so how does the model eventually account for that cost? Answer is capex.' },
+    n:'Non-cash in the period. Follow-up: so how does the model eventually account for that cost? Answer is capex.',
+    a:"Because it is non-cash in that period — the money went out when the asset was purchased, not now. But the cost is real, and the model accounts for it through capital expenditures, which are subtracted in free cash flow. So the cost shows up as capex rather than as D and A. If a candidate cannot get to capex on the follow-up, they have memorized the add-back without understanding it." },
   { id:'si-t7', s:'technical', d:'medium', q:'Why might you use EBITDA instead of net income when comparing two companies?',
-    n:'Strips out capital structure, tax regime, and D&A policy. Bonus if they volunteer that EBITDA ignores real capital intensity.' },
+    n:'Strips out capital structure, tax regime, and D&A policy. Bonus if they volunteer that EBITDA ignores real capital intensity.',
+    a:"EBITDA strips out capital structure (interest), tax regime, and depreciation policy, so two companies financed and domiciled differently become comparable on operating performance. Net income reflects all three of those and can differ for reasons that have nothing to do with the business. The bonus point: EBITDA also ignores real capital intensity, so it flatters businesses that have to keep spending on equipment." },
   { id:'si-t8', s:'technical', d:'hard', q:'Company A trades at twelve times EBITDA and Company B at eighteen times. Give me three reasons that could be true that have nothing to do with one being a better business.',
-    n:'Growth profile, sector, size and liquidity, capital structure, a one-time distortion in the EBITDA figure, where each sits in its cycle. Two solid reasons is a pass.' },
+    n:'Growth profile, sector, size and liquidity, capital structure, a one-time distortion in the EBITDA figure, where each sits in its cycle. Two solid reasons is a pass.',
+    a:"Any three of: different growth rates, different sectors with different economics, size and liquidity differences, different capital structures, a one-time item distorting one of the EBITDA figures, different positions in their cycle, geography or accounting differences, or one being a takeover candidate. Two solid reasons is a pass. What you are testing is whether they know a multiple is a question rather than a verdict." },
   { id:'si-t9', s:'technical', d:'hard', q:'You build a DCF and it says the company is worth sixty percent more than the market says. You have checked your math and it is right. Name the assumptions most likely to be doing the work.',
-    n:'Terminal growth rate, WACC, revenue ramp. Real bonus if they say the market may know something the model does not.' },
+    n:'Terminal growth rate, WACC, revenue ramp. Real bonus if they say the market may know something the model does not.',
+    a:"The terminal value assumptions do most of the work: terminal growth rate and exit multiple. After that, WACC — a percentage point moves the answer enormously. Then the revenue ramp and margin assumptions in the projection years. A really strong candidate adds that the market may be pricing in a risk the model does not capture, and that a 60 percent gap is more likely to be a modeling error than a mispricing." },
   { id:'si-t10', s:'technical', d:'medium', q:'What is WACC, and what happens to a valuation when it goes up?',
-    n:'Blended cost of capital, weighted by capital structure. Higher WACC lowers present value. Follow-up: why is debt cheaper than equity?' },
+    n:'Blended cost of capital, weighted by capital structure. Higher WACC lowers present value. Follow-up: why is debt cheaper than equity?',
+    a:"Weighted average cost of capital — the blended return all capital providers require, weighted by how much debt and equity are in the structure. Cost of equity usually comes from CAPM: risk-free rate plus beta times the equity risk premium. Cost of debt is the after-tax borrowing rate. A higher WACC means a higher discount rate, which lowers present value and therefore lowers the valuation. Debt is cheaper because lenders are senior and interest is tax-deductible." },
   { id:'si-t11', s:'technical', d:'medium', q:'Two companies have identical operations. One is funded entirely with equity, the other carries meaningful debt. Which has the higher enterprise value?',
-    n:'Roughly the same enterprise value; the difference is in equity value. Tests whether the EV concept actually landed.' },
+    n:'Roughly the same enterprise value; the difference is in equity value. Tests whether the EV concept actually landed.',
+    a:"Roughly the same enterprise value. The operating business generates the same cash flows regardless of how it was funded, and enterprise value measures the operating business. What differs is equity value — the levered company has a smaller equity value because debt holders have a claim ahead of shareholders. If a candidate says the levered company has a higher EV, they are adding debt without remembering that the equity value fell by roughly the same amount." },
   { id:'si-t12', s:'technical', d:'medium', q:'A company buys a piece of equipment for one hundred dollars in cash. What happens immediately across the statements?',
-    n:'No income statement impact at purchase. Cash down 100 in investing, PP and E up 100. The point is that spending money is not automatically an expense.' },
+    n:'No income statement impact at purchase. Cash down 100 in investing, PP and E up 100. The point is that spending money is not automatically an expense.',
+    a:"Nothing happens on the income statement at the moment of purchase. On the cash flow statement, 100 goes out under investing activities. On the balance sheet, cash falls 100 and PP and E rises 100, so total assets are unchanged. The expense shows up later, spread over the asset life, as depreciation. The point of the question is that spending cash is not the same as incurring an expense." },
   { id:'si-t13', s:'technical', d:'hard', q:'How would you value a company that has never made a profit?',
-    n:'Revenue multiples, DCF to a future profitable state, comparable transactions, users or unit economics. Judgment question — no single right answer.' },
+    n:'Revenue multiples, DCF to a future profitable state, comparable transactions, users or unit economics. Judgment question — no single right answer.',
+    a:"Several defensible routes: revenue multiples against comparable companies, a DCF that projects out to a future profitable state, precedent transactions for similar assets, or a per-user or per-unit metric if the company accumulates something valuable. For early-stage, you can probability-weight scenarios. There is no single right answer — you are testing whether they can reason when the standard tool does not apply, and whether they acknowledge the range is wide." },
   { id:'si-t14', s:'technical', d:'medium', q:'What is free cash flow, and why do investors care about it more than net income?',
-    n:'Cash left after operating and reinvesting. Harder to distort. Follow-up: name something that shows up in net income but not in free cash flow.' },
+    n:'Cash left after operating and reinvesting. Harder to distort. Follow-up: name something that shows up in net income but not in free cash flow.',
+    a:"Cash generated by operations after the reinvestment needed to keep the business running — roughly operating cash flow minus capex. Investors prefer it because net income includes non-cash charges and accounting judgment, while cash is cash. Things in net income but not in free cash flow: depreciation and amortization, stock-based compensation, and any non-cash gain or loss. Things in free cash flow but not net income: capex and working capital swings." },
   { id:'si-t15', s:'technical', d:'easy', q:'Give me a rough definition of the price to earnings ratio and one thing it fails to tell you.',
-    n:'Misses capital structure, growth, quality of earnings. Easy question that separates memorization from understanding.' },
+    n:'Misses capital structure, growth, quality of earnings. Easy question that separates memorization from understanding.',
+    a:"Price per share divided by earnings per share — what you pay for a dollar of earnings. What it misses: capital structure entirely, since a heavily indebted company can look cheap; growth, since a high multiple may be justified; earnings quality, since net income can be managed; and it breaks down completely when earnings are negative or near zero." },
   { id:'si-t16', s:'technical', d:'medium', q:'A company issues one hundred dollars of debt. Walk me through the statements.',
-    n:'No income statement impact at issuance. Cash up 100, debt up 100. Follow-up: now what happens over the next year as interest accrues?' },
+    n:'No income statement impact at issuance. Cash up 100, debt up 100. Follow-up: now what happens over the next year as interest accrues?',
+    a:"At issuance, no income statement impact. Cash up 100 and debt up 100 on the balance sheet, and a 100 inflow under financing on the cash flow statement. Over the following year, interest expense hits the income statement, reduces pretax income and net income, and creates a tax shield — so the after-tax cost of that interest is what actually reduces equity." },
   { id:'si-t17', s:'technical', d:'hard', q:'What would make you comfortable paying a higher multiple for one company than another in the same industry?',
-    n:'Durable growth, margin structure, competitive moat, reinvestment runway, management. Tests investing judgment rather than mechanics.' },
+    n:'Durable growth, margin structure, competitive moat, reinvestment runway, management. Tests investing judgment rather than mechanics.',
+    a:"Durable growth, higher and more stable margins, a real competitive moat, a long runway to reinvest at high returns, lower capital intensity, better management and capital allocation, recurring rather than one-time revenue, and lower cyclicality. The strongest answers connect the premium to a specific mechanism rather than listing adjectives." },
   { id:'si-t18', s:'technical', d:'medium', q:'Pitch me a stock. Any company, long or short.',
-    n:'The single most informative question here. Do they have a thesis, a reason the market is wrong, and any sense of what would disprove them? Push on the last one.' },
+    n:'The single most informative question here. Do they have a thesis, a reason the market is wrong, and any sense of what would disprove them? Push on the last one.',
+    a:"There is no right answer — judge the structure. A good pitch has: what the company does in one or two sentences, a thesis in a single sentence, why the market is wrong, what specifically will change the price and roughly when, a rough sense of value, and what would prove them wrong. Push hard on the last one. A candidate who cannot say what would change their mind has an opinion, not a thesis." },
 
   // ── Market Knowledge ──
   { id:'si-m1', s:'market', d:'easy', q:'Roughly where is the S and P trading, and is that higher or lower than six months ago?',
@@ -8141,29 +8518,41 @@ const IV_BANK = {
 
   // ── Technical: reasoning, not accounting ──
   { id:'fi-t1', s:'technical', d:'easy', q:'In your own words, what does the stock market actually do?',
-    n:'No jargon required. Watching for whether they understand ownership and price discovery in any form.' },
+    n:'No jargon required. Watching for whether they understand ownership and price discovery in any form.',
+    a:"No jargon needed. A strong answer gets at some combination of: it lets people own pieces of companies, it moves money from people who have it to businesses that need it, and prices reflect what people collectively think those businesses are worth. Anything touching ownership or price discovery counts. Gambling comparisons are fine as a starting point if they can be pushed past it." },
   { id:'fi-t2', s:'technical', d:'easy', q:'What makes one company worth more than another?',
-    n:'Anything pointing at future earnings, growth, or scarcity. Push gently toward the future rather than the present.' },
+    n:'Anything pointing at future earnings, growth, or scarcity. Push gently toward the future rather than the present.',
+    a:"Anything pointing toward the future: how much money it will make, how fast it is growing, how certain those profits are, how hard it would be to compete with. Weaker answers anchor on the present — how much it owns now, how many employees. Nudge them forward and see if they take the hint. Coachability matters more than the starting answer." },
   { id:'fi-t3', s:'technical', d:'medium', q:'Would you rather have a dollar today or a dollar in five years? Why?',
-    n:'Time value of money without the term. Follow-up: how much would I have to offer you in five years to make you indifferent?' },
+    n:'Time value of money without the term. Follow-up: how much would I have to offer you in five years to make you indifferent?',
+    a:"A dollar today. It can be invested and grow, inflation erodes future money, and the future is uncertain. On the follow-up, any number above a dollar shows they grasp the concept; the specific figure does not matter. If they say they are indifferent, ask whether they would rather have a dollar today or a dollar in fifty years and watch them get there." },
   { id:'fi-t4', s:'technical', d:'medium', q:'A company sells more this year than last year but has less cash. How is that possible?',
-    n:'Do not expect the vocabulary. Any plausible mechanism counts: they spent it, customers have not paid, they bought inventory.' },
+    n:'Do not expect the vocabulary. Any plausible mechanism counts: they spent it, customers have not paid, they bought inventory.',
+    a:"Do not expect vocabulary. Any plausible mechanism counts: customers have not paid yet, they bought a lot of inventory, they spent on equipment or expansion, they paid down debt, they hired ahead of the revenue. The concept is that profit and cash are not the same thing, which is genuinely surprising the first time you hear it." },
   { id:'fi-t5', s:'technical', d:'medium', q:'How many gas stations are there in Texas? Walk me through your thinking out loud.',
-    n:'Pure structuring. The number is irrelevant. Stop them if they go silent and ask what they are thinking.' },
+    n:'Pure structuring. The number is irrelevant. Stop them if they go silent and ask what they are thinking.',
+    a:"The number is irrelevant — a reasonable path is Texas population around 30 million, some number of drivers, some number of drivers a station can serve. Judge whether they break the problem into pieces, state assumptions out loud, and do clean arithmetic. If they go silent, prompt them once. A candidate who talks through a wrong path scores far higher than one who guesses a number." },
   { id:'fi-t6', s:'technical', d:'medium', q:'Two coffee shops on the same street. One makes far more money. Give me five reasons why.',
-    n:'Fluency of hypothesis generation. Five is deliberately more than comfortable.' },
+    n:'Fluency of hypothesis generation. Five is deliberately more than comfortable.',
+    a:"Location and foot traffic, quality of the product, price, service and staff, hours, marketing and reputation, seating and atmosphere, loyalty programs, being first, cost structure letting them charge less. Five is deliberately more than comfortable — you are watching whether they can keep generating after the obvious two run out." },
   { id:'fi-t7', s:'technical', d:'hard', q:'A company announces great earnings and the stock falls. What happened?',
-    n:'Expectations were already higher. This is the concept we most want a freshman to leave understanding, so teach it if they miss it and see how fast they take it on board.' },
+    n:'Expectations were already higher. This is the concept we most want a freshman to leave understanding, so teach it if they miss it and see how fast they take it on board.',
+    a:"The market already expected results that good or better, so the beat was smaller than what was priced in. Guidance for next quarter may have been weak, or something in the details disappointed. This is the single most useful concept for a freshman to leave with, so if they miss it, explain it and then ask a follow-up to see how quickly they can apply it." },
   { id:'fi-t8', s:'technical', d:'medium', q:'If you had to bet on one company existing in thirty years, which one and why?',
-    n:'Durability reasoning. Follow-up: what would have to happen for you to be wrong?' },
+    n:'Durability reasoning. Follow-up: what would have to happen for you to be wrong?',
+    a:"No right answer. Look for reasoning about durability: does the company meet a need that will still exist, is it hard to replace, does it adapt. The follow-up about being wrong is the real test — a candidate who can argue against their own pick is showing exactly the habit we want." },
   { id:'fi-t9', s:'technical', d:'medium', q:'What is risk? Not the textbook answer — how would you explain it to a friend?',
-    n:'Best answers get at uncertainty and permanent loss, not just volatility.' },
+    n:'Best answers get at uncertainty and permanent loss, not just volatility.',
+    a:"The strongest answers get at uncertainty about outcomes and the possibility of permanent loss, not just prices bouncing around. Good framings: the chance things do not go how you expect, or the chance you lose money you cannot get back. If they equate risk purely with volatility, ask whether a stock that never moves but slowly goes bankrupt is risky." },
   { id:'fi-t10', s:'technical', d:'easy', q:'What does it mean to own a share of a company?',
-    n:'Fractional ownership, claim on profits, usually a vote. One out of three is fine.' },
+    n:'Fractional ownership, claim on profits, usually a vote. One out of three is fine.',
+    a:"You own a fraction of the company: a claim on its profits, usually a vote on major decisions, and a share of what is left if it is sold or wound up. One of those three is a fine answer at this level. Follow up by asking what they actually get from owning it if the company never pays a dividend." },
   { id:'fi-t11', s:'technical', d:'hard', q:'Pick any company you know well. If you ran it and had one hundred million dollars, what would you do with it?',
-    n:'Capital allocation with no jargon required. Excellent freshmen ask what the company needs before spending.' },
+    n:'Capital allocation with no jargon required. Excellent freshmen ask what the company needs before spending.',
+    a:"No jargon required. Strong answers ask what the company needs before spending: invest in growth, pay down debt, buy a competitor, return it to shareholders, build a cash buffer, invest in people or R and D. The very best freshmen ask you a question back about the company situation before answering, which is exactly the instinct we want." },
   { id:'fi-t12', s:'technical', d:'medium', q:'Why would a company borrow money if it already has cash?',
-    n:'Cheap capital, keep a buffer, tax treatment, timing. Any one reason is a good answer at this level.' },
+    n:'Cheap capital, keep a buffer, tax treatment, timing. Any one reason is a good answer at this level.',
+    a:"Debt can be cheaper than using their own cash, especially at low rates. They may want to keep the cash as a buffer or for something else. Interest is tax-deductible. The cash may be trapped overseas or needed for operations. Borrowing while credit is cheap can be smart timing. Any one of these is a good answer at this level." },
 
   // ── Market Knowledge ──
   { id:'fi-m1', s:'market', d:'easy', q:'What is going on in the world right now that you think matters?',
@@ -8237,37 +8626,53 @@ const IV_BANK = {
 
   // ── Technical: cases and structuring ──
   { id:'sc-t1', s:'technical', d:'medium', q:'A regional coffee chain has flat revenue for two years while the market grows. Walk me through how you would figure out why.',
-    n:'Looking for a structure before any hypothesis: volume versus price, new versus returning customers, store-level versus company-level, internal versus competitive.' },
+    n:'Looking for a structure before any hypothesis: volume versus price, new versus returning customers, store-level versus company-level, internal versus competitive.',
+    a:"A strong answer asks clarifying questions first — is it revenue or cost driven, all stores or some, how does the market compare — then builds a structure before hypothesizing. Profit equals revenue minus cost; revenue splits into price times volume; volume splits into number of customers times frequency. Then they test where the drop actually sits. A candidate who starts listing ideas without a structure is doing it backwards, and that is the main thing being scored." },
   { id:'sc-t2', s:'technical', d:'medium', q:'How many bicycles are sold in Austin in a year?',
-    n:'Segment the population, apply ownership and replacement rates, sanity-check the total. Announcing assumptions out loud is the skill.' },
+    n:'Segment the population, apply ownership and replacement rates, sanity-check the total. Announcing assumptions out loud is the skill.',
+    a:"The number does not matter. A reasonable path: Austin population around a million, some share who own bikes, replacement every several years, plus new buyers. That lands somewhere in the tens of thousands per year. Score the structure, whether they announce each assumption aloud, arithmetic under pressure, and whether they sanity-check the final number instead of just stating it." },
   { id:'sc-t3', s:'technical', d:'medium', q:'A client is profitable but their margins have fallen four points in three years. Where do you look first?',
-    n:'Decompose: is it price, mix, input costs, or overhead? Reward the candidate who asks which line moved before theorizing.' },
+    n:'Decompose: is it price, mix, input costs, or overhead? Reward the candidate who asks which line moved before theorizing.',
+    a:"The right first move is asking to see the margin decomposition rather than guessing. Then: is it price (discounting, mix shift to cheaper products), cost of goods (input costs, supplier terms, waste), or overhead growing faster than revenue. Four points in three years is big enough to have one or two dominant causes, so the job is finding the biggest mover, not listing every possibility." },
   { id:'sc-t4', s:'technical', d:'hard', q:'A grocery chain is deciding whether to launch its own delivery service or partner with an existing app. How would you advise them?',
-    n:'Economics, capabilities, customer data ownership, competitive response, reversibility. Strong answers name what they would need to know to decide.' },
+    n:'Economics, capabilities, customer data ownership, competitive response, reversibility. Strong answers name what they would need to know to decide.',
+    a:"Build gives control of the customer relationship, the data, and the margin, but requires capability, capital, and time. Partnering is fast and cheap but hands over the customer relationship and a slice of every order. The decision turns on how core delivery is to their strategy, how far behind they already are, and whether the partnership is reversible. Strong answers name what they would need to know to decide rather than picking immediately." },
   { id:'sc-t5', s:'technical', d:'medium', q:'A gym has ten thousand members paying forty dollars a month and fixed costs of two hundred thousand a month. Are they profitable, and what is the break-even membership?',
-    n:'400k revenue, profitable by 200k, break-even at 5000 members. Clean mental math with the answer stated plainly.' },
+    n:'400k revenue, profitable by 200k, break-even at 5000 members. Clean mental math with the answer stated plainly.',
+    a:"Revenue is 10,000 times 40, which is 400,000 a month. Fixed costs are 200,000, so they are profitable by 200,000 a month before variable costs. Break-even is 200,000 divided by 40, which is 5,000 members. Watch for clean arithmetic and whether they state the answer plainly rather than trailing off. If they ask about variable costs per member before answering, that is a plus." },
   { id:'sc-t6', s:'technical', d:'medium', q:'How would you size the market for electric toothbrushes in the US?',
-    n:'Population, adoption rate, replacement cycle, price. Watch whether they state each assumption as they go.' },
+    n:'Population, adoption rate, replacement cycle, price. Watch whether they state each assumption as they go.',
+    a:"US population around 340 million, roughly 130 million households, some share owning at least one electric toothbrush, replacement every few years, times price. Any coherent path is fine. The score is on stating assumptions aloud, doing round arithmetic, and sanity-checking. Bonus for segmenting by price tier or by new buyers versus replacements." },
   { id:'sc-t7', s:'technical', d:'hard', q:'A software company gets forty percent of revenue from one client, and that client is renegotiating. What do you do?',
-    n:'Concentration risk. Best answers work both the negotiation and the structural fix, and ask what the client alternatives are.' },
+    n:'Concentration risk. Best answers work both the negotiation and the structural fix, and ask what the client alternatives are.',
+    a:"Two problems, and a strong answer treats them separately. Near term: understand the customer alternatives and switching costs, know your walk-away point, look for ways to add value instead of just cutting price. Structural: diversify the revenue base, deepen the product so switching gets harder, and price concentration risk into how the business is run. Answering only the negotiation misses half the question." },
   { id:'sc-t8', s:'technical', d:'medium', q:'A retailer wants to cut costs by ten percent without hurting the customer. Where would you look?',
-    n:'Structure by cost line. Reward anyone who asks to see the cost breakdown before answering.' },
+    n:'Structure by cost line. Reward anyone who asks to see the cost breakdown before answering.',
+    a:"The right first move is asking for the cost breakdown. Then work biggest line to smallest: cost of goods and supplier terms, labor and scheduling efficiency, shrink and waste, store footprint and utilization, corporate overhead, marketing efficiency. The ten percent constraint about not hurting the customer means naming what they would protect — store staffing, product quality, hours — which is the part that separates a thoughtful answer." },
   { id:'sc-t9', s:'technical', d:'medium', q:'Revenue is up fifteen percent but profit is flat. Give me every explanation you can.',
-    n:'Costs rose, mix shifted, discounting, one-time expense, investment in growth. Quantity and speed both matter here.' },
+    n:'Costs rose, mix shifted, discounting, one-time expense, investment in growth. Quantity and speed both matter here.',
+    a:"Costs rose in line with or faster than revenue; mix shifted toward lower-margin products; they discounted to drive the volume; a one-time expense; deliberate investment in growth such as hiring or marketing ahead of returns; acquisition costs; inflation in inputs they could not pass through. Both speed and quantity matter here — this is a fluency test." },
   { id:'sc-t10', s:'technical', d:'hard', q:'An airline is considering adding a new route. What would make you say yes?',
-    n:'Demand, competition, aircraft utilization, slots, network effects, breakeven load factor. Long list — reward structure, not completeness.' },
+    n:'Demand, competition, aircraft utilization, slots, network effects, breakeven load factor. Long list — reward structure, not completeness.',
+    a:"Demand on the city pair and who is already flying it, competitive response, aircraft availability and fleet fit, gate and slot access, crew and maintenance basing, and network effects from connecting traffic. The number that matters most is the breakeven load factor — what percentage of seats must sell to cover the flight. Naming that concept explicitly is the marker of a strong answer." },
   { id:'sc-t11', s:'technical', d:'medium', q:'What is the difference between a symptom and a root cause? Give me a business example.',
-    n:'' },
+    n:'',
+    a:"A symptom is what the client noticed; the root cause is why it is happening. Falling sales is a symptom. Losing your three best salespeople to a competitor who pays more is closer to a cause. Good examples show the chain: rising churn (symptom) caused by a competitor launching a cheaper product (cause). Clients usually hire you having diagnosed the symptom and mistaken it for the cause." },
   { id:'sc-t12', s:'technical', d:'medium', q:'A client says the answer is obviously to cut headcount. You think they are wrong. How do you handle it?',
-    n:'Client management plus analytical independence. The best answers change the client mind with their own data.' },
+    n:'Client management plus analytical independence. The best answers change the client mind with their own data.',
+    a:"Understand why they believe it first — they may have information you do not, or a board demanding action. Check your own analysis. Then show, do not tell: use their own data to demonstrate the consequence, quantify what headcount cuts would actually save versus cost in capability and morale, and offer the alternative you think is better. The best answers change the client mind with evidence rather than by arguing." },
   { id:'sc-t13', s:'technical', d:'medium', q:'Twenty percent of five hundred thousand, then take thirty percent off the result, out loud.',
-    n:'100k, then 70k. Mental math under mild pressure. Composure matters as much as accuracy.' },
+    n:'100k, then 70k. Mental math under mild pressure. Composure matters as much as accuracy.',
+    a:"Twenty percent of 500,000 is 100,000. Thirty percent off that is 70,000. Score composure as much as accuracy — say the intermediate number out loud, then the final one clearly. A candidate who gets it wrong but narrates cleanly and catches themselves scores better than one who freezes and guesses." },
   { id:'sc-t14', s:'technical', d:'hard', q:'A restaurant group runs thirty locations. Five are losing money. Do you close them?',
-    n:'Contribution margin versus fully loaded, lease obligations, brand and network effects, fixable versus structural. Reflexive yes is the wrong answer.' },
+    n:'Contribution margin versus fully loaded, lease obligations, brand and network effects, fixable versus structural. Reflexive yes is the wrong answer.',
+    a:"A reflexive yes is the wrong answer. Check contribution margin versus fully loaded cost — a location covering its variable costs still contributes to overhead. Then: lease obligations and exit costs, whether the losses are fixable or structural, brand presence and network effects, and whether those five share a common cause. The right move is to segment the five before deciding on any of them." },
   { id:'sc-t15', s:'technical', d:'medium', q:'How would you structure an analysis of whether a university should build a new dorm?',
-    n:'Familiar setting, unfamiliar framing. Demand, cost, alternatives, financing, time horizon.' },
+    n:'Familiar setting, unfamiliar framing. Demand, cost, alternatives, financing, time horizon.',
+    a:"Demand: enrollment trend, current housing occupancy, quality and price of nearby alternatives. Cost: construction, financing, ongoing operations. Alternatives: renovate existing stock, lease from a developer, do nothing. Strategic: effect on recruiting, student experience, campus master plan. Then the financial case over a realistic horizon with a sensitivity on enrollment. Familiar setting, same discipline as any market entry case." },
   { id:'sc-t16', s:'technical', d:'hard', q:'You have finished the analysis and the answer is that the client should do nothing. How do you present that?',
-    n:'Real consulting situation. Watching for how they defend a conclusion nobody wants to hear.' },
+    n:'Real consulting situation. Watching for how they defend a conclusion nobody wants to hear.',
+    a:"Lead with the recommendation rather than burying it. Show the options you tested and why each fails on the client own stated criteria. Quantify the cost of acting badly, which is what makes doing nothing a real recommendation rather than a non-answer. Then give them something to do: what to monitor, and what would change the answer. Consultants who cannot deliver this answer well end up recommending action for its own sake." },
 
   // ── Market Knowledge ──
   { id:'sc-m1', s:'market', d:'easy', q:'What is a business story you have been following?',
@@ -8337,28 +8742,40 @@ const IV_BANK = {
 
   // ── Technical: structured thinking ──
   { id:'fc-t1', s:'technical', d:'medium', q:'How many pizzas are sold in Austin on a Friday night? Think out loud.',
-    n:'Pure structuring. Number is irrelevant. Prompt them if they go quiet.' },
+    n:'Pure structuring. Number is irrelevant. Prompt them if they go quiet.',
+    a:"The number does not matter at all. A reasonable path: Austin population around a million, some share eating pizza on a Friday, some pizzas per group. Score whether they break it into pieces, say their assumptions out loud, and do clean arithmetic. Prompt them if they go quiet — the failure mode is silence, not a wrong number." },
   { id:'fc-t2', s:'technical', d:'medium', q:'Your favorite restaurant is losing money. Give me five reasons why.',
-    n:'Hypothesis fluency. Five is deliberately uncomfortable.' },
+    n:'Hypothesis fluency. Five is deliberately uncomfortable.',
+    a:"Not enough customers, prices too low or too high, food or service quality slipped, costs rose, rent went up, a competitor opened nearby, bad location or parking, poor hours, no marketing, too much waste. Five is deliberately uncomfortable. You are testing whether they keep generating after the obvious two." },
   { id:'fc-t3', s:'technical', d:'medium', q:'A campus coffee shop wants to make more money. What would you tell them to try?',
-    n:'Watch for price versus volume versus cost. Any structure at all is a good sign at this level.' },
-  { id:'fc-t4', s:'technical', d:'easy', q:'How does a business make a profit? Explain it simply.', n:'' },
+    n:'Watch for price versus volume versus cost. Any structure at all is a good sign at this level.',
+    a:"Look for some version of: charge more, sell more, or spend less. Better answers get specific — raise prices on items people are not price-sensitive about, add a morning or late-night rush, sell food alongside coffee, loyalty program, cut waste, adjust staffing to match traffic. Any structure at all is a strong sign at this level." },
+  { id:'fc-t4', s:'technical', d:'easy', q:'How does a business make a profit? Explain it simply.', n:'',
+    a:"Money in from selling things, minus money out for making and selling them. Better answers distinguish costs that scale with sales from costs that stay fixed. If they can explain why a business can be busy and still lose money, that is well above the bar for a freshman." },
   { id:'fc-t5', s:'technical', d:'medium', q:'Two stores on the same street sell the same thing. One does much better. Why?',
-    n:'' },
+    n:'',
+    a:"Location and foot traffic, staff and service, pricing, product mix and stock, store condition, hours, marketing and reputation, loyalty, being established longer. Any five is good. Bonus if they ask a clarifying question first, like whether the stores are the same size." },
   { id:'fc-t6', s:'technical', d:'hard', q:'A streaming service is losing subscribers. How would you figure out why?',
-    n:'Push for structure before hypotheses: who is leaving, when, and compared to what?' },
+    n:'Push for structure before hypotheses: who is leaving, when, and compared to what?',
+    a:"Push for structure before hypotheses. Who is leaving — new subscribers or long-time ones? When — right after signup, or after a price change? Compared to what — is the whole industry seeing this? Only then hypothesize: content, price, competitors, a bad app update, password sharing crackdowns. The instinct to segment before guessing is the thing being scored." },
   { id:'fc-t7', s:'technical', d:'medium', q:'Fifteen percent of two hundred, out loud.',
-    n:'30. Composure under trivial pressure is what is being watched.' },
+    n:'30. Composure under trivial pressure is what is being watched.',
+    a:"Thirty. What is actually being tested is composure — whether they can do simple arithmetic out loud without freezing while someone watches. A candidate who says the answer calmly scores well; one who gets flustered on an easy number will struggle in a case." },
   { id:'fc-t8', s:'technical', d:'medium', q:'How would you decide whether UFA should host more events or fewer, better ones?',
-    n:'Familiar territory, real tradeoff. Do they define what better means before answering?' },
+    n:'Familiar territory, real tradeoff. Do they define what better means before answering?',
+    a:"The strongest move is defining what better means before answering — attendance, engagement, member satisfaction, cost per person, new member conversion. Then the tradeoff: more events means more touchpoints but thinner effort and possible fatigue; fewer, better events means higher quality but less presence. Reward anyone who suggests actually measuring it rather than theorizing." },
   { id:'fc-t9', s:'technical', d:'medium', q:'What information would you want before advising someone to start a business?',
-    n:'Question quality reveals thinking quality.' },
+    n:'Question quality reveals thinking quality.',
+    a:"The quality of the questions is the answer. Strong ones: who is the customer and how do you know they want this, what does it cost to make and what will people pay, who else is doing it, how much money do you need to start, what happens if it takes twice as long as planned, what are you willing to lose. Question quality reveals thinking quality better than any answer would." },
   { id:'fc-t10', s:'technical', d:'hard', q:'If you could only ask a struggling business three questions, what would they be?',
-    n:'Excellent freshman discriminator. Forces prioritization.' },
+    n:'Excellent freshman discriminator. Forces prioritization.',
+    a:"The specific three matter less than whether they cover cause, customer, and economics. Something like: what changed recently, who is leaving and why, and where does the money actually go. The value of the question is that it forces prioritization — ask them to explain why each one earned its slot." },
   { id:'fc-t11', s:'technical', d:'medium', q:'What is the difference between a company being busy and a company being successful?',
-    n:'' },
+    n:'',
+    a:"Busy means lots of activity — customers through the door, orders, hours worked. Successful means the activity produces profit and can keep doing so. A restaurant packed every night at prices below cost is busy and failing. Good answers name a real example of the gap." },
   { id:'fc-t12', s:'technical', d:'medium', q:'A grocery store wants to know whether to open earlier. How would you find out?',
-    n:'Reward anyone who suggests testing it rather than theorizing.' },
+    n:'Reward anyone who suggests testing it rather than theorizing.',
+    a:"The best answer is to test it rather than theorize: open earlier at one location for a few weeks and compare. Short of that: look at whether people are waiting at open, what nearby competitors do, what the extra staffing costs versus expected morning sales, and whether the customer base has early risers. Reward the instinct to gather evidence over the instinct to argue." },
 
   // ── Market Knowledge ──
   { id:'fc-m1', s:'market', d:'easy', q:'What is going on in the world right now that you think matters?', n:'Wide open. Silence is the only failing answer.' },
@@ -8421,7 +8838,8 @@ const MOCK_TRACKS = [
   { id: 'consulting', label: 'Consulting',         blurb: 'Cases, structuring, market sizing, judgment' },
   { id: 'hf',         label: 'Hedge Funds',        blurb: 'Pitches, theses, risk, market views' },
   { id: 'pe',         label: 'Private Equity',     blurb: 'Deal judgment, LBO logic, diligence' },
-  { id: 'behavioral', label: 'Behavioral',         blurb: 'Fit, story, weakness, why this firm' }
+  { id: 'behavioral', label: 'Behavioral',         blurb: 'Fit, story, weakness, why this firm' },
+  { id: 'cases',      label: 'Worked Cases',       blurb: 'Full consulting cases with complete walkthroughs' }
 ];
 
 const MOCK_BANK = {
@@ -8497,7 +8915,77 @@ ib: [
   { id:'ib34', d:'hard', q:'Tell me about a deal you have followed and what you thought of it.',
     f:'Name the parties, size and structure. State the strategic rationale in one sentence. Then give a view with a reason: the price, the synergy assumption, the regulatory risk, the fit. Close by naming what would tell you in two years whether it worked. Have one deal genuinely ready.' },
   { id:'ib35', d:'medium', q:'What is the difference between an asset sale and a stock sale?',
-    f:'In an asset sale the buyer picks specific assets and liabilities and generally gets a stepped-up tax basis; buyers usually prefer it. In a stock sale the buyer takes the whole entity including unknown liabilities; sellers usually prefer it for cleaner exit and better tax treatment. Frame it as who bears what risk.' }
+    f:'In an asset sale the buyer picks specific assets and liabilities and generally gets a stepped-up tax basis; buyers usually prefer it. In a stock sale the buyer takes the whole entity including unknown liabilities; sellers usually prefer it for cleaner exit and better tax treatment. Frame it as who bears what risk.' },
+  { id:'ib36', d:'medium', q:'Walk me through the effect of a one hundred dollar increase in accounts receivable.',
+    f:'No income statement impact. On the cash flow statement, an increase in a working capital asset is a use of cash, so cash falls 100. On the balance sheet, receivables up 100 and cash down 100, so assets are unchanged and it balances. The idea to land: you have recognized revenue but not collected, so growth in receivables quietly consumes cash.' },
+  { id:'ib37', d:'medium', q:'Why can two companies with identical EBITDA have very different free cash flow?',
+    f:'Different capital intensity, so different capex. Different working capital needs. Different interest burdens. Different cash tax rates. Different one-time items buried in the EBITDA adjustments. This is the practical case against treating EBITDA as cash flow, and having a concrete example ready makes the answer land.' },
+  { id:'ib38', d:'medium', q:'What is the difference between LIFO and FIFO and when does it matter?',
+    f:'FIFO expenses the oldest inventory first, LIFO the newest. When prices are rising, LIFO shows higher cost of goods sold, lower profit, and lower taxes, while FIFO shows the reverse and a more current inventory value on the balance sheet. It matters most in inflationary periods and in commodity-linked businesses.' },
+  { id:'ib39', d:'medium', q:'What happens to the three statements if a company writes off a bad receivable of fifty dollars?',
+    f:'Income statement: a bad debt expense of 50 reduces pretax income; at a 25 percent tax rate net income falls 37.50. Cash flow: net income down 37.50, add back the 50 non-cash write-off, so cash rises 12.50 from the tax shield. Balance sheet: receivables down 50, cash up 12.50, retained earnings down 37.50.' },
+  { id:'ib40', d:'hard', q:'When would you use a levered DCF instead of an unlevered one?',
+    f:'When you want equity value directly, or when the capital structure is central to the business rather than incidental. Financial institutions are the standard case, because for a bank debt is raw material rather than financing. In a levered DCF you project free cash flow to equity and discount at cost of equity instead of WACC.' },
+  { id:'ib41', d:'medium', q:'What is the treasury stock method and why do we use it?',
+    f:'It calculates how many net new shares in-the-money options and warrants would add. Assume they are exercised at the strike, then assume the company uses those proceeds to buy back shares at the current market price. The difference is the net share increase. We use it to get a genuine diluted share count for equity value.' },
+  { id:'ib42', d:'medium', q:'Two companies have the same revenue and growth but very different valuations. What explains it?',
+    f:'Margins and the cash conversion behind them, capital intensity, durability and quality of the growth, competitive position, balance sheet risk, management credibility, sector multiple, and how much of the growth is already priced in. Structure the answer as quality of earnings versus quantity of earnings.' },
+  { id:'ib43', d:'medium', q:'What is working capital and what does negative working capital tell you?',
+    f:'Current assets minus current liabilities. Negative working capital is not automatically bad — it often means the business collects from customers before paying suppliers, which is a funding advantage. Restaurants and subscription businesses commonly run negative. It becomes a warning sign only when it reflects a liquidity problem instead of a favorable cycle.' },
+  { id:'ib44', d:'hard', q:'A company has a lot of cash. Should it buy back stock, pay a dividend, invest, or acquire something?',
+    f:'It depends on the return available on each. Reinvest if there are projects earning above the cost of capital. Acquire if a target is genuinely worth more to you than its price. Buy back stock if the shares are undervalued, which is a real if — most buybacks happen at highs. Dividends signal maturity and are hard to cut. Rank them by return and by what the decision signals.' },
+  { id:'ib45', d:'medium', q:'What is the difference between operating leverage and financial leverage?',
+    f:'Operating leverage is the share of costs that are fixed, so profits swing more than revenue does. Financial leverage is the use of debt, which amplifies returns to equity. High on both is a dangerous combination in a downturn: revenue falls, fixed costs stay, and interest still has to be paid.' },
+  { id:'ib46', d:'medium', q:'How would you value a company with volatile earnings?',
+    f:'Normalize across the cycle rather than valuing peak or trough as if permanent. Use mid-cycle margins, look at multi-year averages, run scenarios rather than a single case, and lean on asset value as a floor. Say explicitly that a single-year multiple is misleading for cyclicals, which is the insight being tested.' },
+  { id:'ib47', d:'medium', q:'What is a control premium and why does it exist?',
+    f:'The amount above the trading price an acquirer pays to gain control. It exists because control lets you change management, redirect strategy, capture synergies, and access the cash flows directly. It is why precedent transactions usually imply higher multiples than trading comparables.' },
+  { id:'ib48', d:'medium', q:'Explain the difference between a merger and an acquisition in practice.',
+    f:'Technically a merger combines two companies into a new entity and an acquisition is one buying another. In practice almost everything is an acquisition, and merger of equals is often language chosen to make the transaction easier politically. The useful answer notes that who controls the board and names the CEO tells you which it really is.' },
+  { id:'ib49', d:'hard', q:'What would make you walk away from a deal you had spent months on?',
+    f:'Diligence invalidating the core thesis, quality of earnings findings that materially change the price, a liability you cannot bound, management proving unreliable, or a price that no longer clears your return threshold. Name sunk cost explicitly and say that months invested is not a reason to proceed.' },
+  { id:'ib50', d:'medium', q:'What is deferred revenue and where does it show up?',
+    f:'Cash collected for goods or services not yet delivered. It sits as a liability on the balance sheet and converts to revenue as you deliver. Growing deferred revenue is usually a healthy sign for a subscription business, because it means customers are paying ahead of consumption.' },
+  { id:'ib51', d:'medium', q:'How do you calculate diluted shares outstanding?',
+    f:'Start from basic shares, then add the net dilution from in-the-money options and warrants using the treasury stock method, plus shares from convertible securities where conversion is in the money. Out-of-the-money instruments are excluded. Getting a genuinely diluted count matters because it is the denominator of value per share.' },
+  { id:'ib52', d:'hard', q:'A company is trading below its book value. What does that tell you?',
+    f:'The market believes the assets are worth less than carried, or that the company will destroy value going forward by earning below its cost of capital. Common in banks in stress and in asset-heavy businesses in decline. It can signal a bargain or a warning — the resolution is whether the assets are genuinely worth book and whether returns can recover.' },
+  { id:'ib53', d:'medium', q:'Why might a company with strong earnings still go bankrupt?',
+    f:'Because bankruptcy is about liquidity, not profitability. Earnings can be non-cash or trapped in working capital; debt can come due all at once; a covenant can trip; a lender can refuse to refinance. The line worth having: companies do not go bankrupt from losses, they go bankrupt from running out of cash.' },
+  { id:'ib54', d:'medium', q:'What is the difference between cost of debt and the interest rate on the debt?',
+    f:'The stated interest rate is what is paid; the cost of debt for valuation is the after-tax rate, since interest is deductible. It should also reflect what the company would pay to borrow today rather than what it locked in years ago. Using an old coupon on a company whose credit has deteriorated understates the true cost.' },
+  { id:'ib55', d:'medium', q:'Walk me through what happens when a company pays a one hundred dollar dividend.',
+    f:'No income statement impact — dividends are not an expense. Cash flow statement: 100 outflow under financing. Balance sheet: cash down 100 and retained earnings down 100, so it balances. The point being tested is that returning capital is not the same as incurring a cost.' },
+  { id:'ib56', d:'hard', q:'How would you think about valuing a company being acquired for its technology rather than its cash flow?',
+    f:'Standard cash flow methods will underprice it. Look at what building the capability internally would cost and how long it would take, what the technology is worth inside the acquirer rather than standalone, comparable technology transactions, and value per engineer or per patent as a sanity check. Say plainly that the value is strategic and specific to this buyer.' },
+  { id:'ib57', d:'medium', q:'What is EBIT versus EBITDA and when would you prefer each?',
+    f:'EBIT is after depreciation and amortization, EBITDA is before. Prefer EBITDA when comparing companies with different D and A policies or asset ages. Prefer EBIT when capital intensity is central to the business, because it at least partly accounts for the assets being consumed. Cable and telecom are the classic cases where EBITDA flatters.' },
+  { id:'ib58', d:'medium', q:'What is a sensitivity analysis and why does every DCF have one?',
+    f:'It shows how the output changes across a range of the most uncertain inputs, usually WACC and terminal growth or exit multiple, presented as a grid. Every DCF has one because the point estimate is false precision — the honest output is a range, and the grid shows how much of the answer is assumption rather than analysis.' },
+  { id:'ib59', d:'hard', q:'A client wants to sell. How would you advise them on timing?',
+    f:'Where they sit in their own operating cycle, sector multiples right now versus history, the financing environment for buyers, who the natural buyers are and whether they are active, and whether a year of improvement would raise the price more than it risks. Add that the best time to sell is usually when you do not have to.' },
+  { id:'ib60', d:'medium', q:'What are synergies and why should you be skeptical of them?',
+    f:'Cost synergies come from eliminating duplicate functions and buying power; revenue synergies from cross-selling and distribution. Be skeptical because cost synergies are usually achievable and often overstated in timing, while revenue synergies rarely materialize as modeled. Note also that the target usually captures much of the value through the premium.' },
+  { id:'ib61', d:'medium', q:'What is the equity risk premium and roughly what is it?',
+    f:'The extra return investors demand for holding equities over a risk-free asset. Commonly estimated in the range of four to six percent, depending on method and period. What matters in the answer is knowing it is an estimate with real disagreement behind it, not a constant you look up.' },
+  { id:'ib62', d:'medium', q:'How does a share buyback affect the financial statements and EPS?',
+    f:'No income statement impact directly. Cash down and treasury stock up on the balance sheet, reducing equity. Cash flow: outflow under financing. EPS rises because the share count falls, though net income also falls slightly from the lost interest on the cash used. Add that higher EPS from a buyback is not the same as value creation.' },
+  { id:'ib63', d:'hard', q:'Why might a strategic buyer pay more than a financial sponsor for the same company?',
+    f:'The strategic can realize synergies a sponsor cannot, has a longer holding period, may face a lower cost of capital, and may be defending against a competitor acquiring it. Sponsors are disciplined by a return model with a defined exit. The exception is when a sponsor already owns a platform in the sector and can act like a strategic.' },
+  { id:'ib64', d:'medium', q:'What does a negative enterprise value mean?',
+    f:'Cash exceeds market capitalization plus debt, so the market values the operating business at less than nothing. It happens in deep distress, in companies burning cash where the market expects the balance to be destroyed, and occasionally in genuine mispricings. Worth investigating rather than assuming a free lunch.' },
+  { id:'ib65', d:'medium', q:'Explain accretion and dilution in one minute.',
+    f:'Compare the acquirer standalone EPS to combined pro forma EPS after the deal, including new interest, foregone interest on cash used, and new shares issued. Higher is accretive, lower is dilutive. The shortcut: accretive when the acquirer P/E exceeds the target effective P/E after the premium. Close by saying it is a screen, not a judgment on deal quality.' },
+  { id:'ib66', d:'medium', q:'What is the difference between gross, operating and net margin, and what does each tell you?',
+    f:'Gross margin is pricing power and direct cost efficiency. Operating margin adds overhead and shows how well the whole operation converts revenue to profit. Net margin includes financing and tax, so it reflects choices unrelated to operations. Comparing the three across peers tells you where a company is winning or losing.' },
+  { id:'ib67', d:'hard', q:'Is a company with no debt being run well?',
+    f:'Not necessarily. Zero debt may mean a conservative balance sheet in a volatile business, which is prudent, or it may mean management is leaving cheap capital on the table and accepting a higher cost of capital than necessary. The answer depends on cash flow stability and reinvestment opportunities. Argue a position rather than sitting on the fence.' },
+  { id:'ib68', d:'medium', q:'What is capex maintenance versus growth capex?',
+    f:'Maintenance capex keeps the existing asset base running at current capacity; growth capex expands it. The distinction matters because free cash flow available to owners should be measured after maintenance capex but before growth capex, since growth is discretionary. Companies rarely disclose the split, so it usually has to be estimated.' },
+  { id:'ib69', d:'medium', q:'Why do banks get valued differently from other companies?',
+    f:'Debt is an operating input for a bank rather than financing, so enterprise value and EBITDA are meaningless. Instead you use price to book and price to tangible book, return on equity, and a dividend discount or excess returns model. Regulatory capital requirements also constrain growth in a way they do not for an industrial.' },
+  { id:'ib70', d:'hard', q:'Tell me the last thing you read about markets and what you took from it.',
+    f:'There is no framework here — this is a check on whether you actually follow markets. Name a specific piece, summarize the argument in two sentences, then give your own view including where you disagree. The failure mode is naming a publication instead of a specific piece.' }
 ],
 
 /* ── CONSULTING ────────────────────────────────────────────────────── */
@@ -8571,7 +9059,77 @@ consulting: [
   { id:'co34', d:'medium', q:'A subscription business has rising churn. Walk me through diagnosing it.',
     f:'Segment churn by cohort, tenure, plan and channel — averages hide the answer. Distinguish voluntary from involuntary churn, like failed payments. Find where in the lifecycle people leave, and whether it is an onboarding problem, a value problem, or a competitor.' },
   { id:'co35', d:'hard', q:'If you could ask a struggling business only three questions, what would they be?',
-    f:'Something like: what changed recently, who is leaving and why, and where does the money actually go. The specific three matter less than whether they cover cause, customer and economics. Explain why you chose each one.' }
+    f:'Something like: what changed recently, who is leaving and why, and where does the money actually go. The specific three matter less than whether they cover cause, customer and economics. Explain why you chose each one.' },
+  { id:'co36', d:'medium', q:'A hotel chain has high occupancy but falling profit. What is going on?',
+    f:'High occupancy can hide a pricing problem — they may be filling rooms by discounting. Check average daily rate and revenue per available room, not just occupancy. Then costs: labor, energy, maintenance, distribution fees to booking sites. Mix may have shifted toward lower-rate channels. Occupancy is a volume metric and profit needs price and cost too.' },
+  { id:'co37', d:'medium', q:'How would you decide whether a company should outsource its customer service?',
+    f:'Cost per contact in-house versus outsourced, quality and its effect on retention, how strategic the interaction is, data and security concerns, transition cost and risk, and flexibility to scale. Recommend based on whether customer service is a differentiator or a cost center for this specific business.' },
+  { id:'co38', d:'medium', q:'A grocery chain wants to launch a private label line. How do you evaluate it?',
+    f:'Margin uplift versus branded products, expected share shift and cannibalization, supplier relationships and whether branded vendors retaliate, capital and sourcing capability required, customer perception of quality, and which categories are best suited. Start with categories where brand loyalty is weak and margins on branded goods are thin.' },
+  { id:'co39', d:'medium', q:'How many elevators are there in Manhattan?',
+    f:'Buildings in Manhattan, split by height band, elevators per building by band, then sum. Or work from floor area and rules of thumb about elevators per square foot. Announce assumptions, do round arithmetic, sanity check the total. As always the number is not the point.' },
+  { id:'co40', d:'hard', q:'A client wants to double revenue in three years. Is that realistic and how would you find out?',
+    f:'Decompose the required growth rate and compare it to the market growth rate, their historical growth, and what competitors have achieved. Then map where the growth could come from: existing customers, new customers, new products, new geographies, acquisition. Size each. If the pieces do not add to double, say so and offer what is achievable.' },
+  { id:'co41', d:'medium', q:'What is the difference between market share and share of wallet?',
+    f:'Market share is your slice of total category sales. Share of wallet is your slice of an individual customer spending in the category. You can have low market share and high share of wallet with a small loyal base, which implies a very different growth strategy than the reverse.' },
+  { id:'co42', d:'medium', q:'A retailer online sales are growing but total sales are flat. What is happening?',
+    f:'Channel shift rather than growth — online is cannibalizing stores. Check whether total customers and total units are growing, whether the same customers moved channels, and what the margin difference is between channels. Online often carries lower margins after shipping and returns, so flat sales can mean falling profit.' },
+  { id:'co43', d:'hard', q:'How would you advise a company facing a new competitor with venture funding selling below cost?',
+    f:'Assess how long they can sustain it and what their path to profitability is. Do not match on price if you cannot outlast them. Instead defend the customers who value what you do differently, lock in the profitable segment with contracts or loyalty, cut costs to widen your survivable range, and consider ceding the price-sensitive segment deliberately.' },
+  { id:'co44', d:'medium', q:'What would you measure to know whether a company customer service is good?',
+    f:'Resolution rate on first contact, time to resolution, cost per contact, satisfaction scores, and most importantly the downstream effect on retention and repeat purchase. Warn against optimizing handle time alone, which reduces cost and quietly increases churn.' },
+  { id:'co45', d:'medium', q:'A manufacturer has a plant running at sixty percent capacity. What are the options?',
+    f:'Fill it with new demand, take on contract manufacturing for others, consolidate production from another site and close that one, reduce the footprint, or sell the plant. Evaluate each against fixed cost absorption, flexibility for future demand, and exit costs. Ask first whether the underutilization is seasonal, cyclical, or structural.' },
+  { id:'co46', d:'medium', q:'How would you size the market for private tutoring in Texas?',
+    f:'School-age population in Texas, share of families who use tutoring, sessions per year, price per session. Segment by test prep versus subject help if it helps. State assumptions, do round math, sanity check against the number of tutors implied by the total.' },
+  { id:'co47', d:'hard', q:'A nonprofit wants to increase impact with a flat budget. How do you approach it?',
+    f:'Define impact in measurable terms first, since that is usually the hard part. Then look at cost per unit of impact across programs and reallocate toward the most efficient. Consider partnerships to avoid duplicating capability, and cutting programs that are beloved but ineffective. The political difficulty of the last one is real and worth naming.' },
+  { id:'co48', d:'medium', q:'What is a fighter brand and when does it make sense?',
+    f:'A lower-priced brand launched to compete against a discount entrant without cutting price on your flagship. It makes sense when you have a premium brand worth protecting and a price-sensitive segment you are losing. The risks are cannibalization and confusing your own positioning, so it needs clear separation.' },
+  { id:'co49', d:'medium', q:'A software company churn is fine overall but terrible in one segment. What do you do?',
+    f:'Find out whether that segment was ever a good fit — wrong-fit customers churning is not always a problem to fix. If they are strategically important, diagnose whether it is onboarding, product gaps, pricing, or a competitor. Then decide deliberately whether to fix, reprice, or stop selling to that segment.' },
+  { id:'co50', d:'medium', q:'How do you evaluate whether a company should vertically integrate?',
+    f:'Compare the cost and margin captured against the capital and capability required. Consider supply security, quality control, and whether the supplier has power over you today. Against it: loss of flexibility, capital tied up, and the risk of being worse at the new activity than specialists. Integrate where the input is strategic and the supplier market is concentrated.' },
+  { id:'co51', d:'hard', q:'The client CEO and COO want opposite things. How do you handle it?',
+    f:'Find the shared objective underneath the disagreement and reframe around it. Get the data that would resolve the factual part of the dispute. Present options with tradeoffs rather than a single recommendation that picks a side prematurely. Understand the organizational stakes for each, and do not let the engagement become a proxy for their fight.' },
+  { id:'co52', d:'medium', q:'How many rolls of toilet paper are used in the US each year?',
+    f:'Population, rolls per person per week, times fifty-two. Add commercial usage as a separate bucket. Round numbers throughout. The sanity check at the end matters more than the estimate.' },
+  { id:'co53', d:'medium', q:'A client is considering a price increase but is afraid of losing customers. How do you help?',
+    f:'Segment customers by price sensitivity rather than treating them as one group. Estimate elasticity from past price moves or a test. Model margin gained against volume lost at several price points. Consider raising prices only on less sensitive segments or products, and pairing the increase with a visible improvement. Recommend a test market first.' },
+  { id:'co54', d:'hard', q:'How would you turn around a business losing money in every segment?',
+    f:'Stabilize cash first — that buys the time to do anything else. Then find whether any segment is viable at a smaller size, cut the ones that are structurally unprofitable, and reduce overhead to fit the surviving business. In parallel, diagnose whether the problem is cost, price, or demand, because the fix differs entirely. Be honest if the answer is an orderly wind-down.' },
+  { id:'co55', d:'medium', q:'What is the difference between a cost that is fixed and one that is sunk?',
+    f:'A fixed cost does not vary with volume but is still ongoing and can be changed over time. A sunk cost is already spent and cannot be recovered, so it should never influence a forward-looking decision. The classic error is keeping a failing project alive because of what has already been spent on it.' },
+  { id:'co56', d:'medium', q:'A company wants to expand into a country it knows nothing about. First three things you check?',
+    f:'Market size and growth, and whether the product needs changing for local preferences. Competitive and regulatory landscape, including whether foreign ownership is restricted. Route to market — distribution, partners, and what it costs to reach customers. Then whether the company has the management capacity to run it, which is what usually breaks these.' },
+  { id:'co57', d:'medium', q:'How would you decide which of ten possible projects to fund with limited budget?',
+    f:'Score each on expected value and confidence, cost, time to impact, and dependencies. Prefer projects that are large, fast, and preserve future options. Then check the portfolio for balance between quick wins and long bets, and for whether the organization can actually execute that many at once. Capacity is the constraint people forget.' },
+  { id:'co58', d:'hard', q:'Your analysis contradicts what the client hired you to prove. What now?',
+    f:'Check your work first, hard. Then raise it early and privately with your team lead and the client sponsor rather than saving it for the final presentation. Present the evidence and the method rather than the conclusion alone, and give them room to reach it themselves. Being right at the last minute in front of the board is how relationships end.' },
+  { id:'co59', d:'medium', q:'How would you improve a restaurant profitability without raising prices?',
+    f:'Increase table turns, reduce food waste and portion variance, renegotiate supply, shift the menu toward higher-margin dishes and steer customers to them, add high-margin categories like drinks, adjust staffing to match traffic patterns, and grow off-peak demand. Order them by effort against impact.' },
+  { id:'co60', d:'medium', q:'What is customer lifetime value and how would you use it?',
+    f:'The total profit expected from a customer over the relationship: margin per period times expected tenure, discounted. Use it to decide how much you can spend to acquire a customer, which segments deserve investment, and whether a retention program pays for itself. The common mistake is using revenue rather than margin.' },
+  { id:'co61', d:'hard', q:'A family business is passing to the next generation. What should they worry about?',
+    f:'Governance and decision rights, whether the successor is capable and whether anyone will say so honestly, key employee retention through the transition, liquidity for family members who want out, tax and structure, and whether the strategy that worked for thirty years still works. The people problems here are harder than the financial ones.' },
+  { id:'co62', d:'medium', q:'How do you know when a market is mature?',
+    f:'Growth slows toward GDP, penetration is high, competition shifts from acquiring new customers to taking share, price competition intensifies, consolidation begins, and innovation becomes incremental. In a mature market the strategy shifts from growth to efficiency and share, which changes what advice is useful.' },
+  { id:'co63', d:'medium', q:'A client says their brand is their advantage. How would you test that?',
+    f:'Do customers pay a premium, and how much? Do they choose it when a cheaper equivalent is present? Awareness and consideration versus competitors. Retention and repeat rates. What happens to volume when they discount, and when competitors do. If none of that shows up, the brand is an asset in their minds rather than the market.' },
+  { id:'co64', d:'medium', q:'How would you advise a client on whether to build a mobile app?',
+    f:'Start with what problem it solves that the website does not — most apps fail this first question. Then usage frequency, since apps only make sense for things people do often; the cost to build and maintain; whether they can drive downloads; and what the alternative uses of that budget are. Recommending against is often correct here.' },
+  { id:'co65', d:'hard', q:'A merger has closed and integration is going badly. What do you look at?',
+    f:'Whether decision rights were actually defined, or two structures are running in parallel. Whether the synergy targets were realistic and who owns each one. Attrition among key people from the acquired side. Cultural conflict showing up as process disputes. Customer disruption during systems migration. Most integration failures are governance failures, not strategy failures.' },
+  { id:'co66', d:'medium', q:'What questions would you ask before agreeing that a company needs to cut costs?',
+    f:'Is the problem cost or revenue? How do the costs compare to peers on the relevant unit basis? Which costs create the value customers pay for? What was cut last time and what did it break? What is the target and where does it come from? Cutting is a conclusion, and the job is to test whether the diagnosis supports it.' },
+  { id:'co67', d:'medium', q:'How would you estimate how many people move to Austin each year?',
+    f:'Work from population and a growth rate, or from housing starts and occupancy, or from job growth times a household multiplier. Two independent paths that roughly agree is the strongest possible answer to a sizing question, so mention the cross-check even if you only complete one.' },
+  { id:'co68', d:'hard', q:'What makes a consulting recommendation actually get implemented?',
+    f:'Client ownership of the answer rather than being handed it, a named owner for each action, sequencing that delivers an early visible win, honesty about cost and disruption, executive sponsorship that survives the first setback, and metrics agreed in advance. A brilliant recommendation nobody owns is a document.' },
+  { id:'co69', d:'medium', q:'A client wants to know if they should raise prices or cut costs. How do you frame the choice?',
+    f:'They are not alternatives — compare the margin impact and the risk of each. Price is faster and drops straight to the bottom line but risks volume and competitive response. Cost is slower and more within your control but can damage capability. Look at where they sit versus peers on both, and usually recommend a sequenced combination.' },
+  { id:'co70', d:'medium', q:'Tell me about a business you think is well run and why.',
+    f:'No framework — this tests business curiosity. Name a specific company, name the mechanism behind the performance rather than the outcome, and say what would have to change for you to revise the view. Naming an obvious admired company is fine if the reasoning is specific.' }
 ],
 
 /* ── HEDGE FUNDS ───────────────────────────────────────────────────── */
@@ -8795,6 +9353,45 @@ behavioral: [
   { id:'be35', d:'medium', q:'What have you learned about yourself in the last year?',
     f:'A specific realization and what caused it. Then what you did differently as a result. Reflection with no behavior change afterward reads as an observation, not a lesson.' }
 ]
+,
+
+
+/* ── WORKED CASES ──────────────────────────────────────────────────────
+   Full cases with a complete walkthrough rather than a short framework.
+   Read the prompt, work it out loud on paper for the full time, and only
+   then open the walkthrough. Reading the answer first teaches you nothing.
+   ──────────────────────────────────────────────────────────────────── */
+cases: [
+  { id:'case1', d:'medium', q:'CASE — Your client is a regional chain of forty coffee shops in the Southwest. Revenue has been flat for two years while the specialty coffee market has grown about six percent a year. The CEO wants to know why and what to do about it.',
+    f:'CLARIFY FIRST: Is it all stores or some? Same-store sales versus total? Has store count changed? Is it traffic or ticket? What has the competitive set done? — Assume: store count flat, same-store traffic down four percent, average ticket up three percent. STRUCTURE: Revenue equals stores times transactions per store times average ticket. Store count is flat, ticket is up, so the problem is transactions. Break transactions into new customers and repeat frequency. — ANALYSIS: Falling traffic with rising ticket usually means either price increases drove customers away, or the customer mix shifted toward fewer but higher-spending visits. Check whether the price increases preceded the traffic decline. Then look externally: new competitors within a half mile, delivery apps shifting occasions, changes in the surrounding foot traffic such as offices going hybrid. — LIKELY ANSWER: A combination — price rises covered inflation but pushed out the daily commuter, and hybrid work permanently reduced weekday morning traffic in downtown locations. — RECOMMENDATION: Segment stores by location type. For downtown stores, rebuild off-peak and weekend demand rather than chasing a commuter who no longer exists; consider hours changes and food attach. For suburban stores, invest in drive-through and mobile order where the traffic actually moved. Introduce a loyalty program to raise frequency. Test before rolling out. — WATCH FOR: Candidates who conclude the answer is competition without checking their own price moves first.' },
+
+  { id:'case2', d:'medium', q:'CASE — A national pharmacy chain is deciding whether to enter the primary care clinic business by putting clinics inside its stores. They have three thousand locations. Should they do it?',
+    f:'CLARIFY: What is the objective — revenue growth, margin, traffic, or defense against competitors doing the same? What capability do they have in care delivery? What is the capital available? — Assume: objective is profitable growth plus store traffic; no clinical capability today; meaningful capital. STRUCTURE: Market attractiveness, ability to win, economics, risks. — MARKET: Primary care is large and growing with an aging population, and access is a genuine pain point — wait times for a family doctor are long. Convenience is a real differentiator. — ABILITY TO WIN: Strong footprint and traffic, existing pharmacy relationship, trusted brand. Against: no clinician hiring or management capability, complex licensing that varies by state, and reimbursement contracting with insurers is a specialist skill. — ECONOMICS: Revenue per clinic equals visits per day times reimbursement per visit times days open. Costs are clinician salary — the dominant line — plus space, equipment, and support staff. Roughly: a nurse practitioner seeing twenty patients a day at a hundred dollars a visit is about two thousand a day, against clinician cost of perhaps six hundred a day plus overhead. Workable if utilization holds. The whole case turns on visits per day. Add the pull-through benefit: a prescription written in the clinic is likely filled in the store. — RISKS: Malpractice exposure, clinician recruitment in a tight market, regulatory variation across states, and reputational risk if care quality slips. — RECOMMENDATION: Yes, but phased. Pilot in three states with favorable scope-of-practice rules and high store traffic. Staff with nurse practitioners rather than physicians for cost. Set a utilization threshold before scaling. Consider partnering with an existing provider group rather than building the capability, since that is the gap. — WATCH FOR: Whether they identify visits per day as the swing variable and whether they raise the pull-through benefit to the pharmacy, which is the strategic reason to do this at all.' },
+
+  { id:'case3', d:'hard', q:'CASE — A subscription meal-kit company has grown fast but is losing money. Revenue is two hundred million, they lose forty million a year, and the board wants a path to profitability in eighteen months.',
+    f:'CLARIFY: What is contribution margin per order? Customer acquisition cost and payback period? Churn curve? Where do the losses sit — unit economics or overhead? — Assume: contribution margin thirty percent per order after food and shipping, CAC around one hundred and forty dollars, sixty percent of customers gone within four months. STRUCTURE: Profit equals customers times orders times contribution per order, minus acquisition spend, minus fixed overhead. — DIAGNOSIS: With a hundred and forty dollar CAC and roughly eighteen dollars of contribution per order, a customer needs about eight orders to pay back. If most churn by month four, the average customer never pays back acquisition. This is not a scale problem — growing faster makes it worse. That insight is the case. — LEVERS: 1) Retention is the highest-value lever, because it directly extends payback. Diagnose why people leave — usually price, repetition, or the friction of committing weekly. 2) Reduce CAC by shifting from paid channels to referral and retention-driven growth, and by cutting the discount depth on first orders that attracts deal-seekers who never convert. 3) Raise contribution per order through price, food cost, and shipping density — routing density improves as you concentrate geographically. 4) Cut overhead, but note it is the smallest lever if unit economics are broken. — RECOMMENDATION: Deliberately slow growth for two quarters. Cut acquisition spend in the worst-performing channels, which improves cash immediately. Reinvest in retention: menu variety, flexible skipping, and a loyalty price for long-tenured customers. Concentrate delivery geography to improve shipping cost. Model shows profitability achievable if churn improves by roughly a third and CAC falls by a quarter. — WATCH FOR: The candidate who proposes growing into profitability. That is the wrong answer here and the case is designed to catch it.' },
+
+  { id:'case4', d:'medium', q:'CASE — A university is deciding whether to build a new eight hundred bed dormitory at a cost of one hundred and twenty million dollars. Should they?',
+    f:'CLARIFY: What is the objective — revenue, recruiting, student experience, or capacity? Current occupancy? What is the enrollment plan? What alternatives have been considered? — Assume: objective is supporting a planned enrollment increase while improving the first-year experience; current housing is at ninety-eight percent occupancy. STRUCTURE: Demand, economics, alternatives, strategic fit, risks. — DEMAND: Enrollment trend and the planned increase; the share of students required or wanting to live on campus; the quality and price of nearby private housing; whether the ninety-eight percent occupancy reflects genuine demand or just insufficient supply. — ECONOMICS: Revenue equals eight hundred beds times annual housing charge times occupancy. At, say, twelve thousand dollars a bed that is around nine point six million a year at full occupancy. Operating costs perhaps forty percent of that, leaving roughly six million of contribution. Against one hundred and twenty million of capital, that is a twenty-year simple payback before financing costs — which is normal for university housing but must be financed accordingly. — ALTERNATIVES: Renovate existing stock, master-lease from a private developer, a public-private partnership where a developer builds and operates on university land, or do nothing and let students live off campus. The partnership option often gets skipped and is frequently the right answer, because it moves the capital off the university balance sheet. — STRATEGIC: On-campus first-year living correlates with retention and graduation rates, which has real financial value beyond housing revenue. That argument may matter more than the direct return. — RECOMMENDATION: Proceed, but seriously evaluate the public-private partnership structure before committing university capital. Condition the decision on the enrollment increase being firm rather than aspirational. — WATCH FOR: Whether they quantify the retention benefit rather than just asserting it, and whether they surface the partnership alternative.' },
+
+  { id:'case5', d:'medium', q:'CASE — A mid-sized regional bank is losing deposit customers under thirty-five to digital-only banks. Deposits from that group are down fifteen percent in two years. What should they do?',
+    f:'CLARIFY: Is it customer count or balance per customer? Are they leaving entirely or just moving their primary account? What is the value of a young customer over time? — Assume: customer count down, and those remaining hold smaller balances; young customers are unprofitable today but become the most profitable segment in their forties. STRUCTURE: Why are they leaving, what do they value, what can we credibly offer, what does it cost. — WHY: Digital banks offer better apps, no fees, higher savings rates, and instant onboarding. A branch network is a cost the young customer does not value and a competitor does not carry. — WHAT THEY VALUE: Speed, transparent pricing, mobile quality, and increasingly rate. Not branches, not relationship managers. — OPTIONS: 1) Compete on rate — fast to implement, expensive, and easily matched. 2) Fix the digital experience — necessary but slow and costly, and the bar is set by well-funded competitors. 3) Partner or acquire a digital platform. 4) Focus on what a bank can do that a digital-only cannot: lending, mortgages, and in-person help at moments that matter such as a first home purchase. 5) Deliberately cede the segment and focus on profitable older customers. — THE REAL QUESTION: Whether young customers are worth acquiring at a loss for later value. If lifetime value analysis shows they are, invest; if the relationship no longer persists into later life the way it used to, option five is defensible and unpopular. — RECOMMENDATION: Fix the digital basics to stop the bleeding, do not chase rate, and differentiate on life-moment lending where the branch network is an asset rather than a cost. Test whether young customers acquired digitally actually convert to lending products later, because the entire strategy rests on that assumption. — WATCH FOR: A candidate willing to consider ceding the segment. That takes nerve and shows they are reasoning about economics rather than defaulting to fight everywhere.' },
+
+  { id:'case6', d:'hard', q:'CASE — A specialty chemicals manufacturer has been asked by its largest customer, who represents thirty-five percent of revenue, for a twelve percent price reduction. What do you advise?',
+    f:'CLARIFY: What is the margin on this customer? What is the contract term? What alternatives does the customer have? What alternatives do we have? Why now? — Assume: gross margin on this account is twenty-eight percent, contract renews in six months, the customer has two other qualified suppliers, switching would take them nine to twelve months due to requalification. STRUCTURE: Understand their position, understand ours, options, negotiation, and the structural problem. — THEIR POSITION: Requalification takes nine to twelve months and carries risk — that is real leverage for us. But if they are under margin pressure themselves, they may accept that pain. Find out whether this is opportunistic or necessary for them. — OUR POSITION: At twenty-eight percent margin, a twelve percent price cut removes roughly forty percent of the gross profit on the account. If that account absorbs a large share of fixed manufacturing overhead, losing it entirely is worse than the cut — that comparison is the core math. Calculate the contribution at the new price versus the contribution if we lose them and cannot backfill. — OPTIONS: 1) Refuse and risk the relationship. 2) Accept, and take the margin hit. 3) Counter with a smaller reduction tied to volume commitment or a longer contract, which converts price into certainty. 4) Offer cost reductions instead of price reductions — change packaging, delivery frequency, or specification to lower our cost and share the saving. 5) Restructure as a cost-plus or index-linked arrangement. — RECOMMENDATION: Counter with roughly half the reduction, contingent on a three-year term and a volume floor, plus a joint cost-reduction program targeting the remainder. Simultaneously — and this is the more important half — begin a serious diversification program, because thirty-five percent concentration means this conversation will recur every renewal with worse leverage each time. — WATCH FOR: Whether they treat this only as a negotiation. The structural concentration problem is the real finding, and a candidate who solves the negotiation and stops there has answered half the question.' },
+
+  { id:'case7', d:'medium', q:'CASE — An airline is considering launching a new route from Austin to a mid-sized European city. Should they?',
+    f:'CLARIFY: What aircraft is available? Is this incremental capacity or redeployed? What is the competitive situation on the route? What is the objective — profit, network, or presence? — Assume: one available wide-body, no direct competitor on the route today, objective is profit. STRUCTURE: Demand, competition, economics, network effects, risk. — DEMAND: Point-to-point traffic between the two cities today, currently flying with a connection; business versus leisure mix; seasonality; whether there is a corporate base in Austin with ties to that city. Connecting traffic that could feed the route from other US cities through Austin. — ECONOMICS: This is the heart of the case. Revenue equals seats times load factor times average fare, times flights per week. Costs are fuel — usually the largest and most volatile line — crew, aircraft ownership or lease, landing and handling fees, and marketing. Calculate the breakeven load factor: fixed cost of the flight divided by average fare divided by seats. If breakeven is around seventy percent and realistic expectation is seventy-five, the margin for error is thin. Say that explicitly. — COMPETITION: No direct competitor is a double-edged fact — it may mean opportunity, or it may mean others have evaluated this route and declined. Ask why nobody flies it. Consider the response if a competitor enters after you prove demand. — NETWORK: Value of the route as a feeder, effect on alliance partners, and slot availability at the European end, which is often the binding constraint. — RISK: Fuel price, currency, seasonality forcing low winter loads, and the cost of exiting if it fails. — RECOMMENDATION: Proceed only if breakeven load factor is comfortably below realistic demand, and start seasonal or with reduced frequency to test before committing year-round capacity. — WATCH FOR: Whether the candidate reaches breakeven load factor unprompted. That is the number an airline actually decides on.' },
+
+  { id:'case8', d:'medium', q:'CASE — A private equity firm is considering acquiring a chain of two hundred veterinary clinics. What would you want to know, and how would you think about value creation?',
+    f:'CLARIFY: What is the thesis — platform for rollup, operational improvement, or multiple arbitrage? Hold period? Current EBITDA and margin? — Assume: seventy million EBITDA, fifteen percent margin, five-year hold, thesis is buy-and-build. STRUCTURE: Market, business quality, value creation levers, risks, exit. — MARKET: Veterinary services are attractive — non-cyclical because people spend on pets in downturns, growing with pet ownership and spend per pet, highly fragmented with many single-clinic owners nearing retirement, and largely cash-pay so no insurance reimbursement risk. This is a well-understood attractive sector, which also means it is competitive and priced accordingly. — BUSINESS QUALITY: Same-clinic revenue growth, veterinarian retention — which is the binding constraint in this industry — clinic-level margins and the spread between best and worst, and referral versus walk-in mix. — VALUE CREATION: 1) Add-on acquisitions of single clinics at six to eight times EBITDA into a platform valued at twelve to fifteen times, which is the multiple arbitrage and usually the largest lever. 2) Operational improvement — pricing discipline, procurement of supplies at scale, scheduling to raise vet utilization, and pushing higher-margin services such as dental and wellness plans. 3) Margin convergence by bringing bottom-quartile clinics to median. — RISKS: Veterinarian shortage is the real one — you cannot integrate clinics you cannot staff. Also integration capacity, regulatory limits on corporate ownership of practices in some states, and the possibility that the sector multiple compresses before exit. — EXIT: Larger strategic buyers, another sponsor, or public markets. Underwrite exit at or below entry multiple as discipline. — RECOMMENDATION: Attractive if the veterinarian recruitment plan is credible and the add-on pipeline is real and priced. The diligence priority is staffing, not financials. — WATCH FOR: Whether the candidate identifies vet supply as the constraint rather than treating this as a pure financial exercise.' },
+
+  { id:'case9', d:'hard', q:'CASE — A newspaper with two hundred thousand print subscribers and forty thousand digital subscribers is losing money. Print advertising has fallen seventy percent in a decade. Advise them on the next five years.',
+    f:'CLARIFY: What is the cost structure — how much is print production and distribution? Is digital profitable on its own? Who owns it and what is their objective? — Assume: print is roughly sixty percent of costs, digital subscriptions are profitable at the margin, owner wants a sustainable business rather than a quick sale. STRUCTURE: Where money is made and lost today, structural trends, options, recommendation. — DIAGNOSIS: Print carries most of the cost and a declining share of revenue, but print subscribers still pay meaningfully more per head. The trap is that cutting print too fast destroys revenue faster than cost; cutting too slow bleeds cash. The transition math is the case. — OPTIONS: 1) Accelerate digital subscription growth — the only real long-term path, but forty thousand is small and growth requires content people will pay for. 2) Reduce print frequency to a few days a week, keeping the high-margin weekend edition. This is the standard move and worth quantifying. 3) Go niche and deep — local investigative coverage nobody else does — rather than competing on general news, which is free everywhere. 4) Diversify into events, newsletters, and services. 5) Restructure costs to fit a smaller business. 6) Sell or seek nonprofit or foundation ownership. — ECONOMICS OF THE KEY MOVE: Reducing print from seven days to three could remove a large share of production and distribution cost while retaining most subscription revenue, since weekend readership dominates and advertisers concentrate there. Model subscriber attrition against cost saved. — RECOMMENDATION: Reduce print to weekend plus one midweek edition. Reinvest the savings into local investigative and civic coverage that is genuinely differentiated, and price digital confidently rather than cheaply — the subscribers who value local reporting are not price-driven. Set an explicit target for digital to exceed print revenue within three years, and be honest with the owner that the endpoint is a smaller, sustainable business rather than a restoration of what existed. — WATCH FOR: Candidates who propose a paywall as if it were a new idea, and those unwilling to say the business will end up structurally smaller.' },
+
+  { id:'case10', d:'medium', q:'CASE — A fitness chain has eighty locations. Membership is flat, but management notices that members who attend group classes stay twice as long as those who do not. They want to know what to do with that.',
+    f:'CLARIFY: Is this correlation or causation? What share of members take classes? What is the capacity and cost of classes? What is the value of extended tenure? — Assume: thirty percent take classes, class capacity is underutilized off-peak, average member tenure is fourteen months overall. STRUCTURE: Test the causal claim, size the prize, identify the intervention, evaluate the cost. — THE CENTRAL ISSUE: The finding may be selection rather than causation — people who were already committed choose classes. A candidate who accepts the causal claim uncritically has missed the point of the case. How to test: look at members who started classes after joining and compare their churn before and after; compare similar members across locations with different class availability; ideally run a controlled offer. — SIZING: If tenure doubles from fourteen to twenty-eight months, and monthly margin per member is say thirty dollars, each converted member is worth roughly four hundred additional dollars. Converting even ten percent of the seventy percent who do not attend is a large number. That is worth real investment. — INTERVENTION: Lower the barrier to a first class — the reason most people never attend is intimidation, not disinterest. Free intro classes, beginner-only sessions, scheduling into off-peak slots that already have capacity, and personalized prompts based on visit patterns. Onboarding is the key moment: get them into a class in the first two weeks. — COST: Instructor cost for additional classes, offset by using existing underutilized slots first. Start with capacity you already pay for. — RECOMMENDATION: Run a controlled pilot across ten locations with a structured first-two-weeks class onboarding, measuring retention against matched control sites. Scale only if the causal effect holds. — WATCH FOR: Whether they challenge causation before building a plan on top of it. That instinct is the whole case.' }
+]
 
 };
 
@@ -8813,6 +9410,75 @@ behavioral: [
    in this file are for user experience only — they are not the security
    boundary, and they must never be treated as one.
    ══════════════════════════════════════════════════════════════════════ */
+
+/* ══════════════════════════════════════════════════════════════════
+   TAB GROUPING
+
+   Ten top-level tabs was too many to scan, and it wrapped badly on
+   phones. The four recruiting surfaces now live under one "Recruiting"
+   tab with its own sub-nav — the same two-level pattern the Admin panel
+   already uses, so it reads as part of the same system.
+
+   The panes are MOVED at runtime rather than duplicated in the markup.
+   That keeps every existing id, handler and CSS rule working untouched.
+   ══════════════════════════════════════════════════════════════════ */
+
+var recruitGrouped = false;
+var recruitTab = 'timeline';
+
+const RECRUIT_PANES = {
+  timeline:    'ptab-content-timeline',
+  resources:   'ptab-content-resources',
+  internships: 'ptab-content-internships',
+  resume:      'ptab-content-resume',
+  mock:        'ptab-content-mock',
+  alumni:      'ptab-content-alumni',
+  pitches:     'ptab-content-pitches'
+};
+
+function groupRecruitingTabs() {
+  if (recruitGrouped) return;
+  var slot = document.getElementById('recruit-slot');
+  if (!slot) return;
+  Object.keys(RECRUIT_PANES).forEach(function (k) {
+    var el = document.getElementById(RECRUIT_PANES[k]);
+    if (el) slot.appendChild(el);
+  });
+  recruitGrouped = true;
+  applyRecruitVisibility();
+}
+
+function switchRecruitTab(tab) {
+  recruitTab = tab;
+  Object.keys(RECRUIT_PANES).forEach(function (k) {
+    var btn = document.getElementById('rtab-' + k);
+    var pane = document.getElementById(RECRUIT_PANES[k]);
+    if (btn) btn.classList.toggle('active', k === tab);
+    if (pane) pane.style.display = (k === tab) ? '' : 'none';
+  });
+  if (tab === 'resources')   loadResources();
+  if (tab === 'resume')      loadResumeTab();
+  if (tab === 'mock')        loadMockTab();
+  if (tab === 'timeline')    loadTimeline();
+  if (tab === 'alumni')      loadAlumni();
+  if (tab === 'pitches')     loadPitches();
+}
+
+/**
+ * Alumni and Pitches are board-only until published. Hiding the buttons
+ * is cosmetic — RLS is what actually protects the data — but leaving a
+ * tab that returns nothing for members is just confusing.
+ */
+async function applyRecruitVisibility() {
+  if (ufaIsBoard()) return;   // board always sees everything
+  var pairs = [['alumni', 'visibility_alumni'], ['pitches', 'visibility_pitches']];
+  for (var i = 0; i < pairs.length; i++) {
+    var cur = await ufaGetSetting(pairs[i][1]);
+    var btn = document.getElementById('rtab-' + pairs[i][0]);
+    if (btn) btn.style.display = (cur && cur.members) ? '' : 'none';
+  }
+}
+
 
 /* ── Shared helpers ─────────────────────────────────────────────── */
 
@@ -8933,6 +9599,62 @@ function ufaTime(mins) {
   return hh + (m ? ':' + String(m).padStart(2, '0') : '') + ' ' + ampm;
 }
 
+/**
+ * Normalizes whatever someone types into (512) 555-0134.
+ * Leaves anything that is not a recognizable US number alone rather than
+ * mangling it — international numbers and extensions pass through.
+ */
+function ufaFormatPhone(v) {
+  var digits = String(v || '').replace(/\D/g, '');
+  if (digits.length === 11 && digits.charAt(0) === '1') digits = digits.slice(1);
+  if (digits.length !== 10) return String(v || '').trim();
+  return '(' + digits.slice(0, 3) + ') ' + digits.slice(3, 6) + '-' + digits.slice(6);
+}
+
+/* ── Calendar export ──────────────────────────────────────────────
+   A real two-way Google Calendar sync needs a server and OAuth. These
+   two helpers get most of the benefit with none of that: one click
+   drops the meeting into whatever calendar the person actually uses.
+   ───────────────────────────────────────────────────────────────── */
+
+function ufaCalStamp(d) {
+  return new Date(d).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+}
+
+/** A Google Calendar "add event" URL, prefilled. */
+function ufaGCalUrl(title, start, end, details, location) {
+  var p = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: title,
+    dates: ufaCalStamp(start) + '/' + ufaCalStamp(end),
+    details: details || '',
+    location: location || ''
+  });
+  return 'https://calendar.google.com/calendar/render?' + p.toString();
+}
+
+/** Downloads a .ics file — works with Apple Calendar, Outlook, everything. */
+function ufaDownloadIcs(title, start, end, details, filename) {
+  var ics = [
+    'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//UFA//Portal//EN',
+    'BEGIN:VEVENT',
+    'UID:' + Date.now() + '@texasufa.org',
+    'DTSTAMP:' + ufaCalStamp(new Date()),
+    'DTSTART:' + ufaCalStamp(start),
+    'DTEND:' + ufaCalStamp(end),
+    'SUMMARY:' + String(title).replace(/[,;]/g, ' '),
+    'DESCRIPTION:' + String(details || '').replace(/[,;]/g, ' ').replace(/\n/g, '\\n'),
+    'END:VEVENT', 'END:VCALENDAR'
+  ].join('\r\n');
+  var blob = new Blob([ics], { type: 'text/calendar' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = (filename || 'ufa-meeting') + '.ics';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(function () { URL.revokeObjectURL(url); }, 3000);
+}
+
 function ufaClock(sec) {
   var neg = sec < 0;
   sec = Math.abs(Math.round(sec));
@@ -8991,26 +9713,33 @@ var myResume = null;
 var resumeAdminRows = [];
 
 /**
- * Builds the export filename the board asked for:
- *   lastname_firstname_resume_year.pdf
- * Falls back gracefully when a member has a single-word name or no
- * graduation year on file.
+ * Builds the export filename:
+ *   Lastname_Firstname_Resume_2026.pdf
+ *
+ * The year is the CURRENT year, not the member's graduation year — the
+ * book is compiled and sent out annually, so firms sorting a folder of
+ * these care which cycle it came from. Graduation year is still shown in
+ * the admin table and belongs on the resume itself.
+ *
+ * Falls back gracefully for single-word names.
  */
 function ufaResumeFileName(name, gradYear) {
-  var clean = function (s) {
-    return String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  var cap = function (s) {
+    s = String(s || '').replace(/[^A-Za-z0-9]/g, '');
+    if (!s) return '';
+    return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
   };
   var parts = String(name || '').trim().split(/\s+/).filter(Boolean);
-  var first = clean(parts[0]) || 'member';
-  var last = parts.length > 1 ? clean(parts[parts.length - 1]) : '';
-  var year = clean(gradYear).slice(-4) || 'na';
+  var first = cap(parts[0]) || 'Member';
+  var last = parts.length > 1 ? cap(parts[parts.length - 1]) : '';
+  var year = new Date().getFullYear();
   var stem = last ? (last + '_' + first) : first;
-  return stem + '_resume_' + year + '.pdf';
+  return stem + '_Resume_' + year + '.pdf';
 }
 
 async function loadResumeTab() {
   ufaWireDrop('resume-dropzone', handleResumePick);
-  if (!resumeLoaded) resumeLoaded = true;
+  if (!resumeLoaded) { resumeLoaded = true; loadDriveConfig(); }
   await renderMyResume();
 }
 
@@ -9114,6 +9843,11 @@ async function uploadResume(file) {
     if (bar) bar.style.width = '100%';
     if (txt) txt.textContent = 'Done';
     ufaAlert('resume-alert', 'ok', 'Resume uploaded. You can replace it any time before the book goes out.');
+
+    // Mirror to Drive after the member is already safe. A Drive outage
+    // must never look like a failed upload to them, so this stays silent
+    // on their side; the board sees gaps in the admin tab.
+    mirrorResumeToDrive(file, fileName, name, email);
   } catch (e) {
     ufaAlert('resume-alert', 'err', 'Upload failed: ' + (e.message || 'unknown error') + '. If this keeps happening, tell a board member.');
   } finally {
@@ -9126,11 +9860,156 @@ async function uploadResume(file) {
   }
 }
 
+/* ══════════════════════════════════════════════════════════════════
+   RESUME → GOOGLE DRIVE MIRROR
+
+   Supabase stays the source of truth. This copies each upload into a
+   Drive folder the board owns, so the book can be shared with firms and
+   with board members who have no Supabase login.
+
+   The receiver is a Google Apps Script web app running in the club's own
+   Google account (see drive-upload.gs). It is write-only: it creates
+   files and cannot list or read the folder. Because a static site cannot
+   hold a real secret, treat the shared token as a speed bump, not a lock.
+
+   A Drive failure never fails the upload — the resume is already safely
+   in Supabase by the time this runs.
+   ══════════════════════════════════════════════════════════════════ */
+
+var resumeDriveCfg = { url: '', token: '', enabled: false };
+
+async function loadDriveConfig() {
+  var cfg = await ufaGetSetting('resume_drive');
+  resumeDriveCfg = cfg || { url: '', token: '', enabled: false };
+  return resumeDriveCfg;
+}
+
+function ufaFileToBase64(file) {
+  return new Promise(function (resolve, reject) {
+    var r = new FileReader();
+    r.onload = function () {
+      var s = String(r.result);
+      resolve(s.slice(s.indexOf(',') + 1));   // strip the data: prefix
+    };
+    r.onerror = reject;
+    r.readAsDataURL(file);
+  });
+}
+
+/**
+ * Sends one PDF to the Drive receiver.
+ * Content-Type is text/plain on purpose: it keeps the request "simple"
+ * so the browser skips the CORS preflight, which Apps Script cannot
+ * answer. The body is still JSON and the script parses it as such.
+ */
+async function mirrorResumeToDrive(file, fileName, memberName, memberEmail) {
+  if (!resumeDriveCfg.enabled || !resumeDriveCfg.url) return { skipped: true };
+  try {
+    var b64 = await ufaFileToBase64(file);
+    var res = await fetch(resumeDriveCfg.url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({
+        token: resumeDriveCfg.token || '',
+        filename: fileName,
+        name: memberName || '',
+        email: memberEmail || '',
+        data: b64
+      })
+    });
+    var out = await res.json();
+    if (!out || !out.ok) throw new Error((out && out.error) || 'Drive rejected the upload');
+    return { ok: true, id: out.id };
+  } catch (e) {
+    return { ok: false, error: e.message || 'unknown error' };
+  }
+}
+
+
 /* ── Resume book: admin side ─────────────────────────────────────── */
+
+async function saveDriveConfig() {
+  var url = (document.getElementById('drive-url').value || '').trim();
+  var token = (document.getElementById('drive-token').value || '').trim();
+  var r = await ufaSetSetting('resume_drive', { url: url, token: token, enabled: !!url });
+  if (r.error) { ufaAlert('resume-admin-alert', 'err', 'Could not save: ' + r.error.message); return; }
+  resumeDriveCfg = { url: url, token: token, enabled: !!url };
+  ufaAlert('resume-admin-alert', 'ok', url
+    ? 'Saved. New uploads will copy to Drive automatically.'
+    : 'Drive mirroring turned off.');
+}
+
+async function testDriveConnection() {
+  var btn = document.getElementById('drive-test-btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Testing…'; }
+  var url = (document.getElementById('drive-url').value || '').trim();
+  var token = (document.getElementById('drive-token').value || '').trim();
+  if (!url) {
+    ufaAlert('resume-admin-alert', 'err', 'Paste the Apps Script URL first.');
+    if (btn) { btn.disabled = false; btn.textContent = 'Test connection'; }
+    return;
+  }
+  try {
+    var res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ token: token, ping: true })
+    });
+    var out = await res.json();
+    if (out && out.ok) {
+      ufaAlert('resume-admin-alert', 'ok', 'Connected. Writing to folder: ' + (out.folder || 'unnamed'));
+    } else {
+      ufaAlert('resume-admin-alert', 'err', 'Reached the script but it refused: ' + ((out && out.error) || 'unknown'));
+    }
+  } catch (e) {
+    ufaAlert('resume-admin-alert', 'err',
+      'Could not reach that URL. Check the deployment is set to "Anyone" and you copied the /exec link, not /dev.');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'Test connection'; }
+  }
+}
+
+/** Pushes every resume already in Supabase up to Drive. Safe to re-run. */
+async function backfillDriveMirror() {
+  if (!resumeDriveCfg.enabled) { ufaAlert('resume-admin-alert', 'err', 'Set up the Drive connection first.'); return; }
+  var subs = resumeAdminRows.filter(function (r) { return r.sub; });
+  if (!subs.length) { ufaAlert('resume-admin-alert', 'err', 'No resumes to push yet.'); return; }
+
+  var btn = document.getElementById('drive-backfill-btn');
+  if (btn) { btn.disabled = true; }
+  var ok = 0, failed = [];
+
+  for (var i = 0; i < subs.length; i++) {
+    if (btn) btn.textContent = 'Pushing ' + (i + 1) + ' of ' + subs.length + '…';
+    try {
+      var dl = await sb.storage.from('resumes').download(subs[i].sub.file_path);
+      if (dl.error || !dl.data) { failed.push(subs[i].name); continue; }
+      var r = await mirrorResumeToDrive(dl.data, subs[i].sub.file_name, subs[i].name, subs[i].email);
+      if (r && r.ok) ok++; else failed.push(subs[i].name);
+    } catch (e) { failed.push(subs[i].name); }
+  }
+
+  if (btn) { btn.disabled = false; btn.textContent = 'Push all to Drive'; }
+  ufaAlert('resume-admin-alert', failed.length ? 'err' : 'ok',
+    'Pushed ' + ok + ' of ' + subs.length + ' to Drive.' +
+    (failed.length ? ' Failed: ' + failed.join(', ') : ''));
+}
 
 async function loadResumeAdmin() {
   var sum = document.getElementById('resume-admin-summary');
   if (sum) sum.textContent = 'Loading…';
+
+  await loadDriveConfig();
+  var du = document.getElementById('drive-url');
+  var dt = document.getElementById('drive-token');
+  if (du) du.value = resumeDriveCfg.url || '';
+  if (dt) dt.value = resumeDriveCfg.token || '';
+  var ds = document.getElementById('drive-status');
+  if (ds) {
+    ds.innerHTML = resumeDriveCfg.enabled
+      ? '<span class="ufa-pill ufa-pill-green">Mirroring on</span>'
+      : '<span class="ufa-pill ufa-pill-grey">Not set up</span>';
+  }
 
   var r1 = await sb.from('members').select('email, name, role, grad_year, status').order('name', { ascending: true });
   var r2 = await sb.from('resume_submissions').select('*');
@@ -9278,7 +10157,15 @@ var BK = {
 };
 
 const BOOKING_HORIZON_DAYS = 21;   // how far ahead members can book
-const CANCEL_LEAD_HOURS = 12;      // minimum notice to cancel
+const CANCEL_LEAD_HOURS = 2;       // minimum notice to cancel
+
+/* Fair-use caps, applied per calendar week of the meeting itself rather
+   than to outstanding bookings. A member can meet any one board member
+   once a week and hold three board meetings in a week — enough to be
+   useful during recruiting, not enough to monopolize anyone. Cancelled
+   meetings free their slot back up immediately. */
+const MAX_PER_BOARD_PER_WEEK = 1;
+const MAX_TOTAL_PER_WEEK = 3;
 const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 const DAY_ABBR = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 
@@ -9320,6 +10207,8 @@ function renderMyBookings() {
     var who = bp ? bp.name : b.board_email;
     var hoursOut = (new Date(b.start_ts) - new Date()) / 3600000;
     var canCancel = hoursOut >= CANCEL_LEAD_HOURS;
+    var title = 'UFA — meeting with ' + who;
+    var details = (b.topic || '') + '\nBooked through the UFA member portal.';
     return '<div class="ufa-booking-row">' +
       '<div class="ufa-booking-when">' + ufaDateTime(b.start_ts) + '</div>' +
       '<div style="flex:1;min-width:160px;">' +
@@ -9327,6 +10216,8 @@ function renderMyBookings() {
           ' <span style="font-weight:400;color:#6B7D6B;">&middot; ' + b.duration_min + ' min</span></div>' +
         (b.topic ? '<div style="font-size:12px;color:#6B7D6B;margin-top:3px;">' + ufaEsc(b.topic) + '</div>' : '') +
       '</div>' +
+      '<a class="ufa-btn-ghost ufa-btn-sm" style="text-decoration:none;" target="_blank" rel="noopener" href="' +
+        ufaEsc(ufaGCalUrl(title, b.start_ts, b.end_ts, details)) + '">Add to Calendar</a>' +
       (canCancel
         ? '<button class="ufa-btn-ghost ufa-btn-sm ufa-btn-danger" onclick="cancelBooking(\'' + b.id + '\')">Cancel</button>'
         : '<span style="font-size:12px;color:#6B7D6B;">Too close to cancel</span>') +
@@ -9604,6 +10495,30 @@ function pickSlot(iso) {
   );
 }
 
+/** Sunday 00:00 of the week containing d. */
+function ufaWeekStart(d) {
+  var x = new Date(d);
+  x.setHours(0, 0, 0, 0);
+  x.setDate(x.getDate() - x.getDay());
+  return x;
+}
+
+/**
+ * How many active meetings this member already holds in the same calendar
+ * week as `when`. Past meetings inside that week still count — otherwise
+ * someone could book Monday, attend it, and immediately rebook Tuesday.
+ */
+function myWeekCount(when, boardEmail) {
+  var start = ufaWeekStart(when);
+  var end = new Date(start); end.setDate(end.getDate() + 7);
+  return myBookings.filter(function (b) {
+    if (b.status !== 'booked') return false;
+    var t = new Date(b.start_ts);
+    if (t < start || t >= end) return false;
+    return boardEmail ? b.board_email === boardEmail : true;
+  }).length;
+}
+
 async function confirmBooking() {
   var btn = document.getElementById('booking-confirm-btn');
   var topic = (document.getElementById('booking-topic') || {}).value || '';
@@ -9611,6 +10526,23 @@ async function confirmBooking() {
     ufaAlert('booking-modal-alert', 'err', 'Add a quick note about what you want to cover.');
     return;
   }
+
+  // Fair-use checks. The friendly framing matters — this is a scheduling
+  // courtesy, not a punishment, and the member has done nothing wrong.
+  var slotStart = new Date(BK.pending.start);
+  if (myWeekCount(slotStart, BK.board.email) >= MAX_PER_BOARD_PER_WEEK) {
+    ufaAlert('booking-modal-alert', 'err',
+      'You already have time with ' + BK.board.name + ' that week. ' +
+      'Pick a slot in a different week, or cancel the existing one.');
+    return;
+  }
+  if (myWeekCount(slotStart) >= MAX_TOTAL_PER_WEEK) {
+    ufaAlert('booking-modal-alert', 'err',
+      'You have ' + MAX_TOTAL_PER_WEEK + ' board meetings that week already, which is the limit. ' +
+      'Try the following week.');
+    return;
+  }
+
   if (btn) { btn.disabled = true; btn.textContent = 'Booking…'; }
 
   var start = new Date(BK.pending.start);
@@ -9640,20 +10572,36 @@ async function confirmBooking() {
     return;
   }
 
+  // Confirmation emails to both sides. Deliberately not awaited — the
+  // booking is already saved, and the member should not wait on SMTP.
+  notifyBookingCreated({
+    member_email: ufaEmail(),
+    board_email: BK.board.email,
+    start_ts: start.toISOString(),
+    duration_min: BK.pending.duration,
+    topic: topic.trim()
+  }, BK.board.name, (currentMember && currentMember.name) || ufaEmail());
+
   ufaCloseModal();
   await loadBoardTab();
   if (BK.board) renderBookingWeek();
   ufaAlert('board-alert', 'ok',
-    'Booked with ' + BK.board.name + ' for ' + ufaDateTime(start) + '. It will show under your upcoming meetings.');
+    'Booked with ' + BK.board.name + ' for ' + ufaDateTime(start) + '. A confirmation is on its way to your email.');
 }
 
 async function cancelBooking(id) {
   if (!window.confirm('Cancel this meeting?')) return;
+  var row = myBookings.filter(function (b) { return b.id === id; })[0];
   var res = await sb.from('bookings').update({
     status: 'cancelled',
     cancelled_by: ufaEmail()
   }).eq('id', id);
   if (res.error) { ufaAlert('board-alert', 'err', 'Could not cancel: ' + res.error.message); return; }
+  if (row) {
+    var bp = boardProfiles.filter(function (p) { return p.email === row.board_email; })[0];
+    notifyBookingCancelled(row, ufaEmail(), bp ? bp.name : row.board_email,
+      (currentMember && currentMember.name) || ufaEmail());
+  }
   await loadBoardTab();
   if (BK.board) renderBookingWeek();
   ufaAlert('board-alert', 'ok', 'Meeting cancelled.');
@@ -9674,7 +10622,7 @@ async function loadBoardHoursAdmin() {
   document.getElementById('bp-name').value = myBoardProfile ? (myBoardProfile.name || '') : ((currentMember && currentMember.name) || '');
   document.getElementById('bp-position').value = myBoardProfile ? (myBoardProfile.position || '') : '';
   document.getElementById('bp-phone').value = myBoardProfile ? (myBoardProfile.phone || '') : '';
-  document.getElementById('bp-photo').value = myBoardProfile ? (myBoardProfile.photo_url || '') : '';
+
   document.getElementById('bp-bio').value = myBoardProfile ? (myBoardProfile.bio || '') : '';
   document.getElementById('bp-show-phone').checked = myBoardProfile ? !!myBoardProfile.show_phone : false;
   document.getElementById('bp-booking').checked = myBoardProfile ? !!myBoardProfile.booking_enabled : true;
@@ -9695,8 +10643,8 @@ async function saveBoardProfile() {
     email: ufaEmail(),
     name: name,
     position: document.getElementById('bp-position').value.trim(),
-    phone: document.getElementById('bp-phone').value.trim(),
-    photo_url: document.getElementById('bp-photo').value.trim(),
+    phone: ufaFormatPhone(document.getElementById('bp-phone').value),
+
     bio: document.getElementById('bp-bio').value.trim(),
     show_phone: document.getElementById('bp-show-phone').checked,
     booking_enabled: document.getElementById('bp-booking').checked,
@@ -9804,7 +10752,16 @@ async function refreshMyBoardBookings() {
     return;
   }
 
-  box.innerHTML = rows.map(function (b) {
+  // One click puts every upcoming meeting into their own calendar app.
+  var live = rows.filter(function (b) { return b.status === 'booked'; });
+  var bulk = live.length
+    ? '<div style="margin-bottom:14px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;">' +
+        '<button class="ufa-btn-ghost ufa-btn-sm" onclick="exportBoardCalendar()">Download all as calendar file</button>' +
+        '<span style="font-size:12px;color:#6B7D6B;">Opens in Apple Calendar, Outlook, or Google Calendar import.</span>' +
+      '</div>'
+    : '';
+
+  box.innerHTML = bulk + rows.map(function (b) {
     var cancelled = b.status === 'cancelled';
     return '<div class="ufa-booking-row' + (cancelled ? ' is-cancelled' : '') + '">' +
       '<div class="ufa-booking-when">' + ufaDateTime(b.start_ts) + '</div>' +
@@ -9816,16 +10773,353 @@ async function refreshMyBoardBookings() {
       '</div>' +
       (cancelled
         ? '<span class="ufa-pill ufa-pill-grey">Cancelled</span>'
-        : '<button class="ufa-btn-ghost ufa-btn-sm ufa-btn-danger" onclick="boardCancelBooking(\'' + b.id + '\')">Cancel</button>') +
+        : '<a class="ufa-btn-ghost ufa-btn-sm" style="text-decoration:none;" target="_blank" rel="noopener" href="' +
+            ufaEsc(ufaGCalUrl(
+              'UFA — ' + (b.member_name || b.member_email),
+              b.start_ts, b.end_ts,
+              (b.topic || '') + '\n' + (b.member_email || '') + '\nBooked through the UFA member portal.')) +
+          '">Add to Calendar</a>' +
+          '<button class="ufa-btn-ghost ufa-btn-sm ufa-btn-danger" onclick="boardCancelBooking(\'' + b.id + '\')">Cancel</button>') +
     '</div>';
   }).join('');
 }
 
+/** Every upcoming meeting as one .ics file, for a real calendar app. */
+async function exportBoardCalendar() {
+  var r = await sb.from('bookings').select('*')
+    .eq('board_email', ufaEmail()).eq('status', 'booked')
+    .order('start_ts', { ascending: true });
+  var rows = (r.data || []).filter(function (b) { return new Date(b.end_ts) > new Date(); });
+  if (!rows.length) { ufaAlert('boardhours-alert', 'err', 'Nothing upcoming to export.'); return; }
+
+  var lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//UFA//Portal//EN'];
+  rows.forEach(function (b) {
+    lines.push(
+      'BEGIN:VEVENT',
+      'UID:' + b.id + '@texasufa.org',
+      'DTSTAMP:' + ufaCalStamp(new Date()),
+      'DTSTART:' + ufaCalStamp(b.start_ts),
+      'DTEND:' + ufaCalStamp(b.end_ts),
+      'SUMMARY:UFA — ' + String(b.member_name || b.member_email).replace(/[,;]/g, ' '),
+      'DESCRIPTION:' + String((b.topic || '') + ' | ' + (b.member_email || '')).replace(/[,;]/g, ' '),
+      'END:VEVENT'
+    );
+  });
+  lines.push('END:VCALENDAR');
+
+  var blob = new Blob([lines.join('\r\n')], { type: 'text/calendar' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'ufa-board-hours.ics';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(function () { URL.revokeObjectURL(url); }, 3000);
+  ufaAlert('boardhours-alert', 'ok', 'Downloaded ' + rows.length + ' meetings. Open the file to add them to your calendar.');
+}
+
 async function boardCancelBooking(id) {
-  if (!window.confirm('Cancel this meeting? The member will see it disappear from their portal.')) return;
+  if (!window.confirm('Cancel this meeting? The member is emailed automatically.')) return;
+  var r = await sb.from('bookings').select('*').eq('id', id).maybeSingle();
   await sb.from('bookings').update({ status: 'cancelled', cancelled_by: ufaEmail() }).eq('id', id);
+  if (r && r.data) {
+    notifyBookingCancelled(r.data, ufaEmail(),
+      (currentMember && currentMember.name) || ufaEmail(), r.data.member_name);
+  }
   await refreshMyBoardBookings();
-  ufaAlert('boardhours-alert', 'ok', 'Cancelled. Let them know directly if it was short notice.');
+  ufaAlert('boardhours-alert', 'ok', 'Cancelled and the member has been emailed. Reach out directly if it was short notice.');
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   EMAIL NOTIFICATIONS
+
+   Sends through EmailJS, which the site already loads for the contact
+   form. No server, no new dependency.
+
+   ONE template does everything. Rather than making the board build a
+   separate EmailJS template for bookings, approvals and announcements,
+   this composes the subject and body in JavaScript and passes them to a
+   single generic template. Setup is one template instead of five, and
+   changing the wording of an email is a code change here rather than a
+   trip to the EmailJS dashboard.
+
+   The template needs exactly three variables: to_email, subject, message.
+   Setup instructions are in SETUP.md.
+
+   VOLUME: EmailJS free tier is 200 emails a month. Bookings and approvals
+   use a handful. Emailing every member an announcement does not fit —
+   that path warns before sending and offers a BCC list instead.
+   ══════════════════════════════════════════════════════════════════════ */
+
+var emailCfg = { enabled: false, service: '', template: '', from_name: 'UFA', public_key: '' };
+
+async function loadEmailConfig() {
+  var cfg = await ufaGetSetting('email_config');
+  emailCfg = cfg || { enabled: false, service: '', template: '', from_name: 'UFA', public_key: '' };
+  // The page initialises EmailJS with the key belonging to the contact
+  // form's account. If notifications run on a DIFFERENT EmailJS account,
+  // re-initialise with that account's key or every send is rejected.
+  if (emailCfg.public_key && typeof emailjs !== 'undefined' && emailjs.init) {
+    try { emailjs.init(emailCfg.public_key); } catch (e) {}
+  }
+  return emailCfg;
+}
+
+/**
+ * Sends one email. Never throws — a notification failure must never break
+ * the action that triggered it. A member whose booking saved should not
+ * see an error because an email did not go out.
+ */
+async function ufaSendEmail(toEmail, subject, message) {
+  if (!emailCfg.enabled || !emailCfg.service || !emailCfg.template) {
+    return { skipped: true };
+  }
+  if (typeof emailjs === 'undefined' || !emailjs.send) {
+    return { ok: false, error: 'EmailJS did not load' };
+  }
+  try {
+    await emailjs.send(emailCfg.service, emailCfg.template, {
+      to_email: toEmail,
+      subject: subject,
+      message: message,
+      from_name: emailCfg.from_name || 'UFA',
+      reply_to: 'financeassociationtx@gmail.com'
+    });
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: (e && (e.text || e.message)) || 'send failed' };
+  }
+}
+
+/* ── Message bodies ───────────────────────────────────────────────
+   Plain text on purpose. It renders everywhere, never looks broken,
+   and reads like a person wrote it rather than a system.
+   ───────────────────────────────────────────────────────────────── */
+
+function ufaBookingEmailToMember(b, boardName) {
+  return {
+    subject: 'Confirmed: ' + ufaDateTime(b.start_ts) + ' with ' + boardName,
+    message:
+      'Your meeting is booked.\n\n' +
+      'With:  ' + boardName + '\n' +
+      'When:  ' + ufaDateTime(b.start_ts) + ' (' + b.duration_min + ' minutes)\n' +
+      (b.topic ? 'Topic: ' + b.topic + '\n' : '') +
+      '\nNeed to cancel? Open the member portal, go to Board Hours, and cancel there. ' +
+      'Please do it at least ' + CANCEL_LEAD_HOURS + ' hours ahead so the slot can go to someone else.\n\n' +
+      'texasufa.org/portal'
+  };
+}
+
+function ufaBookingEmailToBoard(b, memberName) {
+  return {
+    subject: 'New booking: ' + memberName + ' — ' + ufaDateTime(b.start_ts),
+    message:
+      memberName + ' booked time with you.\n\n' +
+      'When:  ' + ufaDateTime(b.start_ts) + ' (' + b.duration_min + ' minutes)\n' +
+      'Email: ' + b.member_email + '\n' +
+      (b.topic ? 'They want to talk about: ' + b.topic + '\n' : '') +
+      '\nIt is on your Board Hours tab in the admin panel, where you can add it to ' +
+      'your calendar or cancel if something has come up.\n\n' +
+      'texasufa.org/portal'
+  };
+}
+
+function ufaCancelEmail(b, whoCancelled, otherName) {
+  return {
+    subject: 'Cancelled: ' + ufaDateTime(b.start_ts),
+    message:
+      'The meeting scheduled for ' + ufaDateTime(b.start_ts) + ' has been cancelled by ' + whoCancelled + '.\n\n' +
+      (otherName ? 'With: ' + otherName + '\n' : '') +
+      '\nNo action needed. You can book another time from the Board Hours tab whenever you like.\n\n' +
+      'texasufa.org/portal'
+  };
+}
+
+function ufaApprovalEmail(name) {
+  return {
+    subject: 'Your UFA portal account is approved',
+    message:
+      'Hi ' + (name || 'there') + ',\n\n' +
+      'Your dues have been confirmed and your member portal account is active. You can sign in now.\n\n' +
+      'What is in there:\n' +
+      '  - Check in at meetings and track your points\n' +
+      '  - Recruiting guides, the resume book, and mock interviews\n' +
+      '  - Book time with any board member\n\n' +
+      'texasufa.org/portal\n\n' +
+      'Welcome to UFA.'
+  };
+}
+
+function ufaPendingEmailToBoard(name, email, role) {
+  return {
+    subject: 'New member awaiting approval: ' + name,
+    message:
+      name + ' signed up for the member portal and is waiting on approval.\n\n' +
+      'Email: ' + email + '\n' +
+      'Requested role: ' + (role || 'General Member') + '\n\n' +
+      'Cross-reference their Venmo payment, then approve them in the admin panel ' +
+      'under Approvals.\n\n' +
+      'texasufa.org/portal'
+  };
+}
+
+/* ── Wiring ──────────────────────────────────────────────────────── */
+
+/** Fire-and-forget both sides of a new booking. */
+function notifyBookingCreated(b, boardName, memberName) {
+  var m = ufaBookingEmailToMember(b, boardName);
+  ufaSendEmail(b.member_email, m.subject, m.message);
+  var d = ufaBookingEmailToBoard(b, memberName);
+  ufaSendEmail(b.board_email, d.subject, d.message);
+}
+
+/** Tells whichever side did not click cancel. */
+function notifyBookingCancelled(b, cancelledByEmail, boardName, memberName) {
+  var byMember = String(cancelledByEmail).toLowerCase() === String(b.member_email).toLowerCase();
+  var e = byMember
+    ? ufaCancelEmail(b, memberName, memberName)
+    : ufaCancelEmail(b, boardName, boardName);
+  ufaSendEmail(byMember ? b.board_email : b.member_email, e.subject, e.message);
+}
+
+/** Emails the whole board that somebody is waiting in the queue. */
+async function notifyBoardOfPendingSignup(name, email, role) {
+  try {
+    var r = await sb.from('members').select('email, role').in('role', ['Board', 'President']);
+    var e = ufaPendingEmailToBoard(name, email, role);
+    (r.data || []).forEach(function (m) { ufaSendEmail(m.email, e.subject, e.message); });
+  } catch (err) { /* silent — signup already succeeded */ }
+}
+
+
+/* ── Announcements to the whole membership ───────────────────────── */
+
+/**
+ * Emails every approved member. Deliberately gated behind a confirmation
+ * that states the real number, because on the EmailJS free tier this is
+ * the one action that can burn a monthly quota in a single click.
+ */
+async function emailAnnouncementToAll() {
+  var msg = (document.getElementById('announce-text') || {}).value || '';
+  msg = msg.trim();
+  if (!msg) { ufaAlert('announce-alert', 'err', 'Write the announcement first.'); return; }
+
+  await loadEmailConfig();
+  if (!emailCfg.enabled) {
+    ufaAlert('announce-alert', 'err', 'Email notifications are not set up yet — see the Notifications card below.');
+    return;
+  }
+
+  var r = await sb.from('members').select('email, name, status');
+  var people = (r.data || []).filter(function (m) { return m.status !== 'pending' && m.email; });
+  if (!people.length) { ufaAlert('announce-alert', 'err', 'No members to email.'); return; }
+
+  var proceed = window.confirm(
+    'This sends ' + people.length + ' separate emails.\n\n' +
+    'The EmailJS free plan allows 200 per month across everything, including ' +
+    'booking confirmations. If you are on the free plan this will likely exhaust it.\n\n' +
+    'Send anyway?'
+  );
+  if (!proceed) return;
+
+  var btn = document.getElementById('announce-email-btn');
+  if (btn) { btn.disabled = true; }
+  var sent = 0, failed = 0;
+
+  for (var i = 0; i < people.length; i++) {
+    if (btn) btn.textContent = 'Sending ' + (i + 1) + ' of ' + people.length + '…';
+    var res = await ufaSendEmail(
+      people[i].email,
+      'UFA announcement',
+      'Hi ' + (people[i].name || 'there') + ',\n\n' + msg + '\n\ntexasufa.org/portal'
+    );
+    if (res && res.ok) sent++; else failed++;
+    // EmailJS rate-limits bursts; a short gap keeps the batch reliable.
+    await new Promise(function (r2) { setTimeout(r2, 350); });
+  }
+
+  if (btn) { btn.disabled = false; btn.textContent = 'Also email all members'; }
+  ufaAlert('announce-alert', failed ? 'err' : 'ok',
+    'Sent ' + sent + ' emails' + (failed ? ', ' + failed + ' failed' : '') + '.');
+}
+
+/** The zero-cost alternative: paste into BCC in your own email client. */
+async function copyAllMemberEmails() {
+  var r = await sb.from('members').select('email, status');
+  var list = (r.data || [])
+    .filter(function (m) { return m.status !== 'pending' && m.email; })
+    .map(function (m) { return m.email; });
+  if (!list.length) { ufaAlert('announce-alert', 'err', 'No member emails found.'); return; }
+  var text = list.join(', ');
+  var done = function () {
+    ufaAlert('announce-alert', 'ok',
+      'Copied ' + list.length + ' addresses. Paste them into the BCC field of one email — ' +
+      'free, instant, and it does not touch your EmailJS quota.');
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(done, function () { window.prompt('Copy these:', text); });
+  } else {
+    window.prompt('Copy these:', text);
+  }
+}
+
+
+/* ── Settings UI ─────────────────────────────────────────────────── */
+
+async function loadEmailSettings() {
+  await loadEmailConfig();
+  var set = function (id, v) { var el = document.getElementById(id); if (el) el.value = v || ''; };
+  set('email-service', emailCfg.service);
+  set('email-template', emailCfg.template);
+  set('email-from', emailCfg.from_name || 'UFA');
+  set('email-key', emailCfg.public_key);
+  var chk = document.getElementById('email-enabled');
+  if (chk) chk.checked = !!emailCfg.enabled;
+  var st = document.getElementById('email-status');
+  if (st) {
+    st.innerHTML = emailCfg.enabled
+      ? '<span class="ufa-pill ufa-pill-green">On</span>'
+      : '<span class="ufa-pill ufa-pill-grey">Off</span>';
+  }
+}
+
+async function saveEmailSettings() {
+  var cfg = {
+    enabled: document.getElementById('email-enabled').checked,
+    service: (document.getElementById('email-service').value || '').trim(),
+    template: (document.getElementById('email-template').value || '').trim(),
+    from_name: (document.getElementById('email-from').value || 'UFA').trim(),
+    public_key: (document.getElementById('email-key').value || '').trim()
+  };
+  if (cfg.enabled && (!cfg.service || !cfg.template)) {
+    ufaAlert('announce-alert', 'err', 'Both the service ID and template ID are needed to turn this on.');
+    return;
+  }
+  var r = await ufaSetSetting('email_config', cfg);
+  if (r.error) { ufaAlert('announce-alert', 'err', 'Could not save: ' + r.error.message); return; }
+  emailCfg = cfg;
+  await loadEmailSettings();
+  ufaAlert('announce-alert', 'ok', cfg.enabled
+    ? 'Notifications are on. Send yourself a test below.'
+    : 'Notifications turned off.');
+}
+
+async function sendTestEmail() {
+  await loadEmailConfig();
+  if (!emailCfg.enabled) { ufaAlert('announce-alert', 'err', 'Turn notifications on and save first.'); return; }
+  var btn = document.getElementById('email-test-btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
+  var res = await ufaSendEmail(
+    ufaEmail(),
+    'UFA portal — test email',
+    'This is a test from the member portal.\n\n' +
+    'If you are reading it, booking confirmations and approval notices will go out correctly.\n\n' +
+    'texasufa.org/portal'
+  );
+  if (btn) { btn.disabled = false; btn.textContent = 'Send me a test'; }
+  ufaAlert('announce-alert', res.ok ? 'ok' : 'err', res.ok
+    ? 'Sent to ' + ufaEmail() + '. Check your inbox, and your spam folder if it is not there.'
+    : 'Failed: ' + (res.error || 'unknown') + '. Check the service and template IDs.');
 }
 
 
@@ -10376,6 +11670,18 @@ function renderRunner() {
           '</div>' +
           '<div class="ufa-q-text">' + ufaEsc(q.q) + '</div>' +
           (q.n ? '<div class="ufa-q-hint"><strong>Listen for:</strong> ' + ufaEsc(q.n) + '</div>' : '') +
+          // Technical questions carry a full model answer so an interviewer
+          // who is not a finance major can still judge one. Collapsed by
+          // default — reading it before they answer biases the scoring.
+          (q.a
+            ? '<div style="margin-top:14px;">' +
+                '<button class="ufa-btn-ghost ufa-btn-sm" onclick="toggleIvAnswer()" id="iv-ans-btn">Show model answer</button>' +
+                '<div id="iv-ans-box" style="display:none;margin-top:12px;padding:14px 16px;background:#fff;' +
+                  'border:1px solid rgba(46,74,46,0.16);border-radius:6px;font-size:13px;line-height:1.7;color:#3A4A3A;">' +
+                  ufaEsc(q.a) +
+                '</div>' +
+              '</div>'
+            : '') +
         '</div>' +
         '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px;">' +
           '<button class="ufa-btn-ghost" onclick="ivQuestion(-1)"' + (sec.idx === 0 ? ' disabled' : '') + '>&larr; Previous</button>' +
@@ -10440,6 +11746,15 @@ function ivQuestion(d) {
   var qid = sec.questions[next].id;
   if (IV.run.asked.indexOf(qid) === -1) IV.run.asked.push(qid);
   renderRunner();
+}
+
+function toggleIvAnswer() {
+  var box = document.getElementById('iv-ans-box');
+  var btn = document.getElementById('iv-ans-btn');
+  if (!box) return;
+  var open = box.style.display !== 'none';
+  box.style.display = open ? 'none' : '';
+  if (btn) btn.textContent = open ? 'Show model answer' : 'Hide model answer';
 }
 
 function ivSetScore(n) {
@@ -11006,6 +12321,19 @@ function renderMockTracks() {
 
 function pickMockTrack(id) {
   MOCK.track = id;
+
+  // A worked case is a twenty-minute exercise, not a ninety-second answer,
+  // so default the controls to something usable instead of making the
+  // member notice and change them.
+  var count = document.getElementById('mock-count');
+  var secs = document.getElementById('mock-seconds');
+  if (id === 'cases') {
+    if (count) count.value = '5';
+    if (secs) secs.value = '0';
+  } else if (secs && secs.value === '0') {
+    if (secs) secs.value = '90';
+    if (count) count.value = '8';
+  }
   Array.prototype.forEach.call(document.querySelectorAll('#mock-industries [data-track]'), function (el) {
     var on = el.dataset.track === id;
     el.style.borderColor = on ? '#3D6B3D' : 'rgba(46,74,46,0.12)';
@@ -11200,6 +12528,455 @@ function renderMockStats() {
       '</div>' +
     '</div>';
   }).join('');
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   PORTAL v2 — PART C
+   Recruiting Timeline · Alumni Directory · Stock Pitch Archive
+
+   All three follow the same pattern: one pane that members read, with the
+   board's add and edit controls appearing inline for board accounts. That
+   beats a separate admin screen — you manage the thing while looking at
+   it, and there is one layout to keep consistent instead of two.
+
+   Alumni and Pitches ship hidden. The board fills them in, then flips a
+   visibility switch. That switch is enforced by RLS in the database, not
+   just here, so an unpublished directory is genuinely unreadable rather
+   than merely unlinked.
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* ══════════════════════════════════════════════════════════════════
+   1. RECRUITING TIMELINE
+   ══════════════════════════════════════════════════════════════════ */
+
+var timelineRows = [];
+
+const TL_CATEGORIES = ['Investment Banking', 'Consulting', 'Private Equity',
+                       'Hedge Fund', 'Asset Management', 'Other'];
+
+async function loadTimeline() {
+  var box = document.getElementById('timeline-list');
+  if (box) box.innerHTML = '<div class="ufa-empty">Loading…</div>';
+  var r = await sb.from('recruiting_timeline').select('*').order('deadline', { ascending: true });
+  timelineRows = r.data || [];
+  var admin = document.getElementById('timeline-admin');
+  if (admin) admin.style.display = ufaIsBoard() ? '' : 'none';
+  renderTimeline();
+}
+
+function ufaDaysUntil(d) {
+  if (!d) return null;
+  var target = new Date(d + 'T23:59:59');
+  return Math.ceil((target - new Date()) / 86400000);
+}
+
+function renderTimeline() {
+  var box = document.getElementById('timeline-list');
+  if (!box) return;
+  var cat = (document.getElementById('tl-filter-cat') || {}).value || '';
+  var yr = (document.getElementById('tl-filter-year') || {}).value || '';
+  var hidePast = (document.getElementById('tl-hide-past') || {}).checked;
+
+  var rows = timelineRows.filter(function (t) {
+    if (cat && t.category !== cat) return false;
+    if (yr && t.target_year && t.target_year !== yr) return false;
+    if (hidePast && t.deadline && ufaDaysUntil(t.deadline) < 0) return false;
+    return true;
+  });
+
+  if (!rows.length) {
+    box.innerHTML = '<div class="ufa-empty">' +
+      (timelineRows.length
+        ? 'Nothing matches those filters.'
+        : 'No deadlines posted yet.' + (ufaIsBoard() ? ' Add the first one below.' : ' Check back soon.')) +
+      '</div>';
+    return;
+  }
+
+  box.innerHTML = rows.map(function (t) {
+    var days = ufaDaysUntil(t.deadline);
+    var urgency = 'grey', when = 'No deadline set';
+    if (days !== null) {
+      if (days < 0) { urgency = 'grey'; when = 'Closed'; }
+      else if (days === 0) { urgency = 'red'; when = 'Closes today'; }
+      else if (days <= 7) { urgency = 'red'; when = days + ' day' + (days === 1 ? '' : 's') + ' left'; }
+      else if (days <= 30) { urgency = 'amber'; when = days + ' days left'; }
+      else { urgency = 'green'; when = days + ' days left'; }
+    }
+    return '<div class="ufa-card ufa-card-tight" style="margin-bottom:12px;' +
+        (days !== null && days < 0 ? 'opacity:0.55;' : '') + '">' +
+      '<div style="display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;align-items:flex-start;">' +
+        '<div style="flex:1;min-width:200px;">' +
+          '<div style="font-size:15px;font-weight:600;color:#1C2B1C;">' + ufaEsc(t.firm) + '</div>' +
+          '<div style="font-size:13px;color:#3A4A3A;margin-top:2px;">' + ufaEsc(t.program || '') + '</div>' +
+          '<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">' +
+            '<span class="ufa-pill ufa-pill-blue">' + ufaEsc(t.category) + '</span>' +
+            (t.target_year ? '<span class="ufa-pill ufa-pill-grey">' + ufaEsc(t.target_year) + '</span>' : '') +
+          '</div>' +
+          (t.notes ? '<div style="font-size:12px;color:#6B7D6B;margin-top:8px;line-height:1.6;">' + ufaEsc(t.notes) + '</div>' : '') +
+        '</div>' +
+        '<div style="text-align:right;min-width:140px;">' +
+          '<span class="ufa-pill ufa-pill-' + urgency + '">' + when + '</span>' +
+          (t.opens_on ? '<div style="font-size:12px;color:#6B7D6B;margin-top:8px;">Opens ' + ufaDate(t.opens_on) + '</div>' : '') +
+          (t.deadline ? '<div style="font-size:13px;color:#1C2B1C;font-weight:600;margin-top:2px;">Due ' + ufaDate(t.deadline) + '</div>' : '') +
+          '<div style="margin-top:10px;display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;">' +
+            (t.url ? '<a class="ufa-btn-ghost ufa-btn-sm" style="text-decoration:none;" target="_blank" rel="noopener" href="' + ufaEsc(t.url) + '">Apply</a>' : '') +
+            (ufaIsBoard() ? '<button class="ufa-btn-ghost ufa-btn-sm ufa-btn-danger" onclick="deleteTimelineRow(\'' + t.id + '\')">Delete</button>' : '') +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+async function addTimelineRow() {
+  var firm = (document.getElementById('tl-firm').value || '').trim();
+  if (!firm) { ufaAlert('timeline-alert', 'err', 'The firm name is required.'); return; }
+  var row = {
+    firm: firm,
+    program: (document.getElementById('tl-program').value || '').trim() || null,
+    category: document.getElementById('tl-category').value,
+    target_year: document.getElementById('tl-year').value || null,
+    opens_on: document.getElementById('tl-opens').value || null,
+    deadline: document.getElementById('tl-deadline').value || null,
+    url: (document.getElementById('tl-url').value || '').trim() || null,
+    notes: (document.getElementById('tl-notes').value || '').trim() || null
+  };
+  var res = await sb.from('recruiting_timeline').insert(row);
+  if (res.error) { ufaAlert('timeline-alert', 'err', 'Could not add: ' + res.error.message); return; }
+  ['tl-firm', 'tl-program', 'tl-url', 'tl-notes', 'tl-opens', 'tl-deadline'].forEach(function (id) {
+    var el = document.getElementById(id); if (el) el.value = '';
+  });
+  await loadTimeline();
+  ufaAlert('timeline-alert', 'ok', 'Added ' + firm + '.');
+}
+
+async function deleteTimelineRow(id) {
+  if (!window.confirm('Remove this deadline?')) return;
+  await sb.from('recruiting_timeline').delete().eq('id', id);
+  await loadTimeline();
+}
+
+
+/* ══════════════════════════════════════════════════════════════════
+   2. ALUMNI DIRECTORY
+   ══════════════════════════════════════════════════════════════════ */
+
+var alumniRows = [];
+
+async function loadAlumni() {
+  var box = document.getElementById('alumni-list');
+  if (box) box.innerHTML = '<div class="ufa-empty">Loading…</div>';
+  var r = await sb.from('alumni').select('*').order('firm', { ascending: true });
+  alumniRows = r.data || [];
+
+  var admin = document.getElementById('alumni-admin');
+  if (admin) admin.style.display = ufaIsBoard() ? '' : 'none';
+  if (ufaIsBoard()) await renderVisibilityToggle('alumni', 'visibility_alumni');
+  renderAlumni();
+}
+
+function renderAlumni() {
+  var box = document.getElementById('alumni-list');
+  if (!box) return;
+  var q = ((document.getElementById('al-search') || {}).value || '').trim().toLowerCase();
+  var ind = (document.getElementById('al-industry') || {}).value || '';
+  var chatOnly = (document.getElementById('al-chat-only') || {}).checked;
+
+  var rows = alumniRows.filter(function (a) {
+    if (ind && a.industry !== ind) return false;
+    if (chatOnly && !a.open_to_chat) return false;
+    if (!q) return true;
+    return [a.name, a.firm, a.role, a.city, a.industry, a.grad_year]
+      .join(' ').toLowerCase().indexOf(q) !== -1;
+  });
+
+  var count = document.getElementById('alumni-count');
+  if (count) count.textContent = rows.length + ' of ' + alumniRows.length + ' alumni';
+
+  if (!rows.length) {
+    box.innerHTML = '<div class="ufa-empty">' +
+      (alumniRows.length ? 'Nobody matches that search.' :
+        'The directory is empty.' + (ufaIsBoard() ? ' Add someone below.' : '')) + '</div>';
+    return;
+  }
+
+  box.innerHTML = '<div class="ufa-board-grid">' + rows.map(function (a) {
+    var initials = String(a.name || '?').trim().split(/\s+/)
+      .map(function (w) { return w[0]; }).slice(0, 2).join('').toUpperCase();
+    return '<div class="ufa-board-card">' +
+      '<div style="display:flex;gap:12px;align-items:flex-start;">' +
+        '<div class="ufa-board-avatar" style="margin-bottom:0;width:44px;height:44px;flex:0 0 44px;font-size:16px;">' +
+          ufaEsc(initials) + '</div>' +
+        '<div style="flex:1;min-width:0;">' +
+          '<div class="ufa-board-name" style="font-size:15px;">' + ufaEsc(a.name) + '</div>' +
+          '<div style="font-size:12px;color:#6B7D6B;margin-top:2px;">' +
+            ufaEsc([a.grad_year ? 'Class of ' + a.grad_year : '', a.ufa_role].filter(Boolean).join(' · ')) + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div style="margin-top:14px;">' +
+        '<div style="font-size:14px;font-weight:600;color:#1C2B1C;">' + ufaEsc(a.firm || '—') + '</div>' +
+        '<div style="font-size:13px;color:#3A4A3A;margin-top:2px;">' + ufaEsc(a.role || '') + '</div>' +
+        '<div style="font-size:12px;color:#6B7D6B;margin-top:4px;">' +
+          ufaEsc([a.industry, a.city].filter(Boolean).join(' · ')) + '</div>' +
+      '</div>' +
+      (a.open_to_chat
+        ? '<div style="margin-top:12px;"><span class="ufa-pill ufa-pill-green">Open to coffee chats</span></div>'
+        : '<div style="margin-top:12px;"><span class="ufa-pill ufa-pill-grey">Not taking chats</span></div>') +
+      (a.notes && ufaIsBoard()
+        ? '<div style="font-size:12px;color:#8A6216;background:#FBF0DC;border-radius:5px;padding:8px 10px;margin-top:10px;line-height:1.5;">' +
+          'Board note: ' + ufaEsc(a.notes) + '</div>' : '') +
+      '<div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;">' +
+        (a.email ? '<a class="ufa-btn-ghost ufa-btn-sm" style="text-decoration:none;" href="mailto:' + ufaEsc(a.email) + '">Email</a>' : '') +
+        (a.linkedin ? '<a class="ufa-btn-ghost ufa-btn-sm" style="text-decoration:none;" target="_blank" rel="noopener" href="' + ufaEsc(a.linkedin) + '">LinkedIn</a>' : '') +
+        (ufaIsBoard() ? '<button class="ufa-btn-ghost ufa-btn-sm ufa-btn-danger" onclick="deleteAlumni(\'' + a.id + '\')">Remove</button>' : '') +
+      '</div>' +
+    '</div>';
+  }).join('') + '</div>';
+}
+
+async function addAlumni() {
+  var name = (document.getElementById('al-name').value || '').trim();
+  if (!name) { ufaAlert('alumni-alert', 'err', 'A name is required.'); return; }
+  var row = {
+    name: name,
+    grad_year: (document.getElementById('al-grad').value || '').trim() || null,
+    firm: (document.getElementById('al-firm').value || '').trim() || null,
+    role: (document.getElementById('al-role').value || '').trim() || null,
+    industry: document.getElementById('al-ind-new').value || null,
+    city: (document.getElementById('al-city').value || '').trim() || null,
+    email: (document.getElementById('al-email').value || '').trim().toLowerCase() || null,
+    linkedin: (document.getElementById('al-linkedin').value || '').trim() || null,
+    ufa_role: (document.getElementById('al-ufarole').value || '').trim() || null,
+    notes: (document.getElementById('al-notes').value || '').trim() || null,
+    open_to_chat: document.getElementById('al-open').checked
+  };
+  var res = await sb.from('alumni').insert(row);
+  if (res.error) { ufaAlert('alumni-alert', 'err', 'Could not add: ' + res.error.message); return; }
+  ['al-name', 'al-grad', 'al-firm', 'al-role', 'al-city', 'al-email', 'al-linkedin', 'al-ufarole', 'al-notes']
+    .forEach(function (id) { var el = document.getElementById(id); if (el) el.value = ''; });
+  await loadAlumni();
+  ufaAlert('alumni-alert', 'ok', 'Added ' + name + '.');
+}
+
+async function deleteAlumni(id) {
+  if (!window.confirm('Remove this alum from the directory?')) return;
+  await sb.from('alumni').delete().eq('id', id);
+  await loadAlumni();
+}
+
+/** Bulk import from a pasted CSV — faster than typing eighty alumni. */
+function handleAlumniCsv(files) {
+  if (!files || !files.length) return;
+  var reader = new FileReader();
+  reader.onload = async function () {
+    var rows = ufaParseCsv(String(reader.result));
+    if (rows.length < 2) { ufaAlert('alumni-alert', 'err', 'That file has no data rows.'); return; }
+    var h = rows[0];
+    var col = function (needles) { return ufaFindCol(h, needles); };
+    var iName = col(['name']), iFirm = col(['firm', 'company', 'employer']),
+        iRole = col(['role', 'title', 'position']), iGrad = col(['grad', 'class', 'year']),
+        iEmail = col(['email']), iLink = col(['linkedin', 'link']),
+        iCity = col(['city', 'location']), iInd = col(['industry', 'sector']);
+    if (iName === -1) { ufaAlert('alumni-alert', 'err', 'No name column found in that file.'); return; }
+
+    var payload = rows.slice(1).map(function (r) {
+      return {
+        name: String(r[iName] || '').trim(),
+        firm: iFirm > -1 ? String(r[iFirm] || '').trim() || null : null,
+        role: iRole > -1 ? String(r[iRole] || '').trim() || null : null,
+        grad_year: iGrad > -1 ? String(r[iGrad] || '').trim() || null : null,
+        email: iEmail > -1 ? String(r[iEmail] || '').trim().toLowerCase() || null : null,
+        linkedin: iLink > -1 ? String(r[iLink] || '').trim() || null : null,
+        city: iCity > -1 ? String(r[iCity] || '').trim() || null : null,
+        industry: iInd > -1 ? String(r[iInd] || '').trim() || null : null,
+        open_to_chat: true
+      };
+    }).filter(function (a) { return a.name; });
+
+    if (!payload.length) { ufaAlert('alumni-alert', 'err', 'No usable rows.'); return; }
+    if (!window.confirm('Import ' + payload.length + ' alumni?')) return;
+
+    var res = await sb.from('alumni').insert(payload);
+    if (res.error) { ufaAlert('alumni-alert', 'err', 'Import failed: ' + res.error.message); return; }
+    await loadAlumni();
+    ufaAlert('alumni-alert', 'ok', 'Imported ' + payload.length + ' alumni.');
+  };
+  reader.readAsText(files[0]);
+}
+
+
+/* ══════════════════════════════════════════════════════════════════
+   3. STOCK PITCH ARCHIVE
+   ══════════════════════════════════════════════════════════════════ */
+
+var pitchRows = [];
+
+async function loadPitches() {
+  var box = document.getElementById('pitch-list');
+  if (box) box.innerHTML = '<div class="ufa-empty">Loading…</div>';
+  var r = await sb.from('pitches').select('*').order('pitched_on', { ascending: false });
+  pitchRows = r.data || [];
+
+  var admin = document.getElementById('pitch-admin');
+  if (admin) admin.style.display = ufaIsBoard() ? '' : 'none';
+  if (ufaIsBoard()) await renderVisibilityToggle('pitches', 'visibility_pitches');
+  ufaWireDrop('pitch-dropzone', handlePitchFile);
+  renderPitches();
+}
+
+function renderPitches() {
+  var box = document.getElementById('pitch-list');
+  if (!box) return;
+  var q = ((document.getElementById('pi-search') || {}).value || '').trim().toLowerCase();
+  var dir = (document.getElementById('pi-direction') || {}).value || '';
+
+  var rows = pitchRows.filter(function (p) {
+    if (dir && p.direction !== dir) return false;
+    if (!q) return true;
+    return [p.ticker, p.company, p.author_name, p.thesis].join(' ').toLowerCase().indexOf(q) !== -1;
+  });
+
+  if (!rows.length) {
+    box.innerHTML = '<div class="ufa-empty">' +
+      (pitchRows.length ? 'Nothing matches that search.' :
+        'No pitches archived yet.' + (ufaIsBoard() ? ' Add the first one below.' : '')) + '</div>';
+    return;
+  }
+
+  box.innerHTML = rows.map(function (p) {
+    return '<div class="ufa-card ufa-card-tight" style="margin-bottom:12px;">' +
+      '<div style="display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;align-items:flex-start;">' +
+        '<div style="flex:1;min-width:220px;">' +
+          '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">' +
+            '<span style="font-family:\'Playfair Display\',Georgia,serif;font-size:19px;color:#1C2B1C;font-weight:600;">' +
+              ufaEsc(p.ticker) + '</span>' +
+            '<span class="ufa-pill ufa-pill-' + (p.direction === 'short' ? 'red' : 'green') + '">' +
+              (p.direction === 'short' ? 'Short' : 'Long') + '</span>' +
+          '</div>' +
+          '<div style="font-size:13px;color:#3A4A3A;margin-top:3px;">' + ufaEsc(p.company || '') + '</div>' +
+          (p.thesis ? '<div style="font-size:13px;color:#4A5A4A;line-height:1.65;margin-top:10px;">' + ufaEsc(p.thesis) + '</div>' : '') +
+          '<div style="font-size:12px;color:#6B7D6B;margin-top:10px;">' +
+            ufaEsc([p.author_name, p.team, p.pitched_on ? ufaDate(p.pitched_on) : ''].filter(Boolean).join(' · ')) +
+          '</div>' +
+          (p.outcome ? '<div style="font-size:12px;color:#3A4A5A;background:#F1F5F9;border-radius:5px;padding:8px 10px;margin-top:10px;line-height:1.55;">' +
+            'What happened: ' + ufaEsc(p.outcome) + '</div>' : '') +
+        '</div>' +
+        '<div style="text-align:right;min-width:130px;">' +
+          (p.target_price != null ? '<div style="font-size:12px;color:#6B7D6B;">Target</div>' +
+            '<div style="font-size:17px;font-weight:600;color:#1C2B1C;">$' + Number(p.target_price).toFixed(2) + '</div>' : '') +
+          (p.price_then != null ? '<div style="font-size:12px;color:#6B7D6B;margin-top:6px;">Pitched at $' +
+            Number(p.price_then).toFixed(2) + '</div>' : '') +
+          '<div style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;">' +
+            (p.file_path ? '<button class="ufa-btn-ghost ufa-btn-sm" onclick="openPitchFile(\'' + ufaEsc(p.file_path) + '\')">Open deck</button>' : '') +
+            (ufaIsBoard() ? '<button class="ufa-btn-ghost ufa-btn-sm ufa-btn-danger" onclick="deletePitch(\'' + p.id + '\')">Remove</button>' : '') +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+var pendingPitchFile = null;
+
+function handlePitchFile(files) {
+  if (!files || !files.length) return;
+  var f = files[0];
+  if (f.size > 25 * 1024 * 1024) {
+    ufaAlert('pitch-alert', 'err', 'That file is ' + ufaBytes(f.size) + '. The limit is 25 MB.');
+    return;
+  }
+  pendingPitchFile = f;
+  var el = document.getElementById('pitch-file-label');
+  if (el) el.textContent = f.name + ' (' + ufaBytes(f.size) + ') — ready to attach';
+}
+
+async function addPitch() {
+  var ticker = (document.getElementById('pi-ticker').value || '').trim().toUpperCase();
+  if (!ticker) { ufaAlert('pitch-alert', 'err', 'A ticker is required.'); return; }
+
+  var row = {
+    ticker: ticker,
+    company: (document.getElementById('pi-company').value || '').trim() || null,
+    direction: document.getElementById('pi-dir-new').value,
+    thesis: (document.getElementById('pi-thesis').value || '').trim() || null,
+    author_name: (document.getElementById('pi-author').value || '').trim() || null,
+    team: (document.getElementById('pi-team').value || '').trim() || null,
+    pitched_on: document.getElementById('pi-date').value || null,
+    target_price: parseFloat(document.getElementById('pi-target').value) || null,
+    price_then: parseFloat(document.getElementById('pi-price').value) || null,
+    outcome: (document.getElementById('pi-outcome').value || '').trim() || null
+  };
+
+  if (pendingPitchFile) {
+    var safe = ticker.replace(/[^A-Z0-9]/g, '') + '_' + Date.now() + '_' +
+      pendingPitchFile.name.replace(/[^A-Za-z0-9._-]/g, '_');
+    var up = await sb.storage.from('pitches').upload(safe, pendingPitchFile, { upsert: false });
+    if (up.error) { ufaAlert('pitch-alert', 'err', 'File upload failed: ' + up.error.message); return; }
+    row.file_path = safe;
+    row.file_name = pendingPitchFile.name;
+  }
+
+  var res = await sb.from('pitches').insert(row);
+  if (res.error) { ufaAlert('pitch-alert', 'err', 'Could not save: ' + res.error.message); return; }
+
+  ['pi-ticker', 'pi-company', 'pi-thesis', 'pi-author', 'pi-team', 'pi-date',
+   'pi-target', 'pi-price', 'pi-outcome'].forEach(function (id) {
+    var el = document.getElementById(id); if (el) el.value = '';
+  });
+  pendingPitchFile = null;
+  var lbl = document.getElementById('pitch-file-label');
+  if (lbl) lbl.textContent = '';
+  await loadPitches();
+  ufaAlert('pitch-alert', 'ok', 'Archived ' + ticker + '.');
+}
+
+async function openPitchFile(path) {
+  var r = await sb.storage.from('pitches').createSignedUrl(path, 300);
+  if (r.error || !r.data) { ufaAlert('pitch-alert', 'err', 'Could not open that file.'); return; }
+  window.open(r.data.signedUrl, '_blank', 'noopener');
+}
+
+async function deletePitch(id) {
+  if (!window.confirm('Remove this pitch from the archive?')) return;
+  var row = pitchRows.filter(function (p) { return p.id === id; })[0];
+  if (row && row.file_path) { try { await sb.storage.from('pitches').remove([row.file_path]); } catch (e) {} }
+  await sb.from('pitches').delete().eq('id', id);
+  await loadPitches();
+}
+
+
+/* ══════════════════════════════════════════════════════════════════
+   SHARED: publish / unpublish a feature to members
+   ══════════════════════════════════════════════════════════════════ */
+
+async function renderVisibilityToggle(uiKey, settingKey) {
+  var box = document.getElementById(uiKey + '-visibility');
+  if (!box) return;
+  var cur = await ufaGetSetting(settingKey);
+  var on = !!(cur && cur.members);
+  box.innerHTML =
+    '<div class="ufa-alert ' + (on ? 'ufa-alert-ok' : 'ufa-alert-info') + '" style="display:flex;' +
+      'align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;">' +
+      '<div>' +
+        '<strong>' + (on ? 'Visible to all members' : 'Board only') + '</strong><br>' +
+        (on
+          ? 'Every signed-in member can see this.'
+          : 'Members cannot see this yet — not just hidden in the menu, the database refuses to return it. Publish when you are ready.') +
+      '</div>' +
+      '<button class="ufa-btn' + (on ? '-ghost' : '') + '" onclick="toggleVisibility(\'' + uiKey + '\',\'' + settingKey + '\',' + (!on) + ')">' +
+        (on ? 'Make board only' : 'Publish to members') +
+      '</button>' +
+    '</div>';
+}
+
+async function toggleVisibility(uiKey, settingKey, turnOn) {
+  if (turnOn && !window.confirm('Publish this to every signed-in member?')) return;
+  var r = await ufaSetSetting(settingKey, { members: !!turnOn });
+  if (r.error) { ufaAlert(uiKey + '-alert', 'err', 'Could not change: ' + r.error.message); return; }
+  await renderVisibilityToggle(uiKey, settingKey);
+  ufaAlert(uiKey + '-alert', 'ok', turnOn ? 'Published to members.' : 'Hidden from members again.');
 }
 
 </script>
@@ -12005,6 +13782,10 @@ async function portalSignup() {
     email, name, eid, role, major, grad_year: gradYear,
     semester: 'Fall 2026', status: 'pending'
   });
+
+  // Let the board know somebody is waiting, so the approval queue does not
+  // sit unnoticed for a week. Never blocks signup.
+  try { await loadEmailConfig(); notifyBoardOfPendingSignup(name, email, role); } catch (e) {}
 
   // Sign out immediately to prevent auto-session bypassing pending check
   await sb.auth.signOut();
