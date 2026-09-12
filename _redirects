@@ -1,0 +1,14 @@
+# Old Wix URLs -> current pages
+# Format: /source  /destination  status
+
+/investment       /teams          301
+/analysts         /teams          301
+/get-in-touch     /contact        301
+
+# Old Wix blog: collection page and every post under it
+/blog-2-1         /publications   301
+/blog-2-1/*       /publications   301
+
+# Wix leftovers
+/cart             /               301
+/home             /               301
