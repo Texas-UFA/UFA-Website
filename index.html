@@ -5543,7 +5543,7 @@ button[onclick="pubFlipbookNext()"]:hover {
                 <button type="button" class="ufa-board-card" style="text-align:center;cursor:pointer;padding:12px;" data-level="medium" onclick="toggleMockLevel('medium')">Medium</button>
                 <button type="button" class="ufa-board-card" style="text-align:center;cursor:pointer;padding:12px;" data-level="hard" onclick="toggleMockLevel('hard')">Hard</button>
               </div>
-              <div class="ufa-note">Easy assumes no background. Medium assumes a semester of it. Hard is what a sophomore recruiting for banking gets asked. Pick more than one to mix.</div>
+
             </div>
 
             <div class="ufa-card">
@@ -5563,7 +5563,7 @@ button[onclick="pubFlipbookNext()"]:hover {
                 <button class="ufa-btn" onclick="startMock()" id="mock-start-btn" disabled>Start session</button>
                 <label style="display:flex;align-items:center;gap:7px;font-size:13px;color:#3A4A3A;cursor:pointer;">
                   <input type="checkbox" id="mock-skip-seen" checked style="width:15px;height:15px;cursor:pointer;">
-                  Skip questions I've got down, ask again the ones I flagged for review
+                  Don't repeat questions I've marked as known
                 </label>
               </div>
               <div id="mock-setup-note" class="ufa-note"></div>
@@ -5588,8 +5588,11 @@ button[onclick="pubFlipbookNext()"]:hover {
               <div class="ufa-q-text" id="mock-q-text"></div>
             </div>
 
-            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;">
-              <button class="ufa-btn-ghost" onclick="toggleMockFramework()" id="mock-reveal-btn">Show answer framework</button>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;align-items:center;">
+              <button class="ufa-btn" onclick="toggleMockFramework()" id="mock-reveal-btn">Answer out loud, then reveal &darr;</button>
+            </div>
+            <div class="ufa-note" style="margin-bottom:20px;" id="mock-reveal-hint">
+              Revealing stops the clock.
             </div>
 
             <div class="ufa-card" id="mock-framework" style="display:none;background:#F7F9F7;">
@@ -6764,6 +6767,7 @@ button[onclick="pubFlipbookNext()"]:hover {
 }
 .ufa-timer.is-warn  { color: #B8791B; }
 .ufa-timer.is-over  { color: #A33A32; }
+.ufa-timer.is-stopped { color: #9BA89B; }
 .ufa-timer-sub {
   font-size: 12px;
   color: #6B7D6B;
@@ -14127,7 +14131,9 @@ function showMockQuestion() {
     (left ? '  ·  ' + left + ' more available' : '  ·  last one in this pool');
   document.getElementById('mock-framework').style.display = 'none';
   document.getElementById('mock-framework-text').textContent = q.f;
-  document.getElementById('mock-reveal-btn').textContent = 'Show answer framework';
+  document.getElementById('mock-reveal-btn').textContent = 'Answer out loud, then reveal \u2193';
+  var rh = document.getElementById('mock-reveal-hint');
+  if (rh) rh.textContent = 'Revealing stops the clock.';
   var isLast = MOCK.idx >= MOCK.queue.length - 1;
   document.getElementById('mock-next-btn').textContent = isLast ? 'Finish — that\'s the pool' : 'Next question →';
 
@@ -14181,7 +14187,20 @@ function toggleMockFramework() {
   var box = document.getElementById('mock-framework');
   var open = box.style.display !== 'none';
   box.style.display = open ? 'none' : '';
-  document.getElementById('mock-reveal-btn').textContent = open ? 'Show answer framework' : 'Hide framework';
+  document.getElementById('mock-reveal-btn').textContent =
+    open ? 'Show the framework again' : 'Hide framework';
+
+  /* Looking at the answer ends the timed attempt, so stop the clock on the
+     first reveal. Hiding it again does not restart — you have already seen
+     it, and a timer that resumes would be measuring nothing. */
+  if (!open && MOCK.handle) {
+    clearInterval(MOCK.handle);
+    MOCK.handle = null;
+    var t = document.getElementById('mock-timer');
+    if (t) t.className = 'ufa-timer is-stopped';
+    var hint = document.getElementById('mock-reveal-hint');
+    if (hint) hint.textContent = 'Clock stopped. Read the framework, then move on.';
+  }
   if (!open) box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
@@ -14284,6 +14303,39 @@ function renderMockStats() {
       '</div>' +
     '</div>';
   }).join('');
+}
+
+/* Wipes practice history so a member can run the bank again from scratch.
+   Deliberately destructive and deliberately confirmed — the "don't repeat
+   known questions" filter is the whole reason someone would want this, and
+   clearing it silently would be worse than not offering it at all.
+   Passing null clears every track at once. */
+async function resetMockProgress(track) {
+  var t = MOCK_TRACKS.filter(function (x) { return x.id === track; })[0];
+  var label = track ? (t ? t.label : track) : 'every track';
+  if (!confirm('Reset your practice history for ' + label + '?\n\n' +
+               'Questions you marked as known or flagged for review become ' +
+               'available again, and your session count resets. ' +
+               'This cannot be undone.')) return;
+
+  var q = sb.from('mock_progress').delete().eq('email', ufaEmail());
+  if (track) q = q.eq('industry', track);
+  var r = await q;
+  if (r && r.error) {
+    ufaAlert('mock-alert', 'err', 'Could not reset — please try again.');
+    return;
+  }
+
+  if (track) delete MOCK.progress[track]; else MOCK.progress = {};
+  MOCK.sessionSeen = [];
+  MOCK.sessionMastered = [];
+  MOCK.sessionReview = [];
+  renderMockStats();
+  renderMockTracks();
+  updateMockSetupNote();
+  ufaAlert('mock-alert', 'ok', track
+    ? label + ' history cleared — the full question bank is available again.'
+    : 'All practice history cleared.');
 }
 
 
