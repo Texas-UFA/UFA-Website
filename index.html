@@ -5728,6 +5728,62 @@ button[onclick="pubFlipbookNext()"]:hover {
 
           <!-- Session Codes -->
           <div id="atab-content-sessions">
+            <!-- Recurring Weekly Meeting: set once, and a rolling window of
+                 upcoming weeks stays scheduled automatically. One-off extras
+                 still go through "Create Session Code" below. -->
+            <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:28px;margin-bottom:20px;">
+              <div style="font-size:15px;font-weight:500;color:#1C2B1C;margin-bottom:4px;">Recurring Weekly Meeting</div>
+              <div style="font-size:12px;color:#6B7D6B;margin-bottom:14px;">Set this up once. Every time this admin panel is opened, the schedule tops itself back up automatically — no need to add each week by hand. Use "Create Session Code" below for one-off extras alongside it.</div>
+              <div id="recurring-status" style="font-size:13px;color:#3A4A3A;margin-bottom:16px;">Loading…</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+                <div>
+                  <label style="font-size:12px;font-weight:500;color:#3A4A3A;display:block;margin-bottom:4px;">Event Name</label>
+                  <input id="rec-name" type="text" placeholder="General Meeting" style="width:100%;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;background:#F7F4EE;box-sizing:border-box;">
+                </div>
+                <div>
+                  <label style="font-size:12px;font-weight:500;color:#3A4A3A;display:block;margin-bottom:4px;">Code Prefix</label>
+                  <input id="rec-prefix" type="text" placeholder="UFA-WED" maxlength="16" style="width:100%;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;background:#F7F4EE;box-sizing:border-box;text-transform:uppercase;">
+                </div>
+                <div>
+                  <label style="font-size:12px;font-weight:500;color:#3A4A3A;display:block;margin-bottom:4px;">Day of Week</label>
+                  <select id="rec-weekday" style="width:100%;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;background:#F7F4EE;box-sizing:border-box;">
+                    <option value="0">Sunday</option>
+                    <option value="1">Monday</option>
+                    <option value="2">Tuesday</option>
+                    <option value="3" selected>Wednesday</option>
+                    <option value="4">Thursday</option>
+                    <option value="5">Friday</option>
+                    <option value="6">Saturday</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size:12px;font-weight:500;color:#3A4A3A;display:block;margin-bottom:4px;">Event Type</label>
+                  <select id="rec-type" style="width:100%;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;background:#F7F4EE;box-sizing:border-box;">
+                    <option value="Meeting">Meeting</option>
+                    <option value="Social">Social</option>
+                    <option value="Speaker">Speaker</option>
+                    <option value="Workshop">Workshop</option>
+                    <option value="Community Service">Community Service</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size:12px;font-weight:500;color:#3A4A3A;display:block;margin-bottom:4px;">Points</label>
+                  <input id="rec-points" type="number" value="1" min="1" max="10" style="width:100%;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;background:#F7F4EE;box-sizing:border-box;">
+                </div>
+                <div>
+                  <label style="font-size:12px;font-weight:500;color:#3A4A3A;display:block;margin-bottom:4px;">Keep Scheduled</label>
+                  <select id="rec-weeks" style="width:100%;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;background:#F7F4EE;box-sizing:border-box;">
+                    <option value="4">4 weeks ahead</option>
+                    <option value="8" selected>8 weeks ahead</option>
+                    <option value="12">12 weeks ahead</option>
+                    <option value="16">16 weeks ahead</option>
+                  </select>
+                </div>
+              </div>
+              <button onclick="saveRecurringMeeting()" style="background:#3D6B3D;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;padding:10px 24px;border-radius:4px;border:none;cursor:pointer;">Save &amp; schedule</button>
+              <button onclick="stopRecurringMeeting()" id="rec-stop-btn" style="display:none;margin-left:8px;background:#fff;color:#8b2e2e;border:1px solid rgba(200,50,50,0.3);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;padding:10px 20px;border-radius:4px;cursor:pointer;">Stop recurring</button>
+              <div id="recurring-msg" style="display:none;margin-top:10px;font-size:13px;"></div>
+            </div>
             <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:28px;margin-bottom:20px;">
               <div style="font-size:15px;font-weight:500;color:#1C2B1C;margin-bottom:16px;">Create Session Code</div>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
@@ -6582,6 +6638,14 @@ button[onclick="pubFlipbookNext()"]:hover {
   padding: 22px;
   display: flex;
   flex-direction: column;
+  /* Grid rows only stretch cards to match the tallest card in THAT row, so
+     a short bio two rows down could still end up a different height than a
+     long bio above it. A fixed min-height keeps every card the same size
+     regardless of row, and height:100% + the margin-top:auto below (on the
+     button wrapper) keeps the "Book time" button pinned to the same spot
+     at the bottom of every card. */
+  min-height: 300px;
+  height: 100%;
 }
 .ufa-board-avatar {
   width: 52px; height: 52px;
@@ -7396,7 +7460,12 @@ function renderBadges(attended) {
 // ── Leaderboard ──
 async function renderLeaderboard() {
   var role = (currentMember && currentMember.role) ? currentMember.role : '';
-  document.getElementById('leaderboard-tier-label').textContent = role || 'Your Tier';
+  // President and Board are one tier for leaderboard purposes — the
+  // President shouldn't be alone in a tier of one just because their role
+  // string is different from everyone else on the board.
+  var BOARD_TIER_ROLES = ['Board', 'President'];
+  var isBoardTier = BOARD_TIER_ROLES.indexOf(role) !== -1;
+  document.getElementById('leaderboard-tier-label').textContent = (isBoardTier ? 'Board' : role) || 'Your Tier';
 
   var r1 = await sb.from('attendance').select('email, points');
   var r2 = await sb.from('members').select('email, name, role');
@@ -7474,7 +7543,9 @@ async function renderLeaderboard() {
   };
 
   renderList(ranked, 'leaderboard-all');
-  var tierMembers = ranked.filter(function(m){ return m.role === role; });
+  var tierMembers = ranked.filter(function(m){
+    return isBoardTier ? BOARD_TIER_ROLES.indexOf(m.role) !== -1 : m.role === role;
+  });
   renderList(tierMembers, 'leaderboard-tier');
 }
 
@@ -7753,6 +7824,8 @@ async function clearAnnouncement() {
 
 // ── Admin: Sessions ──
 async function loadAdminSessions() {
+  await ensureRecurringSessions();
+  loadRecurringMeetingUI();
   var el = document.getElementById('sessions-list');
   var res = await sb.from('sessions').select('*').order('meeting_date',{ascending:false});
   var sessions = res.data || [];
@@ -7809,6 +7882,131 @@ async function loadAdminSessions() {
       }).join('')
       + '</div>';
   }
+}
+
+/* ── Recurring Weekly Meeting ──
+   Turns the Sessions tab from a pure one-at-a-time record book into
+   something closer to a calendar: set the weekday, name, type and points
+   once, save it, and a rolling window of upcoming weeks stays scheduled
+   automatically. One-off extras (socials, speakers, etc.) still go through
+   the "Create Session Code" form above/below and live in the same list. */
+const RECURRING_SETTING_KEY = 'recurring_meeting';
+const REC_DAY_NAMES = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+function recFormatDate(d) {
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+function recCodeForDate(prefix, d) {
+  var mm = String(d.getMonth() + 1).padStart(2, '0');
+  var dd = String(d.getDate()).padStart(2, '0');
+  return prefix + '-' + mm + dd;
+}
+
+async function loadRecurringMeetingUI() {
+  var cfgRaw = await ufaGetSetting(RECURRING_SETTING_KEY);
+  var cfg = null;
+  try { cfg = cfgRaw ? JSON.parse(cfgRaw) : null; } catch (e) { cfg = null; }
+  var status = document.getElementById('recurring-status');
+  var stopBtn = document.getElementById('rec-stop-btn');
+  if (cfg) {
+    document.getElementById('rec-name').value = cfg.name || '';
+    document.getElementById('rec-prefix').value = cfg.prefix || '';
+    document.getElementById('rec-weekday').value = String(cfg.weekday);
+    document.getElementById('rec-type').value = cfg.type || 'Meeting';
+    document.getElementById('rec-points').value = cfg.points || 1;
+    document.getElementById('rec-weeks').value = String(cfg.weeksAhead || 8);
+    if (status) status.innerHTML = 'Currently scheduling <strong>' + ufaEsc(cfg.name) + '</strong> every ' +
+      REC_DAY_NAMES[cfg.weekday] + ', kept ' + cfg.weeksAhead + ' weeks out.';
+    if (stopBtn) stopBtn.style.display = '';
+  } else {
+    if (status) status.textContent = 'No recurring meeting set up yet.';
+    if (stopBtn) stopBtn.style.display = 'none';
+  }
+}
+
+async function saveRecurringMeeting() {
+  var name       = document.getElementById('rec-name').value.trim();
+  var prefix     = document.getElementById('rec-prefix').value.trim().toUpperCase().replace(/[^A-Z0-9-]/g, '');
+  var weekday    = parseInt(document.getElementById('rec-weekday').value);
+  var type       = document.getElementById('rec-type').value;
+  var points     = parseInt(document.getElementById('rec-points').value) || 1;
+  var weeksAhead = parseInt(document.getElementById('rec-weeks').value) || 8;
+  var msg = document.getElementById('recurring-msg');
+  if (!name || !prefix) {
+    msg.style.display = 'block'; msg.style.color = '#8b2e2e'; msg.textContent = 'Name and code prefix are required.';
+    return;
+  }
+  var cfg = { name: name, prefix: prefix, weekday: weekday, type: type, points: points, weeksAhead: weeksAhead };
+  var res = await ufaSetSetting(RECURRING_SETTING_KEY, JSON.stringify(cfg));
+  if (res.error) {
+    msg.style.display = 'block'; msg.style.color = '#8b2e2e'; msg.textContent = 'Error saving: ' + res.error.message;
+    return;
+  }
+  var added = await topUpRecurringSessions(cfg);
+  msg.style.display = 'block'; msg.style.color = '#2e6b2e';
+  msg.textContent = 'Saved. Scheduled ' + added + ' upcoming meeting' + (added !== 1 ? 's' : '') + '.';
+  await loadRecurringMeetingUI();
+  await loadAdminSessions();
+  setTimeout(function () { msg.style.display = 'none'; }, 4000);
+}
+
+async function stopRecurringMeeting() {
+  if (!confirm('Stop the recurring meeting? Sessions already scheduled stay on the calendar — this only stops new ones from being added automatically.')) return;
+  await sb.from('app_settings').delete().eq('key', RECURRING_SETTING_KEY);
+  await loadRecurringMeetingUI();
+}
+
+/**
+ * Fills in any missing occurrences between today and cfg.weeksAhead weeks
+ * out, skipping any date that already has a session under this prefix —
+ * so opening the admin panel repeatedly, or changing weeksAhead, never
+ * creates duplicates and never touches a session a board member has since
+ * edited or renamed. Returns how many were actually inserted.
+ */
+async function topUpRecurringSessions(cfg) {
+  if (!cfg || !cfg.prefix) return 0;
+
+  var existing = await sb.from('sessions').select('code').ilike('code', cfg.prefix + '-%');
+  var existingCodes = new Set((existing.data || []).map(function (r) { return r.code; }));
+
+  var today = new Date();
+  today.setHours(0, 0, 0, 0);
+  var d = new Date(today);
+  while (d.getDay() !== cfg.weekday) d.setDate(d.getDate() + 1);
+
+  var horizon = new Date(today);
+  horizon.setDate(horizon.getDate() + cfg.weeksAhead * 7);
+
+  var rows = [];
+  while (d <= horizon) {
+    var code = recCodeForDate(cfg.prefix, d);
+    if (!existingCodes.has(code)) {
+      rows.push({
+        code: code,
+        meeting_name: cfg.name,
+        meeting_date: recFormatDate(d),
+        event_type: cfg.type,
+        points: cfg.points,
+        active: 'false'
+      });
+    }
+    d.setDate(d.getDate() + 7);
+  }
+
+  if (!rows.length) return 0;
+  var ins = await sb.from('sessions').insert(rows);
+  if (ins.error) { console.error('Recurring session insert failed:', ins.error); return 0; }
+  return rows.length;
+}
+
+/** Runs every time the admin Sessions tab loads, so the schedule quietly
+ *  tops itself back up without anyone having to remember to click anything. */
+async function ensureRecurringSessions() {
+  var cfgRaw = await ufaGetSetting(RECURRING_SETTING_KEY);
+  if (!cfgRaw) return;
+  var cfg;
+  try { cfg = JSON.parse(cfgRaw); } catch (e) { return; }
+  await topUpRecurringSessions(cfg);
 }
 
 async function createSession() {
@@ -11126,14 +11324,26 @@ async function deleteMyResume() {
   if (!myResume) return;
   if (!confirm('Remove your resume? You will need to upload a new one before the book goes out.')) return;
   try {
-    await sb.storage.from('resumes').remove([myResume.file_path]);
-    var res = await sb.from('resume_submissions').delete().eq('email', ufaEmail());
+    var storageRes = await sb.storage.from('resumes').remove([myResume.file_path]);
+    if (storageRes.error) throw storageRes.error;
+
+    // .select() makes Supabase return the rows it actually deleted. Without
+    // it, a delete blocked by a permissions/RLS rule comes back with
+    // res.error === null and zero rows touched — the call "succeeds" while
+    // doing nothing, which is exactly what made this look like Remove was
+    // silently not working. Checking res.data catches that case instead of
+    // trusting the absence of an error.
+    var res = await sb.from('resume_submissions').delete().eq('email', ufaEmail()).select();
     if (res.error) throw res.error;
+    if (!res.data || !res.data.length) {
+      throw new Error('The resume record could not be deleted (permission issue).');
+    }
+
     myResume = null;
     ufaAlert('resume-alert', 'ok', 'Resume removed.');
     await renderMyResume();
   } catch (e) {
-    ufaAlert('resume-alert', 'err', 'Could not remove that file. Try again.');
+    ufaAlert('resume-alert', 'err', 'Could not remove that file: ' + (e.message || 'try again, or tell a board member if it keeps happening.'));
   }
 }
 
@@ -11616,7 +11826,7 @@ function renderBoardDirectory() {
         '<div>✉ <a href="mailto:' + ufaEsc(p.email) + '">' + ufaEsc(p.email) + '</a></div>' +
         (p.show_phone && p.phone ? '<div>☎ <a href="tel:' + ufaEsc(p.phone) + '">' + ufaEsc(p.phone) + '</a></div>' : '') +
       '</div>' +
-      '<div style="margin-top:16px;">' +
+      '<div style="margin-top:auto;padding-top:16px;">' +
         (p.booking_enabled && hasHours
           ? '<button class="ufa-btn" style="width:100%;" onclick="openBookingPanel(\'' + ufaEsc(p.email) + '\')">Book time</button>'
           : '<div style="font-size:12px;color:#6B7D6B;text-align:center;padding:8px;">' +
