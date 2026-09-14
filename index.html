@@ -5199,7 +5199,10 @@ button[onclick="pubFlipbookNext()"]:hover {
               <div id="leaderboard-all" style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;overflow:hidden;"></div>
             </div>
             <div>
-              <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:12px;">Your Tier (<span id="leaderboard-tier-label">—</span>)</div>
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+                <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;">Tier (<span id="leaderboard-tier-label">—</span>)</div>
+                <select id="leaderboard-tier-select" onchange="onLeaderboardTierPick(this.value)" style="display:none;font-size:12px;padding:4px 8px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;background:#F7F4EE;"></select>
+              </div>
               <div id="leaderboard-tier" style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;overflow:hidden;"></div>
             </div>
           </div>
@@ -6638,12 +6641,17 @@ button[onclick="pubFlipbookNext()"]:hover {
   padding: 22px;
   display: flex;
   flex-direction: column;
-  /* Grid rows only stretch cards to match the tallest card in THAT row, so
-     a short bio two rows down could still end up a different height than a
-     long bio above it. A fixed min-height keeps every card the same size
-     regardless of row, and height:100% + the margin-top:auto below (on the
-     button wrapper) keeps the "Book time" button pinned to the same spot
-     at the bottom of every card. */
+}
+/* Scoped to the Board Hours directory only — .ufa-board-card is reused by
+   the Mock Interview track/difficulty buttons too, which must NOT get a
+   forced height (that's what made those turn into empty boxes).
+   Grid rows only stretch cards to match the tallest card in THAT row, so a
+   short bio two rows down could still end up a different height than a
+   long bio above it. A fixed min-height keeps every directory card the
+   same size regardless of row, and height:100% + the margin-top:auto on
+   the button wrapper keeps "Book time" pinned to the same spot on every
+   card. */
+.ufa-board-grid .ufa-board-card {
   min-height: 300px;
   height: 100%;
 }
@@ -7458,14 +7466,20 @@ function renderBadges(attended) {
 }
 
 // ── Leaderboard ──
+var LB_SELECTED_TIER = null; // board's chosen tier override, persists across re-renders
+
+function lbTierKey(role, BOARD_TIER_ROLES) {
+  var r = role || 'General Member';
+  return BOARD_TIER_ROLES.indexOf(r) !== -1 ? 'Board' : r;
+}
+
 async function renderLeaderboard() {
   var role = (currentMember && currentMember.role) ? currentMember.role : '';
   // President and Board are one tier for leaderboard purposes — the
   // President shouldn't be alone in a tier of one just because their role
   // string is different from everyone else on the board.
   var BOARD_TIER_ROLES = ['Board', 'President'];
-  var isBoardTier = BOARD_TIER_ROLES.indexOf(role) !== -1;
-  document.getElementById('leaderboard-tier-label').textContent = (isBoardTier ? 'Board' : role) || 'Your Tier';
+  var myTierKey = lbTierKey(role, BOARD_TIER_ROLES);
 
   var r1 = await sb.from('attendance').select('email, points');
   var r2 = await sb.from('members').select('email, name, role');
@@ -7480,6 +7494,32 @@ async function renderLeaderboard() {
   }).sort(function(a,b){ return b.points - a.points; });
 
   var myEmail = currentUser.email;
+
+  // Board members can browse any tier, not just their own — everyone else
+  // just sees their own tier, same as before.
+  var tierSelect = document.getElementById('leaderboard-tier-select');
+  var effectiveTier = myTierKey;
+  if (tierSelect) {
+    if (ufaIsBoard()) {
+      var seen = {};
+      var options = [];
+      ranked.forEach(function(m) {
+        var key = lbTierKey(m.role, BOARD_TIER_ROLES);
+        if (!seen[key]) { seen[key] = true; options.push(key); }
+      });
+      options.sort();
+      if (LB_SELECTED_TIER === null || options.indexOf(LB_SELECTED_TIER) === -1) LB_SELECTED_TIER = myTierKey;
+      effectiveTier = LB_SELECTED_TIER;
+      tierSelect.style.display = '';
+      tierSelect.innerHTML = options.map(function(o) {
+        return '<option value="' + ufaEsc(o) + '"' + (o === effectiveTier ? ' selected' : '') + '>' + ufaEsc(o) + '</option>';
+      }).join('');
+    } else {
+      tierSelect.style.display = 'none';
+      LB_SELECTED_TIER = null;
+    }
+  }
+  document.getElementById('leaderboard-tier-label').textContent = effectiveTier || 'Your Tier';
 
   function buildRow(m, i, isMe) {
     var medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':'<span style="font-size:13px;color:#6B7D6B;font-weight:600;">'+(i+1)+'</span>';
@@ -7544,9 +7584,14 @@ async function renderLeaderboard() {
 
   renderList(ranked, 'leaderboard-all');
   var tierMembers = ranked.filter(function(m){
-    return isBoardTier ? BOARD_TIER_ROLES.indexOf(m.role) !== -1 : m.role === role;
+    return lbTierKey(m.role, BOARD_TIER_ROLES) === effectiveTier;
   });
   renderList(tierMembers, 'leaderboard-tier');
+}
+
+function onLeaderboardTierPick(val) {
+  LB_SELECTED_TIER = val;
+  renderLeaderboard();
 }
 
 // ── Logout ──
