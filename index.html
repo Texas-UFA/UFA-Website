@@ -8783,8 +8783,9 @@ ib: [
     f:'Because acquiring the company hands you its cash, which offsets what you paid. The cleaner framing: enterprise value should reflect the operating business, and idle cash is not an operating asset.' },
   { id:'ib8', d:'medium', q:'Walk me through WACC — what it is and how you would actually calculate it for a company.',
     f:'The blended required return across the capital structure. Cost of equity weighted by equity share plus after-tax cost of debt weighted by debt share. Cost of equity usually via CAPM: risk-free rate plus beta times the equity risk premium. Note that debt is cheaper because it is senior and the interest is tax-deductible.' },
-  { id:'ib9', d:'easy', q:'Why is debt cheaper than equity?',
-    f:'Lenders sit ahead of equity holders in the capital structure, so their risk is lower and their required return is lower. On top of that, interest is tax-deductible, which lowers the after-tax cost further. Add the limit: past a point more debt raises the risk of distress and pushes both costs up.' },
+  { id:'ib9', d:'easy',
+    q:'Why is debt cheaper than equity?',
+    f:'Two reasons. Lenders sit ahead of equity holders in the capital structure — they get paid first, and in a bankruptcy they are satisfied before owners see anything — so their risk is lower and the return they demand is lower. On top of that, interest is tax-deductible, which lowers the after-tax cost further. Then give the tradeoff, because an answer that stops at cheaper is incomplete. Debt is unforgiving: the payments are due whether the year went well or badly, and missing one can hand the company to its lenders. Equity is expensive and permanently dilutes the owners, but it never forces a default. Finish with the limit — past a point, more debt raises the risk of distress and pushes the cost of both debt and equity up, which is why the cheapest capital structure is not the one with the most debt.' },
   { id:'ib10', d:'medium', q:'Which is usually higher, the cost of equity or the cost of debt, and could that ever flip?',
     f:'Cost of equity is higher almost always, for seniority and tax reasons. It can compress in extreme cases — a deeply distressed borrower may face debt costs approaching or exceeding what equity demanded before the trouble started. Showing you know the rule and its edge is what earns credit.' },
   { id:'ib11', d:'medium', q:'Walk me through the three main ways you would value a company, and how you would expect them to rank against each other.',
@@ -8828,8 +8829,13 @@ ib: [
     },
     q:'Walk me through what happens to the statements when a company issues ${A} of stock.',
     f:'No income statement impact. Cash flow statement: ${A} inflow under financing. Balance sheet: cash up {A}, shareholders equity up {A}, so it balances. The point of the question is checking you do not treat raising money as earning money — nothing was sold, nothing was produced, the company simply exchanged ownership for cash.' },
-  { id:'ib30', d:'easy', q:'Why do we care about EBITDA and what does it miss?',
-    f:'It approximates operating cash generation before financing and tax choices, which makes companies comparable. It misses real capital intensity, working capital swings, and the fact that depreciation stands in for assets that genuinely wear out. Have the memorable version ready: EBITDA treats capex as if it were optional.' },
+  { id:'ib30', d:'easy',
+    q:'Why do bankers and investors care about EBITDA?',
+    f:'Because it approximates the cash the business generates from operations before the choices that differ between companies. Strip out interest and you have removed the effect of how the company chose to finance itself. Strip out tax and you have removed jurisdiction and tax structure. Strip out depreciation and amortisation and you have removed accounting judgments about asset lives. What is left is closer to the earning power of the business itself, which is what makes two companies comparable even when their balance sheets and domiciles are completely different. That is also why so many multiples are built on EBITDA rather than net income.' },
+
+  { id:'ib135', d:'medium',
+    q:'What does EBITDA miss, and when would it mislead you?',
+    f:'Three things, and the memorable version is worth having ready: EBITDA treats capex as if it were optional. First, capital intensity. A business that must constantly replace equipment shows the same EBITDA as one that does not, but far less cash actually reaches the owners — depreciation is a real cost standing in for assets that genuinely wear out. Second, working capital. A company funding growing receivables and inventory can post rising EBITDA while its bank balance falls. Third, interest and tax are real cash costs that get paid regardless of how convenient it is to exclude them. So EBITDA misleads most in capital-intensive industries and in highly levered companies. The honest framing: EBITDA is useful for comparison, not for measuring what an owner actually receives — and free cash flow is the number that does that.' },
   { id:'ib31', d:'hard', q:'A company you cover just missed earnings badly and the stock went up. Explain.',
     f:'Expectations were already worse than the print. Guidance may have improved, a buyback or a divestiture may have been announced, or the bad news may have been already priced in. The underlying idea: stocks move on the delta from expectations, not on absolute results.' },
   { id:'ib32', d:'medium', q:'Walk me through the difference between a strategic buyer and a financial buyer in an M and A process.',
@@ -8839,26 +8845,10 @@ ib: [
   { id:'ib34', d:'hard', q:'Tell me about a deal you have followed and what you thought of it.',
     f:'Name the parties, size and structure. State the strategic rationale in one sentence. Then give a view with a reason: the price, the synergy assumption, the regulatory risk, the fit. Close by naming what would tell you in two years whether it worked. Have one deal genuinely ready.' },
   { id:'ib35', d:'hard',
-    q:'There are two ways to structure an acquisition. In an asset sale the buyer purchases specific assets and the legal entity stays with the seller. In a stock sale the buyer purchases the shares and takes the company as it stands. Which structure does each side push for, and why?',
+    q:'An acquisition can be structured as an asset sale, where the buyer purchases specific assets and the legal entity stays with the seller, or a stock sale, where the buyer purchases the shares and takes the company as it stands. Which does each side push for, and why?',
     f:'The buyer wants an asset sale, for two reasons. It steps up the tax basis of what it bought, so it gets fresh depreciation deductions against future income. And it leaves the legal entity behind, which means unknown and contingent liabilities — litigation nobody has filed yet, environmental exposure, old tax positions — stay with the seller. The buyer can also cherry-pick, taking the assets it wants and declining the rest. The seller wants a stock sale, also for two reasons. It is a clean exit: the entity goes and every liability goes with it. And it is usually taxed once rather than twice, since a C-corp asset sale is taxed at the corporate level and again when proceeds are distributed to shareholders. Finish with the two points that show you have seen this in practice. First, the gap gets settled in price — a seller pushed into an asset sale demands compensation for the worse tax outcome. Second, this is mostly a private and middle-market issue; large public deals are almost always structured as stock deals or mergers, because you cannot practically buy the assets of a public company piece by piece.' },
-  { id:'ib36', d:'medium',
-    gen: function () {
-      var A = mockPick([50, 100, 150, 200]);
-      return { A: A };
-    },
-    q:'Walk me through the effect of a ${A} increase in accounts receivable.',
-    f:'No income statement impact — the revenue was already recognised, which is why a receivable exists at all. On the cash flow statement an increase in a working capital asset is a use of cash, so cash falls ${A}. On the balance sheet receivables are up {A} and cash is down {A}, so assets are unchanged and it balances. The idea to land: you have recognised revenue but not collected it, so growth in receivables quietly consumes cash.' },
   { id:'ib37', d:'medium', q:'Why can two companies with identical EBITDA have very different free cash flow?',
     f:'Different capital intensity, so different capex. Different working capital needs. Different interest burdens. Different cash tax rates. Different one-time items buried in the EBITDA adjustments. This is the practical case against treating EBITDA as cash flow, and having a concrete example ready makes the answer land.' },
-  { id:'ib39', d:'medium',
-    gen: function () {
-      var A = mockPick([40, 50, 80, 100]);
-      var T = mockPick([20, 25, 40]);
-      var TAX = A * T / 100;
-      return { A: A, T: T, TAX: TAX, NI: A - TAX };
-    },
-    q:'What happens to the three statements if a company writes off a bad receivable of ${A} at a {T}% tax rate?',
-    f:'Income statement: a bad debt expense of {A} reduces pretax income, and at {T}% the tax saving is ${TAX}, so net income falls ${NI}. Cash flow: net income down {NI}, add back the {A} non-cash write-off, so cash rises ${TAX} — purely the tax shield. Balance sheet: receivables down {A}, cash up {TAX}, so assets fall ${NI}; retained earnings down {NI}. It balances.' },
   { id:'ib40', d:'hard', q:'When would you use a levered DCF instead of an unlevered one?',
     f:'When you want equity value directly, or when the capital structure is central to the business rather than incidental. Financial institutions are the standard case, because for a bank debt is raw material rather than financing. In a levered DCF you project free cash flow to equity and discount at cost of equity instead of WACC.' },
   { id:'ib41', d:'hard', q:'Walk me through the treasury stock method — what it is and why we bother with it.',
@@ -8916,7 +8906,7 @@ ib: [
     f:'Cash exceeds market capitalization plus debt, so the market values the operating business at less than nothing. It happens in deep distress, in companies burning cash where the market expects the balance to be destroyed, and occasionally in genuine mispricings. Worth investigating rather than assuming a free lunch.' },
   { id:'ib65', d:'medium', q:'Explain accretion and dilution in one minute.',
     f:'Compare the acquirer standalone EPS to combined pro forma EPS after the deal, including new interest, foregone interest on cash used, and new shares issued. Higher is accretive, lower is dilutive. The shortcut: accretive when the acquirer P/E exceeds the target effective P/E after the premium. Close by saying it is a screen, not a judgment on deal quality.' },
-  { id:'ib66', d:'easy', q:'Walk me through gross, operating, and net margin, and tell me what each one is actually telling you about a business.',
+  { id:'ib66', d:'medium', q:'Walk me through gross, operating, and net margin, and tell me what each one is actually telling you about a business.',
     f:'Gross margin is pricing power and direct cost efficiency. Operating margin adds overhead and shows how well the whole operation converts revenue to profit. Net margin includes financing and tax, so it reflects choices unrelated to operations. Comparing the three across peers tells you where a company is winning or losing.' },
   { id:'ib67', d:'hard', q:'Is a company with no debt being run well?',
     f:'Not necessarily. Zero debt may mean a conservative balance sheet in a volatile business, which is prudent, or it may mean management is leaving cheap capital on the table and accepting a higher cost of capital than necessary. The answer depends on cash flow stability and reinvestment opportunities. Argue a position rather than sitting on the fence.' },
@@ -8924,20 +8914,12 @@ ib: [
     f:'Maintenance capex keeps the existing asset base running at current capacity; growth capex expands it. The distinction matters because free cash flow available to owners should be measured after maintenance capex but before growth capex, since growth is discretionary. Companies rarely disclose the split, so it usually has to be estimated.' },
   { id:'ib69', d:'hard', q:'Why do banks get valued differently from other companies?',
     f:'Debt is an operating input for a bank rather than financing, so enterprise value and EBITDA are meaningless. Instead you use price to book and price to tangible book, return on equity, and a dividend discount or excess returns model. Regulatory capital requirements also constrain growth in a way they do not for an industrial.' },
-  { id:'ib70', d:'medium', q:'Tell me the last thing you read about markets and what you took from it.',
-    f:'There is no framework here — this is a check on whether you actually follow markets. Name a specific piece, summarize the argument in two sentences, then give your own view including where you disagree. The failure mode is naming a publication instead of a specific piece.' },
+  { id:'ib70', d:'medium',
+    q:'What is the M and A market doing right now, and what is driving it?',
+    f:'They are checking whether you follow the business you are asking to join. Give a view with two or three drivers behind it rather than a headline. The drivers that move deal volume: interest rates and the cost of financing, since expensive debt kills leveraged deals first. Credit availability, meaning whether lenders are willing to underwrite. Valuation gaps between what buyers will pay and what sellers expect, which stall processes when they widen. Regulatory posture, since a more aggressive antitrust environment deters large strategic combinations. And corporate confidence, because boards do not approve transformative deals when the outlook is uncertain. Then name one recent deal or trend as evidence you are actually reading. Close by connecting it to the firm: what does this environment mean for the group you are interviewing with — are they busier in restructuring, in sponsor work, in mid-market deals. That last step is what separates a real answer from a recitation.' },
 
   /* ---------- EASY: arithmetic only, no vocabulary required ---------- */
 
-  { id:'ib71', d:'easy',
-    gen: function () {
-      var REV = mockPick([200, 400, 500, 800]);
-      var GM  = mockPick([25, 40, 50, 60]);
-      var GP  = REV * GM / 100;
-      return { REV: REV, GM: GM, GP: GP, COGS: REV - GP };
-    },
-    q:'A company has revenue of ${REV} million and cost of goods sold of ${COGS} million. What is gross profit, and what is the gross margin?',
-    f:'Gross profit is revenue minus COGS: {REV} minus {COGS} is ${GP} million. Gross margin is gross profit over revenue: {GP} divided by {REV} is {GM}%. Do not stop at the number — say what it means. A {GM}% gross margin is what is left to cover everything below the line: salaries, rent, marketing, interest, tax.' },
 
   { id:'ib72', d:'easy',
     gen: function () {
@@ -8949,17 +8931,6 @@ ib: [
     q:'A company has ${ASSETS} of assets and ${LIABS} of liabilities. What is shareholders equity? And what happens to equity if the company borrows another ${BORROW}?',
     f:'Equity is assets minus liabilities: {ASSETS} minus {LIABS} is ${EQ}. On the borrowing, cash goes up {BORROW} so assets become ${NEWA}, and debt goes up {BORROW} so liabilities become ${NEWL}. Equity is unchanged at ${EQ}. That is the whole point of the second half of the question — borrowing changes the size of the balance sheet, not the owners stake. Nobody gave the company anything; it took on an obligation.' },
 
-  { id:'ib73', d:'easy',
-    gen: function () {
-      var REV  = mockPick([400, 600, 1000]);
-      var OPEX = REV * mockPick([60, 70, 75]) / 100;
-      var T    = mockPick([20, 25, 30, 40]);
-      var EBIT = REV - OPEX;
-      var TAX  = EBIT * T / 100;
-      return { REV: REV, OPEX: OPEX, T: T, EBIT: EBIT, TAX: TAX, NI: EBIT - TAX, MGN: (EBIT - TAX) / REV * 100 };
-    },
-    q:'A company has revenue of ${REV}, operating expenses of ${OPEX}, and a {T}% tax rate. What is net income?',
-    f:'Operating income is revenue minus operating expenses: {REV} minus {OPEX} is ${EBIT}. Tax is {T}% of that, which is ${TAX}. Net income is ${NI}. Walk down the statement in order and say each line out loud — interviewers are listening for whether you have a process, not whether you can do arithmetic fast. Worth adding: that is a {MGN}% net margin.' },
 
   /* ---------- MEDIUM: framework plus one step of reasoning ---------- */
 
@@ -8973,19 +8944,6 @@ ib: [
     q:'Depreciation increases by ${D}. Walk me through the three statements at a {T}% tax rate.',
     f:'Income statement: operating income down {D}, taxes down {TAX}, net income down {NI}. Cash flow statement: start at net income down {NI}, add back the {D} of non-cash depreciation, so cash is up ${CASH}. Balance sheet: cash up {CASH}, PP and E down {D}, so assets are down {ASSETS}; retained earnings down {NI}, so the other side is down {ASSETS} too. It balances. Say the numbers slowly and in the same order every time — the order is what makes it sound rehearsed in the good way.' },
 
-  { id:'ib75', d:'medium',
-    gen: function () {
-      var SH = mockPick([20, 40, 50, 100]);
-      var PX = mockPick([10, 15, 20, 25]);
-      var MC = SH * PX;
-      var DEBT = mockPick([100, 200, 400]);
-      // Cash stays below debt so the bridge always yields net debt, not net
-      // cash — the framework's wording assumes a positive figure.
-      var CASH = DEBT * mockPick([25, 50]) / 100;
-      return { SH: SH, PX: PX, MC: MC, DEBT: DEBT, CASH: CASH, ND: DEBT - CASH, EV: MC + DEBT - CASH };
-    },
-    q:'A company has {SH} million shares trading at ${PX}, ${DEBT} million of debt and ${CASH} million of cash. What is equity value and what is enterprise value?',
-    f:'Equity value is share count times price: {SH} times {PX} is ${MC} million. Enterprise value adds debt and subtracts cash: {MC} plus {DEBT} minus {CASH} is ${EV} million. Net debt is ${ND} million. Have the intuition ready for why cash comes out — when you buy the company you get its cash back, so it reduces what the business effectively costs you.' },
 
   { id:'ib76', d:'medium',
     gen: function () {
@@ -9002,18 +8960,6 @@ ib: [
 
   /* ---------- HARD: multi-step, or judgment with no clean answer ---------- */
 
-  { id:'ib77', d:'hard',
-    gen: function () {
-      var AE = mockPick([100, 200]);
-      var APE = mockPick([20, 25]);
-      var TE = mockPick([20, 40, 50]);
-      var TPE = mockPick([10, 12, 15]);
-      var newSh = TE * TPE / APE;
-      return { AE: AE, APE: APE, TE: TE, TPE: TPE, PRICE: TE * TPE,
-               COMB: AE + TE, NEWE: AE + TE };
-    },
-    q:'An acquirer earning ${AE} trades at {APE}x. It buys a target earning ${TE} for {TPE}x, all stock, no premium and no synergies. Is the deal accretive or dilutive, and why?',
-    f:'Accretive. The shortcut: compare the multiples. The acquirer is issuing stock worth {APE}x its own earnings to buy earnings priced at {TPE}x. Paying {TPE} for a dollar of earnings while your own dollar is valued at {APE} means you get more earnings than you give up. Combined earnings are ${COMB} and the share count rises by less than earnings do, so EPS goes up. Then say the thing that separates a good answer from a memorized one: accretion here is pure multiple arbitrage, not value creation. Nothing about the business improved.' },
 
   { id:'ib78', d:'hard',
     gen: function () {
@@ -9028,24 +8974,6 @@ ib: [
     q:'Final-year unlevered free cash flow is ${FCF}, WACC is {W}% and terminal growth is {G}%. What is terminal value, and what would make you distrust it?',
     f:'Perpetuity growth: grow the final year by {G}% to ${GROWN}, then divide by WACC minus growth, a spread of {SPREAD}%. That gives a terminal value of ${TV}. Note that this is {MULT}x the final-year cash flow. The second half of the question is the real one. That spread in the denominator is small, so the answer moves violently — shaving a point off WACC or adding a point of growth can swing terminal value by a third. And terminal value is usually the majority of total enterprise value, so most of your DCF rests on two assumptions you cannot observe. The honest framing is that a DCF produces a range and a sensitivity table, not a price target.' },
 
-  { id:'ib79', d:'hard',
-    gen: function () {
-      var EB = mockPick([100, 150, 200]);
-      var M = mockPick([8, 10]);
-      var EV = EB * M;
-      var DEBT = EV * mockPick([50, 60]) / 100;
-      var EQ = EV - DEBT;
-      var GROWTH = mockPick([20, 25, 50]);
-      var EXEB = EB * (1 + GROWTH / 100);
-      var EXEV = EXEB * M;
-      var PAID = DEBT * mockPick([30, 40]) / 100;
-      var EXDEBT = DEBT - PAID;
-      var EXEQ = EXEV - EXDEBT;
-      return { EB: EB, M: M, EV: EV, DEBT: DEBT, EQ: EQ, EXEB: EXEB, EXEV: EXEV,
-               PAID: PAID, EXDEBT: EXDEBT, EXEQ: EXEQ, MOM: EXEQ / EQ };
-    },
-    q:'A sponsor buys a company with ${EB} of EBITDA at {M}x, funded with ${DEBT} of debt. Five years later EBITDA is ${EXEB}, it exits at the same {M}x, and it has paid down ${PAID} of debt. What is the money multiple, and where did the return come from?',
-    f:'Entry: enterprise value is {EB} times {M} is ${EV}, less ${DEBT} of debt, so the sponsor writes a check for ${EQ}. Exit: {EXEB} times {M} is ${EXEV}, less remaining debt of ${EXDEBT}, so equity is ${EXEQ}. Money multiple is {EXEQ} over {EQ}, or {MOM}x. Now answer the second half, which is what is actually being tested. The return came from two places: EBITDA growth and debt paydown. It came from zero multiple expansion, because the exit multiple equals the entry multiple. That is the answer a sponsor wants to hear underwritten — a deal that needs the multiple to expand is a bet on market conditions you do not control.' },
 
   { id:'ib80', d:'easy', q:'How are the three financial statements linked?',
     f:'Three links, and knowing all three cold is the point of the question. First, net income from the bottom of the income statement becomes the top line of the cash flow statement. Second, net income also flows into retained earnings on the balance sheet, which is how a profitable year increases equity. Third, the ending cash balance from the bottom of the cash flow statement is the cash line at the top of the balance sheet. Everything else on the cash flow statement is explaining the change in a balance sheet item. If you can say those three sentences without hesitating, you have answered the most commonly asked question in banking.' },
@@ -9065,8 +8993,6 @@ ib: [
   { id:'ib85', d:'easy', q:'What does a share of stock actually represent?',
     f:'Ownership of a slice of a business, and with it a claim on whatever is left after everyone else is paid. Two things to add. First, shareholders are last in line — lenders, suppliers and employees get paid before owners see anything, which is why equity is riskier than debt. Second, what you own is a claim on future earnings, which is why the price moves on news about the future rather than on what the company earned last year. Tie it off: the price is what someone will pay today for that stream of future profits.' },
 
-  { id:'ib86', d:'easy', q:'What is the difference between debt and equity, from the company\'s point of view?',
-    f:'Debt is borrowed and has to be paid back on a schedule with interest, whether business is good or bad. Equity is sold, never repaid, and the buyer gets a share of the upside instead. The tradeoff is the whole answer. Debt is cheaper — interest is a fixed cost and it is tax-deductible — but it is unforgiving, because missing a payment can hand the company to the lenders. Equity is expensive and permanently dilutes the owners, but it never forces you into default. Capital structure is choosing where to sit between those two.' },
 
   { id:'ib87', d:'easy', q:'Why would a company borrow money instead of just using its own cash?',
     f:'Several honest reasons. It may not have enough cash for what it wants to do. Its cash may be earning a return, or needed as a buffer. Interest is tax-deductible, so borrowing is cheaper than it looks. And borrowing magnifies returns to the owners — if you can earn ten percent on money that costs you five, the spread belongs to shareholders. Then say the other half, because an answer with no downside sounds naive: leverage magnifies losses exactly as much as gains, and the payments are due regardless of how the year went.' },
@@ -9422,7 +9348,7 @@ ib: [
     q:'A company has ${CA} of current assets and ${CL} of current liabilities. What is the current ratio and what does it tell you?',
     f:'Current assets over current liabilities: {CA} over {CL} is {R}. That means short-term assets cover short-term obligations {R} times over, so on the face of it the company can meet what is due within the year. Then add the caveat that makes it a real answer: the ratio treats all current assets as equally available, which they are not. Inventory that is not selling and receivables that are not collecting both sit in the numerator while producing no cash. That is why analysts also look at the quick ratio, which strips inventory out.' },
 
-  { id:'ib121', d:'easy',
+  { id:'ib121', d:'medium',
     gen: function () {
       var R1 = mockPick([500, 800, 1000]);
       var M1 = mockPick([10, 12, 15]);
@@ -9471,8 +9397,9 @@ ib: [
 
   /* ── MEDIUM: concept gap ───────────────────────────────────────────── */
 
-  { id:'ib125', d:'medium', q:'Pitch me a stock.',
-    f:'Structure beats content here, and you must have two or three genuinely prepared — one long, ideally one short. The shape: name the company and what it does in one sentence. State your recommendation and the rough upside. Then give two or three reasons the market is wrong, which is the heart of the pitch — you are claiming to know something the price does not reflect, so say what it is and why it is not already priced in. Then a valuation anchor: what it trades at, what you think it is worth, how you got there. Then the catalyst that closes the gap and roughly when. Then the risks, honestly, and what would make you wrong. Two failure modes to avoid. Do not pitch a story everybody already knows, because there is no edge in consensus. And never pitch something you cannot defend at the second layer, since the interviewer will push on your weakest number and watch what you do when pressed.' },
+  { id:'ib125', d:'medium',
+    q:'Pitch me a stock. Give me two reasons why.',
+    f:'Keep it tight — a banking interviewer wants to see that you follow markets and can structure a view, not the depth a hedge fund would demand. Name the company and what it does in one sentence. State your recommendation. Then give exactly two reasons, and make them reasons the market is underappreciating something rather than facts everyone knows: a business change the market has not priced, a misunderstood segment, a margin trajectory people are missing, an end market inflecting. Anchor it with valuation — what it trades at, what you think it is worth. Then name one risk, honestly, and what would make you wrong. Two failure modes: pitching a consensus story, which shows no independent thinking, and pitching something you cannot defend one layer deeper, because the interviewer will push on your weakest number. Have two or three of these prepared and know them cold.' },
 
   /* ── HARD: calculation ─────────────────────────────────────────────── */
 
@@ -9592,7 +9519,28 @@ ib: [
     f:'Go top down, in order of seniority, and tie each layer to its cost. At the top sits the revolver, a credit line drawn as needed, cheapest and usually secured against receivables and inventory. Then term loans, the bulk of senior secured debt, often split into a tranche that amortises steadily and a larger one that is mostly interest-only with a balloon at maturity, sold to institutional investors. Below that, senior unsecured or high-yield notes: no collateral, fixed rate, longer dated, little or no amortisation, and usually not prepayable without penalty. At the bottom, subordinated or mezzanine debt, sometimes with payment-in-kind interest that accrues rather than paying cash, often carrying warrants as compensation for the risk. The organising principle to state explicitly: the further down you go, the later you get paid in a bankruptcy and the higher the return demanded. Sponsors want as much cheap senior debt as lenders will allow and fill the rest with more expensive layers only to the extent they must.' },
 
   { id:'ib134', d:'hard', q:'A company receives a hostile takeover approach. What can it actually do about it?',
-    f:'Separate the structural defences from the tactical responses. Structurally, a poison pill lets existing shareholders other than the bidder buy stock cheaply once the bidder crosses an ownership threshold, making the stake prohibitively expensive to build — it is the most effective single defence and is usually deployed to force negotiation rather than to block permanently. A staggered board means only part of the board is up for election each year, so a bidder cannot replace it in one proxy fight. Tactically, the company can find a white knight, a friendlier buyer willing to pay comparably. It can take on debt or buy back stock to make itself less attractive. It can divest the asset the acquirer actually wants. Then close with the judgment, because that is what is really being tested: the board duty is to shareholders, not to its own independence. Most defences exist to extract a higher price rather than to defeat the bid, and a board that fights a genuinely good offer to protect management is likely to be sued and lose.' }
+    f:'Separate the structural defences from the tactical responses. Structurally, a poison pill lets existing shareholders other than the bidder buy stock cheaply once the bidder crosses an ownership threshold, making the stake prohibitively expensive to build — it is the most effective single defence and is usually deployed to force negotiation rather than to block permanently. A staggered board means only part of the board is up for election each year, so a bidder cannot replace it in one proxy fight. Tactically, the company can find a white knight, a friendlier buyer willing to pay comparably. It can take on debt or buy back stock to make itself less attractive. It can divest the asset the acquirer actually wants. Then close with the judgment, because that is what is really being tested: the board duty is to shareholders, not to its own independence. Most defences exist to extract a higher price rather than to defeat the bid, and a board that fights a genuinely good offer to protect management is likely to be sued and lose.' },
+
+  { id:'ib136', d:'easy', q:'Why would a company want to go public?',
+    f:'A few real reasons, and giving more than one shows you have thought past the headline. To raise money — selling shares to the public brings in capital for growth without taking on debt. To give existing owners a way out, since founders, employees and early investors hold stock they cannot otherwise sell, and a listing creates a market for it. To use stock as currency for acquisitions and for paying employees. And for profile, since being listed brings credibility with customers and lenders. Then give the other side, because every company that stays private is choosing not to do this. Being public means quarterly reporting, heavy disclosure, real cost, and pressure from investors who may punish a decision that hurts this quarter and helps in three years. That trade is exactly why some large companies stay private for decades.' },
+
+  { id:'ib137', d:'easy', q:'What happens to the price of a bond when interest rates go up?',
+    f:'It falls, and being able to say why in one sentence matters more than knowing the direction. A bond pays a fixed coupon. If new bonds are being issued at higher rates, nobody will pay full price for your older one paying less — so its price drops until the return a buyer gets is competitive with what is available now. The relationship is inverse and it is mechanical, not sentiment. Two things worth adding. Longer-dated bonds move more than short ones, because more future payments get repriced. And this is why rising rates hurt almost every asset, not just bonds: the risk-free rate is the baseline every other return gets compared against, so when it rises, the price of everything else has to adjust down to compete.' },
+
+  { id:'ib138', d:'easy', q:'What is net present value, and how would you use it to decide something?',
+    f:'Net present value is what a series of future cash flows is worth in today money, minus what you have to spend to get them. You discount each future amount back at a rate that reflects both waiting and risk, add them up, and subtract the upfront cost. The decision rule is simple: if NPV is positive the investment creates value, if negative it destroys it, and between two options you take the higher NPV. Say why it beats simpler measures — unlike payback, it counts everything over the full life and it accounts for the fact that money arriving in year eight is worth less than money arriving next year. The catch, and worth raising yourself: NPV is only as good as the cash flow forecast and the discount rate, and small changes in either can flip the answer, which is why anyone serious runs it across a range.' },
+
+  { id:'ib139', d:'medium', q:'Walk me through what actually happens in a sell-side M and A process.',
+    f:'This is the job, so know the sequence. Preparation: the bank works with management to build the model, write the CIM, and agree the story and the list of buyers to approach. Outreach: contact potential buyers under an NDA, send a teaser first and the CIM once they sign. First round: buyers submit non-binding indications of interest with a value range, and the seller narrows to a shortlist. Second round: management presentations, a data room opens, buyers run diligence and get access to detail. Final bids come in, this time binding and with a marked-up purchase agreement. Then negotiation with one or two parties, signing, regulatory approvals if needed, and closing. Add what an analyst actually does in each phase — building the model, drafting the CIM, managing the buyer tracker, running the data room. And name the judgment: a broad process maximises competition but risks leaks and disruption, so the seller trades tension against confidentiality.' },
+
+  { id:'ib140', d:'medium', q:'When would you use an EV/EBITDA multiple rather than a P/E, and when would neither work?',
+    f:'Start with the rule that makes the choice mechanical: the numerator and denominator have to belong to the same people. EBITDA, EBIT and revenue are available to everyone who funded the business, so they pair with enterprise value. Net income and earnings per share are what is left for shareholders alone, so they pair with equity value or price. Pairing equity value with EBITDA is the classic error and interviewers listen for it. On the choice itself: use EV/EBITDA when companies have different capital structures or tax situations, since it strips both out and makes them comparable. Use P/E when comparing similar companies in the same market, or where capital structure is part of the business, which is why banks are valued on P/E and price to book. Neither works when earnings are negative or meaningless — an early-stage company, a business in a cyclical trough — and then you move to revenue multiples or something industry-specific, while saying out loud that a revenue multiple assumes a margin you have not proven.' },
+
+  { id:'ib141', d:'medium', q:'Is stock-based compensation a real expense?',
+    f:'Yes, and say so directly, because the question is testing whether you will be talked out of it. The argument for calling it fake is that no cash leaves the company. The reason that argument fails: the company paid for labour, and it paid using shares, which dilutes existing owners. If instead it had paid cash and then issued the same shares to raise that cash, nobody would question the expense — the economics are identical, only the sequence differs. So it is a real cost borne by shareholders through dilution. Then give the practical implication, which is the useful part. Companies love to report adjusted EBITDA or adjusted earnings with stock compensation added back, and for a business where it is a large share of total pay that adjustment can turn a loss into a profit on paper. When you see it, check the share count over several years, because that is where the cost actually shows up.' },
+
+  { id:'ib142', d:'medium', q:'What is the yield curve, and what does it mean when it inverts?',
+    f:'The yield curve plots the interest rate on government bonds against how long until they mature. Normally it slopes upward — lending money for ten years is riskier and less flexible than for two, so you demand more. An inversion means short-term rates are higher than long-term ones, which is backwards. Explain what it implies rather than just naming it: investors are accepting a lower rate to lock money up for longer, which they only do if they expect rates to be much lower in future, and rates fall when the economy weakens. So an inverted curve is the bond market pricing in a slowdown. Add the two things that make this a real answer. It has preceded most recent US recessions, which is why people watch it, but the lag between inversion and downturn has been long and inconsistent, so it is a signal rather than a timer. And it directly squeezes banks, which borrow short and lend long, so their margin compresses when the curve inverts.' }
 ],
 
 /* ── CONSULTING ────────────────────────────────────────────────────── */
@@ -9616,7 +9564,7 @@ consulting: [
     f:'Map the patient journey and find where time is actually lost. Separate demand-side levers (scheduling, triage, redirecting non-urgent cases) from supply-side (throughput per stage, bottleneck resources, discharge delays). Operations problems are usually a bottleneck problem — find it before optimizing anything else.' },
   { id:'co7', d:'medium', q:'Your client is deciding whether to build or buy a capability. How would you frame it?',
     f:'Time to market, cost, capability gap, integration risk, and strategic control. Build when it is core and you have time. Buy when speed matters and the capability is hard to develop. Partner when you want optionality. State which factor dominates in this case.' },
-  { id:'co8', d:'medium', q:'A retailer has two hundred stores and forty are unprofitable. Should they close them?',
+  { id:'co8', d:'medium', q:'A retailer has 200 stores and 40 are unprofitable. Should they close them?',
     f:'Not automatically. Check contribution margin versus fully loaded cost — a store covering variable costs still helps absorb overhead. Consider lease obligations, brand presence, online sales driven by physical footprint, and whether the losses are fixable. Segment the forty before deciding on any of them.' },
   { id:'co9', d:'medium', q:'How would you estimate the revenue of a single Starbucks location?',
     f:'Transactions per day times average ticket times days open. Build transactions from peak and off-peak hours and a throughput estimate. Sanity-check: does the annual figure make sense against rent and staffing? Saying the check out loud is a large part of the score.' },
@@ -9636,8 +9584,9 @@ consulting: [
     },
     q:'A manufacturer wants to cut costs by {C}%. Where do you look?',
     f:'Get the cost breakdown first — you cannot find {C}% without knowing what 100% is made of. Then work biggest line to smallest: procurement and supplier terms, labour productivity, footprint and utilisation, waste and yield, overhead. Flag which cuts are reversible and which permanently damage capability. Name what you would protect, because a target that size usually tempts someone into cutting the thing that made the company work.' },
-  { id:'co13', d:'easy', q:'A client tells you sales are down and calls that the problem — how would you explain to them the difference between a symptom and a root cause?',
-    f:'A symptom is what the client noticed; the root cause is why it happened. Falling sales is a symptom. Losing your best salespeople to a competitor is closer to a cause. Give a concrete example, and note that clients usually hire you having already diagnosed the symptom.' },
+  { id:'co13', d:'easy',
+    q:'A restaurant owner tells you his problem is that fewer people are coming in. Why is that not actually the problem?',
+    f:'Because it is what he noticed, not why it happened. Fewer customers is the result of something — and until you know what, you cannot fix it. Give him the distinction plainly: that is a symptom, like a fever. The cause might be a new restaurant opening nearby, prices that went up, the food or service getting worse, parking disappearing, or a change in the neighbourhood. Each of those needs a completely different response, and treating the symptom by, say, running a discount, might do nothing at all if the real problem is that the food got worse. So the useful first move is asking when it started and which customers stopped coming, because the timing and the pattern point at the cause.' },
   { id:'co14', d:'hard', q:'The data says one thing and the client executives all believe another. What do you do?',
     f:'Check your data and your method first. Then understand why they believe what they believe — they often know something the data does not capture. Present the finding without making anyone wrong, show your work, and let the evidence carry it. Being right and ignored is a failure.' },
   { id:'co15', d:'medium', q:'How would you evaluate whether a company should launch a subscription model?',
@@ -9650,7 +9599,7 @@ consulting: [
     f:'Lead with it, do not bury it. Show the options you tested and why each fails on the client own criteria. Quantify the cost of acting badly. Then offer what to watch for that would change the answer, so the client leaves with something to do even though the answer is to wait.' },
   { id:'co19', d:'medium', q:'A grocery chain wants to compete with delivery apps. Build or partner?',
     f:'Build gives you customer data, margin and control, but demands capability and capital. Partnering gives speed and reach but cedes the customer relationship and a margin slice. Decide based on how core delivery is to their strategy and how far behind they already are. Name the reversibility of each path.' },
-  { id:'co20', d:'medium',
+  { id:'co20', d:'easy',
     gen: function () {
       var BASE = mockPick([400000, 600000, 800000, 1200000]);
       var P1 = mockPick([15, 20, 25]);
@@ -9679,8 +9628,6 @@ consulting: [
     f:'Impact versus effort, sequencing dependencies, and reversibility. Pick things that are large, fast, and do not foreclose later options. Say plainly that a prioritization that keeps everything is not a prioritization.' },
   { id:'co29', d:'medium', q:'What questions would you ask a CEO in the first meeting?',
     f:'What does success look like in twelve months. What have you already tried. What is not on the table. Who disagrees with you internally and why. What would you do if I told you the answer is uncomfortable. The last two are what separate a good first meeting from a polite one.' },
-  { id:'co30', d:'medium', q:'How many haircuts are given in Austin in a year?',
-    f:'Population, split by how often different segments get haircuts per year, multiply and sum. Around a million people, average perhaps eight to ten cuts a year, so several million. State assumptions, do clean math, sanity-check against the number of salons implied.' },
   { id:'co31', d:'hard', q:'A company has been trying the same fix for two years and it has not worked. What now?',
     f:'Question the diagnosis rather than the execution. Two years of failed execution usually means the problem was misidentified. Restate the problem from evidence, test the original assumption explicitly, and be willing to tell them the premise was wrong.' },
   { id:'co32', d:'hard', q:'How would you evaluate an acquisition target for a consulting client?',
@@ -9701,13 +9648,14 @@ consulting: [
     f:'Buildings in Manhattan, split by height band, elevators per building by band, then sum. Or work from floor area and rules of thumb about elevators per square foot. Announce assumptions, do round arithmetic, sanity check the total. As always the number is not the point.' },
   { id:'co40', d:'hard', q:'A client wants to double revenue in three years. Is that realistic and how would you find out?',
     f:'Decompose the required growth rate and compare it to the market growth rate, their historical growth, and what competitors have achieved. Then map where the growth could come from: existing customers, new customers, new products, new geographies, acquisition. Size each. If the pieces do not add to double, say so and offer what is achievable.' },
-  { id:'co41', d:'easy', q:'Walk me through the difference between market share and share of wallet, and why that distinction actually changes a growth strategy.',
-    f:'Market share is your slice of total category sales. Share of wallet is your slice of an individual customer spending in the category. You can have low market share and high share of wallet with a small loyal base, which implies a very different growth strategy than the reverse.' },
+  { id:'co41', d:'easy',
+    q:'What is market share, and why do consultants care about it?',
+    f:'Market share is your slice of total sales in a category — your revenue divided by the whole market. Consultants care because it separates two very different stories that look identical on a revenue line. If your sales grew 10% and the market grew 20%, you got bigger and weaker at the same time, because someone else took share from you. If your sales were flat in a shrinking market, you actually gained ground. So the first question about any growth number is always: compared to what the market did. Growing slower than your market is losing, even though the revenue line went up.' },
   { id:'co42', d:'medium', q:'A retailer online sales are growing but total sales are flat. What is happening?',
     f:'Channel shift rather than growth — online is cannibalizing stores. Check whether total customers and total units are growing, whether the same customers moved channels, and what the margin difference is between channels. Online often carries lower margins after shipping and returns, so flat sales can mean falling profit.' },
   { id:'co43', d:'hard', q:'How would you advise a company facing a new competitor with venture funding selling below cost?',
     f:'Assess how long they can sustain it and what their path to profitability is. Do not match on price if you cannot outlast them. Instead defend the customers who value what you do differently, lock in the profitable segment with contracts or loyalty, cut costs to widen your survivable range, and consider ceding the price-sensitive segment deliberately.' },
-  { id:'co44', d:'easy', q:'What would you measure to know whether a company customer service is good?',
+  { id:'co44', d:'easy', q:'What would you measure to know whether a company is good at customer service?',
     f:'Resolution rate on first contact, time to resolution, cost per contact, satisfaction scores, and most importantly the downstream effect on retention and repeat purchase. Warn against optimizing handle time alone, which reduces cost and quietly increases churn.' },
   { id:'co45', d:'medium',
     gen: function () {
@@ -9718,7 +9666,7 @@ consulting: [
     f:'Ask first whether the {IDLE}% of idle capacity is seasonal, cyclical or structural — the answer changes everything that follows. Then the options: fill it with new demand, take on contract manufacturing for someone else, consolidate production from another site and close that one, shrink the footprint, or sell the plant outright. Evaluate each against fixed cost absorption, flexibility for future demand, and exit costs.' },
   { id:'co46', d:'medium', q:'How would you size the market for private tutoring in Texas?',
     f:'School-age population in Texas, share of families who use tutoring, sessions per year, price per session. Segment by test prep versus subject help if it helps. State assumptions, do round math, sanity check against the number of tutors implied by the total.' },
-  { id:'co47', d:'hard', q:'A nonprofit wants to increase impact with a flat budget. How do you approach it?',
+  { id:'co47', d:'medium', q:'A nonprofit wants to increase impact with a flat budget. How do you approach it?',
     f:'Define impact in measurable terms first, since that is usually the hard part. Then look at cost per unit of impact across programs and reallocate toward the most efficient. Consider partnerships to avoid duplicating capability, and cutting programs that are beloved but ineffective. The political difficulty of the last one is real and worth naming.' },
   { id:'co48', d:'medium', q:'Walk me through what a fighter brand is and when a company would actually want to launch one.',
     f:'A lower-priced brand launched to compete against a discount entrant without cutting price on your flagship. It makes sense when you have a premium brand worth protecting and a price-sensitive segment you are losing. The risks are cannibalization and confusing your own positioning, so it needs clear separation.' },
@@ -9728,14 +9676,11 @@ consulting: [
     f:'Compare the cost and margin captured against the capital and capability required. Consider supply security, quality control, and whether the supplier has power over you today. Against it: loss of flexibility, capital tied up, and the risk of being worse at the new activity than specialists. Integrate where the input is strategic and the supplier market is concentrated.' },
   { id:'co51', d:'hard', q:'The client CEO and COO want opposite things. How do you handle it?',
     f:'Find the shared objective underneath the disagreement and reframe around it. Get the data that would resolve the factual part of the dispute. Present options with tradeoffs rather than a single recommendation that picks a side prematurely. Understand the organizational stakes for each, and do not let the engagement become a proxy for their fight.' },
-  { id:'co52', d:'medium', q:'How many rolls of toilet paper are used in the US each year?',
-    f:'Population, rolls per person per week, times fifty-two. Add commercial usage as a separate bucket. Round numbers throughout. The sanity check at the end matters more than the estimate.' },
-  { id:'co53', d:'medium', q:'A client is considering a price increase but is afraid of losing customers. How do you help?',
-    f:'Segment customers by price sensitivity rather than treating them as one group. Estimate elasticity from past price moves or a test. Model margin gained against volume lost at several price points. Consider raising prices only on less sensitive segments or products, and pairing the increase with a visible improvement. Recommend a test market first.' },
   { id:'co54', d:'hard', q:'How would you turn around a business losing money in every segment?',
     f:'Stabilize cash first — that buys the time to do anything else. Then find whether any segment is viable at a smaller size, cut the ones that are structurally unprofitable, and reduce overhead to fit the surviving business. In parallel, diagnose whether the problem is cost, price, or demand, because the fix differs entirely. Be honest if the answer is an orderly wind-down.' },
-  { id:'co55', d:'easy', q:'Walk me through the difference between a fixed cost and a sunk cost, and why confusing the two leads to bad decisions.',
-    f:'A fixed cost does not vary with volume but is still ongoing and can be changed over time. A sunk cost is already spent and cannot be recovered, so it should never influence a forward-looking decision. The classic error is keeping a failing project alive because of what has already been spent on it.' },
+  { id:'co55', d:'easy',
+    q:'A company has already spent $2 million on a project that is not working. Should that money affect whether they keep going?',
+    f:'No, and this is one of the most useful ideas in business. That $2 million is gone either way — continuing will not bring it back, and stopping will not cost it again. The only question that matters is whether spending the next dollar produces more value than spending it somewhere else. Money already spent and unrecoverable is called a sunk cost, and it should never influence a forward-looking decision. Say why people get this wrong anyway: abandoning the project feels like admitting the $2 million was wasted, so it is emotionally easier to spend more chasing it. That is exactly how small failures turn into large ones.' },
   { id:'co56', d:'medium', q:'A company wants to expand into a country it knows nothing about. First three things you check?',
     f:'Market size and growth, and whether the product needs changing for local preferences. Competitive and regulatory landscape, including whether foreign ownership is restricted. Route to market — distribution, partners, and what it costs to reach customers. Then whether the company has the management capacity to run it, which is what usually breaks these.' },
   { id:'co57', d:'hard', q:'How would you decide which of ten possible projects to fund with limited budget?',
@@ -9744,8 +9689,9 @@ consulting: [
     f:'Check your work first, hard. Then raise it early and privately with your team lead and the client sponsor rather than saving it for the final presentation. Present the evidence and the method rather than the conclusion alone, and give them room to reach it themselves. Being right at the last minute in front of the board is how relationships end.' },
   { id:'co59', d:'medium', q:'How would you improve a restaurant profitability without raising prices?',
     f:'Increase table turns, reduce food waste and portion variance, renegotiate supply, shift the menu toward higher-margin dishes and steer customers to them, add high-margin categories like drinks, adjust staffing to match traffic patterns, and grow off-peak demand. Order them by effort against impact.' },
-  { id:'co60', d:'easy', q:'Say a client asks you to explain customer lifetime value and how they should actually use it — walk me through it.',
-    f:'The total profit expected from a customer over the relationship: margin per period times expected tenure, discounted. Use it to decide how much you can spend to acquire a customer, which segments deserve investment, and whether a retention program pays for itself. The common mistake is using revenue rather than margin.' },
+  { id:'co60', d:'easy',
+    q:'Why is it cheaper to keep an existing customer than to win a new one?',
+    f:'Because you already paid to get them. Winning a customer costs money — advertising, sales effort, discounts to get them to switch — and that spending is done and gone. Keeping one mostly costs good service. There is more to it than the acquisition cost, though, and saying so makes the answer stronger. Existing customers tend to buy more over time as they trust you, they cost less to serve because they know how the product works, and they refer other people. That is why a small improvement in retention often does more for profit than a big push on new sales, and why companies track how many customers they lose every year as closely as how many they win.' },
   { id:'co61', d:'hard', q:'A family business is passing to the next generation. What should they worry about?',
     f:'Governance and decision rights, whether the successor is capable and whether anyone will say so honestly, key employee retention through the transition, liquidity for family members who want out, tax and structure, and whether the strategy that worked for thirty years still works. The people problems here are harder than the financial ones.' },
   { id:'co62', d:'medium', q:'How do you know when a market is mature?',
@@ -9782,8 +9728,8 @@ consulting: [
       var VC = PX * VPCT / 100;
       return { PX: PX, VC: VC, CM: PX - VC, PCT: 100 - VPCT };
     },
-    q:'A product sells for ${PX} and costs ${VC} in materials and labour to produce. What is the contribution margin, and why does it matter more than gross profit in a case?',
-    f:'Contribution margin is price less variable cost: {PX} minus {VC} is ${CM} per unit, or {PCT}% of the price. It matters because it tells you what each additional unit contributes toward fixed costs and then to profit. That makes it the number you need for almost every decision in a case — whether to accept a lower-priced order, whether a price cut pays for itself, how many units break even. Gross profit tells you about the past; contribution margin tells you what happens if volume changes.' },
+    q:'A product sells for ${PX} and costs ${VC} to make. How much does each sale actually contribute to the business?',
+    f:'Each sale brings in {PX} and {VC} of that goes straight back out on materials and labour, so ${CM} is left over — {PCT}% of the price. That leftover is what covers everything else the business has to pay for regardless of how much it sells: rent, salaries, insurance. Once those are covered, it becomes profit. The term for it is contribution margin, and it is the number you need for almost any decision about volume — whether to take a cheaper order, whether a discount pays for itself, how many units you need to sell before you stop losing money.' },
 
   { id:'co73', d:'easy',
     gen: function () {
@@ -9837,11 +9783,14 @@ consulting: [
   { id:'co77', d:'easy',
     gen: function () {
       var INV = mockPick([100000, 250000, 500000]);
-      var SAVE = mockPick([25000, 50000, 100000]);
+      // Saving is derived from the cost so payback always lands between two
+      // and five years. Picking both independently could produce a 20-year
+      // payback, which no client would consider in the first place.
+      var SAVE = INV / mockPick([2, 4, 5]);
       return { INV: INV, SAVE: SAVE, YRS: INV / SAVE };
     },
-    q:'A client can spend ${INV} on equipment that saves ${SAVE} a year. What is the payback period, and what does that measure miss?',
-    f:'Payback is the investment divided by the annual saving: {INV} over {SAVE} is {YRS} years. Now the second half, which is the real question. Payback ignores everything after the payback date, so a project that pays back in {YRS} years and then produces nothing looks identical to one that produces for another decade. It also ignores the time value of money. It survives as a screen because it is fast and it proxies for risk, but a recommendation should rest on net present value, with payback as a supporting sanity check.' },
+    q:'A client can spend ${INV} on equipment that saves ${SAVE} a year. How long until it pays for itself?',
+    f:'Divide the cost by the annual saving: {INV} over {SAVE} is {YRS} years. That is the payback period — how long before the money spent comes back. It is the simplest test of whether an investment is worth making, and it is the first number a client will ask for, so be quick with it. Worth saying out loud that this only tells you how fast you get your money back, not how much you make in total.' },
 
   { id:'co78', d:'medium',
     gen: function () {
@@ -9869,14 +9818,16 @@ consulting: [
   { id:'co82', d:'medium', q:'What makes a market attractive to enter?',
     f:'Work through it in a rough order. Size and growth, because a big shrinking market and a small growing one are very different propositions. Profitability — what margins do incumbents actually earn, since a large market where everyone loses money is not attractive. Competitive intensity and whether there is a dominant player. Barriers to entry, which cut both ways: they keep you out, but they protect you once in. Whether you have a right to win, meaning some capability that makes you better positioned than the next entrant. And the path in — build, buy or partner. The answer that stands out ends by naming which of these would kill the idea fastest, because that is where you would look first.' },
 
-  { id:'co83', d:'easy', q:'What is a competitive advantage, and how would you tell whether a company actually has one?',
-    f:'A competitive advantage is something that lets a company earn better returns than rivals and that rivals cannot easily copy. The second half is what most people miss — being good at something is not an advantage if anyone can match it. The usual sources: scale that lowers unit cost, a brand customers will pay more for, switching costs that lock customers in, network effects where the product improves as more people use it, proprietary technology, or privileged access to a resource or distribution. To test it, look at whether the company has sustained higher margins or returns than competitors over several years, and ask what would have to happen for a well-funded rival to take it away. If you cannot answer that second question, the advantage is probably a head start rather than a moat.' },
+  { id:'co83', d:'easy',
+    q:'What is a competitive advantage? Give me an example.',
+    f:'Something that lets a company make more money than its rivals and that rivals cannot easily copy. The second half is the part that matters — being good at something is not an advantage if anyone can match it next year. Give a concrete example or two. A brand people will pay more for, like a soft drink that costs the same to make as a supermarket own-label but sells for triple. Scale that lowers your cost per unit below what a smaller rival can achieve. Or switching costs, where moving to a competitor means retraining your whole staff, so customers stay even when a cheaper option exists.' },
 
   { id:'co84', d:'easy', q:'A client says they want to grow. What would you want to know before saying anything useful?',
     f:'Grow what, by how much, by when, and why. Revenue growth and profit growth can pull in opposite directions, and a client chasing revenue may be about to buy it with discounting. Then the constraints: what capital is available, what capabilities exist, what the board or owners will tolerate. Then the starting position: how fast is the market growing, since growing at the market rate is not growth in any competitive sense. Only after that do the options make sense, and they are a short list — sell more to existing customers, win new customers in the current market, enter new markets, launch new products, or acquire. Naming the diagnostic questions before jumping to the options is the entire point.' },
 
-  { id:'co85', d:'easy', q:'What is segmentation, and why does it matter in a case?',
-    f:'Segmentation is splitting a market or a customer base into groups that behave differently — by size, geography, channel, need, or profitability. It matters because averages hide the answer. A company with flat overall revenue may have one segment growing fast and another collapsing, and the recommendation for each is opposite. A churn rate that looks acceptable overall may be catastrophic in the segment that generates most of the profit. The practical habit to demonstrate: when handed an aggregate number in a case, ask how it breaks down before drawing any conclusion from it. That single instinct solves a surprising share of cases.' },
+  { id:'co85', d:'easy',
+    q:'A company tells you its customers are happy, on average. Why should you be suspicious of that?',
+    f:'Because averages hide the answer. Happy on average is perfectly consistent with half the customers loving the product and half being on their way out the door, and those two situations call for completely opposite responses. The habit to demonstrate is splitting the number apart — by customer size, by region, by how long they have been a customer, by which product they buy. Do that and you usually find the story is concentrated somewhere specific. This applies to almost any aggregate number you get handed: ask how it breaks down before drawing any conclusion from it.' },
 
   /* ── MEDIUM: calculation ───────────────────────────────────────────── */
 
@@ -10145,7 +10096,7 @@ consulting: [
                INCREASE: labour * RISE / 100,
                REVPCT: (labour * RISE / 100) / REV * 100 };
     },
-    q:'Labour is {LPCT}% of a company ${REV} cost base. Wages rise {RISE}%. How much does that cost them?',
+    q:'Labour makes up {LPCT}% of a cost base of ${REV}. Wages rise {RISE}%. How much does that cost them?',
     f:'Labour costs {LPCT}% of {REV}, or ${LABOUR}. A {RISE}% increase on that is ${INCREASE}, which is {REVPCT}% of the total base. Say the general point out loud, because it is the reason this arithmetic comes up constantly: the impact of any cost increase is the size of the increase times the share of the base it applies to. A dramatic-sounding {RISE}% wage rise turns into a {REVPCT}% hit overall. That is why you always ask how big a cost line is before worrying about how fast it is moving.' },
 
   { id:'co105', d:'easy',
@@ -10157,13 +10108,15 @@ consulting: [
                PROFIT: STORES * REV * M / 100, PER: REV * M / 100 };
     },
     q:'A chain has {STORES} stores, each doing ${REV} of revenue at a {M}% margin. What does the chain earn, and what is one store worth to them?',
-    f:'Total revenue is {STORES} times {REV}, or ${TOTAL}. At {M}% that is ${PROFIT} of profit, and each store contributes ${PER}. The reason to compute the per-store figure is that it turns every subsequent question into something you can size. If closing ten stores is on the table, you now know roughly what that costs. If a proposal improves margin by a point, you know what a point is worth. Getting to a per-unit economic figure early is one of the most useful habits in casing.' },
+    f:'Total revenue is {STORES} times {REV}, or ${TOTAL}. At {M}% that is ${PROFIT} of profit, and each store contributes ${PER}. The reason to compute the per-store figure is that it turns every subsequent question into something you can size. If closing 10 stores is on the table, you now know roughly what that costs. If a proposal improves margin by a point, you know what a point is worth. Getting to a per-unit economic figure early is one of the most useful habits in casing.' },
 
-  { id:'co106', d:'easy', q:'What are economies of scale, and where do they actually come from?',
-    f:'Economies of scale mean cost per unit falls as volume rises. The useful answer names the sources rather than restating the definition. Fixed costs spread over more units — the factory, the software, the head office cost the same whether you make one unit or a million. Purchasing power, since larger buyers negotiate better input prices. Specialisation, because at scale you can afford dedicated people and equipment for each step. And learning, as repetition drives out waste. Then note that they run out. Past a point, coordination costs, bureaucracy and logistics complexity push unit costs back up, which is why the biggest player in a market is not automatically the lowest cost one.' },
+  { id:'co106', d:'easy',
+    q:'Why can a big company usually make something more cheaply than a small one?',
+    f:'Several reasons and a good answer gives a few. The costs that do not change with volume — the factory, the head office, the software — get spread across far more units, so each one carries less. Big buyers negotiate better prices on materials because suppliers want the volume. At scale you can afford dedicated people and machines for each step rather than having everyone do everything. And repetition drives out waste over time. The name for all of this is economies of scale. Then add the part most people miss: it runs out. Past a point, coordination, bureaucracy and logistics complexity push costs back up, which is why the biggest company in a market is not automatically the cheapest producer.' },
 
-  { id:'co107', d:'easy', q:'What is churn, and why do companies care about it so much?',
-    f:'Churn is the share of customers who stop buying over a period. Companies care because keeping a customer is almost always far cheaper than acquiring one, so churn is a direct drain on the money already spent to win them. Make the mechanism explicit: if you lose 20% of customers a year, the average customer stays five years, and that number directly determines lifetime value. Cut churn to 10% and the average life doubles, which doubles what each customer is worth and transforms what you can afford to spend acquiring them. That is why a small improvement in retention often beats a large improvement in acquisition. The habit to demonstrate is asking how churn splits by segment and by tenure, since it is almost never uniform.' },
+  { id:'co107', d:'easy',
+    q:'A company loses 20% of its customers every year. Why is that a bigger problem than it sounds?',
+    f:'Because it has to win 20% back every year just to stay the same size, and winning customers costs money — advertising, sales effort, discounts to get people to switch. So a fifth of the marketing budget is buying no growth at all. There is a second effect worth naming. Losing 20% a year means the average customer only stays about five years, and that number decides how much each customer is worth over the whole relationship. Cut the loss rate to 10% and the average customer stays twice as long, which doubles what each one is worth and changes what the company can afford to spend winning them. The industry term is churn, and a small improvement in it often beats a large improvement in new sales.' },
 
   { id:'co108', d:'easy', q:'How would you tell whether a company is growing well or just growing?',
     f:'Ask four things. Is it growing faster than its market, since growing at the market rate means it is standing still competitively. Is the growth profitable, or is it being bought with discounting and marketing spend that never pays back. Is it coming from existing customers buying more or from new customers, because the first is usually cheaper and more durable. And is it repeatable, or did one large contract flatter the year. Then say the summary judgment: revenue growth on its own is not an achievement. Growth that outpaces the market, holds margin, and comes from a repeatable engine is the version worth paying for.' },
@@ -10171,11 +10124,22 @@ consulting: [
   { id:'co109', d:'easy', q:'What is the difference between a cost and an investment?',
     f:'Mechanically, a cost is consumed now and an investment buys something that produces value later. The interesting part is that the same spending can be either, depending on whether it generates a return — marketing that acquires customers who stay for years is an investment, marketing that buys a one-off promotional bump is a cost. Say why this matters in a cost-cutting case: the easiest cuts are almost always investments, because they have no immediate consequence. Reducing maintenance, training, marketing or R and D improves this year profit and damages the business quietly. When a client asks you to cut costs, separating the two is the first thing to do and the thing they most often have not done.' },
 
-  { id:'co110', d:'easy', q:'A client wants to know whether to raise prices. What would you want to know?',
-    f:'Four things. How price-sensitive customers are, and whether you have any evidence rather than opinion — past price changes, regional differences, competitor moves. What competitors charge, and whether you are currently above or below them. What the contribution margin is, because a high-margin business loses more from volume decline than a low-margin one, which is counterintuitive and worth saying. And whether the price is even the constraint — if customers are leaving for reasons other than price, raising it is simply faster harm. Then add the practical point: pricing rarely has to be all or nothing. Segments, products and geographies can move differently, and testing on a subset beats guessing across the whole book.' },
 
-  { id:'co111', d:'easy', q:'Why might two companies in the same industry have very different margins?',
-    f:'Several reasons and a good answer gives a few. Different positioning — a premium brand charges more for a similar product. Different scale, which spreads fixed costs over more units. Different cost structures, such as owning manufacturing versus outsourcing it. Different product mix inside the same industry, since one may skew toward high-margin services and the other toward low-margin hardware. Different customers, because selling to large buyers with negotiating power compresses margin. And sometimes different accounting — what one company puts in cost of goods sold another puts in operating expenses, which moves gross margin without changing anything real. That last one is worth raising, because it is the check a careful analyst does before concluding one company is better run.' }
+  { id:'co112', d:'easy',
+    q:'Two shops on the same street sell the same thing, but one charges twice as much and stays in business. How?',
+    f:'Because price is only one reason people buy, and a good answer names several others. Convenience — it is closer, faster, open later. Service — someone helps you, handles returns without an argument, remembers you. Quality or perceived quality, which are not the same thing and both work. Selection, if they carry the one version you actually want. Trust built over years, which is why people stay with a shop even when a cheaper one opens. And sometimes the customers are simply different — a shop serving people in a hurry can charge more than one serving people comparing every option. The broader point worth landing: competing on price is the easiest strategy to copy and the hardest to win, so most durable businesses are winning on something else.' },
+
+  { id:'co111', d:'medium', q:'Why might two companies in the same industry have very different margins?',
+    f:'Several reasons and a good answer gives a few. Different positioning — a premium brand charges more for a similar product. Different scale, which spreads fixed costs over more units. Different cost structures, such as owning manufacturing versus outsourcing it. Different product mix inside the same industry, since one may skew toward high-margin services and the other toward low-margin hardware. Different customers, because selling to large buyers with negotiating power compresses margin. And sometimes different accounting — what one company puts in cost of goods sold another puts in operating expenses, which moves gross margin without changing anything real. That last one is worth raising, because it is the check a careful analyst does before concluding one company is better run.' },
+
+  { id:'co113', d:'medium', q:'A client is launching a genuinely new product and asks what to charge for it. How would you figure that out?',
+    f:'There are three ways to set a price and a good answer names all three before choosing. Cost-plus: work out what it costs to make and add a target margin. Simple, defensible, and usually wrong, because it has nothing to do with what the thing is worth to anyone. Competitive: price against whatever customers would otherwise buy. Sensible when close substitutes exist, but a new product may not have any. Value-based: work out what the product is worth to the customer — what it saves them, what it replaces, what it lets them do — and capture a share of that. Almost always the right anchor for something new, and the hardest to do, because it requires understanding the customer economics rather than your own. Then say how you would actually pin it down: talk to prospective customers, look at what they spend on the problem today, and test more than one price in a limited launch rather than committing. Close on the practical asymmetry — starting high and discounting is far easier than starting low and raising, because the first price sets the reference point in the customer mind.' },
+
+  { id:'co114', d:'medium', q:'You have a recommendation you believe in. How would you test it before the client rolls it out everywhere?',
+    f:'Pilot it, and the value of the answer is in how carefully you design the pilot. Pick a subset — some stores, one region, a customer segment — and be deliberate that it is representative rather than the easiest or most enthusiastic group, because a pilot run where everyone wants it to work tells you nothing. Set up a comparison: a control group of similar sites that carry on unchanged, so you can separate the effect of your change from whatever the whole business was doing anyway. Decide the success metric and the threshold before you start, not after, since deciding afterwards is how a failed pilot gets reinterpreted as a qualified success. Run it long enough to get past the novelty period, where any change produces a temporary lift from attention alone. Then say what you do with the result: scale if it clears the bar, kill it if it does not, and be willing to say so. Piloting is also the honest answer to an interviewer pushing on an assumption you cannot prove — you do not need certainty if you can design a cheap way to find out.' },
+
+  { id:'co115', d:'medium', q:'Halfway through the work you realise the client data you have been given is unreliable. What do you do?',
+    f:'Do not go quiet and do not carry on as though it is fine, which are the two instincts to resist. First, work out how bad it is and where — is one field unreliable or the whole system, is it wrong or just inconsistent, does it affect the conclusion or only the precision. Second, raise it immediately with your team and the client, because they may already know, may have a better source, or may need to hear that a number they report internally is wrong. Third, find a way around it: triangulate from another angle, use industry benchmarks, sample a subset manually and check it, or build the analysis so the conclusion holds across a plausible range rather than a single figure. Then the judgment that matters: say what the data can and cannot support, and make the recommendation only as strong as the evidence behind it. A recommendation delivered with false precision on bad data is worse than one delivered as a range with the uncertainty stated, because the client will act on it either way.' }
 ],
 
 /* ── HEDGE FUNDS ───────────────────────────────────────────────────── */
@@ -10184,8 +10148,6 @@ hf: [
     f:'Name, price, market cap and what the business does in two sentences. Your thesis in one sentence. Then: why the market is wrong, what specifically will change the price, over what horizon, and what would prove you wrong. Have a rough target and how you got there. The variant perception is the whole pitch.' },
   { id:'hf2', d:'hard', q:'Pitch me a short.',
     f:'Same structure, plus the things shorts need: why it is not just expensive but broken, what the catalyst is, borrow cost and availability, crowdedness, and your risk management. Address the asymmetry honestly — losses are unbounded and being early looks identical to being wrong.' },
-  { id:'hf3', d:'hard', q:'What is your variant perception on that idea? Why does the market disagree?',
-    f:'Name the consensus view explicitly, then say precisely where you differ and why you are in a position to see it. Legitimate sources of edge: time horizon, a structural forced seller, an underappreciated segment, a misread accounting item. Saying the market has not noticed is not an edge.' },
   { id:'hf4', d:'medium', q:'What would make you sell a position?',
     f:'Thesis played out and the price reflects it. Thesis broken by new evidence. A better use of the capital. A risk limit hit. Have a pre-defined answer — the point of the question is whether you decide before you are emotionally involved.' },
   { id:'hf5', d:'medium', q:'How do you think about position sizing?',
@@ -10356,12 +10318,16 @@ hf: [
                FEE: fee, NET: afterMgmt - fee, TOTALFEE: MGMT + fee };
     },
     q:'A fund returns {GROSS}% gross this year and charges 2 and 20. Roughly what does the investor actually receive?',
-    f:'Take the management fee first: {GROSS}% less the {MGMT}% management fee leaves {AFTER}%. The performance fee is {PERF}% of that, or {FEE}%, leaving the investor with roughly {NET}%. Total fees were about {TOTALFEE}% of assets. Say what that reveals: on a {GROSS}% gross return the manager took {TOTALFEE} points, so the investor captured {NET}. That is the arithmetic behind the whole active-versus-passive debate, and it is why funds are judged on net returns. Note the simplification too — a real calculation would account for the high water mark and any hurdle rate, which can mean no performance fee is charged at all.' }
+    f:'Take the management fee first: {GROSS}% less the {MGMT}% management fee leaves {AFTER}%. The performance fee is {PERF}% of that, or {FEE}%, leaving the investor with roughly {NET}%. Total fees were about {TOTALFEE}% of assets. Say what that reveals: on a {GROSS}% gross return the manager took {TOTALFEE} points, so the investor captured {NET}. That is the arithmetic behind the whole active-versus-passive debate, and it is why funds are judged on net returns. Note the simplification too — a real calculation would account for the high water mark and any hurdle rate, which can mean no performance fee is charged at all.' },
+
+  { id:'hf55', d:'medium',
+    q:'A company you cover just missed earnings badly and the stock went up. Explain.',
+    f:'Expectations were already worse than the print. Guidance may have improved, a buyback or a divestiture may have been announced, or the bad news may have been already priced in. The underlying idea: stocks move on the delta from expectations, not on absolute results.' }
 ],
 
 /* ── PRIVATE EQUITY ────────────────────────────────────────────────── */
 pe: [
-  { id:'pe1', d:'easy', q:'Walk me through an LBO.',
+  { id:'pe1', d:'easy', q:'Walk me through an LBO at a basic level.',
     f:'Sources and uses: sponsor equity plus layers of debt fund the purchase price and fees. Project the operating model, use free cash flow to amortize debt, and exit in about five years at an assumed multiple. Returns decompose into debt paydown, EBITDA growth and multiple change. Report IRR and money multiple.' },
   { id:'pe2', d:'medium', q:'What makes a good LBO candidate?',
     f:'Predictable cash flow above all. Low capital intensity, low existing leverage, a defensible position, a fragmented market to consolidate, non-core assets to divest, and a credible exit. Rank them rather than listing them.' },
@@ -10371,7 +10337,7 @@ pe: [
     f:'Revenue: pricing, salesforce productivity, new channels, add-on acquisitions. Cost: procurement, footprint rationalization, overhead, automation. Mix: shift toward higher-margin lines. Pick two you would do first and say why they come first.' },
   { id:'pe5', d:'easy', q:'What IRR do sponsors typically target and why?',
     f:'Roughly 20% to 25% gross, reflecting the illiquidity, leverage risk and fee structure limited partners are compensating for. Note the relationship to money multiple and hold period: about a 2.5x over five years lands near that IRR.' },
-  { id:'pe6', d:'easy', q:'Walk me through the difference between IRR and money multiple, and tell me when the two can actually disagree.',
+  { id:'pe6', d:'medium', q:'Walk me through the difference between IRR and money multiple, and tell me when the two can actually disagree.',
     f:'IRR is time-weighted, multiple is not. A fast small gain can post a great IRR and a poor multiple; a long hold can do the reverse. Sponsors care about both, and early distributions flatter IRR specifically.' },
   { id:'pe7', d:'hard', q:'Pitch me a company you would take private.',
     f:'Name it and why it fits: cash generation, underleveraged balance sheet, an underperforming segment, or a public market that misprices it. Then your value creation plan, rough leverage, and the exit. Be specific about what you would do in the first hundred days.' },
@@ -10379,19 +10345,15 @@ pe: [
     f:'Enough that returns work, not so much that a downturn breaks covenants. Depends on cash flow stability and cyclicality — stable businesses support more. Talk in turns of EBITDA and mention what happens in a stress case.' },
   { id:'pe9', d:'hard', q:'Walk me through the diligence you would run.',
     f:'Commercial: market, competition, customer concentration and retention. Financial: quality of earnings, working capital, normalization of EBITDA. Operational: management, systems, capex needs. Legal and regulatory. Name what most often kills a deal — quality of earnings surprises.' },
-  { id:'pe11', d:'hard', q:'A target has high customer concentration. Does that kill the deal?',
-    f:'Not automatically. Investigate contract length, switching costs, relationship depth, and history of retention. Then price the risk: lower multiple, seller note, or an earnout. Structure can solve what diligence cannot resolve.' },
   { id:'pe12', d:'easy', q:'How do sponsors exit?',
     f:'Strategic sale, secondary sale to another sponsor, IPO, or a dividend recapitalization as a partial exit. Each has different pricing and certainty. Sponsors underwrite an exit path at entry; note which is usually most valuable and why.' },
-  { id:'pe13', d:'medium', q:'Walk me through what a dividend recap is and when a sponsor would actually use one.',
-    f:'The company raises new debt to pay a dividend to the sponsor, returning capital without selling. Used when returns are achieved but market conditions favor holding. Raises leverage and risk, and it does not fix an underlying business problem.' },
   { id:'pe14', d:'medium', q:'Walk me through what a rollup is and when it actually works.',
     f:'Acquiring many small players in a fragmented market to capture scale and multiple arbitrage — small companies trade cheaper than the combined platform. Works when integration is genuinely achievable. Fails when the acquirer buys revenue without building an operating platform.' },
   { id:'pe15', d:'hard', q:'What kills more deals, price or something else?',
     f:'Price gets blamed; diligence findings and integration risk do more killing. Quality of earnings issues, customer concentration, management gaps, or an unresolvable liability. Give an example of each type.' },
   { id:'pe16', d:'easy', q:'How is PE different from banking day to day?',
     f:'Fewer processes, more ownership per deal, and a decision at the end rather than an execution. You live with the outcome. Say what you are giving up — deal volume and training structure — so the answer sounds considered rather than aspirational.' },
-  { id:'pe17', d:'medium', q:'What would you look at first in a CIM?',
+  { id:'pe17', d:'hard', q:'What would you look at first in a CIM?',
     f:'Historical financials and their trend, customer concentration, the growth story and whether it is credible, and management adjustments to EBITDA. Skepticism about the adjustments is the marker of someone who has done this.' },
   { id:'pe18', d:'hard', q:'A portfolio company is missing its plan. What do you do?',
     f:'Diagnose whether it is market, execution, or a bad plan. Get real visibility into weekly operating metrics, not just monthly financials. Decide whether management is the problem, then act quickly — sponsors regret slow management changes more than fast ones.' },
@@ -10409,7 +10371,7 @@ pe: [
     f:'Buying smaller companies onto a platform to grow EBITDA and blend down the effective purchase multiple. Works when integration and systems are real. Discuss the risk of buying complexity you cannot digest.' },
   { id:'pe25', d:'hard', q:'Talk me through a deal in the news and whether you would have done it.',
     f:'Parties, size, structure and rationale. Then a view: was the price defensible, is the leverage sustainable, is the value creation plan credible. Say what you would need to believe to underwrite it. Have one ready.' },
-  { id:'pe26', d:'medium', q:'What sectors are attractive for buyouts right now, and why?',
+  { id:'pe26', d:'hard', q:'What sectors are attractive for buyouts right now, and why?',
     f:'Pick two and defend them on fundamentals — recurring revenue, fragmentation, non-cyclicality, or a structural tailwind. Then name what is unattractive and why, which is the harder half.' },
   { id:'pe27', d:'medium', q:'How does a sponsor create value beyond financial engineering?',
     f:'Operational improvement, professionalizing systems and reporting, add-ons, pricing discipline, talent upgrades, and strategic repositioning. Give a concrete mechanism rather than the category name.' },
@@ -10417,7 +10379,7 @@ pe: [
     f:'Fund returns dip early because of fees and costs before investments mature, then rise as exits come. It explains why judging a young fund on early marks is misleading.' },
   { id:'pe29', d:'hard', q:'How would you underwrite a business in a cyclical industry?',
     f:'Normalize earnings across the cycle, stress test at a trough, size leverage to survive that trough rather than the base case, and be explicit about where in the cycle you are entering. Note that entering at the peak with peak multiples is the classic error.' },
-  { id:'pe30', d:'easy', q:'Walk me through the difference between growth equity and buyout.',
+  { id:'pe30', d:'medium', q:'Walk me through the difference between growth equity and buyout.',
     f:'Growth equity takes minority stakes in growing companies with little or no leverage, betting on expansion. Buyout takes control with leverage and drives returns through both operations and structure. Different risk, different control, different skill.' },
   { id:'pe31', d:'hard', q:'How do you get comfortable with an exit assumption five years out?',
     f:'Anchor to long-run trading ranges rather than today multiple, assume exit at or below entry as a discipline, and identify who the natural buyers would be. If the only exit is a richer market, the underwriting is weak.' },
@@ -10558,15 +10520,19 @@ pe: [
     f:'Go through the chain rather than just saying deals slow down. Lenders pull back, so the amount of debt available per deal falls — five or six turns becomes three or four. That forces sponsors to write larger equity cheques for the same company, which mechanically lowers returns, so they can no longer justify the multiples they were paying. Entry multiples fall, but sellers anchor to yesterday prices, so a bid-ask gap opens and deal volume collapses until expectations reset. Meanwhile existing portfolio companies with floating-rate debt face rising interest costs, squeezing cash flow and threatening covenants, and exits become harder because buyers face the same financing problem. Then say the other half, which separates a good answer: tighter credit is genuinely bad for firms holding assets bought at peak multiples, and genuinely good for firms with dry powder, because vintages deployed into a dislocation have historically been the strongest performers.' },
 
   { id:'pe51', d:'hard', q:'A sponsor is choosing between two deals with identical projected returns. One is a market leader at a high multiple, the other a turnaround at a low multiple. Which do you take?',
-    f:'There is no correct answer and the reasoning is the whole test, so pick one and defend it properly. Frame it as risk-adjusted rather than headline return. The market leader at a high multiple carries multiple risk — you are paying for quality already recognised, so if sentiment shifts the exit multiple compresses and the return goes with it. But the business itself is more likely to perform, the downside is shallower, and the outcome is less dependent on execution. The turnaround at a low multiple carries operational risk — the return depends on fixing something, and the base rate for turnarounds is poor. But you have multiple support, meaning you paid little enough that you are less exposed if the market re-rates. Then give your answer with the conditions attached: the leader if the projections rely on multiple expansion, the turnaround only if you have done this specific kind of fix before and have the operating team to run it. Say explicitly that identical projected returns almost never mean identical risk, and that the correct response is to interrogate which set of assumptions is more fragile.' }
+    f:'There is no correct answer and the reasoning is the whole test, so pick one and defend it properly. Frame it as risk-adjusted rather than headline return. The market leader at a high multiple carries multiple risk — you are paying for quality already recognised, so if sentiment shifts the exit multiple compresses and the return goes with it. But the business itself is more likely to perform, the downside is shallower, and the outcome is less dependent on execution. The turnaround at a low multiple carries operational risk — the return depends on fixing something, and the base rate for turnarounds is poor. But you have multiple support, meaning you paid little enough that you are less exposed if the market re-rates. Then give your answer with the conditions attached: the leader if the projections rely on multiple expansion, the turnaround only if you have done this specific kind of fix before and have the operating team to run it. Say explicitly that identical projected returns almost never mean identical risk, and that the correct response is to interrogate which set of assumptions is more fragile.' },
+
+  { id:'pe52', d:'easy', q:'Why would the owner of a good business want to sell it to a private equity firm?',
+    f:'Several reasons, and naming a few shows you understand the other side of the table. Liquidity — the owner has most of their net worth locked in one company and wants to take some of it off the table. Succession, when the founder is ready to step back and no family member wants it. Capital and capability to grow faster than they can fund themselves, whether that means new locations, acquisitions, or systems they cannot build alone. Risk reduction, since selling most of the business and keeping a slice means they still participate in the upside with far less exposure. Then add the point that shows real understanding: most sellers are not distressed. A sponsor usually wants a healthy business, and the owner usually keeps a meaningful stake and stays involved, which is why the relationship with the seller matters as much as the price.' },
+
+  { id:'pe53', d:'easy', q:'What actually happens to a company after a private equity firm buys it?',
+    f:'Less than people imagine on day one, and more than they imagine over five years. Immediately, the balance sheet changes — the company now carries significant debt used to fund the purchase, so a meaningful share of cash flow goes to interest and repayment. Governance changes: the sponsor controls the board and sets targets, and reporting gets much more rigorous. Then over the hold period the work begins — often new management or new finance leadership, sharper pricing, cost discipline, systems investment, and frequently acquisitions of smaller competitors. Address the reputation honestly rather than dodging it: PE is associated with layoffs and cost cutting, and that happens, but the more common playbook is growth, because a sponsor makes far more money selling a bigger business than a leaner one. The pressure it creates is real, though — debt does not forgive a bad year.' }
 ],
 
 /* ── BEHAVIORAL ────────────────────────────────────────────────────── */
 behavioral: [
   { id:'be1', d:'easy', q:'Tell me about yourself.',
     f:'Ninety seconds, three beats: where you started and what pulled you toward this, what you have done that built toward it, and what you are looking for now. One throughline, not a resume recital. Land the ending — most people trail off.' },
-  { id:'be2', d:'easy', q:'Why this firm?',
-    f:'Something specific and verifiable: a group, a deal, a person you spoke to, the way they work. Then why that matters to you. Anything you could say about three other firms is not an answer.' },
   { id:'be3', d:'easy', q:'Why finance?',
     f:'A real origin, an honest reason, and evidence you tested it — a class, a project, a conversation, a summer. Avoid a story that is too clean. Interviewers hear hundreds of these and the manufactured ones are obvious.' },
   { id:'be4', d:'medium', q:'What is your greatest weakness?',
@@ -10583,8 +10549,6 @@ behavioral: [
     f:'The feedback, your first reaction honestly, what you did with it, and whether the person noticed a change. Getting to the last part separates a real answer from a rehearsed one.' },
   { id:'be10', d:'medium', q:'Tell me about a time you disagreed with someone senior.',
     f:'Show judgment about when and how you raised it, not just that you did. What you did if you lost the argument matters as much. Disagreeing well and then committing is the skill being tested.' },
-  { id:'be11', d:'easy', q:'Where do you see yourself in five years?',
-    f:'A direction with reasoning, held loosely. Connect it to why this role is a sensible next step. Excessive certainty reads as naive; total vagueness reads as unmotivated.' },
   { id:'be12', d:'medium', q:'Why should we hire you over someone with more experience?',
     f:'Pick two things you actually bring and back each with evidence. Do not attack the hypothetical other candidate. Confidence without a claim you cannot support.' },
   { id:'be13', d:'medium', q:'Tell me about a time you had to learn something quickly.',
@@ -10593,8 +10557,6 @@ behavioral: [
     f:'Something honest and specific. Mastery, competition, building something, working with people who are better than you. Vague passion language is worse than an unglamorous true answer.' },
   { id:'be15', d:'medium', q:'Tell me about a time you made the wrong call.',
     f:'A decision, not an accident. What you knew, what you chose, why it was wrong, and what your process looks like now. Separate a bad outcome from a bad decision if you can.' },
-  { id:'be16', d:'medium', q:'How do you handle stress?',
-    f:'A real mechanism, not a claim of thriving under pressure. What you actually do when things stack up, and an example. Everyone says they handle it well; describing the method is what lands.' },
   { id:'be17', d:'medium', q:'Tell me about a time you went beyond what was asked.',
     f:'What you noticed that nobody assigned you, what you did about it, and what came of it. Initiative is only credible with a specific trigger.' },
   { id:'be18', d:'easy', q:'What questions do you have for me?',
@@ -10605,8 +10567,6 @@ behavioral: [
     f:'Answer as they would, not as you would soften it. Then what you have done since. Naming something genuinely unflattering builds more credibility than any polished answer.' },
   { id:'be21', d:'medium', q:'Tell me about a time you worked with someone difficult.',
     f:'Avoid making them a villain. What was actually driving their behavior, what you tried, what worked. Follow-up you should anticipate: what was it like working with you?' },
-  { id:'be22', d:'medium', q:'How do you prioritize when everything is urgent?',
-    f:'A real method: consequence of delay, dependencies, who is blocked. Then an example. Mention when you have asked someone to help you prioritize, which reads as mature rather than weak.' },
   { id:'be23', d:'easy', q:'What are you most proud of?',
     f:'Something you can talk about with real energy, with your specific contribution clear. It does not have to be professional. Interviewers remember the answers people care about.' },
   { id:'be24', d:'medium', q:'Tell me about a time you had to make a decision without enough information.',
@@ -10629,12 +10589,10 @@ behavioral: [
     f:'How you set it up, what you actually said, how they took it, what changed. Whether you followed up afterward is the detail that distinguishes a real story.' },
   { id:'be33', d:'medium', q:'What kind of environment do you do your best work in?',
     f:'Be specific and honest, and connect it to what you know about this firm. If it does not match, that is information worth both parties having.' },
-  { id:'be34', d:'hard', q:'Is there anything about your background you think we should be concerned about?',
-    f:'Address the obvious thing head-on — a GPA, a gap, a non-target school, a pivot. Explain it in a sentence without defensiveness, then say what offsets it. Getting there before they ask is far stronger than being caught.' },
   { id:'be35', d:'hard', q:'What have you learned about yourself in the last year?',
     f:'A specific realization and what caused it. Then what you did differently as a result. Reflection with no behavior change afterward reads as an observation, not a lesson.' },
 
-  { id:'be36', d:'easy', q:'Why our firm and not the one down the street?',
+  { id:'be36', d:'medium', q:'Why our firm and not the one down the street?',
     f:'The question behind the question is whether you have done any work. Generic answers about culture and people are what everyone says, and they signal you are running the same script at every firm. Give three specifics: something about the group or deal flow you can only know from research or conversations, a person you have actually spoken to and what they told you, and a concrete link to what you want to learn. Then close by saying what you would bring. The bar is simply that your answer could not be copied and pasted to a competitor.' },
 
   { id:'be37', d:'easy', q:'What are your strengths?',
@@ -10646,8 +10604,6 @@ behavioral: [
   { id:'be39', d:'easy', q:'What other firms are you talking to?',
     f:'Be honest but strategic. Naming a coherent set of comparable firms shows you have a thesis about what you want. Naming wildly unrelated paths suggests you are applying everywhere and will take whatever lands. You are not obliged to give a full list or to say where you stand in any process. What you should do is make this firm sound like a genuine first choice without claiming an exclusivity nobody believes. If pressed on ranking, be straightforward that you are still learning, but explain what would make a place the right fit — and make sure that description matches the firm you are sitting in.' },
 
-  { id:'be40', d:'easy', q:'Tell me about a time you worked on a team.',
-    f:'Use the STAR structure and keep the situation short — one sentence of context, then straight into what you did. The mistake almost everyone makes is describing what the team accomplished rather than what they personally contributed, which leaves the interviewer unable to evaluate you. Say what your specific role was, what you did that someone else would not have, and what the result was. If the team succeeded, name your part precisely. If it did not, say what you learned. Specific and modest beats vague and impressive.' },
 
   { id:'be41', d:'medium', q:'Tell me about a time you had to manage several competing deadlines.',
     f:'This is a preview of the job, so the answer should demonstrate a method rather than stamina. Give the situation briefly, then show how you decided what came first — by actual deadline, by who was blocked waiting on you, by what was irreversible. Say explicitly that you communicated early with whoever was going to get their work later, because the failure mode in this job is going quiet and missing a deadline nobody saw coming. End with the outcome and what you would do differently. Never suggest you handled it by simply working more hours; that is not prioritisation.' },
@@ -10664,8 +10620,6 @@ behavioral: [
   { id:'be45', d:'medium', q:'What has been the hardest part of your recruiting process so far?',
     f:'A friendly-sounding question that rewards self-awareness and punishes complaining. Pick something real — balancing it against coursework, getting comfortable talking about yourself, the volume of technical material, handling rejection from a firm you wanted. Then spend most of the answer on what you did about it, because the difficulty is only the setup. Do not criticise other firms or their processes, and do not choose a difficulty that reveals a disqualifying problem, like finding the technical questions impossible. Honest and constructive is the register.' },
 
-  { id:'be46', d:'hard', q:'What is something you are not good at?',
-    f:'Different from the weakness question, and harder, because it invites a flat admission with no escape hatch. Do not reach for a disguised strength — every interviewer has heard that someone works too hard. Name something genuinely true, genuinely limited, and not central to the job: public speaking to a large room, delegating rather than doing it yourself, patience with work you find repetitive. Then give evidence you have worked on it and what changed. The trait being tested is whether you can look at yourself honestly without either performing humility or losing confidence.' },
 
   { id:'be47', d:'hard', q:'Say you get an offer here and a better one somewhere else next week. What do you do?',
     f:'An uncomfortable question with no safe scripted answer, which is the point. Do not promise something implausible, because insisting you would decline any other offer sight unseen is not credible and everyone knows it. The honest and strong answer is that you would treat a commitment as a commitment: if you accept, you stop interviewing. Say that is precisely why you are being careful about what you accept and why you are asking the questions you are asking. Then turn it into a genuine question about what makes people stay at the firm. Integrity plus directness beats flattery here.' },
@@ -10677,7 +10631,28 @@ behavioral: [
     f:'A real tension in the job and there is no clean rule, which is why it is hard. The strong answer gives a heuristic and admits the tradeoff. Something like: try it yourself first, but set a time limit, and when you do ask, come with what you have already tried and a specific question rather than a blank one. Name the two failure modes explicitly — burning six hours on something a two-minute question would have solved, versus interrupting constantly and never building independence. Say that the threshold shifts with how urgent the work is and how new you are, and that early on you would err toward asking with context attached.' },
 
   { id:'be50', d:'hard', q:'If I called someone who worked closely with you, what would they say frustrated them about working with you?',
-    f:'Harder than the standard weakness question because it is framed through someone else and is difficult to dodge. Refusing to answer or saying nobody has ever been frustrated reads as evasive or unaware. Give something specific and plausible — that you can be slow to hand work off, that you ask a lot of clarifying questions early, that you push on details when others want to move on. Attribute it fairly rather than turning it into a virtue. Then say what you have done in response, and if possible cite the actual feedback that made you aware of it. The test is whether you have ever genuinely listened to criticism.' }
+    f:'Harder than the standard weakness question because it is framed through someone else and is difficult to dodge. Refusing to answer or saying nobody has ever been frustrated reads as evasive or unaware. Give something specific and plausible — that you can be slow to hand work off, that you ask a lot of clarifying questions early, that you push on details when others want to move on. Attribute it fairly rather than turning it into a virtue. Then say what you have done in response, and if possible cite the actual feedback that made you aware of it. The test is whether you have ever genuinely listened to criticism.' },
+
+  { id:'be51', d:'easy', q:'What is your favourite class you have taken, and why?',
+    f:'A friendly opener that people waste by naming a class and stopping. Pick one you can talk about with real enthusiasm, and make the reason specific: a concept that changed how you see something, a project you got absorbed in, a professor who argued rather than lectured. It does not have to be a finance class, and a genuinely interesting non-obvious answer is often better than a strategic one. Then connect it lightly to the work if there is an honest link — a class that taught you to build an argument from evidence, or to be comfortable with messy data. The thing being assessed is whether you are actually curious about anything, because an analyst who is only interested in the outcome burns out faster than one who finds the work interesting.' },
+
+  { id:'be52', d:'hard', q:'If you do not get an offer anywhere this cycle, what do you do?',
+    f:'Uncomfortable, rarely asked, and impossible to script — which is the point. Do not get defensive or insist it will not happen, because that reads as avoidance. The strong answer has three parts. Acknowledge it plainly: it happens to good candidates and it would not change what you want to do. Then be concrete about the plan — another summer of relevant experience, a boutique or a smaller firm, a role that builds the same skills, coming back next cycle better prepared. Then say what you would do differently, which is the part that actually reveals self-awareness: start earlier, network more deliberately, be sharper on technicals. What they are testing is resilience and whether your interest in this work survives a setback, so an answer that shows you have thought about it calmly is far stronger than one that refuses to engage with the premise.' },
+
+  { id:'be53', d:'hard', q:'What do you think you will find hardest about this job?',
+    f:'A trap if you answer it with a non-answer, because saying the hours and stopping there is what everyone says. Pick something specific and real, and show you have thought about how you would handle it. Candidates that work: having no control over your own schedule, which is different from simply working a lot. The shift from being the top student to being the least useful person in the room. Doing work that gets thrown away when a deal dies. Getting feedback that is blunt and fast. Sustaining attention to detail at two in the morning when it matters most. Then say what you would do about it, and do not claim it will be easy for you — someone who thinks nothing will be hard has either not understood the job or is not being honest, and both are worse than admitting a real difficulty.' },
+
+  { id:'be54', d:'hard', q:'Tell me about a time you were the least capable person in the room.',
+    f:'Rarely asked and hard to answer without either false modesty or defensiveness. Give a real situation where you were genuinely out of your depth — a team of more experienced people, a subject you had not studied, a room where everyone knew something you did not. Then spend the answer on what you did: whether you asked questions or went quiet, how you got up to speed, what you could contribute while you were catching up. The strongest versions include something specific you did that was useful despite the gap, because that is the situation every first-year analyst is in. Avoid two failure modes — turning it into a story about how you were actually the smartest after all, and describing the discomfort without describing any response to it.' },
+
+  { id:'be55', d:'easy', q:'Why did you choose the school you go to?',
+    f:'An easy opener people answer badly by listing rankings. Give real reasons and make at least one specific to you: a programme or professor you wanted, the alumni network in the industry you are targeting, the size or culture fitting how you work, the city, cost and scholarship, family. Then do the thing most candidates skip, which is saying what you have actually done with the choice — the classes you sought out, the organisations you joined, the people you have met through it. That turns a question about the past into evidence that you make decisions deliberately and follow through on them. Avoid answers that make it sound accidental or purely financial with nothing added, and avoid criticising other schools.' },
+
+  { id:'be56', d:'easy', q:'Tell me about a leadership role you have taken on in a club or organisation.',
+    f:'For most students this is where the real examples live, so have one prepared properly. Give the role and the scope in one line — what the organisation does, how many people, what you were responsible for. Then focus on a specific thing you did rather than describing the position: a problem you found, a change you made, something you built that did not exist before. Say what actually happened as a result, with a number if you have one — attendance, members, money raised, a process that now runs without you. Two things that strengthen it. Mention something that did not work and what you did about it, because a flawless story sounds rehearsed. And be honest about what was yours versus the team, since inflating your role is easy to catch on a follow-up question. A small role described precisely beats a big title described vaguely.' },
+
+  { id:'be57', d:'medium', q:'Tell me about a time a team you were on failed.',
+    f:'Different from a personal failure, and harder, because it tests whether you will blame other people. Describe what the team was trying to do and what went wrong, factually and without assigning fault. Then take your share — what you could have done differently, what you saw coming and did not raise, where you assumed someone else had it handled. That is the whole question: an answer where the failure was entirely other people tells the interviewer exactly what you would be like on a deal team when something goes wrong. Name the underlying cause if you can, since most team failures come from a small set — unclear ownership, nobody surfacing a problem early, an assumption nobody checked, or a plan nobody actually agreed to. Finish with what changed in how you work. Do not choose an example where the failure was catastrophic and entirely avoidable through basic competence, and do not choose one so trivial that nothing was at stake.' }
 ]
 ,
 
@@ -10716,7 +10691,7 @@ cases: [
     f:'CLARIFY: What is the cost structure — how much is print production and distribution? Is digital profitable on its own? Who owns it and what is their objective? — Assume: print is roughly 60% of costs, digital subscriptions are profitable at the margin, owner wants a sustainable business rather than a quick sale. STRUCTURE: Where money is made and lost today, structural trends, options, recommendation. — DIAGNOSIS: Print carries most of the cost and a declining share of revenue, but print subscribers still pay meaningfully more per head. The trap is that cutting print too fast destroys revenue faster than cost; cutting too slow bleeds cash. The transition math is the case. — OPTIONS: 1) Accelerate digital subscription growth — the only real long-term path, but forty thousand is small and growth requires content people will pay for. 2) Reduce print frequency to a few days a week, keeping the high-margin weekend edition. This is the standard move and worth quantifying. 3) Go niche and deep — local investigative coverage nobody else does — rather than competing on general news, which is free everywhere. 4) Diversify into events, newsletters, and services. 5) Restructure costs to fit a smaller business. 6) Sell or seek nonprofit or foundation ownership. — ECONOMICS OF THE KEY MOVE: Reducing print from seven days to three could remove a large share of production and distribution cost while retaining most subscription revenue, since weekend readership dominates and advertisers concentrate there. Model subscriber attrition against cost saved. — RECOMMENDATION: Reduce print to weekend plus one midweek edition. Reinvest the savings into local investigative and civic coverage that is genuinely differentiated, and price digital confidently rather than cheaply — the subscribers who value local reporting are not price-driven. Set an explicit target for digital to exceed print revenue within three years, and be honest with the owner that the endpoint is a smaller, sustainable business rather than a restoration of what existed. — WATCH FOR: Candidates who propose a paywall as if it were a new idea, and those unwilling to say the business will end up structurally smaller.' },
 
   { id:'case10', d:'medium', q:'CASE — A fitness chain has 80 locations. Membership is flat, but management notices that members who attend group classes stay twice as long as those who do not. They want to know what to do with that.',
-    f:'CLARIFY: Is this correlation or causation? What share of members take classes? What is the capacity and cost of classes? What is the value of extended tenure? — Assume: 30% take classes, class capacity is underutilized off-peak, average member tenure is fourteen months overall. STRUCTURE: Test the causal claim, size the prize, identify the intervention, evaluate the cost. — THE CENTRAL ISSUE: The finding may be selection rather than causation — people who were already committed choose classes. A candidate who accepts the causal claim uncritically has missed the point of the case. How to test: look at members who started classes after joining and compare their churn before and after; compare similar members across locations with different class availability; ideally run a controlled offer. — SIZING: If tenure doubles from fourteen to twenty-eight months, and monthly margin per member is say $30, each converted member is worth roughly four hundred additional dollars. Converting even 10% of the 70% who do not attend is a large number. That is worth real investment. — INTERVENTION: Lower the barrier to a first class — the reason most people never attend is intimidation, not disinterest. Free intro classes, beginner-only sessions, scheduling into off-peak slots that already have capacity, and personalized prompts based on visit patterns. Onboarding is the key moment: get them into a class in the first two weeks. — COST: Instructor cost for additional classes, offset by using existing underutilized slots first. Start with capacity you already pay for. — RECOMMENDATION: Run a controlled pilot across ten locations with a structured first-two-weeks class onboarding, measuring retention against matched control sites. Scale only if the causal effect holds. — WATCH FOR: Whether they challenge causation before building a plan on top of it. That instinct is the whole case.' },
+    f:'CLARIFY: Is this correlation or causation? What share of members take classes? What is the capacity and cost of classes? What is the value of extended tenure? — Assume: 30% take classes, class capacity is underutilized off-peak, average member tenure is 14 months overall. STRUCTURE: Test the causal claim, size the prize, identify the intervention, evaluate the cost. — THE CENTRAL ISSUE: The finding may be selection rather than causation — people who were already committed choose classes. A candidate who accepts the causal claim uncritically has missed the point of the case. How to test: look at members who started classes after joining and compare their churn before and after; compare similar members across locations with different class availability; ideally run a controlled offer. — SIZING: If tenure doubles from 14 to 28 months, and monthly margin per member is say $30, each converted member is worth roughly $400 more. Converting even 10% of the 70% who do not attend is a large number. That is worth real investment. — INTERVENTION: Lower the barrier to a first class — the reason most people never attend is intimidation, not disinterest. Free intro classes, beginner-only sessions, scheduling into off-peak slots that already have capacity, and personalized prompts based on visit patterns. Onboarding is the key moment: get them into a class in the first two weeks. — COST: Instructor cost for additional classes, offset by using existing underutilized slots first. Start with capacity you already pay for. — RECOMMENDATION: Run a controlled pilot across 10 locations with a structured first-two-weeks class onboarding, measuring retention against matched control sites. Scale only if the causal effect holds. — WATCH FOR: Whether they challenge causation before building a plan on top of it. That instinct is the whole case.' },
 
   { id:'case11', d:'easy', q:'CASE — A local bakery has seen profit fall over the last year, though the owner says the same number of customers come in. Walk me through how you would find the problem.',
     f:'Start by structuring out loud before touching anything: profit is revenue minus cost, revenue is price times volume, cost is fixed plus variable. The owner has already told you volume is flat, so you can set that branch aside — say that explicitly, because narrowing based on given information is the skill being tested. That leaves price and cost. On price, ask whether prices changed, whether discounting increased, and whether the mix shifted toward cheaper items, since selling the same number of cheaper things looks like flat volume and lower revenue. On cost, walk the big lines: ingredients, labour, rent, utilities. Flour and butter prices moving, or a wage increase, would do it. Then ask for the one piece of data that splits the two branches fastest — revenue this year versus last. If revenue is flat and profit fell, it is cost. If revenue fell on flat volume, it is price or mix. Name the hypothesis you would test first and why.' },
@@ -13945,7 +13920,7 @@ function mockPick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 function mockNum(n) {
   var r = Math.round(n * 100) / 100;
   var s = (r % 1 === 0) ? String(r) : r.toFixed(2);
-  return s.replace(/\B(?=(\d{3})+(?!\d))/, ',');
+  return s.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
 function mockFill(text, vars) {
