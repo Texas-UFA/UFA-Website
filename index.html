@@ -5954,6 +5954,16 @@ button[onclick="pubFlipbookNext()"]:hover {
                 The EmailJS free plan allows 200 emails a month. Bookings and approvals use a handful;
                 emailing the whole membership does not fit, which is why the BCC button exists.
               </div>
+              <div class="ufa-note" style="margin-top:10px;">
+                <strong>One-time step for real calendar invites:</strong> booking emails now carry an
+                actual .ics invite &mdash; the kind with Yes / Maybe / No buttons right in Gmail and
+                Outlook, not just a link. To turn it on, open your EmailJS template, go to the
+                <strong>Attachments</strong> tab, and add a <strong>Variable Attachment</strong> with
+                parameter name <code>ics_attachment</code> (content type <code>text/calendar</code>) and
+                filename parameter <code>ics_filename</code>. Free-tier attachments go up to 500&nbsp;KB,
+                which is far more than an invite needs. Skip this and everything above still works &mdash;
+                the email just won't have the invite attached.
+              </div>
             </div>
           </div>
 
@@ -7189,9 +7199,15 @@ const RESOURCES = [
   // Private Equity
   { name: 'M&I PE Guide', url: 'https://mergersandinquisitions.com/private-equity-interviews/', category: 'pe', desc: 'Guide to breaking into private equity', type: 'link' },
   { name: 'WSO PE Q&A', url: 'https://www.wallstreetoasis.com/resources/interviews/private-equity-interview-questions', category: 'pe', desc: '40 PE interview questions with answers', type: 'link' },
+  { name: 'WSP PE Interview Guide', url: 'https://www.wallstreetprep.com/knowledge/25-private-equity-interview-questions-you-must-know/', category: 'pe', desc: 'Top 25 PE interview questions, free', type: 'link' },
 
   // Hedge Funds
   { name: 'WSO HF Q&A', url: 'https://www.wallstreetoasis.com/resources/interviews/hedge-funds-interview-questions', category: 'hf', desc: '40 HF interview questions with answers', type: 'link' },
+  { name: 'Street of Walls HF Guide', url: 'https://www.streetofwalls.com/finance-training-courses/hedge-fund-training/', category: 'hf', desc: 'Free hedge fund interview prep, written by HF analysts', type: 'link' },
+
+  // Resume (additional free guides)
+  { name: 'CFI IB Resume Guide', url: 'https://corporatefinanceinstitute.com/resources/career/investment-banking-resume/', category: 'resume', desc: 'Free resume checklist and template', type: 'link' },
+  { name: 'WSO IB Resume Template', url: 'https://www.wallstreetoasis.com/resources/templates/word-templates/investment-banking-resume-template', category: 'resume', desc: 'Free resume template, undergrad-focused', type: 'link' },
 ];
 
 var resourcesLoaded = false;
@@ -9807,7 +9823,13 @@ ib: [
     f:'An earnout is a piece of the purchase price that isn\'t paid at closing — instead, it\'s paid later, contingent on the acquired business hitting agreed performance targets over some period after the deal closes, commonly tied to revenue or EBITDA milestones. It shows up most often when the buyer and seller genuinely disagree about what the business is worth, typically because the seller is more optimistic about near-term growth than the buyer is willing to underwrite and pay for upfront — the earnout lets the deal happen anyway by bridging the valuation gap: the seller gets paid the higher price if their optimism turns out to be justified, and the buyer isn\'t stuck overpaying if it doesn\'t. — RECOMMENDATION: the real friction in any earnout isn\'t agreeing to use one, it\'s defining the metric and who controls the business during the earnout period, since a seller who no longer controls the company they\'re being measured against has real reason to worry the buyer could under-invest in the business during the earnout window to avoid paying out — which is why well-drafted earnouts include specific operating covenants protecting the seller\'s ability to actually hit the target.' },
 
   { id:'ib150', d:'hard', q:'A company has convertible bonds outstanding. Walk me through how those affect diluted share count, and why the effect isn\'t simply "add the shares."',
-    f:'A convertible bond is debt that the holder can choose to convert into a fixed number of shares instead of being repaid in cash, at a conversion price set when the bond was issued. If the current stock price is below that conversion price, the bonds are "out of the money" and holders would rather be repaid in cash, so they add no dilution to the share count. Once the stock price rises above the conversion price, the bonds become dilutive, and the standard approach (the if-converted method) adds the full as-converted share count to diluted shares outstanding — but also adds back the after-tax interest expense the company would no longer pay if the bonds converted, since removing debt from the capital structure removes the drag from paying interest on it. — RECOMMENDATION: the mistake to avoid is treating this as free dilution — check the current stock price against the conversion price first, since bonds trading well out of the money genuinely add nothing to diluted shares today, even though they represent real potential dilution if the stock keeps climbing.' }
+    f:'A convertible bond is debt that the holder can choose to convert into a fixed number of shares instead of being repaid in cash, at a conversion price set when the bond was issued. If the current stock price is below that conversion price, the bonds are "out of the money" and holders would rather be repaid in cash, so they add no dilution to the share count. Once the stock price rises above the conversion price, the bonds become dilutive, and the standard approach (the if-converted method) adds the full as-converted share count to diluted shares outstanding — but also adds back the after-tax interest expense the company would no longer pay if the bonds converted, since removing debt from the capital structure removes the drag from paying interest on it. — RECOMMENDATION: the mistake to avoid is treating this as free dilution — check the current stock price against the conversion price first, since bonds trading well out of the money genuinely add nothing to diluted shares today, even though they represent real potential dilution if the stock keeps climbing.' },
+
+  { id:'ib151', d:'medium', q:'What is a fairness opinion, and why does a target company\'s board actually need one before agreeing to a deal?',
+    f:'A fairness opinion is a formal analysis, usually prepared by an investment bank, stating whether the price and terms offered in a deal are fair to shareholders from a financial point of view. The board itself has a legal duty to act in shareholders\' best interest, and directors are rarely valuation experts themselves, so an independent opinion gives them a documented, defensible basis for the decision they\'re making on shareholders\' behalf. It matters most as legal protection — if shareholders later sue claiming the board sold the company too cheaply, a well-supported fairness opinion is a central piece of evidence that the board acted reasonably and did its diligence, rather than rubber-stamping whatever price was offered. — RECOMMENDATION: be honest about the tension built into the process — the bank issuing the opinion is very often also advising on the deal and getting paid a fee contingent on it closing, which creates a real incentive to find the price fair. That conflict doesn\'t make fairness opinions worthless, since reputational risk and the threat of litigation keep the analysis honest in practice, but it\'s exactly why a board should still be probing the assumptions behind the opinion rather than treating it as an automatic rubber stamp.' },
+
+  { id:'ib152', d:'medium', q:'What is the difference between a tender offer and a traditional merger vote as a way to actually acquire a public company?',
+    f:'In a traditional merger, the target\'s board negotiates and approves the deal first, then it goes to a shareholder vote at a meeting, and the deal only closes once a majority (sometimes a supermajority) of shares vote in favor — a process that typically takes months given the proxy statement, SEC review, and meeting scheduling involved. A tender offer skips negotiating with the board entirely: the acquirer goes directly to shareholders and offers to buy their shares at a stated price, and if enough shareholders tender their shares (often a majority or more, depending on the target\'s bylaws), the acquirer gains control without ever needing board approval or a formal vote. Tender offers are the classic tool for a hostile approach — going around a board that has rejected the deal or refused to negotiate — and they can also close faster than a negotiated merger when the target is willing, since there\'s no lengthy proxy solicitation process. — RECOMMENDATION: expect a target board facing an unwanted tender offer to reach for defenses like a poison pill, which dilutes any hostile acquirer that crosses an ownership threshold, precisely because the tender offer route was designed to let an acquirer bypass the board in the first place.' }
 ],
 
 /* ── CONSULTING ────────────────────────────────────────────────────── */
@@ -10372,7 +10394,13 @@ consulting: [{ id:'co2', d:'medium', q:'How many gas stations are there in the U
     f:'State what the number means. A correct calculation that ends with "...so the answer is 1,043 units" and stops there leaves the actual judgment for the interviewer to make, which is exactly backwards — the interviewer wants to see you make it. Follow every calculation with a short, decisive verdict in plain language: this clears the bar easily, this is too close to call without more information, this is a bad investment, this target is unrealistic given the timeline. Being willing to commit to a clear verdict, and to revise it out loud if new information changes the picture, is a large part of what separates a candidate who can do arithmetic from one who is ready to advise a client, since a client paying for advice needs a recommendation, not a number.' },
 
   { id:'co140', d:'medium', q:'A client raises price by just 2% and profit jumps by 20%. Why can a small price change move profit so much more than it moves revenue?',
-    f:'Because price drops straight to the bottom line while revenue has to cover variable cost first, so the same dollar of price increase is worth far more to profit than a dollar of extra volume is. If a product sells for $50 with $40 of variable cost, the $10 of contribution margin is what funds fixed costs and profit — a 2% price increase adds $1 of pure margin per unit with no added cost, while getting the same profit impact through volume alone would require selling roughly 10% more units, since each additional unit only contributes $10 rather than $50. This is the underlying reason pricing is usually the single most powerful lever in a profitability case, and also the most dangerous one to misjudge — the same leverage that makes a price increase valuable makes a price cut expensive, since a 2% price cut can require a much larger percentage volume increase just to keep profit flat, which is exactly the calculation worth running before agreeing to match a competitor\'s lower price.' }
+    f:'Because price drops straight to the bottom line while revenue has to cover variable cost first, so the same dollar of price increase is worth far more to profit than a dollar of extra volume is. If a product sells for $50 with $40 of variable cost, the $10 of contribution margin is what funds fixed costs and profit — a 2% price increase adds $1 of pure margin per unit with no added cost, while getting the same profit impact through volume alone would require selling roughly 10% more units, since each additional unit only contributes $10 rather than $50. This is the underlying reason pricing is usually the single most powerful lever in a profitability case, and also the most dangerous one to misjudge — the same leverage that makes a price increase valuable makes a price cut expensive, since a 2% price cut can require a much larger percentage volume increase just to keep profit flat, which is exactly the calculation worth running before agreeing to match a competitor\'s lower price.' },
+
+  { id:'co141', d:'medium', q:'A competitor drops its price. Before reacting, why does it matter whether their product is a substitute for yours or a complement?',
+    f:'A substitute is something a customer would buy instead of your product — a competing brand of the same item. A complement is something bought alongside your product — the two are used together. The effect of a competitor\'s price cut is close to opposite depending on which relationship you\'re in. If they\'re a substitute, their lower price pulls price-sensitive customers away from you directly, and the standard playbook is to assess whether you can afford to match, differentiate, or accept some share loss. If they\'re a complement, their lower price can actually help you — cheaper printers sell more ink, a cheaper game console sells more games — because it makes the combined purchase more attractive and can grow your own volume without you touching your price at all. — RECOMMENDATION: identify which relationship applies before reaching for a reflexive price-matching response, since matching a complement\'s price cut when you didn\'t need to would just give away margin for no competitive reason, while ignoring a substitute\'s price cut when you needed to respond would cost you real share.' },
+
+  { id:'co142', d:'medium', q:'A client\'s business has high operating leverage — mostly fixed costs, very little variable cost. What does that mean for how their profit behaves as revenue moves?',
+    f:'High operating leverage means profit swings by a much larger percentage than revenue does, in both directions, because most costs don\'t move with volume — so an extra dollar of revenue flows almost straight through to profit once fixed costs are covered, and a lost dollar of revenue takes almost a full dollar of profit down with it, since there\'s little variable cost shrinking alongside the lost sale to cushion the blow. A software company with expensive fixed infrastructure but near-zero cost per additional user is a classic high-operating-leverage business; a staffing agency that pays contractors per hour worked is a classic low-operating-leverage one, since its costs shrink almost in step with revenue. — RECOMMENDATION: flag this explicitly whenever a client with high operating leverage is discussing a growth plan or a downturn scenario, since the same cost structure that makes growth extremely profitable also makes a revenue decline dangerous — a client should be sizing any expansion, and any downturn contingency plan, with that asymmetry in mind rather than assuming profit will move roughly in line with revenue either way.' }
 ],
 
 /* ── HEDGE FUNDS ───────────────────────────────────────────────────── */
@@ -10553,10 +10581,6 @@ hf: [
     q:'A fund returns {GROSS}% gross this year and charges 2 and 20. Roughly what does the investor actually receive?',
     f:'Take the management fee first: {GROSS}% less the {MGMT}% management fee leaves {AFTER}%. The performance fee is {PERF}% of that, or {FEE}%, leaving the investor with roughly {NET}%. Total fees were about {TOTALFEE}% of assets. Say what that reveals: on a {GROSS}% gross return the manager took {TOTALFEE} points, so the investor captured {NET}. That is the arithmetic behind the whole active-versus-passive debate, and it is why funds are judged on net returns. Note the simplification too — a real calculation would account for the high water mark and any hurdle rate, which can mean no performance fee is charged at all.' },
 
-  { id:'hf55', d:'medium',
-    q:'A company you cover just missed earnings badly and the stock went up. Explain.',
-    f:'Expectations were already worse than the print. Guidance may have improved, a buyback or a divestiture may have been announced, or the bad news may have been already priced in. The underlying idea: stocks move on the delta from expectations, not on absolute results.' },
-
   { id:'hf56', d:'medium', q:'Two funds return the same 15% last year. Why might one have taken on much more risk to get there, and how would you actually measure that?',
     f:'Raw return alone says nothing about how bumpy the ride was to get there, and a fund that earned 15% by making a few concentrated, volatile bets got there very differently than one that earned it steadily. The Sharpe ratio is the standard way to adjust for that — it takes the fund\'s return above the risk-free rate and divides by the volatility (standard deviation) of those returns, so two funds with identical returns but different volatility end up with different Sharpe ratios, and the steadier one scores higher. A high absolute return with a mediocre Sharpe ratio is a flag that the manager may have gotten lucky on a few big, volatile positions rather than generating returns in a repeatable way. — RECOMMENDATION: use Sharpe ratio as one input, not the final word — it penalizes upside volatility the same as downside volatility, which can unfairly ding a manager whose big wins happened to be lumpy, so also look at maximum drawdown and how the fund performed specifically in down markets, since a fund can have a reasonable Sharpe ratio overall while still being exposed to a catastrophic single-quarter loss that the ratio smooths over.' }
 ],
@@ -10595,8 +10619,6 @@ pe: [
     f:'Diagnose whether it is market, execution, or a bad plan. Get real visibility into weekly operating metrics, not just monthly financials. Decide whether management is the problem, then act quickly — sponsors regret slow management changes more than fast ones.' },
   { id:'pe19', d:'medium', q:'How do you think about entry multiple discipline?',
     f:'Paying up is only justified when the growth or margin plan genuinely supports it, because entry multiple sets the bar for exit. Overpaying transfers all return responsibility to operational improvement, which is the hardest lever.' },
-  { id:'pe20', d:'easy', q:'Why do LBOs use so much debt?',
-    f:'It amplifies equity returns when the business performs, interest is tax-deductible, and it imposes discipline on cash use. The cost is fragility — the same leverage amplifies downside and removes room for error.' },
   { id:'pe21', d:'medium', q:'Walk me through what a management rollover is and why it actually matters to a sponsor.',
     f:'Management reinvests a portion of their proceeds into the new equity, aligning them with the sponsor. It signals their own confidence. A management team that wants a full cash exit is telling you something.' },
   { id:'pe22', d:'hard', q:'Would you rather buy a good business at a fair price or a fair business at a good price?',
@@ -10609,8 +10631,6 @@ pe: [
     f:'Parties, size, structure and rationale. Then a view: was the price defensible, is the leverage sustainable, is the value creation plan credible. Say what you would need to believe to underwrite it. Have one ready.' },
   { id:'pe26', d:'hard', q:'What sectors are attractive for buyouts right now, and why?',
     f:'Pick two and defend them on fundamentals — recurring revenue, fragmentation, non-cyclicality, or a structural tailwind. Then name what is unattractive and why, which is the harder half.' },
-  { id:'pe27', d:'medium', q:'How does a sponsor create value beyond financial engineering?',
-    f:'Operational improvement, professionalizing systems and reporting, add-ons, pricing discipline, talent upgrades, and strategic repositioning. Give a concrete mechanism rather than the category name.' },
   { id:'pe28', d:'medium', q:'Walk me through the J-curve and why it explains early fund returns.',
     f:'Fund returns dip early because of fees and costs before investments mature, then rise as exits come. It explains why judging a young fund on early marks is misleading.' },
   { id:'pe29', d:'hard', q:'How would you underwrite a business in a cyclical industry?',
@@ -11246,6 +11266,20 @@ function ufaGCalUrl(title, start, end, details, location) {
   return 'https://calendar.google.com/calendar/render?' + p.toString();
 }
 
+/** An Outlook web "add event" URL, prefilled — covers school/office 365 inboxes. */
+function ufaOutlookUrl(title, start, end, details, location) {
+  var p = new URLSearchParams({
+    path: '/calendar/action/compose',
+    rru: 'addevent',
+    subject: title,
+    startdt: new Date(start).toISOString(),
+    enddt: new Date(end).toISOString(),
+    body: details || '',
+    location: location || ''
+  });
+  return 'https://outlook.office.com/calendar/0/deeplink/compose?' + p.toString();
+}
+
 /** Downloads a .ics file — works with Apple Calendar, Outlook, everything. */
 function ufaDownloadIcs(title, start, end, details, filename) {
   var ics = [
@@ -11266,6 +11300,74 @@ function ufaDownloadIcs(title, start, end, details, filename) {
   a.download = (filename || 'ufa-meeting') + '.ics';
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   setTimeout(function () { URL.revokeObjectURL(url); }, 3000);
+}
+
+/**
+ * Escapes text per RFC 5545 (commas, semicolons, backslashes, newlines).
+ * ICS-safe by construction — this is what keeps ufaSendEmail's btoa() safe
+ * from anything outside the Latin1 range a stray emoji or curly quote in a
+ * topic field could otherwise introduce.
+ */
+function ufaIcsEscape(s) {
+  return String(s || '')
+    .replace(/[\u2018\u2019]/g, "'").replace(/[\u201C\u201D]/g, '"')
+    .replace(/[\u2013\u2014]/g, '-').replace(/[^\x00-\x7F]/g, '')
+    .replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,')
+    .replace(/\r?\n/g, '\\n');
+}
+
+/**
+ * A real meeting invite — METHOD:REQUEST with an organizer and an attendee,
+ * not just a plain event. This is what makes Gmail and Outlook render actual
+ * Yes / Maybe / No buttons on the email, and what puts it on both people's
+ * calendars without either one visiting the portal. `uid` must stay the
+ * same across the invite and any later cancellation for it to be recognized
+ * as the same event rather than a second, unrelated one.
+ */
+function ufaIcsInvite(uid, sequence, title, start, end, details, location,
+                       organizerEmail, organizerName, attendeeEmail, attendeeName) {
+  return [
+    'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//UFA//Portal//EN',
+    'METHOD:REQUEST', 'CALSCALE:GREGORIAN',
+    'BEGIN:VEVENT',
+    'UID:' + uid,
+    'SEQUENCE:' + (sequence || 0),
+    'DTSTAMP:' + ufaCalStamp(new Date()),
+    'DTSTART:' + ufaCalStamp(start),
+    'DTEND:' + ufaCalStamp(end),
+    'SUMMARY:' + ufaIcsEscape(title),
+    'DESCRIPTION:' + ufaIcsEscape(details),
+    'LOCATION:' + ufaIcsEscape(location || ''),
+    'STATUS:CONFIRMED',
+    'ORGANIZER;CN=' + ufaIcsEscape(organizerName) + ':mailto:' + organizerEmail,
+    'ATTENDEE;CN=' + ufaIcsEscape(attendeeName) + ';ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE:mailto:' + attendeeEmail,
+    'END:VEVENT', 'END:VCALENDAR'
+  ].join('\r\n');
+}
+
+/** Cancels a previously sent invite — same UID, higher SEQUENCE, METHOD:CANCEL. */
+function ufaIcsCancel(uid, sequence, title, start, end,
+                       organizerEmail, organizerName, attendeeEmail, attendeeName) {
+  return [
+    'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//UFA//Portal//EN',
+    'METHOD:CANCEL', 'CALSCALE:GREGORIAN',
+    'BEGIN:VEVENT',
+    'UID:' + uid,
+    'SEQUENCE:' + (sequence || 1),
+    'DTSTAMP:' + ufaCalStamp(new Date()),
+    'DTSTART:' + ufaCalStamp(start),
+    'DTEND:' + ufaCalStamp(end),
+    'SUMMARY:' + ufaIcsEscape(title),
+    'STATUS:CANCELLED',
+    'ORGANIZER;CN=' + ufaIcsEscape(organizerName) + ':mailto:' + organizerEmail,
+    'ATTENDEE;CN=' + ufaIcsEscape(attendeeName) + ';ROLE=REQ-PARTICIPANT:mailto:' + attendeeEmail,
+    'END:VEVENT', 'END:VCALENDAR'
+  ].join('\r\n');
+}
+
+/** A stable UID for a booking, shared by its invite and any later cancellation. */
+function ufaBookingUid(bookingId) {
+  return 'ufa-booking-' + bookingId + '@texasufa.org';
 }
 
 function ufaClock(sec) {
@@ -11811,6 +11913,36 @@ const MAX_TOTAL_PER_WEEK = 3;
 const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 const DAY_ABBR = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 
+/* Same order the public About page lists the board in (President, VP,
+   then each department's directors, then Treasurer). The board_profiles
+   table has a sort_order column but nothing in the admin UI sets it, so
+   rather than depend on that being filled in correctly, the Board Hours
+   directory matches names against this list directly. Anyone not on the
+   list (a new hire before this gets updated) still shows up — just
+   alphabetically, after everyone who is. */
+const UFA_BOARD_ORDER = [
+  'Caden Warner', 'Alika Frankovska',
+  'Nathan Li', 'Emily Liu',
+  'Shreyas Sripurushottam', 'Seyoon (Sam) Jung',
+  'Varsha Ravi', 'Grace Miller',
+  'Layne Nguyen', 'Emma Nowotny',
+  'Nikhil Parida', 'Linh Ton-Nu',
+  'Aryan Jhaveri'
+];
+
+function ufaBoardSortIndex(name) {
+  var i = UFA_BOARD_ORDER.indexOf(String(name || '').trim());
+  return i === -1 ? UFA_BOARD_ORDER.length : i;
+}
+
+function sortToBoardPageOrder(list) {
+  return list.slice().sort(function (a, b) {
+    var ia = ufaBoardSortIndex(a.name), ib = ufaBoardSortIndex(b.name);
+    if (ia !== ib) return ia - ib;
+    return String(a.name || '').localeCompare(String(b.name || ''));
+  });
+}
+
 async function loadBoardTab() {
   if (ufaIsBoard()) await renderVisibilityToggle('board', 'visibility_board_hours');
   var dir = document.getElementById('board-directory');
@@ -11821,7 +11953,7 @@ async function loadBoardTab() {
   var r3 = await sb.from('board_blackouts').select('*');
   var r4 = await sb.from('bookings').select('*').eq('status', 'booked');
 
-  boardProfiles = r1.data || [];
+  boardProfiles = sortToBoardPageOrder(r1.data || []);
   boardAvail = r2.data || [];
   boardBlackouts = r3.data || [];
   allVisibleBookings = r4.data || [];
@@ -12200,7 +12332,7 @@ async function confirmBooking() {
     duration_min: BK.pending.duration,
     topic: topic.trim(),
     status: 'booked'
-  });
+  }).select().single();
 
   if (res.error) {
     // The partial unique index is what actually prevents a double-book,
@@ -12215,12 +12347,15 @@ async function confirmBooking() {
     return;
   }
 
-  // Confirmation emails to both sides. Deliberately not awaited — the
-  // booking is already saved, and the member should not wait on SMTP.
+  // Confirmation emails to both sides, each with a real calendar invite
+  // attached — not just a link. Deliberately not awaited — the booking is
+  // already saved, and the member should not wait on SMTP.
   notifyBookingCreated({
+    id: res.data.id,
     member_email: ufaEmail(),
     board_email: BK.board.email,
     start_ts: start.toISOString(),
+    end_ts: end.toISOString(),
     duration_min: BK.pending.duration,
     topic: topic.trim()
   }, BK.board.name, (currentMember && currentMember.name) || ufaEmail());
@@ -12512,22 +12647,37 @@ async function loadEmailConfig() {
  * Sends one email. Never throws — a notification failure must never break
  * the action that triggered it. A member whose booking saved should not
  * see an error because an email did not go out.
+ *
+ * `ics` is optional: { content, filename }. When present it rides along as
+ * a dynamic attachment named ics_attachment / ics_filename — see the
+ * one-time EmailJS template setup note in the admin panel. Gmail and
+ * Outlook both recognize a .ics file with METHOD:REQUEST in it and render
+ * real Yes/No/Maybe buttons on the email itself, which is the whole point:
+ * nobody has to open the portal to accept a meeting.
  */
-async function ufaSendEmail(toEmail, subject, message) {
+async function ufaSendEmail(toEmail, subject, message, ics) {
   if (!emailCfg.enabled || !emailCfg.service || !emailCfg.template) {
     return { skipped: true };
   }
   if (typeof emailjs === 'undefined' || !emailjs.send) {
     return { ok: false, error: 'EmailJS did not load' };
   }
+  var params = {
+    to_email: toEmail,
+    subject: subject,
+    message: message,
+    from_name: emailCfg.from_name || 'UFA',
+    reply_to: 'financeassociationtx@gmail.com'
+  };
+  if (ics && ics.content) {
+    // EmailJS dynamic attachments want base64. btoa() only handles Latin1,
+    // and ICS text is plain ASCII by construction (see ufaIcsEscape), so a
+    // straight btoa is safe here without a UTF-8 workaround.
+    params.ics_attachment = btoa(ics.content);
+    params.ics_filename = ics.filename || 'invite.ics';
+  }
   try {
-    await emailjs.send(emailCfg.service, emailCfg.template, {
-      to_email: toEmail,
-      subject: subject,
-      message: message,
-      from_name: emailCfg.from_name || 'UFA',
-      reply_to: 'financeassociationtx@gmail.com'
-    });
+    await emailjs.send(emailCfg.service, emailCfg.template, params);
     return { ok: true };
   } catch (e) {
     return { ok: false, error: (e && (e.text || e.message)) || 'send failed' };
@@ -12540,13 +12690,19 @@ async function ufaSendEmail(toEmail, subject, message) {
    ───────────────────────────────────────────────────────────────── */
 
 function ufaBookingEmailToMember(b, boardName) {
+  var end = new Date(new Date(b.start_ts).getTime() + b.duration_min * 60000);
+  var title = 'UFA — meeting with ' + boardName;
+  var details = (b.topic ? 'Topic: ' + b.topic + '\n' : '') + 'Booked through the UFA member portal.';
   return {
     subject: 'Confirmed: ' + ufaDateTime(b.start_ts) + ' with ' + boardName,
     message:
       'Your meeting is booked.\n\n' +
-      'With:  ' + boardName + '\n' +
+      'With:  ' + boardName + ' (' + b.board_email + ')\n' +
       'When:  ' + ufaDateTime(b.start_ts) + ' (' + b.duration_min + ' minutes)\n' +
       (b.topic ? 'Topic: ' + b.topic + '\n' : '') +
+      '\nAdd it to your calendar:\n' +
+      'Google Calendar:  ' + ufaGCalUrl(title, b.start_ts, end, details, boardName) + '\n' +
+      'Outlook Calendar:  ' + ufaOutlookUrl(title, b.start_ts, end, details, boardName) + '\n' +
       '\nNeed to cancel? Open the member portal, go to Board Hours, and cancel there. ' +
       'Please do it at least ' + CANCEL_LEAD_HOURS + ' hours ahead so the slot can go to someone else.\n\n' +
       'texasufa.org/portal'
@@ -12554,6 +12710,9 @@ function ufaBookingEmailToMember(b, boardName) {
 }
 
 function ufaBookingEmailToBoard(b, memberName) {
+  var end = new Date(new Date(b.start_ts).getTime() + b.duration_min * 60000);
+  var title = 'UFA — meeting with ' + memberName;
+  var details = (b.topic ? 'They want to talk about: ' + b.topic + '\n' : '') + 'Booked through the UFA member portal.';
   return {
     subject: 'New booking: ' + memberName + ' — ' + ufaDateTime(b.start_ts),
     message:
@@ -12561,8 +12720,10 @@ function ufaBookingEmailToBoard(b, memberName) {
       'When:  ' + ufaDateTime(b.start_ts) + ' (' + b.duration_min + ' minutes)\n' +
       'Email: ' + b.member_email + '\n' +
       (b.topic ? 'They want to talk about: ' + b.topic + '\n' : '') +
-      '\nIt is on your Board Hours tab in the admin panel, where you can add it to ' +
-      'your calendar or cancel if something has come up.\n\n' +
+      '\nAdd it to your calendar:\n' +
+      'Google Calendar:  ' + ufaGCalUrl(title, b.start_ts, end, details, memberName) + '\n' +
+      'Outlook Calendar:  ' + ufaOutlookUrl(title, b.start_ts, end, details, memberName) + '\n' +
+      '\nOr cancel it from your Board Hours tab in the admin panel if something has come up.\n\n' +
       'texasufa.org/portal'
   };
 }
@@ -12608,21 +12769,40 @@ function ufaPendingEmailToBoard(name, email, role) {
 
 /* ── Wiring ──────────────────────────────────────────────────────── */
 
-/** Fire-and-forget both sides of a new booking. */
+/** Fire-and-forget both sides of a new booking, each with a real invite attached. */
 function notifyBookingCreated(b, boardName, memberName) {
+  var end = b.end_ts || new Date(new Date(b.start_ts).getTime() + b.duration_min * 60000).toISOString();
+  var uid = ufaBookingUid(b.id);
+  var title = 'UFA — meeting with ' + memberName + ' / ' + boardName;
+  var details = (b.topic ? 'Topic: ' + b.topic + '\n' : '') + 'Booked through the UFA member portal.';
+  var ics = {
+    content: ufaIcsInvite(uid, 0, title, b.start_ts, end, details, '',
+      b.board_email, boardName, b.member_email, memberName),
+    filename: 'ufa-board-hours.ics'
+  };
+
   var m = ufaBookingEmailToMember(b, boardName);
-  ufaSendEmail(b.member_email, m.subject, m.message);
+  ufaSendEmail(b.member_email, m.subject, m.message, ics);
   var d = ufaBookingEmailToBoard(b, memberName);
-  ufaSendEmail(b.board_email, d.subject, d.message);
+  ufaSendEmail(b.board_email, d.subject, d.message, ics);
 }
 
-/** Tells whichever side did not click cancel. */
+/** Tells whichever side did not click cancel, with a matching cancellation attached
+    so the event actually disappears from their calendar rather than just sitting there. */
 function notifyBookingCancelled(b, cancelledByEmail, boardName, memberName) {
   var byMember = String(cancelledByEmail).toLowerCase() === String(b.member_email).toLowerCase();
+  var end = b.end_ts || new Date(new Date(b.start_ts).getTime() + b.duration_min * 60000).toISOString();
+  var uid = ufaBookingUid(b.id);
+  var title = 'UFA — meeting with ' + memberName + ' / ' + boardName;
+  var ics = {
+    content: ufaIcsCancel(uid, 1, title, b.start_ts, end, b.board_email, boardName, b.member_email, memberName),
+    filename: 'ufa-board-hours-cancel.ics'
+  };
+
   var e = byMember
     ? ufaCancelEmail(b, memberName, memberName)
     : ufaCancelEmail(b, boardName, boardName);
-  ufaSendEmail(byMember ? b.board_email : b.member_email, e.subject, e.message);
+  ufaSendEmail(byMember ? b.board_email : b.member_email, e.subject, e.message, ics);
 }
 
 /** Emails the whole board that somebody is waiting in the queue. */
