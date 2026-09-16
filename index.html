@@ -11228,9 +11228,15 @@ async function deleteMyResume() {
   if (!myResume) return;
   if (!confirm('Remove your resume? You will need to upload a new one before the book goes out.')) return;
   try {
-    var storageRes = await sb.storage.from('resumes').remove([myResume.file_path]);
-    if (storageRes.error) throw storageRes.error;
-
+    // Order matters: delete the database row FIRST, storage file SECOND.
+    // If anything fails partway through, the record disappears (the member
+    // just looks like they never submitted — safe and annoying) instead of
+    // the old order, where a storage delete could succeed, then the DB
+    // delete fail, leaving a row that still claims a file is on file when
+    // the actual file is already gone. That silent mismatch is what broke
+    // the Drive push and made a member's resume look "on file" everywhere
+    // except in the one place that actually mattered.
+    //
     // .select() makes Supabase return the rows it actually deleted. Without
     // it, a delete blocked by a permissions/RLS rule comes back with
     // res.error === null and zero rows touched — the call "succeeds" while
@@ -11242,6 +11248,15 @@ async function deleteMyResume() {
     if (!res.data || !res.data.length) {
       throw new Error('The resume record could not be deleted (permission issue).');
     }
+
+    var storageRes = await sb.storage.from('resumes').remove([myResume.file_path]);
+    if (storageRes.error) throw storageRes.error;
+
+    // Supabase is the source of truth and is already clean at this point.
+    // The Drive mirror is best-effort and must never surface an error to
+    // the member — if it fails, the board sees the gap via a stale file
+    // sitting in Drive, same as any other mirror discrepancy.
+    deleteResumeFromDrive(myResume.file_name);
 
     myResume = null;
     ufaAlert('resume-alert', 'ok', 'Resume removed.');
@@ -11398,6 +11413,34 @@ async function mirrorResumeToDrive(file, fileName, memberName, memberEmail) {
     var out = await res.json();
     if (!out || !out.ok) throw new Error((out && out.error) || 'Drive rejected the upload');
     return { ok: true, id: out.id };
+  } catch (e) {
+    return { ok: false, error: e.message || 'unknown error' };
+  }
+}
+
+/**
+ * Tells the Drive receiver to trash whatever file currently has this
+ * filename. Fire-and-forget from the caller's point of view — a Drive
+ * failure here must never block a member's Remove action, since Supabase
+ * (not Drive) is the source of truth. Same reasoning as the mirror-on-
+ * upload call: the member sees success either way, and any gap between
+ * Supabase and Drive shows up to the board, not to them.
+ */
+async function deleteResumeFromDrive(fileName) {
+  if (!resumeDriveCfg.enabled || !resumeDriveCfg.url || !fileName) return { skipped: true };
+  try {
+    var res = await fetch(resumeDriveCfg.url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({
+        token: resumeDriveCfg.token || '',
+        action: 'delete',
+        filename: fileName
+      })
+    });
+    var out = await res.json();
+    if (!out || !out.ok) throw new Error((out && out.error) || 'Drive rejected the delete');
+    return { ok: true, removed: out.removed };
   } catch (e) {
     return { ok: false, error: e.message || 'unknown error' };
   }
