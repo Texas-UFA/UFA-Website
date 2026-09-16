@@ -5310,11 +5310,22 @@ button[onclick="pubFlipbookNext()"]:hover {
             <button onclick="filterResources('pe')" class="res-filter" id="rfilt-pe">Private Equity</button>
             <button onclick="filterResources('hf')" class="res-filter" id="rfilt-hf">Hedge Funds</button>
           </div>
-          <div id="ib-submenu" style="display:none;margin-bottom:16px;padding:10px 14px;background:#f5f8f5;border-radius:8px;flex-wrap:wrap;gap:8px;">
-            <span style="font-size:12px;color:#6B7D6B;align-self:center;margin-right:4px;">Filter by:</span>
-            <button onclick="filterResources('ib-long')" class="res-filter" id="rfilt-ib-long">Long Guides</button>
-            <button onclick="filterResources('ib-short')" class="res-filter" id="rfilt-ib-short">Short Guides</button>
-            <button onclick="filterResources('ib-other')" class="res-filter" id="rfilt-ib-other">Other</button>
+          <div id="ib-submenu" style="display:none;margin-bottom:16px;padding:14px 16px;background:#F3F8F3;border:1px solid rgba(46,74,46,0.12);border-radius:10px;">
+            <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:#6B7D6B;margin-bottom:10px;">Investment banking guides, by depth</div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;">
+              <button type="button" onclick="filterResources('ib-long')" class="ufa-subfilter" id="rfilt-ib-long">
+                <span class="ufa-subfilter-name">Long Guides</span>
+                <span class="ufa-subfilter-sub">Full walkthroughs, topic by topic</span>
+              </button>
+              <button type="button" onclick="filterResources('ib-short')" class="ufa-subfilter" id="rfilt-ib-short">
+                <span class="ufa-subfilter-name">Short Guides</span>
+                <span class="ufa-subfilter-sub">Quick-reference cheat sheets</span>
+              </button>
+              <button type="button" onclick="filterResources('ib-other')" class="ufa-subfilter" id="rfilt-ib-other">
+                <span class="ufa-subfilter-name">Other</span>
+                <span class="ufa-subfilter-sub">Free guides from outside UFA</span>
+              </button>
+            </div>
           </div>
 
           <div id="resources-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;"></div>
@@ -5376,19 +5387,18 @@ button[onclick="pubFlipbookNext()"]:hover {
               <div style="padding:16px 20px;border-bottom:1px solid rgba(46,74,46,0.1);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
                 <div>
                   <div style="font-size:14px;font-weight:600;color:#1C2B1C;">UFA Internship Tracker</div>
-                  <div style="font-size:12px;color:#6B7D6B;margin-top:2px;">Shared spreadsheet &#8212; track openings and add your applications</div>
+                  <div style="font-size:12px;color:#6B7D6B;margin-top:2px;" id="internship-tracker-sub">Shared spreadsheet &#8212; track openings and add your applications</div>
                 </div>
                 <a href="https://docs.google.com/spreadsheets/d/1Uct8-VQKGCsDKCquW01Dxi0SLVUdbiD4lmuSp1NHEVA/edit?usp=sharing" target="_blank" rel="noopener noreferrer"
                    style="font-size:12px;font-weight:600;color:#fff;background:#1C2B1C;padding:8px 16px;border-radius:4px;text-decoration:none;white-space:nowrap;">Open in Google Sheets &#8594;</a>
               </div>
-              <iframe
-                src="https://docs.google.com/spreadsheets/d/1Uct8-VQKGCsDKCquW01Dxi0SLVUdbiD4lmuSp1NHEVA/preview"
-                width="100%"
-                height="520"
-                style="border:none;display:block;"
-                title="UFA Internship Tracker"
-                allow="autoplay">
-              </iframe>
+              <div style="padding:14px 20px;border-bottom:1px solid rgba(46,74,46,0.1);">
+                <input type="text" id="internship-tracker-search" class="ufa-input" placeholder="Search by company or role" style="max-width:320px;" oninput="renderInternshipTracker()">
+              </div>
+              <div class="ufa-table-wrap" style="padding:0 4px 4px;">
+                <table class="ufa-table" id="internship-tracker-table"></table>
+              </div>
+              <div id="internship-tracker-empty" style="display:none;padding:40px 20px;text-align:center;color:#6B7D6B;font-size:13px;"></div>
             </div>
           </div>
         </div>
@@ -5869,6 +5879,15 @@ button[onclick="pubFlipbookNext()"]:hover {
 
           <!-- Member Roster -->
           <div id="atab-content-roster" style="display:none;">
+            <div class="ufa-card ufa-card-tight" style="margin-bottom:16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+              <div style="flex:1;min-width:200px;">
+                <div class="ufa-label" style="margin-bottom:2px;">Current recruiting cycle</div>
+                <div style="font-size:12px;color:#6B7D6B;">Shown on every member's profile pill. Update this once each semester &mdash; nobody needs a database edit anymore.</div>
+              </div>
+              <input id="cycle-input" type="text" class="ufa-input" placeholder="Fall 2026" style="max-width:180px;">
+              <button class="ufa-btn" onclick="saveCurrentCycle()">Save</button>
+              <span id="cycle-alert" style="display:none;font-size:12px;"></span>
+            </div>
             <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
               <input id="roster-search" type="text" placeholder="Search by name or email…" oninput="filterRoster()" style="padding:9px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:13px;background:#fff;width:260px;">
               <select id="roster-role-filter" onchange="filterRoster()" style="padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:13px;background:#fff;">
@@ -7043,6 +7062,28 @@ button[onclick="pubFlipbookNext()"]:hover {
 .ufa-level-name { font-size: 14px; font-weight: 600; color: #1C2B1C; }
 .ufa-level-sub { font-size: 11px; color: #6B7D6B; grid-column: 2; margin-top: 1px; }
 
+/* IB Guides sub-filter cards: same family as .ufa-level (bordered card,
+   name + sub-line, a highlighted "is-on" state) but without the
+   difficulty dot, since Long/Short/Other isn't a graded scale — it's
+   a plain choice of depth. Deliberately not .res-filter, since a flat
+   pill row here would look like a fourth top-level category instead
+   of a sub-choice under IB Guides specifically. */
+.ufa-subfilter {
+  display: block;
+  text-align: left;
+  background: #fff;
+  border: 1px solid rgba(46,74,46,0.14);
+  border-radius: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: border-color 0.16s, background 0.16s, box-shadow 0.16s;
+}
+.ufa-subfilter:hover { border-color: rgba(46,74,46,0.35); }
+.ufa-subfilter.is-on { border-color: #3D6B3D; background: #fff; box-shadow: 0 0 0 3px rgba(61,107,61,0.14); }
+.ufa-subfilter-name { display: block; font-size: 13px; font-weight: 600; color: #1C2B1C; }
+.ufa-subfilter-sub { display: block; font-size: 11px; color: #6B7D6B; margin-top: 2px; }
+
 /* ── Mock interview: running ────────────────────────────────────── */
 .ufa-run-head, .ufa-case-head {
   position: relative;
@@ -7331,6 +7372,21 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { flow
 
 let currentUser   = null;
 let currentMember = null;
+var currentCycle = null;
+
+/**
+ * The recruiting cycle used to live only as a per-member `semester`
+ * column, set once (probably at import) and never touched again — so
+ * everyone's profile pill quietly went stale the moment a new semester
+ * started. This reads one shared value instead, so updating it once in
+ * Admin → Roster fixes it everywhere at once, for every member, forever
+ * — not just for whoever happens to get a manual database edit.
+ */
+async function loadCurrentCycle() {
+  var cfg = await ufaGetSetting('recruiting_cycle');
+  currentCycle = (cfg && cfg.cycle) ? cfg.cycle : 'this semester';
+  return currentCycle;
+}
 let allRosterData = [];
 
 const TYPE_COLORS = {
@@ -7426,6 +7482,154 @@ const RESOURCES = [
 var resourcesLoaded = false;
 var currentResourceFilter = 'all';
 
+/* ══════════════════════════════════════════════════════════════════
+   INTERNSHIP TRACKER — rendered natively instead of embedded
+   ══════════════════════════════════════════════════════════════════
+
+   The sheet used to sit in an <iframe src=".../preview">, which shows
+   Google's own chrome (its header colors, its own scrollbars, its own
+   fonts) inside a card that is otherwise styled to match the rest of
+   the site. This fetches the same sheet as CSV — which works with no
+   API key as long as the sheet is shared "anyone with the link can
+   view", already true since the iframe needed that — and renders it
+   as a real <table> using the site's own classes, so it actually
+   looks like it belongs here. The board keeps editing the same Google
+   Sheet exactly as before; nothing changes on that side.
+   ══════════════════════════════════════════════════════════════════ */
+
+var INTERNSHIP_SHEET_ID = '1Uct8-VQKGCsDKCquW01Dxi0SLVUdbiD4lmuSp1NHEVA';
+var INTERNSHIP_SHEET_TAB = 'Tracker';
+var internshipTrackerRows = null; // [{headerName: value, ...}, ...], null until loaded
+var internshipTrackerLoading = false;
+
+var INTERNSHIP_ROLE_PILL = {
+  'private equity':    'ufa-pill-red',
+  'investment banking':'ufa-pill-blue',
+  'vc':                'ufa-pill-amber',
+  'other':             'ufa-pill-grey'
+};
+
+/** Minimal RFC4180-ish CSV parser: handles quoted fields, embedded
+ * commas, embedded newlines, and "" as an escaped quote. Good enough
+ * for a Google Sheets export; not meant to be a general-purpose parser. */
+function parseCsv(text) {
+  var rows = [], row = [], field = '', inQuotes = false;
+  for (var i = 0; i < text.length; i++) {
+    var ch = text[i], next = text[i + 1];
+    if (inQuotes) {
+      if (ch === '"' && next === '"') { field += '"'; i++; }
+      else if (ch === '"') { inQuotes = false; }
+      else { field += ch; }
+    } else {
+      if (ch === '"') inQuotes = true;
+      else if (ch === ',') { row.push(field); field = ''; }
+      else if (ch === '\r') { /* skip, \n handles the line break */ }
+      else if (ch === '\n') { row.push(field); rows.push(row); row = []; field = ''; }
+      else field += ch;
+    }
+  }
+  if (field.length || row.length) { row.push(field); rows.push(row); }
+  return rows;
+}
+
+async function loadInternshipTracker() {
+  if (internshipTrackerRows || internshipTrackerLoading) { renderInternshipTracker(); return; }
+  internshipTrackerLoading = true;
+  var sub = document.getElementById('internship-tracker-sub');
+  var empty = document.getElementById('internship-tracker-empty');
+  var table = document.getElementById('internship-tracker-table');
+  if (table) table.innerHTML = '';
+  if (empty) { empty.style.display = ''; empty.textContent = 'Loading the tracker…'; }
+
+  try {
+    var url = 'https://docs.google.com/spreadsheets/d/' + INTERNSHIP_SHEET_ID +
+      '/gviz/tq?tqx=out:csv&sheet=' + encodeURIComponent(INTERNSHIP_SHEET_TAB);
+    var res = await fetch(url);
+    if (!res.ok) throw new Error('sheet fetch failed');
+    var csv = await res.text();
+    var grid = parseCsv(csv);
+    if (!grid.length) throw new Error('empty sheet');
+
+    var headers = grid[0].map(function (h) { return (h || '').trim(); });
+    internshipTrackerRows = grid.slice(1)
+      .map(function (r) {
+        var obj = {};
+        headers.forEach(function (h, i) { obj[h] = (r[i] || '').trim(); });
+        return obj;
+      })
+      // Drop rows that are entirely blank — the sheet keeps ~100 empty
+      // rows below the real data for the board to type new rows into.
+      .filter(function (obj) { return Object.keys(obj).some(function (h) { return obj[h]; }); });
+
+    if (sub) sub.textContent = 'Shared spreadsheet — track openings and add your applications';
+    renderInternshipTracker();
+  } catch (e) {
+    internshipTrackerRows = null;
+    if (sub) sub.textContent = "Couldn't load the live sheet just now — the link above still opens it directly.";
+    if (table) table.innerHTML = '';
+    if (empty) {
+      empty.style.display = '';
+      empty.textContent = "Couldn't load the tracker here. Use \"Open in Google Sheets\" above instead.";
+    }
+  } finally {
+    internshipTrackerLoading = false;
+  }
+}
+
+function renderInternshipTracker() {
+  var table = document.getElementById('internship-tracker-table');
+  var empty = document.getElementById('internship-tracker-empty');
+  if (!table || !internshipTrackerRows) return;
+
+  var q = (document.getElementById('internship-tracker-search') || {}).value || '';
+  q = q.trim().toLowerCase();
+
+  var headers = Object.keys(internshipTrackerRows[0] || {});
+  var companyKey = headers.filter(function (h) { return /company/i.test(h); })[0] || headers[0];
+  var roleTypeKey = headers.filter(function (h) { return /role\s*type/i.test(h); })[0];
+  var applicationKey = headers.filter(function (h) { return /application/i.test(h); })[0];
+
+  var rows = internshipTrackerRows.filter(function (r) {
+    if (!q) return true;
+    return headers.some(function (h) { return (r[h] || '').toLowerCase().indexOf(q) !== -1; });
+  });
+
+  if (!rows.length) {
+    table.innerHTML = '';
+    if (empty) {
+      empty.style.display = '';
+      empty.textContent = q ? 'No rows match "' + q + '".' : 'No openings listed yet — check back soon.';
+    }
+    return;
+  }
+  if (empty) empty.style.display = 'none';
+
+  table.innerHTML =
+    '<tr>' + headers.map(function (h) { return '<th>' + ufaEsc(h) + '</th>'; }).join('') + '</tr>' +
+    rows.map(function (r) {
+      return '<tr>' + headers.map(function (h) {
+        var val = r[h] || '';
+        if (h === roleTypeKey && val) {
+          var pillClass = INTERNSHIP_ROLE_PILL[val.toLowerCase()] || 'ufa-pill-grey';
+          return '<td><span class="ufa-pill ' + pillClass + '">' + ufaEsc(val) + '</span></td>';
+        }
+        if (h === applicationKey && val) {
+          if (/^https?:\/\//i.test(val)) {
+            return '<td><a href="' + ufaEsc(val) + '" target="_blank" rel="noopener noreferrer">Apply &#8594;</a></td>';
+          }
+          var emailMatch = val.match(/[^\s]+@[^\s]+\.[^\s]+/);
+          if (emailMatch) {
+            return '<td><a href="mailto:' + ufaEsc(emailMatch[0]) + '">' + ufaEsc(val) + '</a></td>';
+          }
+        }
+        if (h === companyKey) {
+          return '<td style="font-weight:500;color:#1C2B1C;">' + ufaEsc(val) + '</td>';
+        }
+        return '<td>' + ufaEsc(val || '—') + '</td>';
+      }).join('') + '</tr>';
+    }).join('');
+}
+
 async function loadResources() {
   if (resourcesLoaded) return;
   resourcesLoaded = true;
@@ -7466,7 +7670,7 @@ function toggleIBMenu() {
   var menu = document.getElementById('ib-submenu');
   var btn = document.getElementById('rfilt-ib');
   var isOpen = menu.style.display !== 'none';
-  menu.style.display = isOpen ? 'none' : 'flex';
+  menu.style.display = isOpen ? 'none' : 'block';
   btn.classList.toggle('active', !isOpen);
   if (!isOpen) filterResources('ib-long');
 }
@@ -7480,7 +7684,7 @@ function filterResources(cat) {
   });
   ['ib-long','ib-short','ib-other'].forEach(function(c) {
     var btn = document.getElementById('rfilt-' + c);
-    if (btn) btn.classList.toggle('active', c === cat);
+    if (btn) btn.classList.toggle('is-on', c === cat);
   });
   var ibBtn = document.getElementById('rfilt-ib');
   if (ibBtn) ibBtn.classList.toggle('active', isIB);
@@ -7622,13 +7826,12 @@ async function showDashboard() {
 
 
 
-  const name     = (currentMember && currentMember.name)     ? currentMember.name     : currentUser.email;
-  const role     = (currentMember && currentMember.role)     ? currentMember.role     : 'Member';
-  const semester = (currentMember && currentMember.semester) ? currentMember.semester : '---';
+  const name = (currentMember && currentMember.name) ? currentMember.name : currentUser.email;
+  const role = (currentMember && currentMember.role) ? currentMember.role : 'Member';
+  await loadCurrentCycle();
 
-  
   document.getElementById('portal-welcome-name').textContent = name;
-  document.getElementById('portal-welcome-team').textContent = role + ' - ' + semester;
+  document.getElementById('portal-welcome-team').textContent = role + ' - ' + currentCycle;
 
   const BOARD_ROLES = ['Board', 'President'];
   const isBoard = BOARD_ROLES.includes(role);
@@ -7898,13 +8101,14 @@ async function renderUpcoming() {
     var active=s.active==='true'||s.active===true;
     var done=checkedCodes.has(s.code);
     var parts=(s.meeting_date||'').split(' ');
+    var dayNum = (parts[1]||'').replace(/(st|nd|rd|th)$/i, '') || s.meeting_date || '--';
     return '<div style="padding:16px 20px;border-bottom:1px solid rgba(46,74,46,0.08);display:flex;align-items:center;justify-content:space-between;gap:12px;'+(done?'background:#f7fbf7;':'')+'">'
       +'<div style="display:flex;align-items:center;gap:14px;">'
         +'<div style="width:40px;text-align:center;flex-shrink:0;">'
-          +'<div style="font-size:18px;font-weight:600;color:#1C2B1C;line-height:1;">'+(parts[1]||s.meeting_date||'--')+'</div>'
+          +'<div style="font-size:18px;font-weight:600;color:#1C2B1C;line-height:1;">'+dayNum+'</div>'
           +'<div style="font-size:10px;color:#6B7D6B;text-transform:uppercase;letter-spacing:0.06em;">'+(parts[0]||'')+'</div>'
         +'</div>'
-        +'<div style="width:1px;height:32px;background:rgba(46,74,46,0.12);flex-shrink:0;"></div>'
+        +'<div style="width:1px;align-self:stretch;background:rgba(46,74,46,0.12);flex-shrink:0;"></div>'
         +'<div>'
           +'<div style="font-size:14px;font-weight:500;color:#1C2B1C;">'+(s.meeting_name||'Event')+'</div>'
           +'<div style="display:flex;align-items:center;gap:6px;margin-top:3px;">'
@@ -7971,7 +8175,7 @@ async function requestRoleChange() {
 
   currentMember.role = newRole;
   document.getElementById('profile-role').value = newRole;
-  document.getElementById('portal-welcome-team').textContent = newRole + ' - ' + (currentMember.semester||'');
+  document.getElementById('portal-welcome-team').textContent = newRole + ' - ' + (currentCycle || 'this semester');
   
 
   // Replace section with pending message
@@ -8023,7 +8227,7 @@ async function saveProfile() {
   // No email change — update local state normally
   currentMember.name = name; currentMember.eid = eid; currentMember.role = roleToSave;
   document.getElementById('portal-welcome-name').textContent = name;
-  document.getElementById('portal-welcome-team').textContent = roleToSave + ' - ' + (currentMember.semester||'');
+  document.getElementById('portal-welcome-team').textContent = roleToSave + ' - ' + (currentCycle || 'this semester');
 
   var BOARD_ROLES = ['Board', 'President'];
   document.getElementById('ptab-admin').style.display = BOARD_ROLES.includes(roleToSave) ? '' : 'none';
@@ -8400,6 +8604,10 @@ async function loadRosterBadge() {
 }
 
 async function loadRoster() {
+  await loadCurrentCycle();
+  var cycleInput = document.getElementById('cycle-input');
+  if (cycleInput) cycleInput.value = currentCycle === 'this semester' ? '' : currentCycle;
+
   var r1 = await sb.from('members').select('*').order('name',{ascending:true});
   var r2 = await sb.from('attendance').select('email, points');
   var members = r1.data || [];
@@ -8412,6 +8620,19 @@ async function loadRoster() {
   var rosterBadge = document.getElementById('roster-badge');
   if (rosterBadge) { rosterBadge.textContent = pendingRoleCount; rosterBadge.style.display = pendingRoleCount > 0 ? 'inline' : 'none'; }
   renderRosterTable(allRosterData);
+}
+
+/** Board-facing save for the one shared recruiting-cycle value. Every
+ * member's profile pill reads this the next time they load the portal
+ * — no per-row database edits, ever, going forward. */
+async function saveCurrentCycle() {
+  var input = document.getElementById('cycle-input');
+  var val = (input && input.value || '').trim();
+  if (!val) { ufaAlert('cycle-alert', 'err', 'Enter something like "Fall 2026" first.'); return; }
+  var r = await ufaSetSetting('recruiting_cycle', { cycle: val });
+  if (r.error) { ufaAlert('cycle-alert', 'err', 'Could not save: ' + r.error.message); return; }
+  currentCycle = val;
+  ufaAlert('cycle-alert', 'ok', 'Saved. Every member\'s pill picks this up next time they load the portal.');
 }
 
 function filterRoster() {
@@ -8796,7 +9017,7 @@ ib: [
     f:'No income statement impact. Cash flow statement: ${A} inflow under financing. Balance sheet: cash up {A}, shareholders equity up {A}, so it balances. The point of the question is checking you do not treat raising money as earning money — nothing was sold, nothing was produced, the company simply exchanged ownership for cash.' },
   { id:'ib30', d:'easy',
     q:'Why do bankers and investors care about EBITDA?',
-    f:'Because it approximates the cash the business generates from operations before the choices that differ between companies. Strip out interest and you have removed the effect of how the company chose to finance itself. Strip out tax and you have removed jurisdiction and tax structure. Strip out depreciation and amortisation and you have removed accounting judgments about asset lives. What is left is closer to the earning power of the business itself, which is what makes two companies comparable even when their balance sheets and domiciles are completely different. That is also why so many multiples are built on EBITDA rather than net income.' },
+    f:'Because it approximates the cash the business generates from operations before the choices that differ between companies. Strip out interest and you have removed the effect of how the company chose to finance itself. Strip out tax and you have removed jurisdiction and tax structure. Strip out depreciation and amortization and you have removed accounting judgments about asset lives. What is left is closer to the earning power of the business itself, which is what makes two companies comparable even when their balance sheets and domiciles are completely different. That is also why so many multiples are built on EBITDA rather than net income.' },
 
   { id:'ib135', d:'medium',
     q:'What does EBITDA miss, and when would it mislead you?',
@@ -8978,7 +9199,7 @@ ib: [
     f:'A multiple is a ratio of value to some measure of performance — price to earnings, or enterprise value to EBITDA. Its purpose is comparison. Knowing a company is worth ten billion tells you nothing on its own; knowing it trades at twenty times earnings while its competitors trade at twelve tells you something immediately. Add the caveat that earns credit: a multiple is shorthand, not analysis. It compresses growth, risk and margin into one number, and two companies can deserve very different multiples for good reasons.' },
 
   { id:'ib93', d:'easy', q:'A company is profitable every year but keeps running out of cash. How is that possible?',
-    f:'Because profit and cash are not the same thing. The usual culprit is working capital — the company sells on credit and waits months to collect, or it ties up cash in inventory it has not sold yet. Growth makes this worse, not better: every new order means paying for materials and labour now and collecting later, so a fast-growing profitable company can starve itself. Other possibilities are heavy spending on equipment, which never touches the income statement all at once, or large debt repayments. The instinct to show is going to the cash flow statement to find out which.' },
+    f:'Because profit and cash are not the same thing. The usual culprit is working capital — the company sells on credit and waits months to collect, or it ties up cash in inventory it has not sold yet. Growth makes this worse, not better: every new order means paying for materials and labor now and collecting later, so a fast-growing profitable company can starve itself. Other possibilities are heavy spending on equipment, which never touches the income statement all at once, or large debt repayments. The instinct to show is going to the cash flow statement to find out which.' },
 
   { id:'ib95', d:'medium',
     gen: function () {
@@ -8994,7 +9215,7 @@ ib: [
       return { AR: AR };
     },
     q:'Accounts receivable increases by ${AR}. Walk me through the three statements.',
-    f:'Income statement: no change. This is the trap in the question — the revenue was already recognised, which is why there is a receivable at all. Cash flow statement: an increase in an operating asset is a use of cash, so cash is down ${AR}. Balance sheet: accounts receivable up {AR}, cash down {AR}, assets net unchanged, balances. Add the meaning: the company made the sale and has not been paid. If receivables keep outrunning revenue, either collections are deteriorating or revenue is being recognised aggressively.' },
+    f:'Income statement: no change. This is the trap in the question — the revenue was already recognized, which is why there is a receivable at all. Cash flow statement: an increase in an operating asset is a use of cash, so cash is down ${AR}. Balance sheet: accounts receivable up {AR}, cash down {AR}, assets net unchanged, balances. Add the meaning: the company made the sale and has not been paid. If receivables keep outrunning revenue, either collections are deteriorating or revenue is being recognized aggressively.' },
 
   { id:'ib97', d:'medium',
     gen: function () {
@@ -9184,7 +9405,7 @@ ib: [
                  : 'This one falls between anchors, so bracket it: find the two you know and reason to the middle.' };
     },
     q:'A sponsor invests ${EQ} of equity and exits {YRS} years later for ${EXIT}. What is the money multiple and roughly what IRR is that?',
-    f:'Money multiple is {EXIT} over {EQ}, or {MULT}x. For the IRR, do not reach for a calculator — interviewers expect the rules of thumb. The four anchors worth memorising: 2x in 3 years is about 26%, 2x in 5 years about 15%, 3x in 3 years about 44%, and 3x in 5 years about 25%. {NOTE} Here {MULT}x over {YRS} years is approximately {IRR}%. Then say why the distinction matters: money multiple ignores time entirely, so a 2x over three years and a 2x over seven are the same multiple and completely different returns. Sponsors underwrite to IRR and get paid on both.' },
+    f:'Money multiple is {EXIT} over {EQ}, or {MULT}x. For the IRR, do not reach for a calculator — interviewers expect the rules of thumb. The four anchors worth memorizing: 2x in 3 years is about 26%, 2x in 5 years about 15%, 3x in 3 years about 44%, and 3x in 5 years about 25%. {NOTE} Here {MULT}x over {YRS} years is approximately {IRR}%. Then say why the distinction matters: money multiple ignores time entirely, so a 2x over three years and a 2x over seven are the same multiple and completely different returns. Sponsors underwrite to IRR and get paid on both.' },
 
   { id:'ib110', d:'hard',
     gen: function () {
@@ -9231,7 +9452,7 @@ ib: [
                EBITDA: GP - SGA, EBIT: GP - SGA - DA,
                MGN: (GP - SGA - DA) / REV * 100 };
     },
-    q:'A company has revenue of ${REV}, cost of goods sold of ${COGS}, SG and A of ${SGA}, and depreciation and amortisation of ${DA}. Calculate gross profit, EBITDA and EBIT.',
+    q:'A company has revenue of ${REV}, cost of goods sold of ${COGS}, SG and A of ${SGA}, and depreciation and amortization of ${DA}. Calculate gross profit, EBITDA and EBIT.',
     f:'Work down the income statement in order and say each line as you go. Gross profit is revenue less COGS: {REV} minus {COGS} is ${GP}, a {GM}% gross margin. EBITDA is gross profit less SG and A: {GP} minus {SGA} is ${EBITDA}. EBIT is EBITDA less D and A: {EBITDA} minus {DA} is ${EBIT}, an operating margin of {MGN}%. The thing to say out loud, because it is what the question is really checking: EBITDA sits above D and A and EBIT sits below it. That single line is the entire difference between the two, and it is why EBITDA ignores the cost of the assets the business runs on.' },
 
   { id:'ib113', d:'easy',
@@ -9393,7 +9614,7 @@ ib: [
                SYN: PREM / M2, PCT: (M2 - M1) / M1 * 100 };
     },
     q:'A target has ${E} of EBITDA and trades at {M1}x standalone. An acquirer pays {M2}x. How much in annual synergies does it need for the deal to make sense?',
-    f:'Size the premium first. Standalone value is {E} times {M1}, or ${SA}. The acquirer pays {E} times {M2}, or ${PAID}. The premium is ${PREM}, which is {PCT}% over standalone. To justify it, the synergies have to be worth at least that much. Capitalise them at the multiple paid: annual synergies of ${SYN} valued at {M2}x are worth {PREM}, which exactly covers the premium. So ${SYN} a year is the breakeven. Then the part that earns the answer: ask whether {SYN} is credible against {E} of EBITDA. That is a large share of the target entire earnings base, and cost synergies are far more reliable than revenue synergies. Deals fail when a banker underwrites revenue synergies to bridge a premium that cost savings alone could not justify.' },
+    f:'Size the premium first. Standalone value is {E} times {M1}, or ${SA}. The acquirer pays {E} times {M2}, or ${PAID}. The premium is ${PREM}, which is {PCT}% over standalone. To justify it, the synergies have to be worth at least that much. Capitalize them at the multiple paid: annual synergies of ${SYN} valued at {M2}x are worth {PREM}, which exactly covers the premium. So ${SYN} a year is the breakeven. Then the part that earns the answer: ask whether {SYN} is credible against {E} of EBITDA. That is a large share of the target entire earnings base, and cost synergies are far more reliable than revenue synergies. Deals fail when a banker underwrites revenue synergies to bridge a premium that cost savings alone could not justify.' },
 
   { id:'ib128', d:'hard',
     gen: function () {
@@ -9481,10 +9702,10 @@ ib: [
   /* ── HARD: concept gaps ────────────────────────────────────────────── */
 
   { id:'ib133', d:'hard', q:'Walk me through the debt used to fund an LBO — what the layers are and how they differ.',
-    f:'Go top down, in order of seniority, and tie each layer to its cost. At the top sits the revolver, a credit line drawn as needed, cheapest and usually secured against receivables and inventory. Then term loans, the bulk of senior secured debt, often split into a tranche that amortises steadily and a larger one that is mostly interest-only with a balloon at maturity, sold to institutional investors. Below that, senior unsecured or high-yield notes: no collateral, fixed rate, longer dated, little or no amortisation, and usually not prepayable without penalty. At the bottom, subordinated or mezzanine debt, sometimes with payment-in-kind interest that accrues rather than paying cash, often carrying warrants as compensation for the risk. The organising principle to state explicitly: the further down you go, the later you get paid in a bankruptcy and the higher the return demanded. Sponsors want as much cheap senior debt as lenders will allow and fill the rest with more expensive layers only to the extent they must.' },
+    f:'Go top down, in order of seniority, and tie each layer to its cost. At the top sits the revolver, a credit line drawn as needed, cheapest and usually secured against receivables and inventory. Then term loans, the bulk of senior secured debt, often split into a tranche that amortises steadily and a larger one that is mostly interest-only with a balloon at maturity, sold to institutional investors. Below that, senior unsecured or high-yield notes: no collateral, fixed rate, longer dated, little or no amortization, and usually not prepayable without penalty. At the bottom, subordinated or mezzanine debt, sometimes with payment-in-kind interest that accrues rather than paying cash, often carrying warrants as compensation for the risk. The organizing principle to state explicitly: the further down you go, the later you get paid in a bankruptcy and the higher the return demanded. Sponsors want as much cheap senior debt as lenders will allow and fill the rest with more expensive layers only to the extent they must.' },
 
   { id:'ib134', d:'hard', q:'A company receives a hostile takeover approach. What can it actually do about it?',
-    f:'Separate the structural defences from the tactical responses. Structurally, a poison pill lets existing shareholders other than the bidder buy stock cheaply once the bidder crosses an ownership threshold, making the stake prohibitively expensive to build — it is the most effective single defence and is usually deployed to force negotiation rather than to block permanently. A staggered board means only part of the board is up for election each year, so a bidder cannot replace it in one proxy fight. Tactically, the company can find a white knight, a friendlier buyer willing to pay comparably. It can take on debt or buy back stock to make itself less attractive. It can divest the asset the acquirer actually wants. Then close with the judgment, because that is what is really being tested: the board duty is to shareholders, not to its own independence. Most defences exist to extract a higher price rather than to defeat the bid, and a board that fights a genuinely good offer to protect management is likely to be sued and lose.' },
+    f:'Separate the structural defenses from the tactical responses. Structurally, a poison pill lets existing shareholders other than the bidder buy stock cheaply once the bidder crosses an ownership threshold, making the stake prohibitively expensive to build — it is the most effective single defense and is usually deployed to force negotiation rather than to block permanently. A staggered board means only part of the board is up for election each year, so a bidder cannot replace it in one proxy fight. Tactically, the company can find a white knight, a friendlier buyer willing to pay comparably. It can take on debt or buy back stock to make itself less attractive. It can divest the asset the acquirer actually wants. Then close with the judgment, because that is what is really being tested: the board duty is to shareholders, not to its own independence. Most defenses exist to extract a higher price rather than to defeat the bid, and a board that fights a genuinely good offer to protect management is likely to be sued and lose.' },
 
   { id:'ib136', d:'easy', q:'Why would a company want to go public?',
     f:'A few real reasons, and giving more than one shows you have thought past the headline. To raise money — selling shares to the public brings in capital for growth without taking on debt. To give existing owners a way out, since founders, employees and early investors hold stock they cannot otherwise sell, and a listing creates a market for it. To use stock as currency for acquisitions and for paying employees. And for profile, since being listed brings credibility with customers and lenders. Then give the other side, because every company that stays private is choosing not to do this. Being public means quarterly reporting, heavy disclosure, real cost, and pressure from investors who may punish a decision that hurts this quarter and helps in three years. That trade is exactly why some large companies stay private for decades.' },
@@ -9502,7 +9723,7 @@ ib: [
     f:'Start with the rule that makes the choice mechanical: the numerator and denominator have to belong to the same people. EBITDA, EBIT and revenue are available to everyone who funded the business, so they pair with enterprise value. Net income and earnings per share are what is left for shareholders alone, so they pair with equity value or price. Pairing equity value with EBITDA is the classic error and interviewers listen for it. On the choice itself: use EV/EBITDA when companies have different capital structures or tax situations, since it strips both out and makes them comparable. Use P/E when comparing similar companies in the same market, or where capital structure is part of the business, which is why banks are valued on P/E and price to book. Neither works when earnings are negative or meaningless — an early-stage company, a business in a cyclical trough — and then you move to revenue multiples or something industry-specific, while saying out loud that a revenue multiple assumes a margin you have not proven.' },
 
   { id:'ib141', d:'medium', q:'Is stock-based compensation a real expense?',
-    f:'Yes, and say so directly, because the question is testing whether you will be talked out of it. The argument for calling it fake is that no cash leaves the company. The reason that argument fails: the company paid for labour, and it paid using shares, which dilutes existing owners. If instead it had paid cash and then issued the same shares to raise that cash, nobody would question the expense — the economics are identical, only the sequence differs. So it is a real cost borne by shareholders through dilution. Then give the practical implication, which is the useful part. Companies love to report adjusted EBITDA or adjusted earnings with stock compensation added back, and for a business where it is a large share of total pay that adjustment can turn a loss into a profit on paper. When you see it, check the share count over several years, because that is where the cost actually shows up.' },
+    f:'Yes, and say so directly, because the question is testing whether you will be talked out of it. The argument for calling it fake is that no cash leaves the company. The reason that argument fails: the company paid for labor, and it paid using shares, which dilutes existing owners. If instead it had paid cash and then issued the same shares to raise that cash, nobody would question the expense — the economics are identical, only the sequence differs. So it is a real cost borne by shareholders through dilution. Then give the practical implication, which is the useful part. Companies love to report adjusted EBITDA or adjusted earnings with stock compensation added back, and for a business where it is a large share of total pay that adjustment can turn a loss into a profit on paper. When you see it, check the share count over several years, because that is where the cost actually shows up.' },
 
   { id:'ib142', d:'medium', q:'What is the yield curve, and what does it mean when it inverts?',
     f:'The yield curve plots the interest rate on government bonds against how long until they mature. Normally it slopes upward — lending money for ten years is riskier and less flexible than for two, so you demand more. An inversion means short-term rates are higher than long-term ones, which is backwards. Explain what it implies rather than just naming it: investors are accepting a lower rate to lock money up for longer, which they only do if they expect rates to be much lower in future, and rates fall when the economy weakens. So an inverted curve is the bond market pricing in a slowdown. Add the two things that make this a real answer. It has preceded most recent US recessions, which is why people watch it, but the lag between inversion and downturn has been long and inconsistent, so it is a signal rather than a timer. And it directly squeezes banks, which borrow short and lend long, so their margin compresses when the curve inverts.' },
@@ -9547,7 +9768,7 @@ consulting: [{ id:'co2', d:'medium', q:'How many gas stations are there in the U
       return { R: R };
     },
     q:'Revenue is up {R}% but profit is flat. What is going on?',
-    f:'Costs rose at roughly the same rate as revenue. Decompose before theorising: is it cost of goods sold or overhead, fixed or variable, one-time or structural. Then the candidate explanations — mix shift toward lower-margin products, discounting that bought the {R}% volume growth, or deliberate investment in growth that will operate leverage later. Ask which cost line actually moved before picking a story.' },
+    f:'Costs rose at roughly the same rate as revenue. Decompose before theorizing: is it cost of goods sold or overhead, fixed or variable, one-time or structural. Then the candidate explanations — mix shift toward lower-margin products, discounting that bought the {R}% volume growth, or deliberate investment in growth that will operate leverage later. Ask which cost line actually moved before picking a story.' },
   { id:'co5', d:'hard', q:'How would you size the market for electric vehicles in the US over the next five years?',
     f:'Start from total vehicle sales per year, apply an adoption curve, sanity-check against current penetration and its trend. Segment by price band or use case if it helps. Name what would break your estimate: charging infrastructure, subsidy policy, battery cost.' },
   { id:'co6', d:'hard', q:'A hospital wants to reduce patient wait times without hiring. Where do you start?',
@@ -9571,10 +9792,10 @@ consulting: [{ id:'co2', d:'medium', q:'How many gas stations are there in the U
       return { C: C };
     },
     q:'A manufacturer wants to cut costs by {C}%. Where do you look?',
-    f:'Get the cost breakdown first — you cannot find {C}% without knowing what 100% is made of. Then work biggest line to smallest: procurement and supplier terms, labour productivity, footprint and utilisation, waste and yield, overhead. Flag which cuts are reversible and which permanently damage capability. Name what you would protect, because a target that size usually tempts someone into cutting the thing that made the company work.' },
+    f:'Get the cost breakdown first — you cannot find {C}% without knowing what 100% is made of. Then work biggest line to smallest: procurement and supplier terms, labor productivity, footprint and utilization, waste and yield, overhead. Flag which cuts are reversible and which permanently damage capability. Name what you would protect, because a target that size usually tempts someone into cutting the thing that made the company work.' },
   { id:'co13', d:'easy',
     q:'A restaurant owner tells you his problem is that fewer people are coming in. Why is that not actually the problem?',
-    f:'Because it is what he noticed, not why it happened. Fewer customers is the result of something — and until you know what, you cannot fix it. Give him the distinction plainly: that is a symptom, like a fever. The cause might be a new restaurant opening nearby, prices that went up, the food or service getting worse, parking disappearing, or a change in the neighbourhood. Each of those needs a completely different response, and treating the symptom by, say, running a discount, might do nothing at all if the real problem is that the food got worse. So the useful first move is asking when it started and which customers stopped coming, because the timing and the pattern point at the cause.' },
+    f:'Because it is what he noticed, not why it happened. Fewer customers is the result of something — and until you know what, you cannot fix it. Give him the distinction plainly: that is a symptom, like a fever. The cause might be a new restaurant opening nearby, prices that went up, the food or service getting worse, parking disappearing, or a change in the neighborhood. Each of those needs a completely different response, and treating the symptom by, say, running a discount, might do nothing at all if the real problem is that the food got worse. So the useful first move is asking when it started and which customers stopped coming, because the timing and the pattern point at the cause.' },
   { id:'co14', d:'hard', q:'The data says one thing and the client executives all believe another. What do you do?',
     f:'Check your data and your method first. Then understand why they believe what they believe — they often know something the data does not capture. Present the finding without making anyone wrong, show your work, and let the evidence carry it. Being right and ignored is a failure.' },
   { id:'co15', d:'medium', q:'How would you evaluate whether a company should launch a subscription model?',
@@ -9678,7 +9899,7 @@ consulting: [{ id:'co2', d:'medium', q:'How many gas stations are there in the U
       return { PX: PX, VC: VC, CM: PX - VC, PCT: 100 - VPCT };
     },
     q:'A product sells for ${PX} and costs ${VC} to make. How much does each sale actually contribute to the business?',
-    f:'Each sale brings in {PX} and {VC} of that goes straight back out on materials and labour, so ${CM} is left over — {PCT}% of the price. That leftover is what covers everything else the business has to pay for regardless of how much it sells: rent, salaries, insurance. Once those are covered, it becomes profit. The term for it is contribution margin, and it is the number you need for almost any decision about volume — whether to take a cheaper order, whether a discount pays for itself, how many units you need to sell before you stop losing money.' },
+    f:'Each sale brings in {PX} and {VC} of that goes straight back out on materials and labor, so ${CM} is left over — {PCT}% of the price. That leftover is what covers everything else the business has to pay for regardless of how much it sells: rent, salaries, insurance. Once those are covered, it becomes profit. The term for it is contribution margin, and it is the number you need for almost any decision about volume — whether to take a cheaper order, whether a discount pays for itself, how many units you need to sell before you stop losing money.' },
 
   { id:'co73', d:'easy',
     gen: function () {
@@ -9727,7 +9948,7 @@ consulting: [{ id:'co2', d:'medium', q:'How many gas stations are there in the U
       return { FC: FC, V1: V1, V2: V2, C1: FC / V1, C2: FC / V2, MULT: MULT };
     },
     q:'A factory has ${FC} of fixed costs. What is the fixed cost per unit at {V1} units, and at {V2} units?',
-    f:'At {V1} units, {FC} spread across them is ${C1} per unit. At {V2} units it is ${C2} per unit. Producing {MULT} times as much cut the fixed cost per unit to a {MULT}th. That is economies of scale in one line, and it is why utilisation shows up in so many cases — a plant running below capacity is carrying fixed cost on too few units, which inflates unit cost and destroys margin even when nothing about the product changed.' },
+    f:'At {V1} units, {FC} spread across them is ${C1} per unit. At {V2} units it is ${C2} per unit. Producing {MULT} times as much cut the fixed cost per unit to a {MULT}th. That is economies of scale in one line, and it is why utilization shows up in so many cases — a plant running below capacity is carrying fixed cost on too few units, which inflates unit cost and destroys margin even when nothing about the product changed.' },
 
   { id:'co77', d:'easy',
     gen: function () {
@@ -9756,10 +9977,10 @@ consulting: [{ id:'co2', d:'medium', q:'How many gas stations are there in the U
   /* ── EASY: concept ─────────────────────────────────────────────────── */
 
   { id:'co79', d:'easy', q:'What is the difference between a fixed cost and a variable cost?',
-    f:'A fixed cost does not change with how much you produce — rent, salaried staff, insurance. A variable cost scales with volume — materials, shipping, hourly labour on the line. Then give the reason it matters in a case, because the definition alone is not an answer. The mix determines how profit behaves when volume moves. A business that is mostly fixed cost has high operating leverage: once it clears break-even, additional revenue drops almost entirely to profit, and below break-even it bleeds. A mostly variable cost structure is flatter in both directions. Airlines and software sit at one end, a distributor at the other. Worth adding the honest complication: almost nothing is fixed forever, it is fixed over a relevant range and a time horizon.' },
+    f:'A fixed cost does not change with how much you produce — rent, salaried staff, insurance. A variable cost scales with volume — materials, shipping, hourly labor on the line. Then give the reason it matters in a case, because the definition alone is not an answer. The mix determines how profit behaves when volume moves. A business that is mostly fixed cost has high operating leverage: once it clears break-even, additional revenue drops almost entirely to profit, and below break-even it bleeds. A mostly variable cost structure is flatter in both directions. Airlines and software sit at one end, a distributor at the other. Worth adding the honest complication: almost nothing is fixed forever, it is fixed over a relevant range and a time horizon.' },
 
   { id:'co80', d:'easy', q:'What actually drives a company\'s profit? Break it down for me.',
-    f:'Profit is revenue minus cost, and the whole skill is decomposing both. Revenue is price times volume, and volume is market size times market share. Cost splits into fixed and variable, and variable splits by cost line — materials, labour, distribution. So a profit decline has a limited number of possible homes: price fell, volume fell, the market shrank, share was lost, or some cost line rose. Say that structure out loud at the start of any profitability case and then ask which branch the data points to. Interviewers are not testing whether you know the equation, they are testing whether you narrow methodically instead of guessing at causes.' },
+    f:'Profit is revenue minus cost, and the whole skill is decomposing both. Revenue is price times volume, and volume is market size times market share. Cost splits into fixed and variable, and variable splits by cost line — materials, labor, distribution. So a profit decline has a limited number of possible homes: price fell, volume fell, the market shrank, share was lost, or some cost line rose. Say that structure out loud at the start of any profitability case and then ask which branch the data points to. Interviewers are not testing whether you know the equation, they are testing whether you narrow methodically instead of guessing at causes.' },
 
   { id:'co83', d:'easy',
     q:'What is a competitive advantage? Give me an example.',
@@ -9893,8 +10114,8 @@ consulting: [{ id:'co2', d:'medium', q:'How many gas stations are there in the U
                  ? 'a net gain of $' + mockNum(net)
                  : 'a net loss of $' + mockNum(-net) + ', so on these numbers the launch destroys profit') };
     },
-    q:'A company with ${OLD} of revenue at a {OM}% margin launches a new product expected to do ${NEWREV} at a {NM}% margin. But {CANN}% of existing sales will cannibalise. Is the launch worth it?',
-    f:'Count both sides. The new product contributes ${NEWREV} at {NM}%, or ${NEWPROF} of profit. Cannibalisation costs {CANN}% of {OLD}, which is ${LOST} of lost revenue at the old {OM}% margin, or ${LOSTPROF} of lost profit. Net effect is {VERDICT}. Then make the argument that separates this from arithmetic: the right comparison is not launch versus today, it is launch versus what happens if you do not. If a competitor would take that {CANN}% anyway, then cannibalising yourself is far better than being cannibalised by someone else, and the lost profit should not be charged against the launch at all. Framing the counterfactual correctly is the whole question.' },
+    q:'A company with ${OLD} of revenue at a {OM}% margin launches a new product expected to do ${NEWREV} at a {NM}% margin. But {CANN}% of existing sales will cannibalize. Is the launch worth it?',
+    f:'Count both sides. The new product contributes ${NEWREV} at {NM}%, or ${NEWPROF} of profit. Cannibalization costs {CANN}% of {OLD}, which is ${LOST} of lost revenue at the old {OM}% margin, or ${LOSTPROF} of lost profit. Net effect is {VERDICT}. Then make the argument that separates this from arithmetic: the right comparison is not launch versus today, it is launch versus what happens if you do not. If a competitor would take that {CANN}% anyway, then cannibalizing yourself is far better than being cannibalized by someone else, and the lost profit should not be charged against the launch at all. Framing the counterfactual correctly is the whole question.' },
 
   { id:'co93', d:'hard',
     gen: function () {
@@ -9952,11 +10173,11 @@ consulting: [{ id:'co2', d:'medium', q:'How many gas stations are there in the U
       return { CUR: CUR, TARGET: TARGET, REV: REV, CM: CM, IDLE: idle,
                EXTRA: REV / CUR * idle, PROFIT: (REV / CUR * idle) * CM / 100 };
     },
-    q:'A plant runs at {CUR}% capacity, generating ${REV} of revenue at a {CM}% contribution margin. What is the prize if utilisation reaches {TARGET}%?',
-    f:'Work out what a point of utilisation is worth. {REV} at {CUR}% means each point of capacity generates about {REV} divided by {CUR}. Getting to {TARGET}% adds {IDLE} points, or roughly ${EXTRA} of incremental revenue. Because the plant fixed costs are already covered, that revenue comes in at the {CM}% contribution margin, adding about ${PROFIT} of profit. Then say the two things that matter more than the arithmetic. This assumes the demand exists to fill the plant, which is the entire question and the number tells you nothing about it. And it assumes no step-change in fixed cost — capacity usually comes in lumps, so a new shift or supervisor layer may be required partway up.' },
+    q:'A plant runs at {CUR}% capacity, generating ${REV} of revenue at a {CM}% contribution margin. What is the prize if utilization reaches {TARGET}%?',
+    f:'Work out what a point of utilization is worth. {REV} at {CUR}% means each point of capacity generates about {REV} divided by {CUR}. Getting to {TARGET}% adds {IDLE} points, or roughly ${EXTRA} of incremental revenue. Because the plant fixed costs are already covered, that revenue comes in at the {CM}% contribution margin, adding about ${PROFIT} of profit. Then say the two things that matter more than the arithmetic. This assumes the demand exists to fill the plant, which is the entire question and the number tells you nothing about it. And it assumes no step-change in fixed cost — capacity usually comes in lumps, so a new shift or supervisor layer may be required partway up.' },
 
   { id:'co98', d:'medium', q:'How would you tell whether a company problem is strategic or operational?',
-    f:'The distinction matters because the fix is completely different. An operational problem means the company is doing the right things badly — costs out of line with peers, poor execution, weak processes. Fixable internally, usually measurable against a benchmark. A strategic problem means the company is doing the wrong things well — serving a shrinking market, holding a position with no advantage, competing on a dimension customers stopped caring about. To tell them apart, compare against competitors. If rivals in the same market are healthy and you are not, it is probably operational. If everyone in the market is struggling, it is structural and no amount of efficiency saves you. The expensive mistake is running a cost programme on what is actually a strategy problem, which buys time and changes nothing.' },
+    f:'The distinction matters because the fix is completely different. An operational problem means the company is doing the right things badly — costs out of line with peers, poor execution, weak processes. Fixable internally, usually measurable against a benchmark. A strategic problem means the company is doing the wrong things well — serving a shrinking market, holding a position with no advantage, competing on a dimension customers stopped caring about. To tell them apart, compare against competitors. If rivals in the same market are healthy and you are not, it is probably operational. If everyone in the market is struggling, it is structural and no amount of efficiency saves you. The expensive mistake is running a cost program on what is actually a strategy problem, which buys time and changes nothing.' },
 
   { id:'co100', d:'hard',
     gen: function () {
@@ -9977,13 +10198,13 @@ consulting: [{ id:'co2', d:'medium', q:'How many gas stations are there in the U
       var REV = mockPick([1000, 2000, 5000]);
       var LPCT = mockPick([20, 30, 40]);
       var RISE = mockPick([10, 20, 25]);
-      var labour = REV * LPCT / 100;
-      return { REV: REV, LPCT: LPCT, LABOUR: labour, RISE: RISE,
-               INCREASE: labour * RISE / 100,
-               REVPCT: (labour * RISE / 100) / REV * 100 };
+      var labor = REV * LPCT / 100;
+      return { REV: REV, LPCT: LPCT, LABOUR: labor, RISE: RISE,
+               INCREASE: labor * RISE / 100,
+               REVPCT: (labor * RISE / 100) / REV * 100 };
     },
-    q:'Labour makes up {LPCT}% of a cost base of ${REV}. Wages rise {RISE}%. How much does that cost them?',
-    f:'Labour costs {LPCT}% of {REV}, or ${LABOUR}. A {RISE}% increase on that is ${INCREASE}, which is {REVPCT}% of the total base. Say the general point out loud, because it is the reason this arithmetic comes up constantly: the impact of any cost increase is the size of the increase times the share of the base it applies to. A dramatic-sounding {RISE}% wage rise turns into a {REVPCT}% hit overall. That is why you always ask how big a cost line is before worrying about how fast it is moving.' },
+    q:'Labor makes up {LPCT}% of a cost base of ${REV}. Wages rise {RISE}%. How much does that cost them?',
+    f:'Labor costs {LPCT}% of {REV}, or ${LABOUR}. A {RISE}% increase on that is ${INCREASE}, which is {REVPCT}% of the total base. Say the general point out loud, because it is the reason this arithmetic comes up constantly: the impact of any cost increase is the size of the increase times the share of the base it applies to. A dramatic-sounding {RISE}% wage rise turns into a {REVPCT}% hit overall. That is why you always ask how big a cost line is before worrying about how fast it is moving.' },
 
   { id:'co105', d:'easy',
     gen: function () {
@@ -10024,7 +10245,7 @@ consulting: [{ id:'co2', d:'medium', q:'How many gas stations are there in the U
   { id:'co114', d:'medium', q:'You have a recommendation you believe in. How would you test it before the client rolls it out everywhere?',
     f:'Pilot it, and the value of the answer is in how carefully you design the pilot. Pick a subset — some stores, one region, a customer segment — and be deliberate that it is representative rather than the easiest or most enthusiastic group, because a pilot run where everyone wants it to work tells you nothing. Set up a comparison: a control group of similar sites that carry on unchanged, so you can separate the effect of your change from whatever the whole business was doing anyway. Decide the success metric and the threshold before you start, not after, since deciding afterwards is how a failed pilot gets reinterpreted as a qualified success. Run it long enough to get past the novelty period, where any change produces a temporary lift from attention alone. Then say what you do with the result: scale if it clears the bar, kill it if it does not, and be willing to say so. Piloting is also the honest answer to an interviewer pushing on an assumption you cannot prove — you do not need certainty if you can design a cheap way to find out.' },
 
-  { id:'co115', d:'medium', q:'Halfway through the work you realise the client data you have been given is unreliable. What do you do?',
+  { id:'co115', d:'medium', q:'Halfway through the work you realize the client data you have been given is unreliable. What do you do?',
     f:'Do not go quiet and do not carry on as though it is fine, which are the two instincts to resist. First, work out how bad it is and where — is one field unreliable or the whole system, is it wrong or just inconsistent, does it affect the conclusion or only the precision. Second, raise it immediately with your team and the client, because they may already know, may have a better source, or may need to hear that a number they report internally is wrong. Third, find a way around it: triangulate from another angle, use industry benchmarks, sample a subset manually and check it, or build the analysis so the conclusion holds across a plausible range rather than a single figure. Then the judgment that matters: say what the data can and cannot support, and make the recommendation only as strong as the evidence behind it. A recommendation delivered with false precision on bad data is worse than one delivered as a range with the uncertainty stated, because the client will act on it either way.' },
 
   { id:'co116', d:'medium', q:'A subscription business tells you their customer lifetime value is $600 and it costs $150 to acquire a customer. Is that good?',
@@ -10263,10 +10484,10 @@ hf: [
     f:'Beta is the return you get from simply being exposed to the market — if stocks rise 10% and you own stocks, that is beta, and nobody should pay a fee for it since an index fund delivers it cheaply. Alpha is return above what the market exposure explains, which is the part attributable to skill in picking or timing. Say why the distinction is the whole argument for active management: a fund that returned 15% in a year the market returned 14% has produced almost no alpha, however good the headline sounds. Then add the honest complication — separating the two requires assumptions about how much market exposure the fund actually had, and managers have an incentive to present beta as alpha.' },
 
   { id:'hf50', d:'easy', q:'What is a drawdown?',
-    f:'A drawdown is the decline from a peak to a trough — how much the fund fell from its highest point before recovering. Maximum drawdown is the worst such fall over a period. It matters more than volatility to most investors because it describes the actual experience of losing money, and because recovery is asymmetric: a 50% drawdown requires a 100% gain to get back to even. Add the practical dimension, which is about behaviour rather than arithmetic. Investors redeem during drawdowns, often at the worst moment, which forces the manager to sell into weakness. So a large drawdown can permanently damage a fund even if the positions would eventually have worked.' },
+    f:'A drawdown is the decline from a peak to a trough — how much the fund fell from its highest point before recovering. Maximum drawdown is the worst such fall over a period. It matters more than volatility to most investors because it describes the actual experience of losing money, and because recovery is asymmetric: a 50% drawdown requires a 100% gain to get back to even. Add the practical dimension, which is about behavior rather than arithmetic. Investors redeem during drawdowns, often at the worst moment, which forces the manager to sell into weakness. So a large drawdown can permanently damage a fund even if the positions would eventually have worked.' },
 
   { id:'hf51', d:'easy', q:'What are the main types of hedge fund strategies?',
-    f:'Give four or five with a sentence each. Long-short equity buys undervalued companies and shorts overvalued ones, which is the most common and the one most students interview for. Global macro bets on currencies, rates and commodities based on a view of economies rather than individual companies. Event-driven trades around specific situations such as mergers, bankruptcies or spin-offs, where the outcome depends on the event rather than the market. Quantitative uses systematic models and often very high trading frequency. Credit focuses on debt rather than equity, including distressed. Then say the organising point: the strategies differ in where the return is supposed to come from, and a candidate should know which one the fund they are interviewing with actually runs.' },
+    f:'Give four or five with a sentence each. Long-short equity buys undervalued companies and shorts overvalued ones, which is the most common and the one most students interview for. Global macro bets on currencies, rates and commodities based on a view of economies rather than individual companies. Event-driven trades around specific situations such as mergers, bankruptcies or spin-offs, where the outcome depends on the event rather than the market. Quantitative uses systematic models and often very high trading frequency. Credit focuses on debt rather than equity, including distressed. Then say the organizing point: the strategies differ in where the return is supposed to come from, and a candidate should know which one the fund they are interviewing with actually runs.' },
 
   { id:'hf52', d:'easy', q:'What is the difference between a hedge fund and a private equity firm?',
     f:'Both are private investment vehicles for institutions, but they do different things. A hedge fund buys and sells securities in public markets, holds positions for days to years, can go long or short, and generally lets investors withdraw periodically. A private equity firm buys whole private companies, controls them, holds for three to seven years, and locks up capital for a decade. Then give the deeper difference, which is where value comes from: a hedge fund makes money by being right about what something is worth before the market agrees. A PE firm makes money by owning the business and changing it. One is a prediction, the other is an intervention. That distinction explains almost every other difference in how the two work.' },
@@ -10409,10 +10630,10 @@ pe: [
                DELAYIRR: Math.round((Math.pow(M, 1 / (Y + 2)) - 1) * 100) };
     },
     q:'A deal returns {M}x on ${EQ} of equity over {Y} years. What is the IRR? And what happens to it if the exit slips by two years?',
-    f:'{M}x over {Y} years is approximately {IRR}%, using the standard anchors — 2x in three years is about 26%, 2x in five about 15%, 3x in three about 44%, 3x in five about 25%. Now the second half, which is the real question. If the exit slips to {DELAY} years, the money multiple is unchanged at {M}x but the IRR falls to roughly {DELAYIRR}%. Nothing about the business got worse; the same profit simply took longer. Draw the conclusion: this is why sponsors push hard on exit timing and why holding a good asset too long destroys IRR even while multiple holds up. It is also the honest criticism of IRR as a metric — it rewards selling early, which is not always the same as maximising value for investors.' },
+    f:'{M}x over {Y} years is approximately {IRR}%, using the standard anchors — 2x in three years is about 26%, 2x in five about 15%, 3x in three about 44%, 3x in five about 25%. Now the second half, which is the real question. If the exit slips to {DELAY} years, the money multiple is unchanged at {M}x but the IRR falls to roughly {DELAYIRR}%. Nothing about the business got worse; the same profit simply took longer. Draw the conclusion: this is why sponsors push hard on exit timing and why holding a good asset too long destroys IRR even while multiple holds up. It is also the honest criticism of IRR as a metric — it rewards selling early, which is not always the same as maximizing value for investors.' },
 
   { id:'pe42', d:'hard', q:'What is a quality of earnings analysis, and what would you actually be looking for?',
-    f:'It is diligence work, usually by an accounting firm, that tests whether reported EBITDA reflects the true sustainable earning power of the business. You are buying at a multiple of EBITDA, so every dollar of overstatement costs you that multiple in purchase price. Say what you look for. One-time items dressed as recurring: a large customer win that will not repeat, a favourable legal settlement. Costs the seller has excluded as add-backs — the add-back schedule is where aggressive sellers live, and you challenge each one. Revenue recognition timing, especially anything pulled forward before a sale process. Under-investment in maintenance capex or marketing that flatters current earnings at the cost of future ones. Working capital run at an artificially low level so the buyer has to fund a rebuild. Close with the judgment: the output is an adjusted EBITDA that you negotiate against, and a purchase price built on unadjusted seller EBITDA is how buyers overpay.' },
+    f:'It is diligence work, usually by an accounting firm, that tests whether reported EBITDA reflects the true sustainable earning power of the business. You are buying at a multiple of EBITDA, so every dollar of overstatement costs you that multiple in purchase price. Say what you look for. One-time items dressed as recurring: a large customer win that will not repeat, a favorable legal settlement. Costs the seller has excluded as add-backs — the add-back schedule is where aggressive sellers live, and you challenge each one. Revenue recognition timing, especially anything pulled forward before a sale process. Under-investment in maintenance capex or marketing that flatters current earnings at the cost of future ones. Working capital run at an artificially low level so the buyer has to fund a rebuild. Close with the judgment: the output is an adjusted EBITDA that you negotiate against, and a purchase price built on unadjusted seller EBITDA is how buyers overpay.' },
 
   { id:'pe43', d:'easy', q:'Who are the GP and the LPs in a private equity fund?',
     f:'The GP, or general partner, is the PE firm itself — it raises the fund, finds and executes deals, manages the companies and decides when to exit. The LPs, or limited partners, are the investors who supply most of the capital: pension funds, endowments, sovereign wealth funds, insurance companies, wealthy families. Their liability is limited to what they committed, and they have no say in individual deals. Then add the two details that show you understand the relationship. The GP commits its own money too, usually a small percentage of the fund, so it has skin in the game. And LPs do not hand over cash upfront — they commit an amount and the GP calls it down as deals are done, which is why uncalled commitments matter as much as the headline fund size.' },
@@ -10441,7 +10662,7 @@ pe: [
                EXDEBT: DEBT - PAID, EXEQ: exEq, MOM: exEq / EQ };
     },
     q:'Entry: ${EBITDA} EBITDA at {M}x, {DPCT}% debt. Exit: ${EXEB} EBITDA at {EXM}x with ${PAID} of debt repaid. What is the money multiple?',
-    f:'Four steps. Entry enterprise value is {EBITDA} times {M}, or ${EV}. Debt is {DPCT}% of that, ${DEBT}, so the sponsor equity cheque is ${EQ}. Exit enterprise value is {EXEB} times {EXM}, or ${EXEV}. Debt has fallen to ${EXDEBT}, so exit equity is ${EXEQ}. Money multiple is {EXEQ} over {EQ}, or {MOM}x. Narrate each step rather than jumping to the answer, because in a real interview the interviewer is following your process and will stop you the moment you skip the debt. Then say where the return came from — EBITDA growth, the move from {M}x to {EXM}x, and debt paydown — since that follow-up is guaranteed.' },
+    f:'Four steps. Entry enterprise value is {EBITDA} times {M}, or ${EV}. Debt is {DPCT}% of that, ${DEBT}, so the sponsor equity check is ${EQ}. Exit enterprise value is {EXEB} times {EXM}, or ${EXEV}. Debt has fallen to ${EXDEBT}, so exit equity is ${EXEQ}. Money multiple is {EXEQ} over {EQ}, or {MOM}x. Narrate each step rather than jumping to the answer, because in a real interview the interviewer is following your process and will stop you the moment you skip the debt. Then say where the return came from — EBITDA growth, the move from {M}x to {EXM}x, and debt paydown — since that follow-up is guaranteed.' },
 
   { id:'pe47', d:'medium',
     gen: function () {
@@ -10479,10 +10700,10 @@ pe: [
     f:'Work backwards from the return, which is how sponsors actually underwrite. To hit {TARGET}x on ${EQ}, exit equity must be ${NEED}. Assuming the debt is unchanged at ${DEBT}, exit enterprise value must be ${EXEV}. Against ${EXEB} of exit EBITDA, that implies an exit multiple of {EXM}x. Now deliver the judgment, which is the whole question. Compare {EXM}x to the {M}x entry multiple and to where comparable companies trade. If the required exit multiple is meaningfully above entry, the deal only works if the market re-rates the business, and that is a bet on conditions outside the sponsor control. A disciplined underwriting assumes exit at or below entry and requires the return to come from EBITDA growth and debt paydown instead.' },
 
   { id:'pe50', d:'hard', q:'What happens to private equity when credit markets tighten?',
-    f:'Go through the chain rather than just saying deals slow down. Lenders pull back, so the amount of debt available per deal falls — five or six turns becomes three or four. That forces sponsors to write larger equity cheques for the same company, which mechanically lowers returns, so they can no longer justify the multiples they were paying. Entry multiples fall, but sellers anchor to yesterday prices, so a bid-ask gap opens and deal volume collapses until expectations reset. Meanwhile existing portfolio companies with floating-rate debt face rising interest costs, squeezing cash flow and threatening covenants, and exits become harder because buyers face the same financing problem. Then say the other half, which separates a good answer: tighter credit is genuinely bad for firms holding assets bought at peak multiples, and genuinely good for firms with dry powder, because vintages deployed into a dislocation have historically been the strongest performers.' },
+    f:'Go through the chain rather than just saying deals slow down. Lenders pull back, so the amount of debt available per deal falls — five or six turns becomes three or four. That forces sponsors to write larger equity checks for the same company, which mechanically lowers returns, so they can no longer justify the multiples they were paying. Entry multiples fall, but sellers anchor to yesterday prices, so a bid-ask gap opens and deal volume collapses until expectations reset. Meanwhile existing portfolio companies with floating-rate debt face rising interest costs, squeezing cash flow and threatening covenants, and exits become harder because buyers face the same financing problem. Then say the other half, which separates a good answer: tighter credit is genuinely bad for firms holding assets bought at peak multiples, and genuinely good for firms with dry powder, because vintages deployed into a dislocation have historically been the strongest performers.' },
 
   { id:'pe51', d:'hard', q:'A sponsor is choosing between two deals with identical projected returns. One is a market leader at a high multiple, the other a turnaround at a low multiple. Which do you take?',
-    f:'There is no correct answer and the reasoning is the whole test, so pick one and defend it properly. Frame it as risk-adjusted rather than headline return. The market leader at a high multiple carries multiple risk — you are paying for quality already recognised, so if sentiment shifts the exit multiple compresses and the return goes with it. But the business itself is more likely to perform, the downside is shallower, and the outcome is less dependent on execution. The turnaround at a low multiple carries operational risk — the return depends on fixing something, and the base rate for turnarounds is poor. But you have multiple support, meaning you paid little enough that you are less exposed if the market re-rates. Then give your answer with the conditions attached: the leader if the projections rely on multiple expansion, the turnaround only if you have done this specific kind of fix before and have the operating team to run it. Say explicitly that identical projected returns almost never mean identical risk, and that the correct response is to interrogate which set of assumptions is more fragile.' },
+    f:'There is no correct answer and the reasoning is the whole test, so pick one and defend it properly. Frame it as risk-adjusted rather than headline return. The market leader at a high multiple carries multiple risk — you are paying for quality already recognized, so if sentiment shifts the exit multiple compresses and the return goes with it. But the business itself is more likely to perform, the downside is shallower, and the outcome is less dependent on execution. The turnaround at a low multiple carries operational risk — the return depends on fixing something, and the base rate for turnarounds is poor. But you have multiple support, meaning you paid little enough that you are less exposed if the market re-rates. Then give your answer with the conditions attached: the leader if the projections rely on multiple expansion, the turnaround only if you have done this specific kind of fix before and have the operating team to run it. Say explicitly that identical projected returns almost never mean identical risk, and that the correct response is to interrogate which set of assumptions is more fragile.' },
 
   { id:'pe52', d:'easy', q:'Why would the owner of a good business want to sell it to a private equity firm?',
     f:'Several reasons, and naming a few shows you understand the other side of the table. Liquidity — the owner has most of their net worth locked in one company and wants to take some of it off the table. Succession, when the founder is ready to step back and no family member wants it. Capital and capability to grow faster than they can fund themselves, whether that means new locations, acquisitions, or systems they cannot build alone. Risk reduction, since selling most of the business and keeping a slice means they still participate in the upside with far less exposure. Then add the point that shows real understanding: most sellers are not distressed. A sponsor usually wants a healthy business, and the owner usually keeps a meaningful stake and stays involved, which is why the relationship with the seller matters as much as the price.' },
@@ -10527,8 +10748,8 @@ behavioral: [
     f:'A decision, not an accident. What you knew, what you chose, why it was wrong, and what your process looks like now. Separate a bad outcome from a bad decision if you can.' },
   { id:'be17', d:'medium', q:'Tell me about a time you went beyond what was asked.',
     f:'What you noticed that nobody assigned you, what you did about it, and what came of it. Initiative is only credible with a specific trigger.' },
-  { id:'be18', d:'easy', q:'What questions do you have for me?',
-    f:'Have three, and make them things you could not have looked up. Ask about how they work, what surprised them, what makes someone successful here. Never say you have none. Never ask about hours or comp in a first round.' },
+  { id:'be58', d:'medium', q:'Tell me about a time you had to manage up — keep someone senior informed or aligned without being asked to.',
+    f:'This tests whether you take responsibility for a relationship rather than waiting to be managed. Give a real situation: a manager who was stretched thin, hard to reach, or missing context they needed. Explain what you actually did — flagging a risk early, sending a short proactive update, asking what mattered most to them rather than guessing. The specific behavior matters more than the outcome. Avoid a story where "managing up" really means you did their job for them; the skill being tested is judgment about what a senior person needs to know, not covering for someone.' },
   { id:'be19', d:'easy', q:'Walk me through your resume.',
     f:'Chronological, with a reason for each transition. Why you moved, what you took from it, how it led to the next one. Spend the most time on the most relevant experience, not the most recent.' },
   { id:'be20', d:'hard', q:'What would your last manager say is your biggest area for improvement?',
@@ -10560,21 +10781,21 @@ behavioral: [
   { id:'be35', d:'hard', q:'What have you learned about yourself in the last year?',
     f:'A specific realization and what caused it. Then what you did differently as a result. Reflection with no behavior change afterward reads as an observation, not a lesson.' },
 
-  { id:'be36', d:'medium', q:'Why our firm and not the one down the street?',
-    f:'The question behind the question is whether you have done any work. Generic answers about culture and people are what everyone says, and they signal you are running the same script at every firm. Give three specifics: something about the group or deal flow you can only know from research or conversations, a person you have actually spoken to and what they told you, and a concrete link to what you want to learn. Then close by saying what you would bring. The bar is simply that your answer could not be copied and pasted to a competitor.' },
+  { id:'be59', d:'medium', q:'Describe a time you had to build trust with someone quickly.',
+    f:'Common in client-facing or cross-team work, where you rarely have the luxury of a slow ramp. Give the situation and why trust mattered right away — a new client, a teammate you had never worked with, someone skeptical of you specifically. Then be concrete about what you actually did: showing competence on something small first, being transparent about what you did not know, following through on a minor commitment before a big one. End with a sign that it worked, ideally something the other person said or did. Avoid vague answers about "being genuine" with nothing behind it.' },
 
   { id:'be37', d:'easy', q:'What are your strengths?',
     f:'Pick two, not five, and make them relevant to the job rather than flattering in the abstract. For this work the strengths that land are attention to detail, reliability under deadline, speed of learning, and the ability to communicate something technical simply. Then prove each with a specific example in one or two sentences. An unproven strength is just an adjective. Avoid claiming to be a perfectionist or a hard worker as though those distinguish you — everyone in the room is claiming that.' },
 
-  { id:'be38', d:'easy', q:'What do you know about what an analyst actually does day to day?',
-    f:'They are checking whether you have a realistic picture, because analysts who quit early are usually the ones who imagined something else. Describe it honestly: building and updating models, comps and precedent analysis, putting together pitchbooks and CIMs, turning comments, running diligence processes, and a great deal of formatting and checking. Long and unpredictable hours, with the schedule driven by things outside your control. Then say what draws you to it anyway, and make that reason survive the unglamorous parts — if your answer only works on the interesting days, it is not an answer.' },
+  { id:'be60', d:'medium', q:'Tell me about a time you had to hold a teammate accountable.',
+    f:'A harder version of the conflict question, since the tension here is ongoing rather than a single disagreement. Describe what they were not delivering and the effect it was having, factually and without piling on. Then walk through how you raised it: privately, focused on the specific gap rather than their character, with a clear ask for what needed to change. Say what happened next, including if it did not fully work, since a clean resolution every time reads as invented. The trait being tested is whether you can have an uncomfortable conversation without either avoiding it or making it personal.' },
 
-  { id:'be39', d:'easy', q:'What other firms are you talking to?',
-    f:'Be honest but strategic. Naming a coherent set of comparable firms shows you have a thesis about what you want. Naming wildly unrelated paths suggests you are applying everywhere and will take whatever lands. You are not obliged to give a full list or to say where you stand in any process. What you should do is make this firm sound like a genuine first choice without claiming an exclusivity nobody believes. If pressed on ranking, be straightforward that you are still learning, but explain what would make a place the right fit — and make sure that description matches the firm you are sitting in.' },
+  { id:'be61', d:'easy', q:'How do you handle stress, and what does that actually look like in practice?',
+    f:'A question that punishes vague answers like "I stay calm under pressure" with nothing behind them. Give a real mechanism: how you triage when everything feels urgent, what you do in the first ten minutes of a stressful day, who you talk to when you are stuck. Ground it with a specific recent example rather than a general philosophy. It is fine to admit stress affects you — the interviewer is checking whether you have a method for working through it, not whether you never feel it.' },
 
 
   { id:'be41', d:'medium', q:'Tell me about a time you had to manage several competing deadlines.',
-    f:'This is a preview of the job, so the answer should demonstrate a method rather than stamina. Give the situation briefly, then show how you decided what came first — by actual deadline, by who was blocked waiting on you, by what was irreversible. Say explicitly that you communicated early with whoever was going to get their work later, because the failure mode in this job is going quiet and missing a deadline nobody saw coming. End with the outcome and what you would do differently. Never suggest you handled it by simply working more hours; that is not prioritisation.' },
+    f:'This is a preview of the job, so the answer should demonstrate a method rather than stamina. Give the situation briefly, then show how you decided what came first — by actual deadline, by who was blocked waiting on you, by what was irreversible. Say explicitly that you communicated early with whoever was going to get their work later, because the failure mode in this job is going quiet and missing a deadline nobody saw coming. End with the outcome and what you would do differently. Never suggest you handled it by simply working more hours; that is not prioritization.' },
 
   { id:'be42', d:'medium', q:'Tell me about a time you caught a mistake.',
     f:'Highly relevant to a job where a wrong number in a model reaches a client. Describe what the error was, how you caught it, and critically, what you did next. The instinct being tested is whether you flag things or hide them. Say that you raised it immediately even though it was uncomfortable, and describe the process change you made afterward — a checking routine, a second pass on links, tying outputs back to a source. If the mistake was your own, that is a stronger answer than catching someone else, provided you own it cleanly without excessive apology.' },
@@ -10586,7 +10807,7 @@ behavioral: [
     f:'This tests judgment about when to push and when to commit. Describe the disagreement substantively so it is clear you had a real reason, not a preference. Say how you raised it — privately, with the reasoning laid out, once rather than repeatedly. Then say that once the decision was made you committed to it fully and did not undermine it. If the outcome proved you right, resist gloating; if it proved you wrong, say so plainly, because that is the more impressive version. The trait being screened for is someone who contributes their view and then rows in the same direction.' },
 
   { id:'be45', d:'medium', q:'What has been the hardest part of your recruiting process so far?',
-    f:'A friendly-sounding question that rewards self-awareness and punishes complaining. Pick something real — balancing it against coursework, getting comfortable talking about yourself, the volume of technical material, handling rejection from a firm you wanted. Then spend most of the answer on what you did about it, because the difficulty is only the setup. Do not criticise other firms or their processes, and do not choose a difficulty that reveals a disqualifying problem, like finding the technical questions impossible. Honest and constructive is the register.' },
+    f:'A friendly-sounding question that rewards self-awareness and punishes complaining. Pick something real — balancing it against coursework, getting comfortable talking about yourself, the volume of technical material, handling rejection from a firm you wanted. Then spend most of the answer on what you did about it, because the difficulty is only the setup. Do not criticize other firms or their processes, and do not choose a difficulty that reveals a disqualifying problem, like finding the technical questions impossible. Honest and constructive is the register.' },
 
 
   { id:'be47', d:'hard', q:'Say you get an offer here and a better one somewhere else next week. What do you do?',
@@ -10601,7 +10822,7 @@ behavioral: [
   { id:'be50', d:'hard', q:'If I called someone who worked closely with you, what would they say frustrated them about working with you?',
     f:'Harder than the standard weakness question because it is framed through someone else and is difficult to dodge. Refusing to answer or saying nobody has ever been frustrated reads as evasive or unaware. Give something specific and plausible — that you can be slow to hand work off, that you ask a lot of clarifying questions early, that you push on details when others want to move on. Attribute it fairly rather than turning it into a virtue. Then say what you have done in response, and if possible cite the actual feedback that made you aware of it. The test is whether you have ever genuinely listened to criticism.' },
 
-  { id:'be51', d:'easy', q:'What is your favourite class you have taken, and why?',
+  { id:'be51', d:'easy', q:'What is your favorite class you have taken, and why?',
     f:'A friendly opener that people waste by naming a class and stopping. Pick one you can talk about with real enthusiasm, and make the reason specific: a concept that changed how you see something, a project you got absorbed in, a professor who argued rather than lectured. It does not have to be a finance class, and a genuinely interesting non-obvious answer is often better than a strategic one. Then connect it lightly to the work if there is an honest link — a class that taught you to build an argument from evidence, or to be comfortable with messy data. The thing being assessed is whether you are actually curious about anything, because an analyst who is only interested in the outcome burns out faster than one who finds the work interesting.' },
 
   { id:'be52', d:'hard', q:'If you do not get an offer anywhere this cycle, what do you do?',
@@ -10614,10 +10835,10 @@ behavioral: [
     f:'Rarely asked and hard to answer without either false modesty or defensiveness. Give a real situation where you were genuinely out of your depth — a team of more experienced people, a subject you had not studied, a room where everyone knew something you did not. Then spend the answer on what you did: whether you asked questions or went quiet, how you got up to speed, what you could contribute while you were catching up. The strongest versions include something specific you did that was useful despite the gap, because that is the situation every first-year analyst is in. Avoid two failure modes — turning it into a story about how you were actually the smartest after all, and describing the discomfort without describing any response to it.' },
 
   { id:'be55', d:'easy', q:'Why did you choose the school you go to?',
-    f:'An easy opener people answer badly by listing rankings. Give real reasons and make at least one specific to you: a programme or professor you wanted, the alumni network in the industry you are targeting, the size or culture fitting how you work, the city, cost and scholarship, family. Then do the thing most candidates skip, which is saying what you have actually done with the choice — the classes you sought out, the organisations you joined, the people you have met through it. That turns a question about the past into evidence that you make decisions deliberately and follow through on them. Avoid answers that make it sound accidental or purely financial with nothing added, and avoid criticising other schools.' },
+    f:'An easy opener people answer badly by listing rankings. Give real reasons and make at least one specific to you: a program or professor you wanted, the alumni network in the industry you are targeting, the size or culture fitting how you work, the city, cost and scholarship, family. Then do the thing most candidates skip, which is saying what you have actually done with the choice — the classes you sought out, the organizations you joined, the people you have met through it. That turns a question about the past into evidence that you make decisions deliberately and follow through on them. Avoid answers that make it sound accidental or purely financial with nothing added, and avoid criticizing other schools.' },
 
-  { id:'be56', d:'easy', q:'Tell me about a leadership role you have taken on in a club or organisation.',
-    f:'For most students this is where the real examples live, so have one prepared properly. Give the role and the scope in one line — what the organisation does, how many people, what you were responsible for. Then focus on a specific thing you did rather than describing the position: a problem you found, a change you made, something you built that did not exist before. Say what actually happened as a result, with a number if you have one — attendance, members, money raised, a process that now runs without you. Two things that strengthen it. Mention something that did not work and what you did about it, because a flawless story sounds rehearsed. And be honest about what was yours versus the team, since inflating your role is easy to catch on a follow-up question. A small role described precisely beats a big title described vaguely.' },
+  { id:'be56', d:'easy', q:'Tell me about a leadership role you have taken on in a club or organization.',
+    f:'For most students this is where the real examples live, so have one prepared properly. Give the role and the scope in one line — what the organization does, how many people, what you were responsible for. Then focus on a specific thing you did rather than describing the position: a problem you found, a change you made, something you built that did not exist before. Say what actually happened as a result, with a number if you have one — attendance, members, money raised, a process that now runs without you. Two things that strengthen it. Mention something that did not work and what you did about it, because a flawless story sounds rehearsed. And be honest about what was yours versus the team, since inflating your role is easy to catch on a follow-up question. A small role described precisely beats a big title described vaguely.' },
 
   { id:'be57', d:'medium', q:'Tell me about a time a team you were on failed.',
     f:'Different from a personal failure, and harder, because it tests whether you will blame other people. Describe what the team was trying to do and what went wrong, factually and without assigning fault. Then take your share — what you could have done differently, what you saw coming and did not raise, where you assumed someone else had it handled. That is the whole question: an answer where the failure was entirely other people tells the interviewer exactly what you would be like on a deal team when something goes wrong. Name the underlying cause if you can, since most team failures come from a small set — unclear ownership, nobody surfacing a problem early, an assumption nobody checked, or a plan nobody actually agreed to. Finish with what changed in how you work. Do not choose an example where the failure was catastrophic and entirely avoidable through basic competence, and do not choose one so trivial that nothing was at stake.' }
@@ -10796,6 +11017,7 @@ function switchRecruitTab(tab) {
     if (pane) pane.style.display = (k === tab) ? '' : 'none';
   });
   if (tab === 'resources')   loadResources();
+  if (tab === 'internships') loadInternshipTracker();
   if (tab === 'resume')      loadResumeTab();
   if (tab === 'alumni')      loadAlumni();
 }
@@ -12158,7 +12380,7 @@ async function cancelBooking(id) {
   }
   await loadBoardTab();
   if (BK.board) renderBookingWeek();
-  ufaAlert('board-alert', 'ok', 'Meeting cancelled.');
+  ufaAlert('board-alert', 'ok', 'Meeting canceled.');
 }
 
 
@@ -12322,7 +12544,7 @@ async function refreshMyBoardBookings() {
         (b.topic ? '<div style="font-size:13px;color:#3A4A3A;margin-top:6px;">' + ufaEsc(b.topic) + '</div>' : '') +
       '</div>' +
       (cancelled
-        ? '<span class="ufa-pill ufa-pill-grey">Cancelled</span>'
+        ? '<span class="ufa-pill ufa-pill-grey">Canceled</span>'
         : '<a class="ufa-btn-ghost ufa-btn-sm" style="text-decoration:none;" target="_blank" rel="noopener" href="' +
             ufaEsc(ufaGCalUrl(
               'UFA — ' + (b.member_name || b.member_email),
@@ -12376,7 +12598,7 @@ async function boardCancelBooking(id) {
       (currentMember && currentMember.name) || ufaEmail(), r.data.member_name);
   }
   await refreshMyBoardBookings();
-  ufaAlert('boardhours-alert', 'ok', 'Cancelled and the member has been emailed. Reach out directly if it was short notice.');
+  ufaAlert('boardhours-alert', 'ok', 'Canceled and the member has been emailed. Reach out directly if it was short notice.');
 }
 
 
@@ -12502,9 +12724,9 @@ function ufaBookingEmailToBoard(b, memberName) {
 
 function ufaCancelEmail(b, whoCancelled, otherName) {
   return {
-    subject: 'Cancelled: ' + ufaDateTime(b.start_ts),
+    subject: 'Canceled: ' + ufaDateTime(b.start_ts),
     message:
-      'The meeting scheduled for ' + ufaDateTime(b.start_ts) + ' has been cancelled by ' + whoCancelled + '.\n\n' +
+      'The meeting scheduled for ' + ufaDateTime(b.start_ts) + ' has been canceled by ' + whoCancelled + '.\n\n' +
       (otherName ? 'With: ' + otherName + '\n' : '') +
       '\nNo action needed. You can book another time from the Board Hours tab whenever you like.\n\n' +
       'texasufa.org/portal'
@@ -12828,7 +13050,30 @@ function caseWalkthrough(c) {
   }).join('');
 }
 
+/**
+ * A member should see this exactly once — the first time they ever open
+ * the Worked Cases track — not before every single case. localStorage is
+ * enough for that: it is a one-time orientation, not something that needs
+ * to sync across a member's devices or survive a board audit.
+ */
+var CASE_INTRO_SEEN_KEY = 'ufa_case_intro_seen';
+
 function startCaseRun() {
+  if (localStorage.getItem(CASE_INTRO_SEEN_KEY)) { startCaseRunActual(); return; }
+  ufaModal(
+    '<div class="ufa-label" style="margin-bottom:6px;">Before your first worked case</div>' +
+    '<div style="font-family:\'Playfair Display\',Georgia,serif;font-size:22px;color:#1C2B1C;margin-bottom:16px;">This is practice, not a tutorial</div>' +
+    '<p class="ufa-case-p" style="margin-bottom:14px;">' +
+      'A worked case assumes you already know the basic shape of a case interview: building a structure specific to the business rather than a generic checklist, asking clarifying questions that actually change your approach, doing math out loud, and leading a recommendation with the answer before the reasons. If any of that is unfamiliar, that is a real gap worth closing first — start with the Consulting guides under Resources, not here.' +
+    '</p>' +
+    '<p class="ufa-case-p" style="margin-bottom:20px;">' +
+      'How to actually use this: read the prompt and talk through your answer out loud for the full time before revealing the interviewer\'s notes. Revealing early is the easiest way to fool yourself into thinking you are more prepared than you are &mdash; the clock and the reveal button are there to stop you from doing that.' +
+    '</p>' +
+    '<button class="ufa-btn" onclick="localStorage.setItem(\'' + CASE_INTRO_SEEN_KEY + '\',\'1\');ufaCloseModal();startCaseRunActual();">Got it &mdash; start the case</button>'
+  );
+}
+
+function startCaseRunActual() {
   document.getElementById('mock-running').style.display = 'none';
   document.getElementById('mock-case').style.display = '';
   showCase();
