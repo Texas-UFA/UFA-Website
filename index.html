@@ -8816,8 +8816,8 @@ const MOCK_BANK = {
 
 /* ── INVESTMENT BANKING ────────────────────────────────────────────── */
 ib: [
-  { id:'ib1', d:'easy', q:'Walk me through the three financial statements.',
-    f:'Income statement: revenue down to net income, profitability over a period. Balance sheet: assets, liabilities and equity at a point in time, and it must balance. Cash flow statement: net income adjusted back to actual cash, split into operating, investing and financing. Close by saying how they link — net income tops the cash flow statement and feeds retained earnings, and ending cash lands on the balance sheet.' },
+  { id:'ib1', d:'easy', q:'What are the three financial statements?',
+    f:'The income statement, the balance sheet, and the cash flow statement. The income statement shows revenue down to profit over a period of time. The balance sheet shows what a company owns and owes at a single point in time, and the two sides must balance. The cash flow statement shows the actual cash moving in and out, split into operating, investing and financing activities. Naming all three cleanly, without hesitating, is the whole bar for this question.' },
   { id:'ib2', d:'easy', q:'If you could only look at one statement to judge a company, which would it be?',
     f:'Pick the cash flow statement and defend it: cash is the hardest number to manipulate, and it shows you what the business actually generates and what it spends to keep going. Acknowledge the tradeoff — you would lose margin structure and the balance sheet picture. The confidence of the pick matters more than the pick.' },
   { id:'ib4', d:'medium',
@@ -9029,7 +9029,7 @@ ib: [
     f:'Perpetuity growth: grow the final year by {G}% to ${GROWN}, then divide by WACC minus growth, a spread of {SPREAD}%. That gives a terminal value of ${TV}. Note that this is {MULT}x the final-year cash flow. The second half of the question is the real one. That spread in the denominator is small, so the answer moves violently — shaving a point off WACC or adding a point of growth can swing terminal value by a third. And terminal value is usually the majority of total enterprise value, so most of your DCF rests on two assumptions you cannot observe. The honest framing is that a DCF produces a range and a sensitivity table, not a price target.' },
 
 
-  { id:'ib80', d:'easy', q:'How are the three financial statements linked?',
+  { id:'ib80', d:'medium', q:'How are the three financial statements linked?',
     f:'Three links, and knowing all three cold is the point of the question. First, net income from the bottom of the income statement becomes the top line of the cash flow statement. Second, net income also flows into retained earnings on the balance sheet, which is how a profitable year increases equity. Third, the ending cash balance from the bottom of the cash flow statement is the cash line at the top of the balance sheet. Everything else on the cash flow statement is explaining the change in a balance sheet item. If you can say those three sentences without hesitating, you have answered the most commonly asked question in banking.' },
 
   { id:'ib81', d:'easy', q:'Why is a dollar today worth more than a dollar a year from now?',
@@ -9353,7 +9353,7 @@ ib: [
     q:'A company earns ${NI} of net income with {SH} million shares outstanding. What is earnings per share?',
     f:'Net income divided by share count: {NI} over {SH} is ${EPS} per share. Two things worth adding. Use the diluted share count rather than basic if you have it, because options and convertibles will eventually become real shares. And note why anyone cares — net income tells you what the business earned, EPS tells you what a single share earned, which is the only version an investor holding one share can act on.' },
 
-  { id:'ib116', d:'easy',
+  { id:'ib116', d:'medium',
     gen: function () {
       var EQ = mockPick([400, 500, 800, 1000]);
       var R = mockPick([10, 12, 15, 20]);
@@ -9362,7 +9362,7 @@ ib: [
     q:'A company earns ${NI} of net income on ${EQ} of shareholders equity. What is return on equity?',
     f:'Net income over equity: {NI} divided by {EQ} is {R}%. What it means is that for every dollar owners have tied up in the business, it produced {R} cents of profit this year. The caveat worth raising unprompted, because it is what separates a real answer from a formula: ROE can be flattered by leverage. Borrowing shrinks the equity base, so a heavily indebted company can post a high ROE while being riskier, not better.' },
 
-  { id:'ib117', d:'easy',
+  { id:'ib117', d:'medium',
     gen: function () {
       var EBIT = mockPick([200, 300, 400, 600]);
       var INT = mockPick([20, 40, 50, 80]);
@@ -9393,7 +9393,7 @@ ib: [
     q:'A company earns ${EPS} per share, pays a ${DPS} annual dividend, and trades at ${PX}. What is the payout ratio and the dividend yield?',
     f:'Two different ratios that people mix up. Payout ratio is dividend over earnings: {DPS} over {EPS} is {PAY}%, which is the share of profit being returned rather than reinvested. Dividend yield is dividend over price: {DPS} over {PX} is {YIELD}%, which is the cash return you get on what you paid. The distinction matters because the first is about company policy and the second is about your entry price. A high payout ratio is not automatically good — it can mean a mature business with nowhere attractive to reinvest.' },
 
-  { id:'ib120', d:'easy',
+  { id:'ib120', d:'medium',
     gen: function () {
       var CL = mockPick([150, 200, 300]);
       var R = mockPick([1.5, 2, 3]);
@@ -9669,6 +9669,43 @@ ib: [
 
   { id:'ib162', d:'easy', q:'What actually makes a stock price go up or down day to day?',
     f:'Buyers and sellers disagreeing on what the company is worth, and the price is wherever they currently agree to trade. New information moves that agreement: an earnings report, a product announcement, an economic data point, even a rumor. Underneath all of it is one idea worth saying explicitly — a stock price reflects what investors expect the company to earn in the future, not what it earned last quarter, which is why a company can report a great quarter and the stock can still fall if expectations were even higher.' },
+
+  { id:'ib163', d:'easy', q:'What is a shareholder, in simple terms?',
+    f:'Anyone who owns at least one share of a company\'s stock. That ownership comes with a few concrete things: a claim on a slice of future profits, usually a vote on major company decisions like electing the board, and a claim on whatever is left of the company assets if it is ever sold or shut down — after every lender and other creditor has been paid first. Being a shareholder means being an owner, just a very small one if the company is large.' },
+
+  { id:'ib164', d:'easy', q:'What does "liquidity" mean for a company, in the simplest sense?',
+    f:'How easily it can get its hands on cash to pay its bills. A company can be very profitable on paper and still have a liquidity problem if most of what it owns is tied up in things that take time to turn into cash — unsold inventory, money customers owe it, a building. The plain version: liquidity is about timing, not wealth. A company can be rich in assets and still fail to make payroll next week if none of those assets can be sold fast enough.' },
+
+  { id:'ib165', d:'easy', q:'What is inflation, and why does it matter to a business?',
+    f:'The general rise in prices over time, meaning a dollar buys a little less than it used to. For a business it matters in a few concrete ways: the cost of materials and labor goes up, which squeezes margins unless prices are raised to match; and money owed to the company in the future is worth less in real terms by the time it arrives, which matters for anything valued on future cash flows. It is also why interest rates and inflation move together in the news — raising rates is the standard tool used to try to slow inflation down.' },
+
+  { id:'ib166', d:'easy', q:'Why do some companies pay dividends and others don\'t?',
+    f:'It comes down to what the company has better use for its cash for. A mature, stable business with more cash than it can profitably reinvest often returns some of it to shareholders as a dividend. A younger, fast-growing company usually keeps every dollar to fund expansion, betting that reinvesting will make shareholders more money over time than a cash payout would. Neither choice is automatically better — it depends on whether the company can actually generate a strong return on the cash it keeps.' },
+
+  { id:'ib167', d:'easy', q:'What is a fiscal year, and does it have to match the calendar year?',
+    f:'A company\'s own twelve-month period for reporting financial results. It does not have to run January to December — plenty of companies pick a fiscal year that better fits their business, like ending in June or in late January right after the holiday shopping season for a retailer. The reason to know this: when comparing two companies\' "annual" results, check that their fiscal years actually cover the same months, or the comparison can be misleading.' },
+
+  { id:'ib168', d:'easy', q:'Why is cash shown on the balance sheet instead of the income statement?',
+    f:'Because the balance sheet shows what a company has at a single point in time, and cash is exactly that — a balance sitting in the bank right now. The income statement instead shows activity over a period, like revenue earned or expenses incurred during the year. Cash itself is not an activity; it is the result of all the activities, which is why the ending cash balance from the cash flow statement is what actually lands on the balance sheet.' },
+
+  { id:'ib169', d:'easy', q:'What does it mean for a company to go bankrupt?',
+    f:'It means the company cannot pay what it owes and turns to the courts for a legal process to sort it out. Two common versions are worth knowing by name. Chapter 11 lets the company keep operating while it reorganizes its debts, often paying lenders back less than they are owed or trading debt for ownership. Chapter 7 means the company shuts down entirely and its assets are sold off to pay creditors. Either way, shareholders are almost always wiped out first, since they are last in line behind every lender.' },
+
+  { id:'ib170', d:'easy',
+    gen: function () {
+      var BUY = mockPick([20, 40, 50, 80]);
+      var SELL = mockPick([25, 50, 60, 100]);
+      var RET = (SELL - BUY) / BUY * 100;
+      return { BUY: BUY, SELL: SELL, RET: RET };
+    },
+    q:'You buy a share for ${BUY} and later sell it for ${SELL}. What is your percentage return?',
+    f:'Return is the gain divided by what you paid: {SELL} minus {BUY} is the gain, divided by {BUY}, gives a return of {RET}%. The rule that matters here is the same one from any growth calculation — you always divide by the starting point, your original cost, never by the ending price.' },
+
+  { id:'ib171', d:'easy', q:'What is the difference between a loan and a bond?',
+    f:'They are economically the same thing — borrowed money that gets repaid with interest — but structured differently. A loan is typically a private agreement between a borrower and a single lender, like a bank, and it is not usually resold. A bond is a loan broken into standardized pieces that can be bought and sold on a market, which lets many different investors each hold a small slice of the same debt and trade it before it matures. The practical difference is tradability, not the underlying economics.' },
+
+  { id:'ib172', d:'easy', q:'What is the difference between an asset and a liability, in plain English?',
+    f:'An asset is something the company owns that has value — cash, equipment, a building, money owed to it by customers. A liability is something the company owes to someone else — a loan, unpaid bills, wages owed to employees. The simplest test: if it would show up in your favor if the company were liquidated, it is an asset; if it is a claim someone else has against the company, it is a liability. The gap between the two, what is left after paying off every liability, is what belongs to the owners.' },
 
 ],
 
@@ -10378,7 +10415,7 @@ hf: [
     q:'You think an idea has a {WIN}% chance of working and returning {GAIN}%, and a {LOSEPCT}% chance of losing {LOSS}%. Should you take it, and how would you size it?',
     f:'Expected value first. The upside leg is {WIN}% times {GAIN}%, or {UP}%. The downside leg is {LOSEPCT}% times {LOSS}%, or {DOWN}%. {EVTXT}. The payoff ratio is {RATIO} to one. Now the part that separates an investor from a calculator. Expected value tells you whether to take it, not how large to make it. Sizing depends on how confident you are in those probabilities, how correlated the idea is with the rest of the book, and whether the downside is really capped at {LOSS}% or could be far worse if the thesis is wrong for a reason you have not considered. The honest caveat: you invented both probabilities, so the precision of that figure is false. The discipline is asking whether you are being paid enough for being wrong.' },
 
-  { id:'hf42', d:'easy', q:'Walk me through how a hedge fund actually makes money — fees, and what a high water mark is.',
+  { id:'hf42', d:'medium', q:'Walk me through how a hedge fund actually makes money — fees, and what a high water mark is.',
     f:'The classic structure is two and twenty: a management fee of roughly 2% of assets charged regardless of performance, and an incentive fee of roughly 20% of profits. Then explain the two provisions that protect investors, because that is the real content. A high water mark means the fund only charges performance fees on gains above the highest value the investor account has previously reached — so after a losing year, the manager earns nothing on performance until the losses are recovered. A hurdle rate, where used, means the incentive fee only applies above some threshold return. Close with the incentive problem this creates: a fund far below its high water mark has a weak economic reason to keep grinding back, which is one reason funds close after bad years rather than working through them.' },
 
   { id:'hf43', d:'easy', q:'What does a portfolio manager actually do all day?',
@@ -10408,7 +10445,7 @@ hf: [
   { id:'hf53', d:'easy', q:'What does liquidity mean, and why does a fund care about it?',
     f:'Liquidity is how easily you can buy or sell something without moving its price. A large-cap stock is highly liquid; a small company or a private position is not. A fund cares for two reasons. First, an illiquid position is one you cannot exit when you want to, so being right eventually is worthless if you needed the money sooner. Second, liquidity and redemptions interact dangerously: if investors ask for money back while the fund holds illiquid positions, the manager is forced to sell the liquid holdings first, leaving a portfolio that is worse than the one they chose. Say that last point explicitly — it is how funds get into trouble even when their investment thesis was sound.' },
 
-  { id:'hf54', d:'easy',
+  { id:'hf54', d:'medium',
     gen: function () {
       var GROSS = mockPick([10, 15, 20, 25]);
       var MGMT = 2;
@@ -10438,6 +10475,21 @@ hf: [
 
   { id:'hf60', d:'medium', q:'You run a book of longs and shorts that all look uncorrelated on paper. Why might they all move together anyway in a real sell-off?',
     f:'Because correlations are not fixed — they are estimated from normal, calm markets, and in a genuine panic, normal relationships break down and nearly everything trades on one factor: fear. Investors sell whatever is liquid enough to sell, regardless of the individual story behind each name, so uncorrelated-looking positions can suddenly move in lockstep. This is exactly what catches funds off guard in a crisis, and it is why real risk management looks at how a book behaves under stress scenarios, not just at the historical correlation matrix from a quiet period.' },
+
+  { id:'hf61', d:'easy', q:'Why is it called a "hedge" fund in the first place?',
+    f:'Because the original idea was to hedge — to hold both long and short positions so the fund would not simply rise and fall with the overall market, unlike a typical stock fund that is only long. The classic pairing was a long position in a stock you liked funded partly by shorting a similar one you liked less, so a big chunk of your risk was the difference between the two rather than the market as a whole. Modern hedge funds have drifted far from that original template — many run heavily long or make no attempt to hedge market risk at all — but the name stuck.' },
+
+  { id:'hf62', d:'easy', q:'What is an "accredited investor," and why does it matter for who can invest in a hedge fund?',
+    f:'Someone who meets a minimum income or net worth threshold set by regulators, on the theory that they can afford to lose the money and do not need the same protections as an everyday retail investor. Hedge funds are legally restricted to accredited investors and institutions rather than being open to the general public. The reasoning: hedge funds take on more risk, use leverage and shorting, and disclose far less than a regulated mutual fund, so the rules limit access to investors assumed to be able to evaluate and absorb that risk.' },
+
+  { id:'hf63', d:'easy', q:'What is a benchmark, and why do hedge funds get compared to one?',
+    f:'A benchmark is a reference point — usually a market index like the S&P 500 — that a fund\'s performance gets measured against. The point of comparing to one is simple: a 12% return sounds great until you learn the overall market returned 20% that year, in which case the fund actually underperformed. For a fund charging real fees to be worth it, it generally needs to beat its benchmark over time, not just post a positive number.' },
+
+  { id:'hf64', d:'hard', q:'What is a total return swap, and why might a fund use one instead of just buying the stock outright?',
+    f:'A derivative in which one party pays the total return of an asset — price appreciation plus any dividends — to a counterparty, who in exchange pays a financing rate, typically a benchmark rate plus a spread. The fund gets the full economic exposure of owning the stock without ever actually holding it. Give the real reasons a fund reaches for this instead of a plain purchase. Leverage: the fund only posts collateral rather than the full purchase price, so exposure per dollar of capital is much higher. Disclosure: because the fund does not hold the shares directly, large positions can be built without triggering the ownership-disclosure thresholds that a direct stake would. Access: some markets or specific securities are easier or cheaper to gain exposure to synthetically than to buy directly, especially for shorting. Close with the honest risk: the fund is now also exposed to its swap counterparty — if the bank on the other side of the trade fails, the fund position and any collateral posted are at risk, a dynamic that mattered enormously in the 2008 crisis and again in the Archegos collapse.' },
+
+  { id:'hf65', d:'hard', q:'Walk me through the specific risk in a merger arbitrage trade, and what would make you size it differently from an ordinary long position.',
+    f:'A merger arb trade typically buys the target of an announced deal, which trades below the announced deal price to reflect the chance the deal falls through, and captures the spread if it closes. Unlike an ordinary long, the thesis is not about the business — it is a bet on a binary event: does this specific deal close, on time, at this price. The specific risk is deal-break risk: a failed regulatory approval, a financing collapse, a shareholder vote that fails, or an acquirer walking away, any of which can send the target price crashing back toward its pre-announcement level, often losing far more than the spread being captured if the deal succeeds. That asymmetry — capped upside, uncapped-feeling downside relative to the trade\'s stated return — is exactly why sizing has to reflect deal-specific risk, not just volatility. Size smaller for deals facing serious antitrust scrutiny, contested financing, or hostile dynamics, and larger for clean strategic deals with committed financing and no obvious regulatory friction. Close with the diversification point: because the risk is idiosyncratic to each deal rather than correlated with the market, a book of many small merger arb positions behaves very differently from one or two large ones, which is the entire reason the strategy is usually run as a diversified book rather than a handful of concentrated bets.' },
 
 ],
 
@@ -10506,7 +10558,7 @@ pe: [
   { id:'pe37', d:'easy', q:'Why does buying a company with debt increase returns?',
     f:'Because you put in less of your own money for the same asset. Use a concrete example rather than abstraction: buy a company for 100 in all cash, sell it for 150, and you have made 1.5 times your money. Buy the same company with 30 of equity and 70 of debt, sell for 150, repay the 70, and your 30 became 80 — nearly 2.7 times. The asset performed identically; only the equity slice changed. Then give the other half, because an answer with no downside is incomplete. Leverage magnifies losses in exactly the same way, and the interest must be paid whether the year went well or badly. That is why sponsors care so much about cash flow stability — the debt does not care about your business plan.' },
 
-  { id:'pe38', d:'easy',
+  { id:'pe38', d:'medium',
     gen: function () {
       var EQ = mockPick([100, 200, 400]);
       var M = mockPick([2, 2.5, 3]);
@@ -10563,7 +10615,7 @@ pe: [
   { id:'pe43', d:'easy', q:'Who are the GP and the LPs in a private equity fund?',
     f:'The GP, or general partner, is the PE firm itself — it raises the fund, finds and executes deals, manages the companies and decides when to exit. The LPs, or limited partners, are the investors who supply most of the capital: pension funds, endowments, sovereign wealth funds, insurance companies, wealthy families. Their liability is limited to what they committed, and they have no say in individual deals. Then add the two details that show you understand the relationship. The GP commits its own money too, usually a small percentage of the fund, so it has skin in the game. And LPs do not hand over cash upfront — they commit an amount and the GP calls it down as deals are done, which is why uncalled commitments matter as much as the headline fund size.' },
 
-  { id:'pe44', d:'easy', q:'What is dry powder, and why does it matter?',
+  { id:'pe44', d:'medium', q:'What is dry powder, and why does it matter?',
     f:'Dry powder is committed capital a fund has not yet invested — money the LPs have promised but the GP has not called down and deployed. It matters for two reasons worth giving. At the industry level, large amounts of dry powder mean many firms chasing the same deals, which bids up entry multiples and makes it harder to underwrite good returns. At the fund level, it creates pressure: a GP has a limited investment period, typically about five years, and capital left undeployed at the end must be returned, which is bad for fees and for the firm track record. Say the consequence plainly — that pressure to deploy is one of the honest explanations for why firms sometimes pay up near the top of a cycle.' },
 
   
@@ -10648,7 +10700,7 @@ pe: [
   { id:'pe57', d:'easy', q:'Why would a private equity firm want to own a company rather than just investing in its stock?',
     f:'Control. Owning a majority stake means the firm can replace management, change strategy, cut costs, or make acquisitions without needing to convince a room full of public shareholders first. A stock investor can only vote and hope; an owner can act directly. That is the whole reason PE returns are supposed to come partly from actively improving the business, not just from the market re-rating it.' },
 
-  { id:'pe58', d:'easy', q:'What does it mean to say a private equity fund is "closed-end," and why would an investor accept that?',
+  { id:'pe58', d:'medium', q:'What does it mean to say a private equity fund is "closed-end," and why would an investor accept that?',
     f:'Investors commit their money for a long, fixed period — often around ten years — and cannot ask for it back early the way they could with a typical mutual fund. Investors accept that tradeoff because the fund is buying illiquid things, whole private companies, that take years to fix up and sell, and having investors able to pull money out early would force the fund to sell assets at the worst possible time. In exchange for locking up their money, investors expect a higher return than they would get from something they could sell tomorrow.' },
 
   { id:'pe59', d:'easy',
@@ -10671,6 +10723,21 @@ pe: [
 
   { id:'pe63', d:'easy', q:'What does "portfolio company" mean when people use that term in private equity?',
     f:'It just means a company that a private equity fund currently owns — one of the businesses sitting in the fund\'s portfolio, the same way a stock investor might have several stocks sitting in their portfolio. The term gets used constantly because a single fund usually owns several companies across different industries at once, and "portfolio company" is shorthand for "one of the businesses we own," as opposed to a company the firm is merely looking at or bidding on.' },
+
+  { id:'pe64', d:'easy', q:'What is due diligence, in plain terms?',
+    f:'The research a buyer does on a company before actually agreeing to buy it — checking that the financials are real, the customers are real, there is no hidden lawsuit or liability, and the business is actually what it claims to be. Think of it as the grown-up version of checking a used car\'s history before buying it. The whole point is to catch expensive surprises before signing, not after, since fixing a bad assumption after the deal closes is far more costly than walking away beforehand.' },
+
+  { id:'pe65', d:'easy', q:'Why can\'t just anyone invest in a private equity fund the way they can buy a stock?',
+    f:'Because private equity funds are restricted to large institutions and wealthy individuals who meet minimum income or net worth requirements, rather than being open to the general public. The reasoning is similar to why hedge funds are restricted: the investments are illiquid, the money is locked up for years, and the risks are harder to evaluate than a public stock, so regulators limit access to investors assumed to be able to absorb the risk and afford having their money tied up that long.' },
+
+  { id:'pe66', d:'easy', q:'What is a "buyout," in the simplest sense?',
+    f:'One party purchasing enough of a company to take full control of it, rather than just buying a small slice like a typical stock investor would. In private equity specifically, a buyout usually means buying essentially all of a company, often using a mix of the firm\'s own money and borrowed money, so the sponsor ends up owning and directly running the business rather than just holding shares in it.' },
+
+  { id:'pe67', d:'hard', q:'What is a "club deal," and why would a sponsor team up with other PE firms on a buyout instead of doing it alone?',
+    f:'A club deal is a buyout where two or more private equity firms jointly buy a company, pooling equity rather than one firm writing the whole check. The obvious reason is size: a target may be too large for any single fund to buy without putting an outsized share of its capital into one position, breaching the diversification limits most funds operate under. Teaming up lets each firm write a smaller check and keep its portfolio properly diversified. There is also a competitive angle — clubbing together can reduce the number of bidders in an auction, which can help keep the purchase price down, though this has drawn real antitrust scrutiny in the past for exactly that reason. Give the honest downside, because it is the real substance of the question. Governance gets harder with multiple sponsors who each want a say, decision-making slows down, and firms with different investment horizons or exit preferences can end up in conflict right when the company needs a fast decision. Sponsors that can act alone generally prefer to, and club deals are typically a function of deal size forcing the issue rather than a preferred way of investing.' },
+
+  { id:'pe68', d:'hard', q:'What is a "staple," or stapled financing package, in an M and A sale process, and why would a seller arrange one?',
+    f:'A staple is a pre-arranged debt financing package, negotiated by the seller\'s bank ahead of the sale, that any bidder can use — or "staple" — to the acquisition if they choose to. It is offered to every potential buyer on the same terms rather than each bidder having to independently line up its own financing. Give the reasons a seller actually does this. It speeds up the process, since bidders do not have to spend weeks separately arranging debt before they can submit a credible offer, which widens the pool of buyers who can move quickly, particularly financial sponsors who otherwise need financing certainty before bidding seriously. It also gives the seller more control and visibility over what financing terms are realistically available in the market, which helps set expectations on price. Now the conflict that makes this a real question rather than a trivia one: the bank arranging the staple is typically also advising the seller on the sale itself, earning a fee either way, which creates an incentive to make the staple look attractive enough that bidders use it — and a bidder is never required to use it and often gets better terms shopping its own financing elsewhere, so a staple functions more as a floor and a speed tool than as the final word on financing cost.' },
 
 ],
 
