@@ -5392,13 +5392,11 @@ button[onclick="pubFlipbookNext()"]:hover {
                 <a href="https://docs.google.com/spreadsheets/d/1Uct8-VQKGCsDKCquW01Dxi0SLVUdbiD4lmuSp1NHEVA/edit?usp=sharing" target="_blank" rel="noopener noreferrer"
                    style="font-size:12px;font-weight:600;color:#fff;background:#1C2B1C;padding:8px 16px;border-radius:4px;text-decoration:none;white-space:nowrap;">Open in Google Sheets &#8594;</a>
               </div>
-              <div style="padding:14px 20px;border-bottom:1px solid rgba(46,74,46,0.1);">
-                <input type="text" id="internship-tracker-search" class="ufa-input" placeholder="Search by company or role" style="max-width:320px;" oninput="renderInternshipTracker()">
+              <div style="padding:4px;">
+                <iframe id="internship-tracker-iframe" data-src="https://docs.google.com/spreadsheets/d/1Uct8-VQKGCsDKCquW01Dxi0SLVUdbiD4lmuSp1NHEVA/preview?gid=0&amp;rm=minimal"
+                        title="UFA Internship Tracker" loading="lazy" frameborder="0"
+                        style="display:block;width:100%;height:640px;border:0;border-radius:6px;"></iframe>
               </div>
-              <div class="ufa-table-wrap" style="padding:0 4px 4px;">
-                <table class="ufa-table" id="internship-tracker-table"></table>
-              </div>
-              <div id="internship-tracker-empty" style="display:none;padding:40px 20px;text-align:center;color:#6B7D6B;font-size:13px;"></div>
             </div>
           </div>
         </div>
@@ -7483,151 +7481,21 @@ var resourcesLoaded = false;
 var currentResourceFilter = 'all';
 
 /* ══════════════════════════════════════════════════════════════════
-   INTERNSHIP TRACKER — rendered natively instead of embedded
+   INTERNSHIP TRACKER — embedded live sheet
    ══════════════════════════════════════════════════════════════════
 
-   The sheet used to sit in an <iframe src=".../preview">, which shows
-   Google's own chrome (its header colors, its own scrollbars, its own
-   fonts) inside a card that is otherwise styled to match the rest of
-   the site. This fetches the same sheet as CSV — which works with no
-   API key as long as the sheet is shared "anyone with the link can
-   view", already true since the iframe needed that — and renders it
-   as a real <table> using the site's own classes, so it actually
-   looks like it belongs here. The board keeps editing the same Google
-   Sheet exactly as before; nothing changes on that side.
+   Back to embedding the actual Google Sheet in an <iframe>, so every
+   HYPERLINK() cell (Handshake, Apply Here, etc.) stays clickable —
+   that link data isn't exposed by the CSV export the native-table
+   version relied on, so this is the version that keeps it. The
+   iframe's src is only set the first time the Internships tab opens
+   (rather than baked into the markup) purely so the sheet doesn't
+   load before anyone visits that tab.
    ══════════════════════════════════════════════════════════════════ */
 
-var INTERNSHIP_SHEET_ID = '1Uct8-VQKGCsDKCquW01Dxi0SLVUdbiD4lmuSp1NHEVA';
-var INTERNSHIP_SHEET_TAB = 'Tracker';
-var internshipTrackerRows = null; // [{headerName: value, ...}, ...], null until loaded
-var internshipTrackerLoading = false;
-
-var INTERNSHIP_ROLE_PILL = {
-  'private equity':    'ufa-pill-red',
-  'investment banking':'ufa-pill-blue',
-  'vc':                'ufa-pill-amber',
-  'other':             'ufa-pill-grey'
-};
-
-/** Minimal RFC4180-ish CSV parser: handles quoted fields, embedded
- * commas, embedded newlines, and "" as an escaped quote. Good enough
- * for a Google Sheets export; not meant to be a general-purpose parser. */
-function parseCsv(text) {
-  var rows = [], row = [], field = '', inQuotes = false;
-  for (var i = 0; i < text.length; i++) {
-    var ch = text[i], next = text[i + 1];
-    if (inQuotes) {
-      if (ch === '"' && next === '"') { field += '"'; i++; }
-      else if (ch === '"') { inQuotes = false; }
-      else { field += ch; }
-    } else {
-      if (ch === '"') inQuotes = true;
-      else if (ch === ',') { row.push(field); field = ''; }
-      else if (ch === '\r') { /* skip, \n handles the line break */ }
-      else if (ch === '\n') { row.push(field); rows.push(row); row = []; field = ''; }
-      else field += ch;
-    }
-  }
-  if (field.length || row.length) { row.push(field); rows.push(row); }
-  return rows;
-}
-
-async function loadInternshipTracker() {
-  if (internshipTrackerRows || internshipTrackerLoading) { renderInternshipTracker(); return; }
-  internshipTrackerLoading = true;
-  var sub = document.getElementById('internship-tracker-sub');
-  var empty = document.getElementById('internship-tracker-empty');
-  var table = document.getElementById('internship-tracker-table');
-  if (table) table.innerHTML = '';
-  if (empty) { empty.style.display = ''; empty.textContent = 'Loading the tracker…'; }
-
-  try {
-    var url = 'https://docs.google.com/spreadsheets/d/' + INTERNSHIP_SHEET_ID +
-      '/gviz/tq?tqx=out:csv&sheet=' + encodeURIComponent(INTERNSHIP_SHEET_TAB);
-    var res = await fetch(url);
-    if (!res.ok) throw new Error('sheet fetch failed');
-    var csv = await res.text();
-    var grid = parseCsv(csv);
-    if (!grid.length) throw new Error('empty sheet');
-
-    var headers = grid[0].map(function (h) { return (h || '').trim(); });
-    internshipTrackerRows = grid.slice(1)
-      .map(function (r) {
-        var obj = {};
-        headers.forEach(function (h, i) { obj[h] = (r[i] || '').trim(); });
-        return obj;
-      })
-      // Drop rows that are entirely blank — the sheet keeps ~100 empty
-      // rows below the real data for the board to type new rows into.
-      .filter(function (obj) { return Object.keys(obj).some(function (h) { return obj[h]; }); });
-
-    if (sub) sub.textContent = 'Shared spreadsheet — track openings and add your applications';
-    renderInternshipTracker();
-  } catch (e) {
-    internshipTrackerRows = null;
-    if (sub) sub.textContent = "Couldn't load the live sheet just now — the link above still opens it directly.";
-    if (table) table.innerHTML = '';
-    if (empty) {
-      empty.style.display = '';
-      empty.textContent = "Couldn't load the tracker here. Use \"Open in Google Sheets\" above instead.";
-    }
-  } finally {
-    internshipTrackerLoading = false;
-  }
-}
-
-function renderInternshipTracker() {
-  var table = document.getElementById('internship-tracker-table');
-  var empty = document.getElementById('internship-tracker-empty');
-  if (!table || !internshipTrackerRows) return;
-
-  var q = (document.getElementById('internship-tracker-search') || {}).value || '';
-  q = q.trim().toLowerCase();
-
-  var headers = Object.keys(internshipTrackerRows[0] || {});
-  var companyKey = headers.filter(function (h) { return /company/i.test(h); })[0] || headers[0];
-  var roleTypeKey = headers.filter(function (h) { return /role\s*type/i.test(h); })[0];
-  var applicationKey = headers.filter(function (h) { return /application/i.test(h); })[0];
-
-  var rows = internshipTrackerRows.filter(function (r) {
-    if (!q) return true;
-    return headers.some(function (h) { return (r[h] || '').toLowerCase().indexOf(q) !== -1; });
-  });
-
-  if (!rows.length) {
-    table.innerHTML = '';
-    if (empty) {
-      empty.style.display = '';
-      empty.textContent = q ? 'No rows match "' + q + '".' : 'No openings listed yet — check back soon.';
-    }
-    return;
-  }
-  if (empty) empty.style.display = 'none';
-
-  table.innerHTML =
-    '<tr>' + headers.map(function (h) { return '<th>' + ufaEsc(h) + '</th>'; }).join('') + '</tr>' +
-    rows.map(function (r) {
-      return '<tr>' + headers.map(function (h) {
-        var val = r[h] || '';
-        if (h === roleTypeKey && val) {
-          var pillClass = INTERNSHIP_ROLE_PILL[val.toLowerCase()] || 'ufa-pill-grey';
-          return '<td><span class="ufa-pill ' + pillClass + '">' + ufaEsc(val) + '</span></td>';
-        }
-        if (h === applicationKey && val) {
-          if (/^https?:\/\//i.test(val)) {
-            return '<td><a href="' + ufaEsc(val) + '" target="_blank" rel="noopener noreferrer">Apply &#8594;</a></td>';
-          }
-          var emailMatch = val.match(/[^\s]+@[^\s]+\.[^\s]+/);
-          if (emailMatch) {
-            return '<td><a href="mailto:' + ufaEsc(emailMatch[0]) + '">' + ufaEsc(val) + '</a></td>';
-          }
-        }
-        if (h === companyKey) {
-          return '<td style="font-weight:500;color:#1C2B1C;">' + ufaEsc(val) + '</td>';
-        }
-        return '<td>' + ufaEsc(val || '—') + '</td>';
-      }).join('') + '</tr>';
-    }).join('');
+function loadInternshipTracker() {
+  var frame = document.getElementById('internship-tracker-iframe');
+  if (frame && !frame.src && frame.dataset.src) frame.src = frame.dataset.src;
 }
 
 async function loadResources() {
