@@ -8831,9 +8831,9 @@ ib: [
     f:'Same discipline as any flow-through. Pretax income down {W}, tax saving ${TAX}, net income down ${NI}. Cash flow: net income down {NI}, add back the {W} non-cash charge, so cash is up ${CASH}. Balance sheet: inventory down {W}, cash up {CASH}, so assets are down ${NI}; retained earnings down {NI}. It balances. The cash actually rises here, which surprises people — the only real cash effect of a write-down is the tax saving.' },
   { id:'ib5', d:'medium', q:'Walk me through a DCF.',
     f:'Project unlevered free cash flow for five to ten years. Discount each year at WACC. Calculate terminal value by perpetuity growth or an exit multiple, and discount that too. Sum for enterprise value. Bridge to equity value by subtracting net debt. Divide by diluted shares for value per share. Add one honest sentence about how sensitive the whole thing is to terminal assumptions.' },
-  { id:'ib6', d:'easy', q:'Walk me through the difference between enterprise value and equity value.',
+  { id:'ib6', d:'medium', q:'Walk me through the difference between enterprise value and equity value.',
     f:'Equity value is what shareholders own; enterprise value is what the whole operating business is worth regardless of who financed it. Bridge: equity value plus debt, minus cash, plus preferred and minority interest. The intuitive line to have ready: you subtract cash because when you buy the company you get its cash back, so it lowers your effective price.' },
-  { id:'ib7', d:'easy', q:'Why do you subtract cash in the enterprise value bridge?',
+  { id:'ib7', d:'medium', q:'Why do you subtract cash in the enterprise value bridge?',
     f:'Because acquiring the company hands you its cash, which offsets what you paid. The cleaner framing: enterprise value should reflect the operating business, and idle cash is not an operating asset.' },
   { id:'ib8', d:'medium', q:'Walk me through WACC — what it is and how you would actually calculate it for a company.',
     f:'The blended required return across the capital structure. Cost of equity weighted by equity share plus after-tax cost of debt weighted by debt share. Cost of equity usually via CAPM: risk-free rate plus beta times the equity risk premium. Note that debt is cheaper because it is senior and the interest is tax-deductible.' },
@@ -8856,7 +8856,7 @@ ib: [
     f:'Value each company standalone. Set the purchase price and the mix of cash, debt and stock. Combine the financials, layer in synergies, and adjust for new interest expense, foregone interest on cash used, and new shares issued. Compare combined pro forma EPS to the acquirer standalone EPS to see accretion or dilution.' },
   { id:'ib17', d:'medium', q:'Say a banker tells you a deal is accretive — what actually determines that, and what would make the same deal dilutive instead?',
     f:'Compare what you earn against what you pay for it. Roughly, if the acquirer P/E is higher than the target effective P/E after the premium, the deal is accretive. Cash deals tend to be accretive when rates are low, stock deals when the acquirer trades at a rich multiple. State the rule and then say it is a screen, not a verdict on whether the deal is good.' },
-  { id:'ib18', d:'hard', q:'A deal is accretive. Does that make it a good deal?',
+  { id:'ib18', d:'medium', q:'A deal is accretive. Does that make it a good deal?',
     f:'No. Accretion is an accounting outcome that can be engineered with cheap debt or an overvalued stock. A good deal creates value: real synergies, strategic fit, a price below what the asset is worth. Cite the failure mode — a company can buy earnings while destroying value.' },
   { id:'ib19', d:'hard', q:'Walk me through an LBO.',
     f:'A sponsor buys a company using mostly debt and a slice of equity. Model the sources and uses, project cash flows, use free cash flow to pay down debt, then exit in roughly five years at an assumed multiple. Returns come from three places: debt paydown, EBITDA growth, and multiple expansion. Compute IRR and money multiple on the sponsor equity.' },
@@ -8896,7 +8896,7 @@ ib: [
     f:'A strategic buyer operates in or near the business and can realize synergies, so it can usually pay more. A financial sponsor buys for return on invested capital and is disciplined by its underwriting model. Note the consequence for a sale process: you run them differently.' },
   { id:'ib33', d:'medium', q:'Why might a company choose to do a stock deal rather than a cash deal?',
     f:'It lacks the cash or does not want the leverage, its own stock is richly valued, it wants to share the integration risk with target shareholders, or the tax treatment favors it. Add that offering stock can signal the acquirer thinks its own shares are expensive, which the market notices.' },
-  { id:'ib34', d:'hard', q:'Tell me about a deal you have followed and what you thought of it.',
+  { id:'ib34', d:'medium', q:'Tell me about a deal you have followed and what you thought of it.',
     f:'Name the parties, size and structure. State the strategic rationale in one sentence. Then give a view with a reason: the price, the synergy assumption, the regulatory risk, the fit. Close by naming what would tell you in two years whether it worked. Have one deal genuinely ready.' },
   { id:'ib35', d:'hard',
     q:'An acquisition can be structured as an asset sale, where the buyer purchases specific assets and the legal entity stays with the seller, or a stock sale, where the buyer purchases the shares and takes the company as it stands. Which does each side push for, and why?',
@@ -8907,7 +8907,7 @@ ib: [
     f:'When you want equity value directly, or when the capital structure is central to the business rather than incidental. Financial institutions are the standard case, because for a bank debt is raw material rather than financing. In a levered DCF you project free cash flow to equity and discount at cost of equity instead of WACC.' },
   { id:'ib41', d:'hard', q:'Walk me through the treasury stock method — what it is and why we bother with it.',
     f:'It calculates how many net new shares in-the-money options and warrants would add. Assume they are exercised at the strike, then assume the company uses those proceeds to buy back shares at the current market price. The difference is the net share increase. We use it to get a genuine diluted share count for equity value.' },
-  { id:'ib42', d:'hard', q:'Two companies have the same revenue and growth but very different valuations. What explains it?',
+  { id:'ib42', d:'medium', q:'Two companies have the same revenue and growth but very different valuations. What explains it?',
     f:'Margins and the cash conversion behind them, capital intensity, durability and quality of the growth, competitive position, balance sheet risk, management credibility, sector multiple, and how much of the growth is already priced in. Structure the answer as quality of earnings versus quantity of earnings.' },
   { id:'ib43', d:'medium', q:'Walk me through working capital, and tell me what it means if a company is running negative working capital.',
     f:'Current assets minus current liabilities. Negative working capital is not automatically bad — it often means the business collects from customers before paying suppliers, which is a funding advantage. Restaurants and subscription businesses commonly run negative. It becomes a warning sign only when it reflects a liquidity problem instead of a favorable cycle.' },
@@ -8925,9 +8925,9 @@ ib: [
     f:'Diligence invalidating the core thesis, quality of earnings findings that materially change the price, a liability you cannot bound, management proving unreliable, or a price that no longer clears your return threshold. Name sunk cost explicitly and say that months invested is not a reason to proceed.' },
   { id:'ib50', d:'medium', q:'Walk me through deferred revenue — what it is, where it shows up, and what it tells you when it is growing.',
     f:'Cash collected for goods or services not yet delivered. It sits as a liability on the balance sheet and converts to revenue as you deliver. Growing deferred revenue is usually a healthy sign for a subscription business, because it means customers are paying ahead of consumption.' },
-  { id:'ib51', d:'hard', q:'How do you calculate diluted shares outstanding?',
+  { id:'ib51', d:'medium', q:'How do you calculate diluted shares outstanding?',
     f:'Start from basic shares, then add the net dilution from in-the-money options and warrants using the treasury stock method, plus shares from convertible securities where conversion is in the money. Out-of-the-money instruments are excluded. Getting a genuinely diluted count matters because it is the denominator of value per share.' },
-  { id:'ib52', d:'hard', q:'A company is trading below its book value. What does that tell you?',
+  { id:'ib52', d:'medium', q:'A company is trading below its book value. What does that tell you?',
     f:'The market believes the assets are worth less than carried, or that the company will destroy value going forward by earning below its cost of capital. Common in banks in stress and in asset-heavy businesses in decline. It can signal a bargain or a warning — the resolution is whether the assets are genuinely worth book and whether returns can recover.' },
   { id:'ib53', d:'medium', q:'Why might a company with strong earnings still go bankrupt?',
     f:'Because bankruptcy is about liquidity, not profitability. Earnings can be non-cash or trapped in working capital; debt can come due all at once; a covenant can trip; a lender can refuse to refinance. The line worth having: companies do not go bankrupt from losses, they go bankrupt from running out of cash.' },
@@ -8942,7 +8942,7 @@ ib: [
     f:'No income statement impact — dividends are not an expense, they are a distribution of profit that was already taxed. Cash flow statement: ${A} outflow under financing. Balance sheet: cash down {A} and retained earnings down {A}, so it balances. The point being tested is that returning capital to owners is not the same as incurring a cost.' },
   { id:'ib56', d:'hard', q:'How would you think about valuing a company being acquired for its technology rather than its cash flow?',
     f:'Standard cash flow methods will underprice it. Look at what building the capability internally would cost and how long it would take, what the technology is worth inside the acquirer rather than standalone, comparable technology transactions, and value per engineer or per patent as a sanity check. Say plainly that the value is strategic and specific to this buyer.' },
-  { id:'ib57', d:'easy', q:'Walk me through EBIT versus EBITDA, and tell me when you\'d reach for one over the other.',
+  { id:'ib57', d:'medium', q:'Walk me through EBIT versus EBITDA, and tell me when you\'d reach for one over the other.',
     f:'EBIT is after depreciation and amortization, EBITDA is before. Prefer EBITDA when comparing companies with different D and A policies or asset ages. Prefer EBIT when capital intensity is central to the business, because it at least partly accounts for the assets being consumed. Cable and telecom are the classic cases where EBITDA flatters.' },
   { id:'ib58', d:'hard', q:'Say you hand me a DCF with no sensitivity table on it — what am I missing, and why does every DCF need one?',
     f:'It shows how the output changes across a range of the most uncertain inputs, usually WACC and terminal growth or exit multiple, presented as a grid. Every DCF has one because the point estimate is false precision — the honest output is a range, and the grid shows how much of the answer is assumption rather than analysis.' },
@@ -8962,11 +8962,11 @@ ib: [
     f:'Compare the acquirer standalone EPS to combined pro forma EPS after the deal, including new interest, foregone interest on cash used, and new shares issued. Higher is accretive, lower is dilutive. The shortcut: accretive when the acquirer P/E exceeds the target effective P/E after the premium. Close by saying it is a screen, not a judgment on deal quality.' },
   { id:'ib66', d:'medium', q:'Walk me through gross, operating, and net margin, and tell me what each one is actually telling you about a business.',
     f:'Gross margin is pricing power and direct cost efficiency. Operating margin adds overhead and shows how well the whole operation converts revenue to profit. Net margin includes financing and tax, so it reflects choices unrelated to operations. Comparing the three across peers tells you where a company is winning or losing.' },
-  { id:'ib67', d:'hard', q:'Is a company with no debt being run well?',
+  { id:'ib67', d:'medium', q:'Is a company with no debt being run well?',
     f:'Not necessarily. Zero debt may mean a conservative balance sheet in a volatile business, which is prudent, or it may mean management is leaving cheap capital on the table and accepting a higher cost of capital than necessary. The answer depends on cash flow stability and reinvestment opportunities. Argue a position rather than sitting on the fence.' },
   { id:'ib68', d:'hard', q:'Walk me through the difference between maintenance capex and growth capex, and why that split matters for free cash flow.',
     f:'Maintenance capex keeps the existing asset base running at current capacity; growth capex expands it. The distinction matters because free cash flow available to owners should be measured after maintenance capex but before growth capex, since growth is discretionary. Companies rarely disclose the split, so it usually has to be estimated.' },
-  { id:'ib69', d:'hard', q:'Why do banks get valued differently from other companies?',
+  { id:'ib69', d:'medium', q:'Why do banks get valued differently from other companies?',
     f:'Debt is an operating input for a bank rather than financing, so enterprise value and EBITDA are meaningless. Instead you use price to book and price to tangible book, return on equity, and a dividend discount or excess returns model. Regulatory capital requirements also constrain growth in a way they do not for an industrial.' },
   { id:'ib70', d:'medium',
     q:'What is the M and A market doing right now, and what is driving it?',
@@ -9309,7 +9309,7 @@ ib: [
     q:'A stock trades at ${PX} and earns ${EPS} per share. What is its P/E, and what does that number actually tell you?',
     f:'P/E is price over earnings per share: {PX} over {EPS} is {PE}x. Two readings, and giving both is what separates this from a definition. Mechanically, investors are paying ${PE} for every dollar of annual earnings. Flipped over, it is an earnings yield of {YIELD}% — what you would earn if profits stayed flat forever and were all paid to you. The interpretation: a high P/E is a statement about expected growth, not about the company being overpriced. Compare it to peers and to its own history before calling it expensive.' },
 
-  { id:'ib112', d:'easy',
+  { id:'ib112', d:'medium',
     gen: function () {
       var REV = mockPick([500, 800, 1000]);
       var GM = mockPick([40, 50, 60]);
@@ -9382,7 +9382,7 @@ ib: [
     q:'A company has fixed costs of ${FC}, sells its product for ${PX}, and each unit costs ${VC} to make. How many units must it sell to break even?',
     f:'Find the contribution margin first — what each sale contributes toward covering fixed costs. That is price less variable cost: {PX} minus {VC} is ${CM} per unit. Then divide fixed costs by it: {FC} over {CM} is {UNITS} units. Say the intuition rather than just the number: every unit past {UNITS} drops ${CM} straight to operating profit, which is exactly why businesses with high fixed costs are so profitable once they clear the hurdle and so painful below it.' },
 
-  { id:'ib119', d:'easy',
+  { id:'ib119', d:'medium',
     gen: function () {
       var EPS = mockPick([2, 4, 5]);
       var PAY = mockPick([25, 40, 50]);
@@ -9596,35 +9596,80 @@ ib: [
   { id:'ib142', d:'medium', q:'What is the yield curve, and what does it mean when it inverts?',
     f:'The yield curve plots the interest rate on government bonds against how long until they mature. Normally it slopes upward — lending money for ten years is riskier and less flexible than for two, so you demand more. An inversion means short-term rates are higher than long-term ones, which is backwards. Explain what it implies rather than just naming it: investors are accepting a lower rate to lock money up for longer, which they only do if they expect rates to be much lower in future, and rates fall when the economy weakens. So an inverted curve is the bond market pricing in a slowdown. Add the two things that make this a real answer. It has preceded most recent US recessions, which is why people watch it, but the lag between inversion and downturn has been long and inconsistent, so it is a signal rather than a timer. And it directly squeezes banks, which borrow short and lend long, so their margin compresses when the curve inverts.' },
 
-  { id:'ib143', d:'medium', q:'Walk me through the difference between an operating lease and a finance lease, and why it matters for valuation.',
+  { id:'ib143', d:'hard', q:'Walk me through the difference between an operating lease and a finance lease, and why it matters for valuation.',
     f:'Both let a company use an asset without owning it, but they are treated differently. A finance lease (sometimes called a capital lease) transfers most of the risks and rewards of ownership, so the asset and a matching liability go on the balance sheet, and the expense is split into depreciation and interest, similar to owning the asset with debt. An operating lease is closer to a true rental — historically it stayed off the balance sheet entirely, though current accounting rules now require most leases to show up on the balance sheet as a right-of-use asset and a lease liability regardless of type, with the type still affecting how the expense is split on the income statement. The reason this matters for valuation: a company that leases heavily rather than owning its assets can look like it is carrying less debt than an otherwise identical competitor that bought the same assets with a loan, when economically the obligation is similar. — RECOMMENDATION: when comparing two companies, check how much each relies on leases, and be prepared to add lease liabilities back into a debt-like figure for enterprise value so the comparison is apples to apples, rather than accepting the balance sheet debt figure at face value.' },
 
-  { id:'ib144', d:'easy', q:'What is the difference between GAAP and IFRS, and does it actually matter for valuation?',
+  { id:'ib144', d:'hard', q:'What is the difference between GAAP and IFRS, and does it actually matter for valuation?',
     f:'GAAP is the accounting standard used in the United States; IFRS is used in most of the rest of the world. Both aim to produce the same underlying picture of a company\'s performance, but differ in specific rules — for example, IFRS does not permit LIFO inventory accounting, and historically treated leases somewhat differently than GAAP did, though the two have converged significantly on that point in recent years. For valuation, the differences rarely change the investment conclusion on their own, but they matter when comparing companies that report under different standards, since a metric like inventory value or a specific expense classification may not be directly comparable without adjustment. — RECOMMENDATION: when comparing a US company to an international peer, flag which standard each reports under and check for the handful of areas — inventory costing, lease treatment, non-recurring items — where the rules genuinely diverge, rather than assuming the reported numbers are automatically comparable line for line.' },
 
-  { id:'ib145', d:'medium', q:'Walk me through the difference between LIFO and FIFO inventory accounting, and what it does to a company\'s numbers when costs are rising.',
+  { id:'ib145', d:'hard', q:'Walk me through the difference between LIFO and FIFO inventory accounting, and what it does to a company\'s numbers when costs are rising.',
     f:'FIFO (first in, first out) assumes the oldest, typically cheaper inventory is sold first, so cost of goods sold reflects older, lower costs and the inventory left on the balance sheet reflects more recent, higher costs. LIFO (last in, first out) assumes the newest inventory is sold first, so cost of goods sold reflects current, higher costs and the balance sheet carries older, lower-cost inventory. When costs are rising, LIFO produces higher cost of goods sold and therefore lower reported profit and lower taxes than FIFO would for the identical physical inventory — which is exactly why some US companies choose it, despite the lower reported earnings, since the tax savings are real cash. IFRS does not permit LIFO at all, which is one of the more consequential differences between the two standards for comparing inventory-heavy companies internationally. — RECOMMENDATION: when comparing two similar companies with rising input costs, check which method each uses before comparing gross margin directly, since a LIFO company can show a structurally lower margin than an otherwise identical FIFO company for accounting reasons alone.' },
 
-  { id:'ib146', d:'medium', q:'What does it mean for an M and A deal to be structured "cash-free, debt-free," and why is it the standard way private deals get done?',
+  { id:'ib146', d:'hard', q:'What does it mean for an M and A deal to be structured "cash-free, debt-free," and why is it the standard way private deals get done?',
     f:'It means the buyer and seller agree on an enterprise value for the business, and then the seller keeps any cash sitting on the balance sheet at close and is responsible for paying off any existing debt before or at close — the buyer is effectively purchasing the operating business itself, independent of how it happened to be financed or how much cash it happened to be holding on closing day. This avoids a messy negotiation over exactly how much of the seller\'s cash the buyer is "entitled to" and removes the incentive for either side to game the balance sheet right before closing — the seller can\'t strip out working capital assets, and the buyer isn\'t stuck absorbing the seller\'s old debt at whatever terms it was issued on. — RECOMMENDATION: because the enterprise value is fixed but actual cash and debt on the closing date fluctuate, most agreements still include a normalized working capital target — a "peg" — with a true-up mechanism, so that a genuine change in operating working capital between signing and closing adjusts the final price paid, even though the headline valuation is quoted on a cash-free, debt-free basis.' },
 
   { id:'ib147', d:'hard', q:'What is a contribution analysis in an M and A deal, and what is it actually used to check?',
     f:'A contribution analysis compares what percentage of the combined company\'s revenue, EBITDA, or net income each side brings to the table against what percentage of ownership in the combined company each side ends up with after the deal — most relevant in a stock-for-stock merger of relative equals, where ownership is split based on an agreed exchange ratio rather than a cash payment. If one company contributes 60% of the combined EBITDA but only receives 45% of the combined ownership, that is a signal — either the market has priced in a valuation premium the contribution numbers don\'t reflect (perhaps for growth, quality, or synergy potential), or that side is arguably being under-compensated relative to what it\'s bringing into the deal. — RECOMMENDATION: use contribution analysis as a sanity check on the ownership split in any merger of equals, not as the deciding factor on its own, since a legitimate premium for growth rate, margin quality, or strategic value can fully explain a mismatch between contribution and ownership — but an unexplained, large mismatch is exactly the kind of thing that should prompt more questions before signing off on the exchange ratio.' },
 
-  { id:'ib148', d:'medium', q:'What is PIK interest, and why would a company or a lender ever prefer it to normal cash interest?',
+  { id:'ib148', d:'hard', q:'What is PIK interest, and why would a company or a lender ever prefer it to normal cash interest?',
     f:'PIK stands for payment-in-kind — instead of the borrower paying interest in cash each period, the interest accrues and gets added to the principal balance of the loan, to be paid (with interest on the now-larger balance) later, typically at maturity or refinancing. For a borrower, PIK debt is valuable specifically when cash is tight — a highly leveraged company, or one going through a period of heavy investment, can take on debt without straining current cash flow, at the cost of a larger principal balance to repay down the road, and PIK debt usually carries a higher interest rate than cash-pay debt to compensate the lender for that deferral and the added risk. For a lender, PIK is generally lower down the risk spectrum than a bank happily wants, and is more common among mezzanine or subordinated lenders who are already pricing in more risk and want the higher yield. — RECOMMENDATION: whenever a capital structure includes PIK debt, check whether the principal balance is compounding fast enough to become a problem by the time the company needs to refinance or exit, since PIK debt that looked manageable at issuance can balloon into a much larger obligation than the cash-flow picture at the time suggested.' },
 
-  { id:'ib149', d:'medium', q:'What is an earnout in an M and A deal, and when do buyers and sellers actually use one?',
+  { id:'ib149', d:'hard', q:'What is an earnout in an M and A deal, and when do buyers and sellers actually use one?',
     f:'An earnout is a piece of the purchase price that isn\'t paid at closing — instead, it\'s paid later, contingent on the acquired business hitting agreed performance targets over some period after the deal closes, commonly tied to revenue or EBITDA milestones. It shows up most often when the buyer and seller genuinely disagree about what the business is worth, typically because the seller is more optimistic about near-term growth than the buyer is willing to underwrite and pay for upfront — the earnout lets the deal happen anyway by bridging the valuation gap: the seller gets paid the higher price if their optimism turns out to be justified, and the buyer isn\'t stuck overpaying if it doesn\'t. — RECOMMENDATION: the real friction in any earnout isn\'t agreeing to use one, it\'s defining the metric and who controls the business during the earnout period, since a seller who no longer controls the company they\'re being measured against has real reason to worry the buyer could under-invest in the business during the earnout window to avoid paying out — which is why well-drafted earnouts include specific operating covenants protecting the seller\'s ability to actually hit the target.' },
 
   { id:'ib150', d:'hard', q:'A company has convertible bonds outstanding. Walk me through how those affect diluted share count, and why the effect isn\'t simply "add the shares."',
     f:'A convertible bond is debt that the holder can choose to convert into a fixed number of shares instead of being repaid in cash, at a conversion price set when the bond was issued. If the current stock price is below that conversion price, the bonds are "out of the money" and holders would rather be repaid in cash, so they add no dilution to the share count. Once the stock price rises above the conversion price, the bonds become dilutive, and the standard approach (the if-converted method) adds the full as-converted share count to diluted shares outstanding — but also adds back the after-tax interest expense the company would no longer pay if the bonds converted, since removing debt from the capital structure removes the drag from paying interest on it. — RECOMMENDATION: the mistake to avoid is treating this as free dilution — check the current stock price against the conversion price first, since bonds trading well out of the money genuinely add nothing to diluted shares today, even though they represent real potential dilution if the stock keeps climbing.' },
 
-  { id:'ib151', d:'medium', q:'What is a fairness opinion, and why does a target company\'s board actually need one before agreeing to a deal?',
+  { id:'ib151', d:'hard', q:'What is a fairness opinion, and why does a target company\'s board actually need one before agreeing to a deal?',
     f:'A fairness opinion is a formal analysis, usually prepared by an investment bank, stating whether the price and terms offered in a deal are fair to shareholders from a financial point of view. The board itself has a legal duty to act in shareholders\' best interest, and directors are rarely valuation experts themselves, so an independent opinion gives them a documented, defensible basis for the decision they\'re making on shareholders\' behalf. It matters most as legal protection — if shareholders later sue claiming the board sold the company too cheaply, a well-supported fairness opinion is a central piece of evidence that the board acted reasonably and did its diligence, rather than rubber-stamping whatever price was offered. — RECOMMENDATION: be honest about the tension built into the process — the bank issuing the opinion is very often also advising on the deal and getting paid a fee contingent on it closing, which creates a real incentive to find the price fair. That conflict doesn\'t make fairness opinions worthless, since reputational risk and the threat of litigation keep the analysis honest in practice, but it\'s exactly why a board should still be probing the assumptions behind the opinion rather than treating it as an automatic rubber stamp.' },
 
-  { id:'ib152', d:'medium', q:'What is the difference between a tender offer and a traditional merger vote as a way to actually acquire a public company?',
-    f:'In a traditional merger, the target\'s board negotiates and approves the deal first, then it goes to a shareholder vote at a meeting, and the deal only closes once a majority (sometimes a supermajority) of shares vote in favor — a process that typically takes months given the proxy statement, SEC review, and meeting scheduling involved. A tender offer skips negotiating with the board entirely: the acquirer goes directly to shareholders and offers to buy their shares at a stated price, and if enough shareholders tender their shares (often a majority or more, depending on the target\'s bylaws), the acquirer gains control without ever needing board approval or a formal vote. Tender offers are the classic tool for a hostile approach — going around a board that has rejected the deal or refused to negotiate — and they can also close faster than a negotiated merger when the target is willing, since there\'s no lengthy proxy solicitation process. — RECOMMENDATION: expect a target board facing an unwanted tender offer to reach for defenses like a poison pill, which dilutes any hostile acquirer that crosses an ownership threshold, precisely because the tender offer route was designed to let an acquirer bypass the board in the first place.' }
+  { id:'ib152', d:'hard', q:'What is the difference between a tender offer and a traditional merger vote as a way to actually acquire a public company?',
+    f:'In a traditional merger, the target\'s board negotiates and approves the deal first, then it goes to a shareholder vote at a meeting, and the deal only closes once a majority (sometimes a supermajority) of shares vote in favor — a process that typically takes months given the proxy statement, SEC review, and meeting scheduling involved. A tender offer skips negotiating with the board entirely: the acquirer goes directly to shareholders and offers to buy their shares at a stated price, and if enough shareholders tender their shares (often a majority or more, depending on the target\'s bylaws), the acquirer gains control without ever needing board approval or a formal vote. Tender offers are the classic tool for a hostile approach — going around a board that has rejected the deal or refused to negotiate — and they can also close faster than a negotiated merger when the target is willing, since there\'s no lengthy proxy solicitation process. — RECOMMENDATION: expect a target board facing an unwanted tender offer to reach for defenses like a poison pill, which dilutes any hostile acquirer that crosses an ownership threshold, precisely because the tender offer route was designed to let an acquirer bypass the board in the first place.' },
+
+  /* ── EASY: true fundamentals, no jargon assumed ──────────────────── */
+
+  { id:'ib153', d:'easy', q:'What is a stock exchange, and what does it actually do?',
+    f:'A marketplace where shares of companies are bought and sold. It does not set the price itself — it just matches buyers and sellers and makes sure the trade is recorded and settled properly. The price you see is simply whatever the most recent buyer and seller agreed to. Add the point that shows real understanding: the exchange existing is what lets an owner sell their stake to a stranger in seconds, which is what makes owning stock in a company practical in the first place.' },
+
+  { id:'ib154', d:'easy',
+    gen: function () {
+      var SH = mockPick([10, 50, 100, 200]);
+      var PX = mockPick([5, 20, 50, 80]);
+      return { SH: SH, PX: PX, MC: SH * PX };
+    },
+    q:'A company has {SH} million shares outstanding and trades at ${PX} per share. What is its market capitalization?',
+    f:'Shares outstanding times price per share: {SH} million times ${PX} is ${MC} million. That number is what the market currently thinks the whole company is worth to its owners — not what it would cost to buy the company outright, since a buyer usually has to pay a premium over the current price to convince shareholders to sell.' },
+
+  { id:'ib155', d:'easy', q:'If a company\'s stock price goes up today, does the company actually receive more cash?',
+    f:'No, and that surprises people the first time they think about it. Once shares are issued and trading on the exchange, buyers and sellers are trading with each other, not with the company. The company only receives cash at the moment it originally sells shares. A rising stock price benefits existing shareholders and makes it cheaper for the company to raise money later by issuing new shares, but it does not put a single dollar into the company bank account today.' },
+
+  { id:'ib156', d:'easy', q:'What is the difference between a public company and a private company?',
+    f:'A public company has sold shares on a stock exchange that anyone can buy, and in exchange it has to regularly disclose its financials to the public. A private company is owned by a small group — founders, employees, maybe some outside investors — and its shares are not available to the general public and its financials stay confidential. Add the tradeoff: going public brings access to a lot of capital and an easy way for early owners to cash out, at the cost of constant disclosure and pressure from public shareholders.' },
+
+  { id:'ib157', d:'easy', q:'What is a bond, in plain terms?',
+    f:'A loan, just packaged so it can be bought and sold. The issuer — a company or a government — borrows money from whoever buys the bond, promises to pay interest on a schedule, and repays the original amount at a set date in the future. The buyer is the lender. Unlike a private loan, a bond can be resold to someone else before it matures, which is what makes it a security rather than just an IOU.' },
+
+  { id:'ib158', d:'easy', q:'What is compound interest, and why does it matter so much over time?',
+    f:'Interest that gets added to your balance and then itself starts earning interest, rather than being paid out and set aside. The effect is small in year one and enormous by year twenty, because you are earning a return on your past returns, not just your original amount. It is the same math that makes debt dangerous when it compounds against you and makes long-term investing powerful when it compounds for you — time matters as much as the rate.' },
+
+  { id:'ib159', d:'easy', q:'What is an IPO, and what actually happens when a company does one?',
+    f:'An initial public offering — the first time a company sells shares to the public and lists on a stock exchange. Practically, the company works with banks to decide how many shares to sell and at what price, sells a batch of new shares to big investors the night before, and then trading opens to everyone the next morning. The company raises cash from that initial sale; every trade after that is just investors trading with each other, and the company gets nothing further from a rising share price.' },
+
+  { id:'ib160', d:'easy', q:'What does it mean to \"diversify\" a portfolio, and why do investors do it?',
+    f:'Spreading money across many different investments instead of putting it all into one. The point is not to boost returns — it is to reduce the damage if any single bet goes badly. If ten unrelated stocks are held instead of one, a single company collapsing barely dents the portfolio instead of wiping it out. The tradeoff worth naming: diversifying also means you will never fully capture the huge win from one spectacular pick, since it is diluted across everything else you own.' },
+
+  { id:'ib161', d:'easy',
+    gen: function () {
+      var REV = mockPick([100, 200, 500, 1000]);
+      var COSTS = REV * mockPick([60, 70, 80]) / 100;
+      return { REV: REV, COSTS: COSTS, PROFIT: REV - COSTS };
+    },
+    q:'A company brings in ${REV} of revenue and spends ${COSTS} running the business. What is its profit?',
+    f:'Profit is simply what came in minus what went out: {REV} minus {COSTS} is ${PROFIT}. That is the whole idea sitting underneath every income statement, however complicated the real version gets — revenue at the top, every cost subtracted in some order, profit at the bottom.' },
+
+  { id:'ib162', d:'easy', q:'What actually makes a stock price go up or down day to day?',
+    f:'Buyers and sellers disagreeing on what the company is worth, and the price is wherever they currently agree to trade. New information moves that agreement: an earnings report, a product announcement, an economic data point, even a rumor. Underneath all of it is one idea worth saying explicitly — a stock price reflects what investors expect the company to earn in the future, not what it earned last quarter, which is why a company can report a great quarter and the stock can still fall if expectations were even higher.' },
+
 ],
 
 /* ── CONSULTING ────────────────────────────────────────────────────── */
@@ -10258,17 +10303,17 @@ hf: [
     f:'Pick something real. Cover how the businesses make money, what drives margins, who has power in the chain, and what is changing. Depth in one sector beats shallow coverage of many.' },
   { id:'hf28', d:'hard', q:'What would you do with a hundred million dollars today?',
     f:'Give an actual allocation with reasoning: concentration level, asset mix, cash held for optionality, and what you are avoiding. Being specific and defending it matters more than the allocation itself.' },
-  { id:'hf29', d:'medium', q:'What role does cash play in a portfolio?',
+  { id:'hf29', d:'easy', q:'What role does cash play in a portfolio?',
     f:'Optionality and the ability to act when others must sell. It costs you return in rising markets. Argue a position: whether cash is a strategic holding or a residual of not finding ideas.' },
   { id:'hf30', d:'medium', q:'How do you handle a thesis that is taking much longer than expected?',
     f:'Distinguish delayed from wrong. Re-check whether the mechanism you predicted is progressing even if price is not. Set a time limit in advance so the position does not quietly become permanent.' },
-  { id:'hf31', d:'medium', q:'What financial metric do you trust least?',
+  { id:'hf31', d:'hard', q:'What financial metric do you trust least?',
     f:'Adjusted EBITDA, non-GAAP earnings, or anything with management discretion in the adjustment. Explain the specific manipulation it permits and what you look at instead.' },
   { id:'hf32', d:'easy', q:'Why do you want to work at a hedge fund rather than in banking?',
     f:'You want to be judged on being right rather than on execution. You want ownership of a view. Be honest about the tradeoffs you are accepting: narrower training, less structure, real accountability for losses.' },
   { id:'hf33', d:'medium', q:'Give me a company you have followed for a long time — what have you learned just from watching it?',
     f:'Demonstrates sustained attention rather than a rehearsed pitch. Talk about how your view evolved and what surprised you. Being wrong about it at some point makes the answer stronger.' },
-  { id:'hf34', d:'medium', q:'How do you think about the difference between a good company and a good investment?',
+  { id:'hf34', d:'easy', q:'How do you think about the difference between a good company and a good investment?',
     f:'A good company at the wrong price is a bad investment; a mediocre company at a sufficiently low price can be a good one. Price is the bridge between the two. Give an example of each.' },
   { id:'hf35', d:'hard', q:'Walk me through what is on your watchlist right now, and tell me why it is not a position yet.',
     f:'Real names with a real reason for waiting: price, a pending catalyst, an unresolved question in the diligence. Shows a process rather than a portfolio, and that you can hold a view without acting on it.' },
@@ -10279,7 +10324,7 @@ hf: [
   { id:'hf37', d:'easy', q:'What does it mean to short a stock?',
     f:'You borrow shares you do not own, sell them at today price, and hope to buy them back cheaper later to return them. Your profit is the difference. Then say the three things that make shorting genuinely harder than being long, because that is what the question is testing. The loss is unlimited, since a stock can rise without bound while it can only fall to zero. Time works against you, because you pay to borrow the shares and the market drifts up over long periods. And you can be forced out at the worst moment if the lender recalls the shares or the position moves against you. Being right eventually is not enough if you are carried out first.' },
 
-  { id:'hf38', d:'easy',
+  { id:'hf38', d:'medium',
     gen: function () {
       var CAP = mockPick([100, 200, 500]);
       var LONG = mockPick([120, 130, 150]);
@@ -10348,13 +10393,13 @@ hf: [
   { id:'hf48', d:'easy', q:'What is AUM, and why does it matter to a fund?',
     f:'Assets under management is the total value of money the fund manages. It matters for three reasons worth naming. It determines revenue, since the management fee is a percentage of it. It signals credibility, because institutions rarely allocate to very small funds. And critically, it constrains strategy: a fund managing twenty billion cannot take a meaningful position in a small company without moving the price or owning an unsellable stake. That is the insight that shows real understanding — size is not purely an advantage. Many strategies that work beautifully at a hundred million stop working at ten billion, which is why some successful funds deliberately cap the money they accept.' },
 
-  { id:'hf49', d:'easy', q:'What is the difference between alpha and beta?',
+  { id:'hf49', d:'medium', q:'What is the difference between alpha and beta?',
     f:'Beta is the return you get from simply being exposed to the market — if stocks rise 10% and you own stocks, that is beta, and nobody should pay a fee for it since an index fund delivers it cheaply. Alpha is return above what the market exposure explains, which is the part attributable to skill in picking or timing. Say why the distinction is the whole argument for active management: a fund that returned 15% in a year the market returned 14% has produced almost no alpha, however good the headline sounds. Then add the honest complication — separating the two requires assumptions about how much market exposure the fund actually had, and managers have an incentive to present beta as alpha.' },
 
   { id:'hf50', d:'easy', q:'What is a drawdown?',
     f:'A drawdown is the decline from a peak to a trough — how much the fund fell from its highest point before recovering. Maximum drawdown is the worst such fall over a period. It matters more than volatility to most investors because it describes the actual experience of losing money, and because recovery is asymmetric: a 50% drawdown requires a 100% gain to get back to even. Add the practical dimension, which is about behavior rather than arithmetic. Investors redeem during drawdowns, often at the worst moment, which forces the manager to sell into weakness. So a large drawdown can permanently damage a fund even if the positions would eventually have worked.' },
 
-  { id:'hf51', d:'easy', q:'What are the main types of hedge fund strategies?',
+  { id:'hf51', d:'medium', q:'What are the main types of hedge fund strategies?',
     f:'Give four or five with a sentence each. Long-short equity buys undervalued companies and shorts overvalued ones, which is the most common and the one most students interview for. Global macro bets on currencies, rates and commodities based on a view of economies rather than individual companies. Event-driven trades around specific situations such as mergers, bankruptcies or spin-offs, where the outcome depends on the event rather than the market. Quantitative uses systematic models and often very high trading frequency. Credit focuses on debt rather than equity, including distressed. Then say the organizing point: the strategies differ in where the return is supposed to come from, and a candidate should know which one the fund they are interviewing with actually runs.' },
 
   { id:'hf52', d:'easy', q:'What is the difference between a hedge fund and a private equity firm?',
@@ -10376,21 +10421,37 @@ hf: [
     q:'A fund returns {GROSS}% gross this year and charges 2 and 20. Roughly what does the investor actually receive?',
     f:'Take the management fee first: {GROSS}% less the {MGMT}% management fee leaves {AFTER}%. The performance fee is {PERF}% of that, or {FEE}%, leaving the investor with roughly {NET}%. Total fees were about {TOTALFEE}% of assets. Say what that reveals: on a {GROSS}% gross return the manager took {TOTALFEE} points, so the investor captured {NET}. That is the arithmetic behind the whole active-versus-passive debate, and it is why funds are judged on net returns. Note the simplification too — a real calculation would account for the high water mark and any hurdle rate, which can mean no performance fee is charged at all.' },
 
-  { id:'hf56', d:'medium', q:'Two funds return the same 15% last year. Why might one have taken on much more risk to get there, and how would you actually measure that?',
-    f:'Raw return alone says nothing about how bumpy the ride was to get there, and a fund that earned 15% by making a few concentrated, volatile bets got there very differently than one that earned it steadily. The Sharpe ratio is the standard way to adjust for that — it takes the fund\'s return above the risk-free rate and divides by the volatility (standard deviation) of those returns, so two funds with identical returns but different volatility end up with different Sharpe ratios, and the steadier one scores higher. A high absolute return with a mediocre Sharpe ratio is a flag that the manager may have gotten lucky on a few big, volatile positions rather than generating returns in a repeatable way. — RECOMMENDATION: use Sharpe ratio as one input, not the final word — it penalizes upside volatility the same as downside volatility, which can unfairly ding a manager whose big wins happened to be lumpy, so also look at maximum drawdown and how the fund performed specifically in down markets, since a fund can have a reasonable Sharpe ratio overall while still being exposed to a catastrophic single-quarter loss that the ratio smooths over.' }
+  { id:'hf56', d:'hard', q:'Two funds return the same 15% last year. Why might one have taken on much more risk to get there, and how would you actually measure that?',
+    f:'Raw return alone says nothing about how bumpy the ride was to get there, and a fund that earned 15% by making a few concentrated, volatile bets got there very differently than one that earned it steadily. The Sharpe ratio is the standard way to adjust for that — it takes the fund\'s return above the risk-free rate and divides by the volatility (standard deviation) of those returns, so two funds with identical returns but different volatility end up with different Sharpe ratios, and the steadier one scores higher. A high absolute return with a mediocre Sharpe ratio is a flag that the manager may have gotten lucky on a few big, volatile positions rather than generating returns in a repeatable way. — RECOMMENDATION: use Sharpe ratio as one input, not the final word — it penalizes upside volatility the same as downside volatility, which can unfairly ding a manager whose big wins happened to be lumpy, so also look at maximum drawdown and how the fund performed specifically in down markets, since a fund can have a reasonable Sharpe ratio overall while still being exposed to a catastrophic single-quarter loss that the ratio smooths over.' },
+
+  { id:'hf55', d:'easy', q:'In plain terms, what does it mean to "buy low and sell high," and why is it harder than it sounds?',
+    f:'Buy something for less than it is worth and sell it once the price reflects that. It is harder than it sounds for one honest reason worth naming: you never know for certain what something is actually worth, only your best estimate — so "low" is a judgment call, not a fact, and you can be confidently wrong. It is also emotionally hard, because the moment a stock looks cheapest is usually when the news around it is worst and everyone else is selling.' },
+
+  { id:'hf57', d:'easy', q:'What does it mean when someone says a fund "beat the market"?',
+    f:'Its return over some period was higher than a benchmark index, like the S&P 500, that represents just owning the overall market. Add the two honest caveats that show real understanding. First, beating the market for one year proves very little — a string of years, ideally including a down year, is what actually separates skill from luck. Second, beating the market before fees is not the same as beating it after fees, and a fund charging a performance cut can underperform in the number that actually lands in an investor\'s account.' },
+
+  { id:'hf58', d:'easy', q:'What does it mean to "go long" a stock, in plain terms?',
+    f:'Simply buying it because you expect the price to rise, and profiting from the difference if you are right. It is the ordinary, default way almost everyone invests — the opposite of shorting, where you profit when a price falls. When people say a fund is "long" a name, they just mean it owns the stock outright, the same way a regular investor would in a brokerage account.' },
+
+  { id:'hf59', d:'easy', q:'What does "volatility" mean, in simple terms?',
+    f:'How much and how often a price moves around, in either direction. A stock that bounces between plus and minus five percent every week is volatile; one that barely moves for months is not. Volatility is not the same thing as risk of loss — a volatile stock can end up fine and a quiet one can go to zero — but it is the standard shorthand for how bumpy the ride is likely to be along the way, and it is why two investments can have the exact same expected return and still feel completely different to hold.' },
+
+  { id:'hf60', d:'medium', q:'You run a book of longs and shorts that all look uncorrelated on paper. Why might they all move together anyway in a real sell-off?',
+    f:'Because correlations are not fixed — they are estimated from normal, calm markets, and in a genuine panic, normal relationships break down and nearly everything trades on one factor: fear. Investors sell whatever is liquid enough to sell, regardless of the individual story behind each name, so uncorrelated-looking positions can suddenly move in lockstep. This is exactly what catches funds off guard in a crisis, and it is why real risk management looks at how a book behaves under stress scenarios, not just at the historical correlation matrix from a quiet period.' },
+
 ],
 
 /* ── PRIVATE EQUITY ────────────────────────────────────────────────── */
 pe: [
-  { id:'pe1', d:'easy', q:'Walk me through an LBO at a basic level.',
+  { id:'pe1', d:'medium', q:'Walk me through an LBO at a basic level.',
     f:'Sources and uses: sponsor equity plus layers of debt fund the purchase price and fees. Project the operating model, use free cash flow to amortize debt, and exit in about five years at an assumed multiple. Returns decompose into debt paydown, EBITDA growth and multiple change. Report IRR and money multiple.' },
   { id:'pe2', d:'medium', q:'What makes a good LBO candidate?',
     f:'Predictable cash flow above all. Low capital intensity, low existing leverage, a defensible position, a fragmented market to consolidate, non-core assets to divest, and a credible exit. Rank them rather than listing them.' },
-  { id:'pe3', d:'easy', q:'What are the three levers of LBO returns?',
+  { id:'pe3', d:'medium', q:'What are the three levers of LBO returns?',
     f:'Debt paydown, EBITDA growth, multiple expansion. Argue EBITDA growth is the most durable and the only one fully within the sponsor control. Underwriting to multiple expansion is underwriting to luck.' },
   { id:'pe4', d:'medium', q:'How would you grow EBITDA at a portfolio company?',
     f:'Revenue: pricing, salesforce productivity, new channels, add-on acquisitions. Cost: procurement, footprint rationalization, overhead, automation. Mix: shift toward higher-margin lines. Pick two you would do first and say why they come first.' },
-  { id:'pe5', d:'easy', q:'What IRR do sponsors typically target and why?',
+  { id:'pe5', d:'medium', q:'What IRR do sponsors typically target and why?',
     f:'Roughly 20% to 25% gross, reflecting the illiquidity, leverage risk and fee structure limited partners are compensating for. Note the relationship to money multiple and hold period: about a 2.5x over five years lands near that IRR.' },
   { id:'pe6', d:'medium', q:'Walk me through the difference between IRR and money multiple, and tell me when the two can actually disagree.',
     f:'IRR is time-weighted, multiple is not. A fast small gain can post a great IRR and a poor multiple; a long hold can do the reverse. Sponsors care about both, and early distributions flatter IRR specifically.' },
@@ -10400,7 +10461,7 @@ pe: [
     f:'Enough that returns work, not so much that a downturn breaks covenants. Depends on cash flow stability and cyclicality — stable businesses support more. Talk in turns of EBITDA and mention what happens in a stress case.' },
   { id:'pe9', d:'hard', q:'Walk me through the diligence you would run.',
     f:'Commercial: market, competition, customer concentration and retention. Financial: quality of earnings, working capital, normalization of EBITDA. Operational: management, systems, capex needs. Legal and regulatory. Name what most often kills a deal — quality of earnings surprises.' },
-  { id:'pe12', d:'easy', q:'How do sponsors exit?',
+  { id:'pe12', d:'medium', q:'How do sponsors exit?',
     f:'Strategic sale, secondary sale to another sponsor, IPO, or a dividend recapitalization as a partial exit. Each has different pricing and certainty. Sponsors underwrite an exit path at entry; note which is usually most valuable and why.' },
   { id:'pe14', d:'medium', q:'Walk me through what a rollup is and when it actually works.',
     f:'Acquiring many small players in a fragmented market to capture scale and multiple arbitrage — small companies trade cheaper than the combined platform. Works when integration is genuinely achievable. Fails when the acquirer buys revenue without building an operating platform.' },
@@ -10408,13 +10469,13 @@ pe: [
     f:'Price gets blamed; diligence findings and integration risk do more killing. Quality of earnings issues, customer concentration, management gaps, or an unresolvable liability. Give an example of each type.' },
   { id:'pe16', d:'easy', q:'How is PE different from banking day to day?',
     f:'Fewer processes, more ownership per deal, and a decision at the end rather than an execution. You live with the outcome. Say what you are giving up — deal volume and training structure — so the answer sounds considered rather than aspirational.' },
-  { id:'pe17', d:'hard', q:'What would you look at first in a CIM?',
+  { id:'pe17', d:'medium', q:'What would you look at first in a CIM?',
     f:'Historical financials and their trend, customer concentration, the growth story and whether it is credible, and management adjustments to EBITDA. Skepticism about the adjustments is the marker of someone who has done this.' },
   { id:'pe18', d:'hard', q:'A portfolio company is missing its plan. What do you do?',
     f:'Diagnose whether it is market, execution, or a bad plan. Get real visibility into weekly operating metrics, not just monthly financials. Decide whether management is the problem, then act quickly — sponsors regret slow management changes more than fast ones.' },
   { id:'pe19', d:'medium', q:'How do you think about entry multiple discipline?',
     f:'Paying up is only justified when the growth or margin plan genuinely supports it, because entry multiple sets the bar for exit. Overpaying transfers all return responsibility to operational improvement, which is the hardest lever.' },
-  { id:'pe21', d:'medium', q:'Walk me through what a management rollover is and why it actually matters to a sponsor.',
+  { id:'pe21', d:'hard', q:'Walk me through what a management rollover is and why it actually matters to a sponsor.',
     f:'Management reinvests a portion of their proceeds into the new equity, aligning them with the sponsor. It signals their own confidence. A management team that wants a full cash exit is telling you something.' },
   { id:'pe22', d:'hard', q:'Would you rather buy a good business at a fair price or a fair business at a good price?',
     f:'In PE the answer usually leans toward the good business, because you hold for years and quality compounds while cheap can stay broken. But argue it, and note where the cheap fair business wins: a clear operational fix and a short path to exit.' },
@@ -10424,19 +10485,15 @@ pe: [
     f:'Buying smaller companies onto a platform to grow EBITDA and blend down the effective purchase multiple. Works when integration and systems are real. Discuss the risk of buying complexity you cannot digest.' },
   { id:'pe25', d:'hard', q:'Talk me through a deal in the news and whether you would have done it.',
     f:'Parties, size, structure and rationale. Then a view: was the price defensible, is the leverage sustainable, is the value creation plan credible. Say what you would need to believe to underwrite it. Have one ready.' },
-  { id:'pe26', d:'hard', q:'What sectors are attractive for buyouts right now, and why?',
-    f:'Pick two and defend them on fundamentals — recurring revenue, fragmentation, non-cyclicality, or a structural tailwind. Then name what is unattractive and why, which is the harder half.' },
-  { id:'pe28', d:'medium', q:'Walk me through the J-curve and why it explains early fund returns.',
+    { id:'pe28', d:'medium', q:'Walk me through the J-curve and why it explains early fund returns.',
     f:'Fund returns dip early because of fees and costs before investments mature, then rise as exits come. It explains why judging a young fund on early marks is misleading.' },
   { id:'pe29', d:'hard', q:'How would you underwrite a business in a cyclical industry?',
     f:'Normalize earnings across the cycle, stress test at a trough, size leverage to survive that trough rather than the base case, and be explicit about where in the cycle you are entering. Note that entering at the peak with peak multiples is the classic error.' },
   { id:'pe30', d:'medium', q:'Walk me through the difference between growth equity and buyout.',
     f:'Growth equity takes minority stakes in growing companies with little or no leverage, betting on expansion. Buyout takes control with leverage and drives returns through both operations and structure. Different risk, different control, different skill.' },
-  { id:'pe31', d:'hard', q:'How do you get comfortable with an exit assumption five years out?',
-    f:'Anchor to long-run trading ranges rather than today multiple, assume exit at or below entry as a discipline, and identify who the natural buyers would be. If the only exit is a richer market, the underwriting is weak.' },
-  { id:'pe32', d:'medium', q:'What working capital issues would you look for in diligence?',
+    { id:'pe32', d:'medium', q:'What working capital issues would you look for in diligence?',
     f:'Seasonality and the peak funding need, receivable aging and collection quality, inventory obsolescence, and whether the seller has stretched payables to flatter cash before sale. That last one is common and specific.' },
-  { id:'pe33', d:'hard', q:'When would you walk away from a deal you have already spent months on?',
+  { id:'pe33', d:'medium', q:'When would you walk away from a deal you have already spent months on?',
     f:'When diligence invalidates the thesis, when the price required exceeds what the model supports, or when management proves unreliable. Sunk cost is the trap — say plainly that months spent is not a reason to proceed.' },
   { id:'pe34', d:'easy', q:'Why private equity and why now, for you?',
     f:'What you want to learn, what you have done that points here, and what you find interesting about ownership rather than advising. Specific and personal beats polished and generic.' },
@@ -10509,9 +10566,7 @@ pe: [
   { id:'pe44', d:'easy', q:'What is dry powder, and why does it matter?',
     f:'Dry powder is committed capital a fund has not yet invested — money the LPs have promised but the GP has not called down and deployed. It matters for two reasons worth giving. At the industry level, large amounts of dry powder mean many firms chasing the same deals, which bids up entry multiples and makes it harder to underwrite good returns. At the fund level, it creates pressure: a GP has a limited investment period, typically about five years, and capital left undeployed at the end must be returned, which is bad for fees and for the firm track record. Say the consequence plainly — that pressure to deploy is one of the honest explanations for why firms sometimes pay up near the top of a cycle.' },
 
-  { id:'pe45', d:'easy', q:'How long does a private equity fund actually last, and what happens over its life?',
-    f:'Roughly ten years, often with extension options. Walk the phases. First the raise, where the GP secures commitments from LPs. Then the investment period, usually about five years, during which capital is called down and companies are acquired. Then the holding and value creation period, overlapping with the first, where the firm runs and improves the portfolio. Then harvesting, where companies are sold and proceeds returned. Add the practical consequences: because the fund has a finite life, exit timing is partly driven by the clock rather than purely by what is best for each business, and firms raise a new fund every few years so they are usually investing one fund while harvesting the last. The vintage year — when the fund started deploying — matters enormously, since a fund that bought in at the top of a cycle faces a very different outcome than one that bought after a correction.' },
-
+  
   { id:'pe46', d:'medium',
     gen: function () {
       var EBITDA = mockPick([40, 60, 100]);
@@ -10579,11 +10634,44 @@ pe: [
   { id:'pe53', d:'easy', q:'What actually happens to a company after a private equity firm buys it?',
     f:'Less than people imagine on day one, and more than they imagine over five years. Immediately, the balance sheet changes — the company now carries significant debt used to fund the purchase, so a meaningful share of cash flow goes to interest and repayment. Governance changes: the sponsor controls the board and sets targets, and reporting gets much more rigorous. Then over the hold period the work begins — often new management or new finance leadership, sharper pricing, cost discipline, systems investment, and frequently acquisitions of smaller competitors. Address the reputation honestly rather than dodging it: PE is associated with layoffs and cost cutting, and that happens, but the more common playbook is growth, because a sponsor makes far more money selling a bigger business than a leaner one. The pressure it creates is real, though — debt does not forgive a bad year.' },
 
-  { id:'pe54', d:'medium', q:'What is a dividend recapitalization, and why would a sponsor do one partway through a hold period instead of just waiting to exit?',
+  { id:'pe54', d:'hard', q:'What is a dividend recapitalization, and why would a sponsor do one partway through a hold period instead of just waiting to exit?',
     f:'A dividend recap is when a portfolio company raises new debt and uses the proceeds to pay a special dividend out to the sponsor, typically well before the company is actually sold. It lets the sponsor return cash to its own investors and lock in part of its return early, reducing the amount of capital still at risk in the deal, without giving up ownership or control of the company. The trade-off is that it adds leverage back onto a company that has likely already paid down some of its original acquisition debt, which increases the interest burden and financial risk the business carries going forward — effectively resetting some of the deleveraging progress that had already built value. — RECOMMENDATION: a dividend recap makes sense when the company has genuinely outperformed and can comfortably support more debt at a reasonable rate without threatening its ability to keep investing or weather a downturn; it\'s a warning sign, rather than a value-creation move, when it\'s used mainly to generate an early return on a deal that isn\'t performing well enough to be confident about the eventual exit.' },
 
   { id:'pe55', d:'hard', q:'A private equity fund just signed a purchase agreement to acquire a company. What actually protects the buyer between signing and closing, and after closing?',
-    f:'Several mechanisms work together, each covering a different kind of risk. A working capital peg, agreed at signing, sets a target level of normalized working capital, with a true-up at closing if the actual figure comes in higher or lower — protecting the buyer from a seller stripping cash-like assets out of the business right before the deal closes. Representations and warranties are the seller\'s contractual statements about the state of the business — that the financials are accurate, there\'s no undisclosed litigation, contracts are in good standing — and if any of those turn out to be false, the buyer has a claim for damages. An escrow — a portion of the purchase price held back in a third-party account for a period after closing — gives the buyer an actual pool of money to draw from if a warranty breach or other claim surfaces, rather than having to chase the seller for cash after the fact. Indemnification provisions spell out exactly how big a claim has to be before it counts, how long the buyer has to bring one, and any caps on total seller liability. — RECOMMENDATION: none of these mechanisms fully substitutes for real diligence before signing — they exist to handle problems that genuinely couldn\'t have been caught, not as a safety net for skipping the work upfront, since a buyer who under-diligences and leans on indemnification afterward often finds the actual recovery process slower and less complete than the number in the contract implies.' }
+    f:'Several mechanisms work together, each covering a different kind of risk. A working capital peg, agreed at signing, sets a target level of normalized working capital, with a true-up at closing if the actual figure comes in higher or lower — protecting the buyer from a seller stripping cash-like assets out of the business right before the deal closes. Representations and warranties are the seller\'s contractual statements about the state of the business — that the financials are accurate, there\'s no undisclosed litigation, contracts are in good standing — and if any of those turn out to be false, the buyer has a claim for damages. An escrow — a portion of the purchase price held back in a third-party account for a period after closing — gives the buyer an actual pool of money to draw from if a warranty breach or other claim surfaces, rather than having to chase the seller for cash after the fact. Indemnification provisions spell out exactly how big a claim has to be before it counts, how long the buyer has to bring one, and any caps on total seller liability. — RECOMMENDATION: none of these mechanisms fully substitutes for real diligence before signing — they exist to handle problems that genuinely couldn\'t have been caught, not as a safety net for skipping the work upfront, since a buyer who under-diligences and leans on indemnification afterward often finds the actual recovery process slower and less complete than the number in the contract implies.' },
+
+  /* ── EASY: true fundamentals, no jargon assumed ──────────────────── */
+
+  { id:'pe56', d:'easy', q:'In the simplest terms, what does a private equity firm actually do?',
+    f:'It raises money from big investors, uses that money — plus borrowed money — to buy whole companies, tries to make those companies more valuable over a few years, and then sells them for a profit. The core idea to say out loud: unlike a stock investor who buys a small slice of a public company and has no say in running it, a PE firm buys enough of a company to actually control it and change how it operates.' },
+
+  { id:'pe57', d:'easy', q:'Why would a private equity firm want to own a company rather than just investing in its stock?',
+    f:'Control. Owning a majority stake means the firm can replace management, change strategy, cut costs, or make acquisitions without needing to convince a room full of public shareholders first. A stock investor can only vote and hope; an owner can act directly. That is the whole reason PE returns are supposed to come partly from actively improving the business, not just from the market re-rating it.' },
+
+  { id:'pe58', d:'easy', q:'What does it mean to say a private equity fund is "closed-end," and why would an investor accept that?',
+    f:'Investors commit their money for a long, fixed period — often around ten years — and cannot ask for it back early the way they could with a typical mutual fund. Investors accept that tradeoff because the fund is buying illiquid things, whole private companies, that take years to fix up and sell, and having investors able to pull money out early would force the fund to sell assets at the worst possible time. In exchange for locking up their money, investors expect a higher return than they would get from something they could sell tomorrow.' },
+
+  { id:'pe59', d:'easy',
+    gen: function () {
+      var EQ = mockPick([50, 100, 200]);
+      var DEBT = mockPick([150, 300, 400]);
+      return { EQ: EQ, DEBT: DEBT, TOTAL: EQ + DEBT, PCT: Math.round(EQ / (EQ + DEBT) * 100) };
+    },
+    q:'A sponsor buys a company for ${TOTAL}, putting in ${EQ} of its own money and borrowing ${DEBT}. What percentage of the purchase price is actually the sponsor\'s own cash?',
+    f:'Divide the equity by the total: {EQ} over {TOTAL} is {PCT}%. That is the entire idea behind a leveraged buyout in one number — the sponsor owns the whole company but only had to put up {PCT}% of its price out of pocket, borrowing the rest. The company itself, not the sponsor personally, is on the hook to pay that debt back.' },
+
+  { id:'pe60', d:'easy', q:'Why does a private equity firm usually want to sell a company again in just a few years, instead of holding it forever?',
+    f:'Two straightforward reasons. First, the fund itself has a limited life — investors were promised their money back within roughly ten years, so every company bought has to be sold within that window. Second, the firm own pay is tied to selling at a profit: it only earns its real payout, carried interest, when it actually cashes out a position, not while it is simply sitting on paper gains. Holding forever would mean the firm never gets paid for the work.' },
+
+  { id:'pe61', d:'easy', q:'If a private equity firm buys a struggling company, is the goal usually to shut it down and sell off the pieces, or to fix it and grow it?',
+    f:'Almost always to fix it and grow it — a firm makes far more money selling a larger, healthier business than it does liquidating a small one for parts. The shut-it-down-for-parts version happens, but it is the exception, usually reserved for a business with no realistic path to survive. The common playbook is closer to: cut what is wasteful, invest in what works, professionalize the operations, and sell a meaningfully better business than the one that was bought.' },
+
+  { id:'pe62', d:'easy', q:'Is private equity the same thing as investing in the stock market?',
+    f:'No, and the difference is the whole point. Buying stock means buying a small piece of a public company through an exchange, with no ability to control what the company does. Private equity means a firm buying enough of an entire private company to actually run it — deciding on strategy, management, spending — and typically holding it for years before selling, rather than being able to trade in and out in seconds. Public stock investing is passive; private equity is hands-on ownership.' },
+
+  { id:'pe63', d:'easy', q:'What does "portfolio company" mean when people use that term in private equity?',
+    f:'It just means a company that a private equity fund currently owns — one of the businesses sitting in the fund\'s portfolio, the same way a stock investor might have several stocks sitting in their portfolio. The term gets used constantly because a single fund usually owns several companies across different industries at once, and "portfolio company" is shorthand for "one of the businesses we own," as opposed to a company the firm is merely looking at or bidding on.' },
+
 ],
 
 /* ── BEHAVIORAL ────────────────────────────────────────────────────── */
