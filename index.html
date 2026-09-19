@@ -5562,6 +5562,15 @@ button[onclick="pubFlipbookNext()"]:hover {
               <div id="mock-topics" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;"></div>
             </div>
 
+            <div class="ufa-card" id="mock-qtype-card" style="display:none;">
+              <div class="ufa-label">Question type</div>
+              <div id="mock-qtype" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;">
+                <button type="button" class="ufa-subfilter is-on" data-qtype="all" onclick="setMockQType('all')"><span class="ufa-subfilter-name">All questions</span></button>
+                <button type="button" class="ufa-subfilter" data-qtype="quant" onclick="setMockQType('quant')"><span class="ufa-subfilter-name">Quantitative only</span></button>
+                <button type="button" class="ufa-subfilter" data-qtype="qual" onclick="setMockQType('qual')"><span class="ufa-subfilter-name">Qualitative only</span></button>
+              </div>
+            </div>
+
             <div class="ufa-card">
               <div id="mock-config-grid">
                 <div>
@@ -14391,6 +14400,7 @@ var MOCK = {
   track: null,
   levels: [],
   topics: [],
+  qtype: 'all',
   queue: [],
   idx: 0,
   perQ: 90,
@@ -14484,6 +14494,40 @@ function toggleMockTopic(id) {
   updateMockStartReadiness();
 }
 
+/* A question counts as quantitative if it carries a gen function (it
+   plugs in numbers and asks for a calculation); everything else is
+   qualitative. The card itself only shows up when a track actually has
+   a real mix of both — offering "quantitative only" on a track with zero
+   calc questions would just be a dead end. */
+function mockIsQuant(q) { return typeof q.gen === 'function'; }
+
+function renderMockQType(trackId) {
+  var card = document.getElementById('mock-qtype-card');
+  if (!card) return;
+  var bank = MOCK_BANK[trackId] || [];
+  var quantCount = bank.filter(mockIsQuant).length;
+  var qualCount = bank.length - quantCount;
+  card.style.display = (quantCount > 0 && qualCount > 0) ? '' : 'none';
+  MOCK.qtype = 'all';
+  Array.prototype.forEach.call(document.querySelectorAll('#mock-qtype [data-qtype]'), function (el) {
+    el.classList.toggle('is-on', el.dataset.qtype === 'all');
+  });
+}
+
+function setMockQType(type) {
+  MOCK.qtype = type;
+  Array.prototype.forEach.call(document.querySelectorAll('#mock-qtype [data-qtype]'), function (el) {
+    el.classList.toggle('is-on', el.dataset.qtype === type);
+  });
+  updateMockStartReadiness();
+}
+
+function mockMatchesQType(q) {
+  if (MOCK.qtype === 'quant') return mockIsQuant(q);
+  if (MOCK.qtype === 'qual') return !mockIsQuant(q);
+  return true;
+}
+
 /* A track and at least one difficulty are both required before starting. */
 function updateMockStartReadiness() {
   var btn = document.getElementById('mock-start-btn');
@@ -14508,7 +14552,7 @@ function updateMockSetupNote() {
   var topicFilter = {};
   MOCK.topics.forEach(function (id) { topicFilter[id] = true; });
   var pool = MOCK_BANK[MOCK.track].filter(function (q) {
-    return levels[q.d] && (!MOCK.topics.length || topicFilter[q.t]);
+    return levels[q.d] && (!MOCK.topics.length || topicFilter[q.t]) && mockMatchesQType(q);
   });
   var p = MOCK.progress[MOCK.track] || {};
   var mastered = {}; (p.mastered_ids || []).forEach(function (id) { mastered[id] = true; });
@@ -14517,7 +14561,7 @@ function updateMockSetupNote() {
   var freshCount = pool.filter(function (q) { return !mastered[q.id] && !review[q.id]; }).length;
 
   if (!pool.length) {
-    var reason = MOCK.topics.length ? 'at this difficulty and focus — try widening either one' : 'at this difficulty yet — try selecting another difficulty';
+    var reason = (MOCK.topics.length || MOCK.qtype !== 'all') ? 'at this difficulty, focus, and question type — try widening one of them' : 'at this difficulty yet — try selecting another difficulty';
     note.textContent = 'No ' + t.label + ' questions ' + reason + '.';
     return;
   }
@@ -14530,6 +14574,7 @@ function updateMockSetupNote() {
     });
     focusTxt = ' in ' + names.join(', ');
   }
+  if (MOCK.qtype !== 'all') focusTxt += (focusTxt ? ', ' : ' — ') + (MOCK.qtype === 'quant' ? 'quantitative only' : 'qualitative only');
   var unit = MOCK.track === 'cases' ? ' case' : ' question';
   var bits = [pool.length + ' ' + (MOCK.track === 'cases' ? 'worked' : t.label) + unit + (pool.length === 1 ? '' : 's') + ' at this difficulty' + focusTxt];
   if (reviewCount) bits.push(reviewCount + ' flagged for review');
@@ -14578,6 +14623,7 @@ function pickMockTrack(id) {
   MOCK.track = id;
   MOCK.topics = [];
   renderMockTopics(id);
+  renderMockQType(id);
 
   // A worked case is a twenty-minute exercise, not a ninety-second answer.
   // Cases carry their own per-step clock, so the per-question control is
@@ -14607,7 +14653,7 @@ function startMock() {
   var topicFilter = {};
   MOCK.topics.forEach(function (id) { topicFilter[id] = true; });
   var bank = MOCK_BANK[MOCK.track].filter(function (q) {
-    return levels[q.d] && (!MOCK.topics.length || topicFilter[q.t]);
+    return levels[q.d] && (!MOCK.topics.length || topicFilter[q.t]) && mockMatchesQType(q);
   });
   var skipSeen = document.getElementById('mock-skip-seen').checked;
   MOCK.perQ = Number(document.getElementById('mock-seconds').value);
@@ -14662,6 +14708,12 @@ function showMockQuestion() {
   var q = MOCK.queue[MOCK.idx];
   if (!q) { endMock(false); return; }
   MOCK.sessionSeen.push(q.id);
+
+  /* Reading the answer can leave the page scrolled well down the card;
+     a fresh question should always open back at the top, not wherever
+     the last one left off. */
+  var runEl = document.getElementById('mock-running');
+  if (runEl) runEl.scrollIntoView({ behavior: 'auto', block: 'start' });
 
   document.getElementById('mock-q-text').textContent = q.q;
   document.getElementById('mock-q-meta').innerHTML =
