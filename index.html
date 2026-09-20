@@ -161,6 +161,11 @@
     font-size: 16px;
     line-height: 1.7;
     overflow-x: hidden;
+    /* clip hides sideways overflow the same way, but without turning body
+       into its own scroll container, which silently disables every
+       position: sticky element on the page. Browsers without clip support
+       keep the hidden line above. */
+    overflow-x: clip;
     max-width: 100vw;
     padding-top: 80px;
   }
@@ -5547,35 +5552,47 @@ button[onclick="pubFlipbookNext()"]:hover {
               <div id="mock-industries" class="ufa-tracks"></div>
             </div>
 
-            <div class="ufa-card">
-              <div class="ufa-label">Difficulty</div>
-              <div id="mock-levels" class="ufa-levels">
-                <button type="button" class="ufa-level" data-level="easy" onclick="toggleMockLevel('easy')"><span class="ufa-level-dot"></span><span class="ufa-level-name">Easy</span><span class="ufa-level-sub">No prior exposure assumed</span></button>
-                <button type="button" class="ufa-level" data-level="medium" onclick="toggleMockLevel('medium')"><span class="ufa-level-dot"></span><span class="ufa-level-name">Medium</span><span class="ufa-level-sub">About a semester in</span></button>
-                <button type="button" class="ufa-level" data-level="hard" onclick="toggleMockLevel('hard')"><span class="ufa-level-dot"></span><span class="ufa-level-name">Hard</span><span class="ufa-level-sub">Sophomore recruiting depth</span></button>
+            <!-- Everything that shapes a session lives in one card, one row
+                 per setting, so the whole setup reads top to bottom without
+                 hunting across five separate boxes. -->
+            <div class="ufa-card ufa-settings">
+              <div class="ufa-set-row">
+                <div class="ufa-set-label">Difficulty<span class="ufa-set-sub">Pick one or more.</span></div>
+                <div class="ufa-set-body">
+                  <div id="mock-levels" class="ufa-levels">
+                    <button type="button" class="ufa-level" data-level="easy" aria-pressed="false" onclick="toggleMockLevel('easy')"><span class="ufa-level-dot"></span><span class="ufa-level-name">Easy</span><span class="ufa-level-sub">Just learned the topic</span></button>
+                    <button type="button" class="ufa-level" data-level="medium" aria-pressed="false" onclick="toggleMockLevel('medium')"><span class="ufa-level-dot"></span><span class="ufa-level-name">Medium</span><span class="ufa-level-sub">Recruiting-standard</span></button>
+                    <button type="button" class="ufa-level" data-level="hard" aria-pressed="false" onclick="toggleMockLevel('hard')"><span class="ufa-level-dot"></span><span class="ufa-level-name">Hard</span><span class="ufa-level-sub">Stretch questions</span></button>
+                  </div>
+                </div>
               </div>
 
-            </div>
-
-            <div class="ufa-card" id="mock-topics-card" style="display:none;">
-              <div class="ufa-label">Focus <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#6B7D6B;">— optional, leave blank to pull from the whole track</span></div>
-              <div id="mock-topics" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;"></div>
-            </div>
-
-            <div class="ufa-card" id="mock-qtype-card" style="display:none;">
-              <div class="ufa-label">Question type</div>
-              <div id="mock-qtype" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;">
-                <button type="button" class="ufa-subfilter is-on" data-qtype="all" onclick="setMockQType('all')"><span class="ufa-subfilter-name">All questions</span></button>
-                <button type="button" class="ufa-subfilter" data-qtype="quant" onclick="setMockQType('quant')"><span class="ufa-subfilter-name">Quantitative only</span></button>
-                <button type="button" class="ufa-subfilter" data-qtype="qual" onclick="setMockQType('qual')"><span class="ufa-subfilter-name">Qualitative only</span></button>
+              <div class="ufa-set-row" id="mock-topics-card" style="display:none;">
+                <div class="ufa-set-label">Focus<span class="ufa-set-sub" id="mock-topics-sub">Optional. Leave all off to use the whole track.</span></div>
+                <div class="ufa-set-body">
+                  <div id="mock-topics" class="ufa-topic-grid"></div>
+                  <div id="mock-topics-auto" class="ufa-auto-note" style="display:none;" role="status">
+                    <span id="mock-topics-auto-text"></span>
+                    <button type="button" class="ufa-linkbtn" onclick="includeSpringTopics()">Include them</button>
+                  </div>
+                </div>
               </div>
-            </div>
 
-            <div class="ufa-card">
-              <div id="mock-config-grid">
-                <div>
-                  <div class="ufa-label">Seconds per question</div>
-                  <select id="mock-seconds" class="ufa-select">
+              <div class="ufa-set-row" id="mock-qtype-card" style="display:none;">
+                <div class="ufa-set-label">Question type</div>
+                <div class="ufa-set-body">
+                  <div id="mock-qtype" class="ufa-seg" role="group" aria-label="Question type">
+                    <button type="button" class="ufa-subfilter is-on" data-qtype="all" onclick="setMockQType('all')"><span class="ufa-subfilter-name">All</span></button>
+                    <button type="button" class="ufa-subfilter" data-qtype="quant" onclick="setMockQType('quant')"><span class="ufa-subfilter-name">Quantitative</span></button>
+                    <button type="button" class="ufa-subfilter" data-qtype="qual" onclick="setMockQType('qual')"><span class="ufa-subfilter-name">Qualitative</span></button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="ufa-set-row" id="mock-config-grid">
+                <div class="ufa-set-label"><label for="mock-seconds">Time per question</label></div>
+                <div class="ufa-set-body">
+                  <select id="mock-seconds" class="ufa-select ufa-select-short">
                     <option value="60">60 seconds</option>
                     <option value="90" selected>90 seconds</option>
                     <option value="120">2 minutes</option>
@@ -5584,15 +5601,20 @@ button[onclick="pubFlipbookNext()"]:hover {
                   </select>
                 </div>
               </div>
-              <div style="margin-top:18px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-                <button class="ufa-btn" onclick="startMock()" id="mock-start-btn" disabled>Start session</button>
-                <label style="display:flex;align-items:center;gap:7px;font-size:13px;color:#3A4A3A;cursor:pointer;">
-                  <input type="checkbox" id="mock-skip-seen" checked style="width:15px;height:15px;cursor:pointer;">
-                  Don't repeat questions I've marked as known
+              <div id="mock-case-note" class="ufa-note" style="display:none;margin:0 0 16px;">Worked cases run step by step on their own clock: two minutes to clarify, two to structure, five to analyze, one to recommend. Revealing the interviewer's notes stops the clock for that step.</div>
+            </div>
+
+            <!-- Sticky start bar: always on screen during setup, and always
+                 saying exactly what the session will contain. -->
+            <div class="ufa-startbar" id="mock-startbar">
+              <div class="ufa-startbar-text">
+                <div id="mock-setup-note" class="ufa-startbar-summary" aria-live="polite"></div>
+                <label class="ufa-startbar-check">
+                  <input type="checkbox" id="mock-skip-seen" checked onchange="updateMockStartReadiness()">
+                  Don't repeat questions I've nailed
                 </label>
               </div>
-              <div id="mock-setup-note" class="ufa-note"></div>
-              <div id="mock-case-note" class="ufa-note" style="display:none;">Worked cases run step by step on their own clock: two minutes to clarify, two to structure, five to analyze, one to recommend. Revealing the interviewer's notes stops the clock for that step.</div>
+              <button class="ufa-btn" onclick="startMock()" id="mock-start-btn" disabled>Start session</button>
             </div>
           </div>
 
@@ -5615,28 +5637,40 @@ button[onclick="pubFlipbookNext()"]:hover {
               <div class="ufa-q-text" id="mock-q-text"></div>
             </div>
 
-            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;align-items:center;">
-              <button class="ufa-btn" onclick="toggleMockFramework()" id="mock-reveal-btn">Answer out loud, then reveal &darr;</button>
+            <div class="ufa-reveal-row">
+              <button class="ufa-btn-ghost" onclick="toggleMockHint()" id="mock-hint-btn" aria-expanded="false" aria-controls="mock-hint" style="display:none;">Show a hint</button>
+              <button class="ufa-btn" onclick="toggleMockFramework()" id="mock-reveal-btn" aria-expanded="false" aria-controls="mock-framework">Reveal the answer</button>
             </div>
-            <div class="ufa-note" style="margin-bottom:20px;" id="mock-reveal-hint">
-              Revealing stops the clock.
+            <div class="ufa-note" style="margin-bottom:18px;" id="mock-reveal-hint">Revealing the answer stops the clock.</div>
+
+            <div class="ufa-hint-box" id="mock-hint" style="display:none;">
+              <div class="ufa-hint-label">Hint</div>
+              <div id="mock-hint-text"></div>
             </div>
 
             <div class="ufa-card" id="mock-framework" style="display:none;background:#F7F9F7;">
               <div class="ufa-label">How a strong answer is built</div>
               <div id="mock-framework-text" style="font-size:14px;color:#3A4A3A;line-height:1.75;"></div>
+              <div class="ufa-followups" id="mock-followups" style="display:none;">
+                <div class="ufa-label">The interviewer might follow up with</div>
+                <ul id="mock-followups-list"></ul>
+              </div>
               <div class="ufa-note" style="margin-top:14px;font-style:italic;">
                 This is a skeleton, not a script. Interviewers can tell when an answer is memorized.
               </div>
             </div>
 
-            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:20px;align-items:center;">
-              <button class="ufa-btn" onclick="answerMockQuestion('next')" id="mock-next-btn">Next question &rarr;</button>
-              <button class="ufa-btn-ghost" onclick="answerMockQuestion('mastered')" id="mock-gotit-btn">I know this — stop asking it</button>
-              <button class="ufa-btn-ghost" onclick="answerMockQuestion('review')" id="mock-review-btn">Flag for review</button>
-            </div>
-            <div class="ufa-note" style="margin-top:10px;">
-              Next just moves on. Use the other two only when you want to change what comes up in future sessions.
+            <div class="ufa-rate" role="group" aria-labelledby="mock-rate-label">
+              <div class="ufa-rate-label" id="mock-rate-label">How did that go?</div>
+              <div class="ufa-rate-row">
+                <button type="button" class="ufa-rate-btn" data-rate="nailed" onclick="answerMockQuestion('mastered')" id="mock-gotit-btn"><span class="ufa-rate-name">Nailed it</span><span class="ufa-rate-sub">Retire it from future sessions</span><kbd class="ufa-kbd" aria-hidden="true">1</kbd></button>
+                <button type="button" class="ufa-rate-btn" data-rate="shaky" onclick="answerMockQuestion('shaky')" id="mock-shaky-btn"><span class="ufa-rate-name">Shaky</span><span class="ufa-rate-sub">Bring it back next session</span><kbd class="ufa-kbd" aria-hidden="true">2</kbd></button>
+                <button type="button" class="ufa-rate-btn" data-rate="missed" onclick="answerMockQuestion('missed')" id="mock-review-btn"><span class="ufa-rate-name">Missed it</span><span class="ufa-rate-sub">Bring it back next session</span><kbd class="ufa-kbd" aria-hidden="true">3</kbd></button>
+              </div>
+              <div class="ufa-rate-foot">
+                <button type="button" class="ufa-btn-ghost ufa-btn-sm" onclick="answerMockQuestion('next')" id="mock-next-btn">Skip</button>
+                <span class="ufa-keys-note" id="mock-keys-note">Keyboard: Space reveals the answer, H shows the hint, 1 to 3 rates it, N skips.</span>
+              </div>
             </div>
           </div>
 
@@ -5679,6 +5713,7 @@ button[onclick="pubFlipbookNext()"]:hover {
               <div style="font-size:34px;margin-bottom:12px;">✓</div>
               <div class="ufa-pane-title" style="font-size:20px;">Session complete</div>
               <div class="ufa-pane-sub" id="mock-done-stats" style="margin-top:6px;"></div>
+              <div id="mock-done-breakdown" style="display:none;"></div>
               <div style="margin-top:22px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
                 <button class="ufa-btn" onclick="resetMock()">Run another</button>
                 <button class="ufa-btn-ghost" onclick="reviewMockSession()">Review the questions</button>
@@ -6792,7 +6827,7 @@ button[onclick="pubFlipbookNext()"]:hover {
   /* Form grids collapse to one column well before phone width — two
      columns of inputs get unusably narrow on a small laptop or a split
      window long before the 768px breakpoint. */
-  #bp-grid, #bp-grid2, #drive-grid, #mock-config-grid,
+  #bp-grid, #bp-grid2, #drive-grid,
   #tl-grid, #ts-grid, #al-grid, #pi-grid, #email-grid {
     grid-template-columns: 1fr !important;
   }
@@ -7095,6 +7130,189 @@ button[onclick="pubFlipbookNext()"]:hover {
 .ufa-subfilter.is-on { border-color: #3D6B3D; background: #fff; box-shadow: 0 0 0 3px rgba(61,107,61,0.14); }
 .ufa-subfilter-name { display: block; font-size: 13px; font-weight: 600; color: #1C2B1C; }
 .ufa-subfilter-sub { display: block; font-size: 11px; color: #6B7D6B; margin-top: 2px; }
+
+/* ── Mock interview: setup ──────────────────────────────────────── */
+.ufa-settings { padding-top: 6px; padding-bottom: 6px; }
+.ufa-set-row {
+  display: grid;
+  grid-template-columns: 170px minmax(0, 1fr);
+  gap: 20px;
+  padding: 18px 0;
+  border-top: 1px solid rgba(46,74,46,0.08);
+  align-items: start;
+}
+.ufa-settings > .ufa-set-row:first-child { border-top: none; }
+.ufa-set-label { font-size: 13px; font-weight: 600; color: #1C2B1C; padding-top: 11px; }
+.ufa-set-label label { cursor: pointer; }
+.ufa-set-sub { display: block; font-size: 12px; font-weight: 400; color: #6B7D6B; line-height: 1.45; margin-top: 3px; }
+@media (max-width: 760px) {
+  .ufa-set-row { grid-template-columns: 1fr; gap: 10px; padding: 16px 0; }
+  .ufa-set-label { padding-top: 0; }
+}
+
+.ufa-topic-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.ufa-topic { display: flex; flex-direction: column; gap: 5px; }
+.ufa-topic-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.ufa-topic-count { font-size: 12px; font-weight: 600; color: #6B7D6B; font-variant-numeric: tabular-nums; }
+.ufa-topic.is-on .ufa-topic-count { color: #2E6B2E; }
+.ufa-topic.is-empty:not(.is-on) { opacity: 0.55; }
+.ufa-topic-tag {
+  align-self: flex-start;
+  font-size: 10.5px; font-weight: 600;
+  color: #8A6216; background: #FBF0DC;
+  border-radius: 999px; padding: 1px 8px;
+}
+.ufa-auto-note {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px;
+  margin-top: 10px;
+  padding: 9px 12px;
+  font-size: 12.5px; line-height: 1.5; color: #3A4A3A;
+  background: #F3F8F3;
+  border: 1px solid rgba(61,107,61,0.18);
+  border-radius: 8px;
+}
+.ufa-linkbtn {
+  background: none; border: none; padding: 0;
+  font: inherit; font-weight: 600; color: #2E6B2E;
+  text-decoration: underline; text-underline-offset: 2px;
+  cursor: pointer;
+}
+.ufa-linkbtn:hover { color: #1C2B1C; }
+
+.ufa-seg {
+  display: inline-flex; flex-wrap: wrap; gap: 2px;
+  padding: 3px;
+  background: #F3F6F3;
+  border: 1px solid rgba(46,74,46,0.14);
+  border-radius: 10px;
+}
+.ufa-seg .ufa-subfilter { border: none; background: transparent; border-radius: 7px; padding: 7px 16px; box-shadow: none; }
+.ufa-seg .ufa-subfilter:hover { background: rgba(255,255,255,0.6); }
+.ufa-seg .ufa-subfilter.is-on { background: #fff; box-shadow: 0 1px 2px rgba(28,43,28,0.12), 0 0 0 1px rgba(61,107,61,0.28); }
+.ufa-select-short { max-width: 220px; }
+
+.ufa-startbar {
+  position: sticky; bottom: 0; z-index: 5;
+  display: flex; align-items: center; justify-content: space-between; gap: 18px;
+  margin: 0 0 20px;
+  padding: 14px 18px;
+  padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+  background: #fff;
+  border: 1px solid rgba(46,74,46,0.16);
+  border-radius: 12px;
+  box-shadow: 0 -10px 28px -18px rgba(28,43,28,0.45);
+}
+.ufa-startbar-summary { font-size: 14px; color: #1C2B1C; line-height: 1.45; }
+.ufa-startbar-summary strong { font-weight: 700; }
+.ufa-startbar-summary .ufa-sub { display: block; font-size: 12px; color: #6B7D6B; margin-top: 2px; }
+.ufa-startbar-check { display: flex; align-items: center; gap: 7px; margin-top: 7px; font-size: 12.5px; color: #3A4A3A; cursor: pointer; }
+.ufa-startbar-check input { width: 15px; height: 15px; cursor: pointer; accent-color: #3D6B3D; }
+.ufa-startbar .ufa-btn { flex-shrink: 0; padding: 12px 24px; }
+@media (max-width: 560px) {
+  .ufa-startbar { flex-direction: column; align-items: stretch; gap: 12px; padding: 12px 14px; padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)); }
+  .ufa-startbar .ufa-btn { width: 100%; }
+}
+
+/* Phones: each track collapses to a single row (mark, name, progress)
+   so the difficulty settings are reachable without a long scroll. */
+@media (max-width: 560px) {
+  .ufa-tracks { gap: 8px; }
+  .ufa-track {
+    display: grid;
+    grid-template-columns: 36px minmax(0, 1fr) auto;
+    column-gap: 12px; row-gap: 4px;
+    align-items: center;
+    padding: 11px 14px 11px 16px;
+    border-radius: 12px;
+  }
+  .ufa-track::before { top: 0; bottom: 0; left: 0; right: auto; width: 4px; height: auto; }
+  .ufa-track-head { display: contents; }
+  .ufa-track-mono { grid-column: 1; grid-row: 1 / span 2; width: 36px; height: 36px; border-radius: 10px; font-size: 11px; }
+  .ufa-track-check { grid-column: 3; grid-row: 1; width: 20px; height: 20px; font-size: 11px; }
+  .ufa-track-name { grid-column: 2; grid-row: 1; font-size: 14px; }
+  .ufa-track-blurb { display: none; }
+  .ufa-track-foot { grid-column: 2 / span 2; grid-row: 2; margin-top: 0; }
+  .ufa-track:hover { transform: none; }
+}
+
+/* ── Mock interview: answering ─────────────────────────────────── */
+.ufa-q-topic {
+  font-size: 12px; color: #3A4A3A;
+  border: 1px solid rgba(46,74,46,0.2);
+  border-radius: 999px; padding: 2px 9px;
+}
+.ufa-reveal-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 8px; }
+.ufa-hint-box {
+  margin: 0 0 18px;
+  padding: 14px 18px;
+  background: #FFFBF2;
+  border: 1px solid #F0DFB8;
+  border-left: 3px solid #B8791B;
+  border-radius: 8px;
+  font-size: 14px; line-height: 1.65; color: #3A4A3A;
+}
+.ufa-hint-label { font-size: 12px; font-weight: 600; color: #8A6216; margin-bottom: 4px; }
+.ufa-followups { margin-top: 16px; padding-top: 14px; border-top: 1px dashed rgba(46,74,46,0.2); }
+.ufa-followups ul { margin: 0; padding-left: 18px; font-size: 14px; line-height: 1.65; color: #3A4A3A; }
+.ufa-followups li + li { margin-top: 5px; }
+
+.ufa-rate { margin-top: 22px; }
+.ufa-rate-label { font-size: 13px; font-weight: 600; color: #1C2B1C; margin-bottom: 9px; }
+.ufa-rate-row { display: flex; flex-wrap: wrap; gap: 10px; }
+.ufa-rate-btn {
+  --rate: #3D8B3D;
+  position: relative;
+  flex: 1 1 160px;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
+  text-align: left;
+  padding: 11px 36px 11px 32px;
+  background: #fff;
+  border: 1px solid rgba(46,74,46,0.16);
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  transition: border-color 0.16s, background 0.16s;
+}
+.ufa-rate-btn[data-rate="shaky"]  { --rate: #C0912A; }
+.ufa-rate-btn[data-rate="missed"] { --rate: #B5473E; }
+.ufa-rate-btn::before {
+  content: '';
+  position: absolute; left: 13px; top: 16px;
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--rate);
+}
+.ufa-rate-btn:hover { border-color: var(--rate); background: #FAFBFA; }
+.ufa-rate-btn:focus-visible { outline: 2px solid var(--rate); outline-offset: 2px; }
+.ufa-rate-name { font-size: 14px; font-weight: 600; color: #1C2B1C; }
+.ufa-rate-sub { font-size: 11.5px; color: #6B7D6B; }
+.ufa-kbd {
+  position: absolute; right: 10px; top: 10px;
+  font-family: inherit; font-size: 10.5px; font-weight: 600; line-height: 16px;
+  color: #6B7D6B;
+  padding: 0 5px;
+  border: 1px solid rgba(46,74,46,0.22); border-bottom-width: 2px;
+  border-radius: 4px;
+}
+.ufa-rate-foot { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: 12px; }
+.ufa-keys-note { font-size: 12px; color: #6B7D6B; }
+@media (hover: none), (pointer: coarse) {
+  .ufa-kbd, .ufa-keys-note { display: none; }
+}
+
+.ufa-rate-nailed { background: #E4F0E4; color: #2E6B2E; }
+.ufa-rate-shaky  { background: #FBF0DC; color: #8A6216; }
+.ufa-rate-missed { background: #FBE9E7; color: #A33A32; }
+
+.ufa-done-tally { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+.ufa-done-tally > div {
+  min-width: 96px; padding: 10px 14px;
+  background: #F7F9F7;
+  border: 1px solid rgba(46,74,46,0.12);
+  border-radius: 10px;
+}
+.ufa-done-tally b { display: block; font-size: 22px; font-weight: 600; color: #1C2B1C; font-variant-numeric: tabular-nums; }
+.ufa-done-tally span { font-size: 12px; color: #6B7D6B; }
+.ufa-done-weak { margin-top: 14px; font-size: 13px; color: #3A4A3A; line-height: 1.55; }
 
 /* ── Mock interview: running ────────────────────────────────────── */
 .ufa-run-head, .ufa-case-head {
@@ -8834,8 +9052,8 @@ const MOCK_TOPICS = {
   ib: [
     { id: 'accounting', label: 'Accounting' },
     { id: 'valuation',  label: 'Valuation & DCF' },
-    { id: 'ma',         label: 'M&A' },
-    { id: 'lbo',        label: 'LBO' },
+    { id: 'ma',         label: 'M&A', spring: true },
+    { id: 'lbo',        label: 'LBO', spring: true },
     { id: 'markets',    label: 'Markets' }
   ],
   pe: [
@@ -8859,7 +9077,7 @@ const MOCK_BANK = {
 ib: [
   { id:'ib1', d:'easy', t:'accounting', q:'What are the three financial statements?',
     f:'The income statement, the balance sheet, and the cash flow statement. The income statement shows revenue down to profit over a period of time. The balance sheet shows what a company owns and owes at a single point in time, and the two sides must balance. The cash flow statement shows the actual cash moving in and out, split into operating, investing and financing activities. Naming all three cleanly, without hesitating, is the whole bar for this question.' },
-  { id:'ib2', d:'easy', t:'accounting', q:'If you could only look at one statement to judge a company, which would it be?',
+  { id:'ib2', d:'medium', t:'accounting', q:'If you could only look at one statement to judge a company, which would it be?',
     f:'Pick the cash flow statement and defend it: cash is the hardest number to manipulate, and it shows you what the business actually generates and what it spends to keep going. Acknowledge the tradeoff — you would lose margin structure and the balance sheet picture. The confidence of the pick matters more than the pick.' },
   { id:'ib4', d:'medium', t:'accounting',
     gen: function () {
@@ -9350,7 +9568,7 @@ ib: [
     q:'A stock trades at ${PX} and earns ${EPS} per share. What is its P/E, and what does that number actually tell you?',
     f:'P/E is price over earnings per share: {PX} over {EPS} is {PE}x. Two readings, and giving both is what separates this from a definition. Mechanically, investors are paying ${PE} for every dollar of annual earnings. Flipped over, it is an earnings yield of {YIELD}% — what you would earn if profits stayed flat forever and were all paid to you. The interpretation: a high P/E is a statement about expected growth, not about the company being overpriced. Compare it to peers and to its own history before calling it expensive.' },
 
-  { id:'ib112', d:'medium', t:'accounting',
+  { id:'ib112', d:'easy', t:'accounting',
     gen: function () {
       var REV = mockPick([500, 800, 1000]);
       var GM = mockPick([40, 50, 60]);
@@ -9461,21 +9679,6 @@ ib: [
     f:'Cash accounting records a transaction when money moves. Accrual accounting records it when the economic activity happens, regardless of when the cash arrives. Give the example, because it makes the idea concrete: under accrual, a company that delivers a product in December and gets paid in March books the revenue in December and carries a receivable until March. Cash accounting would book nothing until March. Then say why it matters. Accrual gives a truer picture of performance in a period, which is why it is required under GAAP, but it introduces judgment — when exactly is revenue earned — and judgment is where manipulation lives. That is the entire reason the cash flow statement exists: it reconciles the accrual picture back to what actually happened to the bank balance.' },
 
   /* ── MEDIUM: calculation ───────────────────────────────────────────── */
-
-  { id:'ib123', d:'medium', t:'accounting',
-    gen: function () {
-      var R = mockPick([1200, 1800, 2400]);
-      var DSO = mockPick([30, 45, 60]);
-      var CPCT = mockPick([50, 60]);
-      var COGS = R * CPCT / 100;
-      var DIO = mockPick([30, 60]);
-      var DPO = mockPick([30, 45]);
-      return { R: R, COGS: COGS, DSO: DSO, DIO: DIO, DPO: DPO,
-               AR: R * DSO / 360, INV: COGS * DIO / 360, AP: COGS * DPO / 360,
-               CCC: DSO + DIO - DPO };
-    },
-    q:'Revenue is ${R} and COGS is ${COGS}. Receivables are ${AR}, inventory is ${INV} and payables are ${AP}. Using a 360-day year, calculate the cash conversion cycle.',
-    f:'Three pieces. Days sales outstanding is receivables over revenue times 360: {DSO} days. Days inventory outstanding is inventory over COGS times 360: {DIO} days. Days payable outstanding is payables over COGS times 360: {DPO} days. Cash conversion cycle is DSO plus DIO minus DPO: {DSO} plus {DIO} minus {DPO} is {CCC} days. Say what it means — the company waits {CCC} days between paying for inventory and collecting from customers, and it has to fund that gap. Note the sign convention people get backwards: paying suppliers more slowly shortens the cycle, which is why stretching payables is a lever for freeing up cash.' },
 
   { id:'ib124', d:'medium', t:'valuation',
     gen: function () {
@@ -9797,17 +10000,8 @@ ib: [
   q:'Net income is ${NI}, D&A is ${DA}, capex is ${CAPEX}, and the increase in net working capital is ${NWC}. What is free cash flow, roughly?',
   f:'Start from net income and adjust for items that do not show up there. Add back D&A of ${DA} since it is a non-cash expense, then subtract the actual cash outlays net income does not capture: capex of ${CAPEX} and the ${NWC} increase in net working capital. That leaves free cash flow of about ${FCF}.' },
 
-{ id:'ib301', d:'medium', t:'accounting',
-  gen: function () {
-    var AR = mockPick([40,60,80]), REV = mockPick([300,400,500]);
-    var DSO = AR / REV * 365;
-    return { AR:AR, REV:REV, DSO:DSO };
-  },
-  q:'A company has ${AR} of accounts receivable and ${REV} of annual revenue. Roughly how many days does it take to collect from its customers, on average?',
-  f:'Days sales outstanding: accounts receivable divided by revenue, times 365 days. ${AR} over ${REV}, times 365, is about {DSO} days. A rising DSO over time is often an early warning sign that customers are taking longer to pay, even while the income statement still looks fine.' },
-
 // --- VALUATION (11) ---
-{ id:'ib302', d:'easy', t:'valuation',
+{ id:'ib302', d:'medium', t:'valuation',
   gen: function () {
     var DIV = mockPick([2,3,4]), GROWTH = mockPick([2,3,4]), COE = mockPick([8,9,10]);
     var PRICE = DIV / ((COE - GROWTH) / 100);
@@ -10289,15 +10483,6 @@ ib: [
   q:'Just the balance sheet: current assets are ${CA} and current liabilities are ${CL}. What is working capital?',
   f:'Working capital is current assets minus current liabilities: ${CA} minus ${CL} is ${WC}. It is a rough read on short-term liquidity — whether the company has enough assets that will turn into cash soon to cover what it owes soon.' },
 
-{ id:'ib435', d:'easy', t:'accounting',
-  gen: function () {
-    var CASH = mockPick([20,30,40]), AR = mockPick([30,40,50]), INV = mockPick([25,35,45]);
-    var TOTAL = CASH + AR + INV;
-    return { CASH:CASH, AR:AR, INV:INV, TOTAL:TOTAL };
-  },
-  q:'Just the balance sheet: cash is ${CASH}, accounts receivable is ${AR}, and inventory is ${INV}. Assuming those are the only current assets, what is total current assets?',
-  f:'Add them up: ${CASH} of cash plus ${AR} of receivables plus ${INV} of inventory is ${TOTAL} of total current assets. These are the three classic current assets — everything the company either already has in cash or expects to convert to cash within about a year.' },
-
 { id:'ib436', d:'easy', t:'accounting',
   gen: function () {
     var LIAB = mockPick([150,200,250,300]), EQUITY = mockPick([100,150,200,250]);
@@ -10308,24 +10493,6 @@ ib: [
   f:'The balance sheet has to balance: assets always equal liabilities plus equity. ${LIAB} plus ${EQUITY} is ${ASSETS} — that has to be the total assets figure, whether or not you know what those assets actually are.' },
 
 // --- CASH FLOW STATEMENT (3) ---
-{ id:'ib437', d:'easy', t:'accounting',
-  gen: function () {
-    var CFO = mockPick([60,80,100]), CFI = mockPick([-40,-30,-20]), CFF = mockPick([-20,-10,10]);
-    var NET = CFO + CFI + CFF;
-    return { CFO:CFO, CFI:CFI, CFF:CFF, NET:NET };
-  },
-  q:'Just the cash flow statement: operating cash flow is ${CFO}, investing cash flow is ${CFI}, and financing cash flow is ${CFF}. What is the net change in cash for the period?',
-  f:'Add the three sections together: ${CFO} from operations, ${CFI} from investing, and ${CFF} from financing sums to a net change in cash of ${NET}. Every dollar that moved in or out of the company in the period falls into exactly one of those three buckets.' },
-
-{ id:'ib438', d:'easy', t:'accounting',
-  gen: function () {
-    var BEGIN = mockPick([50,80,100]), CHANGE = mockPick([-20,-10,10,20,30]);
-    var END = BEGIN + CHANGE;
-    return { BEGIN:BEGIN, CHANGE:CHANGE, END:END };
-  },
-  q:'Just the cash flow statement: the company started the period with ${BEGIN} of cash, and the net change in cash for the period was ${CHANGE}. What is the ending cash balance?',
-  f:'Ending cash is simply beginning cash plus the net change: ${BEGIN} plus ${CHANGE} is ${END}. This ending balance is exactly what should show up as cash on the balance sheet at the end of the period — the cash flow statement and the balance sheet always have to agree on this number.' },
-
 { id:'ib439', d:'easy', t:'accounting',
   gen: function () {
     var CFO = mockPick([80,100,120,150]), CAPEX = mockPick([20,30,40,50]);
@@ -10335,6 +10502,436 @@ ib: [
   q:'Just the cash flow statement: operating cash flow is ${CFO}, and capital expenditures are ${CAPEX}. What is free cash flow?',
   f:'Free cash flow is operating cash flow minus capex: ${CFO} minus ${CAPEX} is ${FCF}. It is the cash the business actually generated after paying for the equipment and infrastructure it needs just to keep running — the cash that is genuinely free to pay down debt, return to shareholders, or reinvest in growth.' },
 
+
+
+{ id:'ib440', d:'easy', t:'accounting',
+  gen: function () {
+    var PAYABLE = mockPick([15,20,25,30]);
+    return { PAYABLE:PAYABLE };
+  },
+  q:'Just the balance sheet: a company pays off ${PAYABLE} of accounts payable using cash on hand. What happens to total assets, total liabilities, and does the balance sheet still balance?',
+  f:'Cash, an asset, goes down ${PAYABLE}. Accounts payable, a liability, also goes down ${PAYABLE}. Total assets fall by ${PAYABLE} and total liabilities fall by ${PAYABLE} — equal amounts on both sides, so the balance sheet still balances, with equity completely untouched. This is the simplest possible balance sheet move: paying down a liability with cash shrinks both sides by the same amount without ever touching profitability.' },
+
+{ id:'ib441', d:'easy', t:'accounting',
+  gen: function () {
+    var CFO = mockPick([60,80,100]), CFI = mockPick([-40,-30,-20]), NET = mockPick([-10,0,10,20]);
+    var CFF = NET - CFO - CFI;
+    return { CFO:CFO, CFI:CFI, NET:NET, CFF:CFF };
+  },
+  q:'Just the cash flow statement: operating cash flow is ${CFO}, investing cash flow is ${CFI}, and the net change in cash for the period was ${NET}. What was financing cash flow?',
+  f:'The three sections always have to add up to the net change: operating plus investing plus financing equals the net change in cash. Rearranged, financing cash flow is the net change minus operating minus investing: ${NET} minus ${CFO} minus ${CFI} is ${CFF}. Whenever you are given the total and two of the three pieces, the third is just algebra, not a mystery.' },
+
+{ id:'ib442', d:'easy', t:'accounting',
+  gen: function () {
+    var NI = mockPick([40,50,60]), DEP = mockPick([10,15,20]), WC_EFFECT = mockPick([-15,-10,10,15]);
+    var NI_PLUS_DEP = NI + DEP;
+    var CFO = NI_PLUS_DEP + WC_EFFECT;
+    var ABS_WC = Math.abs(WC_EFFECT);
+    var DIRECTION_CFO = WC_EFFECT >= 0 ? 'higher' : 'lower';
+    var WC_MOVE = WC_EFFECT >= 0 ? 'decreased' : 'increased';
+    var CASH_EFFECT = WC_EFFECT >= 0 ? 'freeing up' : 'tying up';
+    return { NI:NI, DEP:DEP, NI_PLUS_DEP:NI_PLUS_DEP, CFO:CFO, ABS_WC:ABS_WC, DIRECTION_CFO:DIRECTION_CFO, WC_MOVE:WC_MOVE, CASH_EFFECT:CASH_EFFECT };
+  },
+  q:'Just the cash flow statement: net income is ${NI}, depreciation is ${DEP}, and operating cash flow works out to ${CFO}. What happened to working capital this period, and in which direction?',
+  f:'Operating cash flow should equal net income plus depreciation unless something else moved: ${NI} plus ${DEP} is ${NI_PLUS_DEP}, but actual operating cash flow came in at ${CFO} instead — {DIRECTION_CFO} by ${ABS_WC}. That gap has to be working capital: since cash flow came in {DIRECTION_CFO} than net income plus depreciation, working capital must have {WC_MOVE} by ${ABS_WC} during the period, {CASH_EFFECT} cash rather than the reverse. This is exactly the kind of gap analysts look for on a real cash flow statement — the difference between net income plus D&A and actual operating cash flow is almost always sitting in working capital.' },
+
+
+  /* Added with hints (h) and follow-ups (fu). */
+  /* ── Valuation ── */
+  { id:'ib500', d:'easy', t:'valuation',
+    gen: function () {
+      var PV = mockPick([100, 200, 400, 500]); var R = mockPick([5, 10, 20, 25]);
+      return { PV: PV, R: R, FV: PV * (1 + R / 100) };
+    },
+    q:'Someone promises to pay you ${FV} exactly one year from now. If you could earn {R}% a year by investing your money somewhere else, what is that promise worth to you today?',
+    f:'Work backwards from the future amount: divide ${FV} by one plus {R}%, which gives ${PV}. The check that makes it click: invest ${PV} today at {R}% and you have exactly ${FV} in a year, so the two are equivalent. That is all a present value is — the amount today that grows into the future payment at the return you could earn elsewhere. Every DCF is this same step, repeated for each year.',
+    h:'Flip the question around: how much would you need to invest today at {R}% to end up with ${FV} a year from now?',
+    fu:['What if the same ${FV} arrived two years from now instead of one — is it worth more or less today, and why?',
+        'Why would a riskier promise of the same ${FV} be worth less to you today?'] },
+
+  { id:'ib501', d:'easy', t:'valuation',
+    gen: function () {
+      var E = mockPick([10, 20, 25, 40]); var M = mockPick([6, 8, 10, 12]);
+      return { E: E, M: M, EV: E * M };
+    },
+    q:'Similar companies sell for about {M}x their EBITDA. This company earns ${E} million of EBITDA. Roughly what is the whole business worth?',
+    f:'Apply the peer multiple to this company\'s EBITDA: {M} times ${E} million is ${EV} million. That is enterprise value — what the whole operating business is worth, before worrying about how it is financed. The logic is the same as pricing a house off what similar houses on the street sold for per square foot: you anchor on what the market already pays for comparable things.',
+    h:'A multiple is just price per unit of earnings. If peers sell for {M} dollars per dollar of EBITDA, what does ${E} million of EBITDA sell for?',
+    fu:['Why might this company deserve a higher multiple than its peers?',
+        'That number is enterprise value. What would you need to know to get from there to what the shareholders own?'] },
+
+  { id:'ib502', d:'easy', t:'valuation',
+    gen: function () {
+      var SH = mockPick([10, 20, 50]); var PX = mockPick([10, 20, 30]);
+      var DEBT = mockPick([50, 100, 150]); var CASH = mockPick([20, 30, 40]);
+      var MC = SH * PX;
+      return { SH: SH, PX: PX, DEBT: DEBT, CASH: CASH, MC: MC, EV: MC + DEBT - CASH };
+    },
+    q:'A company has {SH} million shares trading at ${PX}. It has ${DEBT} million of debt and ${CASH} million of cash. What is its enterprise value?',
+    f:'Start with what the shares are worth: {SH} million times ${PX} is ${MC} million of equity value, or market cap. A buyer of the whole business also takes on the debt, so add ${DEBT} million. But the buyer gets the cash too, which offsets part of the price, so subtract ${CASH} million. Enterprise value is ${EV} million. Say the intuition out loud, not just the formula — interviewers want to hear why debt goes in and cash comes out.',
+    h:'Equity value first. Then ask: if you bought the whole company, what else would you be taking on, and what would you get back?',
+    fu:['Why do we add the debt, when the company already has it on its own balance sheet?',
+        'What happens to enterprise value if a company has more cash than its whole market cap?'] },
+
+  { id:'ib503', d:'easy', t:'valuation',
+    q:'You buy a house for $500,000, and the seller leaves $20,000 of cash in a safe that comes with it. What did you really pay for the house, and how does that idea show up when we value companies?',
+    f:'You really paid $480,000 — the cash in the safe is yours the moment you close, so it hands back part of what you spent. That is exactly why enterprise value subtracts a company\'s cash: when you buy the business, its cash comes with it, and what you are really paying for is the operating business underneath. Tie it back in one sentence: enterprise value is the price of the house, not the price of the house plus the safe.',
+    h:'The cash is yours the second you get the keys. What does that do to your real, out-of-pocket cost?',
+    fu:['Now say the house also came with a $100,000 mortgage you have to take over. What did you really pay?',
+        'Why would a buyer care about the house and the cash separately, instead of just the total?'] },
+
+  { id:'ib504', d:'easy', t:'valuation',
+    q:'What is a discount rate, and why would a riskier company have a higher one?',
+    f:'A discount rate is the return you need to earn to be willing to wait for money in the future — it is what turns future dollars into today\'s dollars. A riskier company gets a higher one because you are less sure the money will actually show up. If you are going to take that chance, you demand more in return, and a higher discount rate makes those uncertain future cash flows worth less today. A quick example helps: a promise from the government and a promise from a startup might name the same dollar amount, but nobody values them the same.',
+    h:'Think about two friends who each promise to pay you back $100 next year. One always pays; one sometimes does not. Would you value the two promises the same today?',
+    fu:['If the discount rate goes up, what happens to the value of a company, and why?',
+        'Where would you actually get a discount rate for a real company?'] },
+
+  { id:'ib505', d:'medium', t:'valuation',
+    gen: function () {
+      var K = mockPick([1, 2, 5]);
+      return { C1: 110 * K, C2: 121 * K, C3: 133.1 * K, PV: 100 * K, TOTAL: 300 * K, COST: 280 * K };
+    },
+    q:'A project pays ${C1} in year one, ${C2} in year two, and ${C3} in year three. At a 10% discount rate, what is it worth today?',
+    f:'Discount each year separately. Year one: ${C1} divided by 1.1 is ${PV}. Year two: ${C2} divided by 1.1 squared, or 1.21, is ${PV}. Year three: ${C3} divided by 1.1 cubed, or 1.331, is also ${PV}. Add them up and the project is worth ${TOTAL} today. The numbers were chosen to come out even, so spend your words on the structure: each year gets discounted one more time than the year before, because the money is one more year away. This is a DCF in miniature.',
+    h:'Each cash flow gets its own discount. Year one divides by 1.1, year two by 1.1 twice, year three by 1.1 three times.',
+    fu:['The project costs ${COST} upfront. Should you do it?',
+        'What happens to the value if the discount rate rises to 12%? You do not need the exact number — just the direction and why.'] },
+
+  { id:'ib506', d:'medium', t:'valuation',
+    gen: function () {
+      var c = mockPick([{ SH: 30, PX: 10, D: 100 }, { SH: 20, PX: 20, D: 100 }, { SH: 10, PX: 15, D: 50 }, { SH: 40, PX: 15, D: 400 }]);
+      var RE = mockPick([10, 12]); var RD = mockPick([6, 8]);
+      var E = c.SH * c.PX; var V = E + c.D;
+      var WE = E / V * 100; var WD = c.D / V * 100; var ATRD = RD * 0.75;
+      return { SH: c.SH, PX: c.PX, D: c.D, RE: RE, RD: RD, E: E, V: V, WE: WE, WD: WD, ATRD: ATRD,
+               WACC: WE * RE / 100 + WD * ATRD / 100 };
+    },
+    q:'A company has {SH} million shares at ${PX} and ${D} million of debt. Its cost of equity is {RE}%, its pre-tax cost of debt is {RD}%, and the tax rate is 25%. What is its WACC?',
+    f:'Get the weights from market values first. Equity is {SH} million times ${PX}, or ${E} million; add ${D} million of debt for ${V} million of total capital. That makes it {WE}% equity and {WD}% debt. Tax-affect the debt: {RD}% times one minus 25% is {ATRD}%. Now blend: {WE}% times {RE}% plus {WD}% times {ATRD}% gives a WACC of about {WACC}%. The step people skip is the weights — use the market value of equity, not book value, because that is what investors actually have at stake today.',
+    h:'Before you can blend anything you need the weights. What is the equity worth at today\'s share price, and what share of total capital is that?',
+    fu:['Why do we use the market value of equity rather than its book value in the weights?',
+        'If this company borrowed more, would its WACC necessarily go down?'] },
+
+  { id:'ib507', d:'hard', t:'valuation',
+    gen: function () {
+      var SH = mockPick([100, 200]); var PX = mockPick([40, 50]);
+      var OPT = mockPick([10, 20]); var K = mockPick([20, 30]);
+      var OPT2 = mockPick([5, 8]); var K2 = PX + 10;
+      var PROC = OPT * K; var BUY = PROC / PX; var NET = OPT - BUY; var DIL = SH + NET;
+      return { SH: SH, PX: PX, OPT: OPT, K: K, OPT2: OPT2, K2: K2, PROC: PROC, BUY: BUY, NET: NET, DIL: DIL, EQ: DIL * PX };
+    },
+    q:'A company has {SH} million basic shares trading at ${PX}. It also has {OPT} million options with a ${K} strike, and another {OPT2} million options with a ${K2} strike. Using the treasury stock method, what is the diluted share count, and what is diluted equity value?',
+    f:'Take each tranche separately, and check whether it is in the money first. The ${K2} options are above the ${PX} share price, so nobody would exercise them — they add nothing. The ${K} options are in the money. Assume all {OPT} million are exercised, bringing in {OPT} million times ${K}, or ${PROC} million of cash. The company uses that cash to buy back stock at ${PX}, retiring {BUY} million shares. Net new shares: {OPT} million minus {BUY} million, or {NET} million. Diluted shares are {SH} million plus {NET} million, or {DIL} million, and diluted equity value is {DIL} million times ${PX}, or ${EQ} million. Name the assumption behind the method: exercise proceeds get used to buy back shares at today\'s price.',
+    h:'Start by asking which of the two option tranches anyone would actually exercise at a ${PX} share price.',
+    fu:['What changes if the share price rises above ${K2}?',
+        'Why does the treasury stock method assume the company buys back shares with the exercise proceeds?'] },
+
+  { id:'ib508', d:'hard', t:'valuation',
+    gen: function () {
+      var FACE = mockPick([200, 300, 500]); var CP = mockPick([20, 25, 50]);
+      return { FACE: FACE, CP: CP, PX: CP * 1.5, PXLOW: CP * 0.8, CONV: FACE / CP };
+    },
+    q:'A company has ${FACE} million of convertible bonds that convert at ${CP} per share. The stock trades at ${PX}. How do the convertibles affect the diluted share count — and what changes if the stock falls to ${PXLOW}?',
+    f:'First check whether conversion makes sense. At ${PX}, the stock is above the ${CP} conversion price, so holders would rather have shares than their ${FACE} million of principal back. Use the if-converted method: ${FACE} million divided by ${CP} gives {CONV} million new shares. Add those to the diluted count, and stop counting the ${FACE} million as debt — you cannot count it as both debt and equity. If the stock falls to ${PXLOW}, it is below the conversion price, so holders would take their money back instead. Then it stays as ${FACE} million of debt in the enterprise value bridge and adds no shares. What the question is testing: a convertible is either debt or equity depending on the share price, never both.',
+    h:'Put yourself in the bondholder\'s shoes. At ${PX} a share, would you rather have your ${FACE} million back, or the shares you could convert into?',
+    fu:['Why can\'t you count the convertible as both debt and new shares?',
+        'Why would a company issue a convertible instead of plain debt or plain stock?'] },
+
+  { id:'ib509', d:'hard', t:'valuation',
+    gen: function () {
+      var BU = mockPick([0.8, 1.0, 1.2]); var DE = mockPick([0.25, 1]);
+      var RF = 4; var ERP = mockPick([5, 6]); var RD = mockPick([6, 8]);
+      var BL = BU * (1 + 0.75 * DE); var RE = RF + BL * ERP;
+      var WE = 1 / (1 + DE) * 100; var WD = DE / (1 + DE) * 100; var ATRD = RD * 0.75;
+      return { BU: BU, DE: DE, DEPCT: DE * 100, RF: RF, ERP: ERP, RD: RD, BL: BL, RE: RE, WE: WE, WD: WD, ATRD: ATRD,
+               WACC: WE * RE / 100 + WD * ATRD / 100 };
+    },
+    q:'Comparable companies have an average unlevered beta of {BU}. Your target has a debt-to-equity ratio of {DE}, a 25% tax rate, and a {RD}% pre-tax cost of debt. The risk-free rate is {RF}% and the equity risk premium is {ERP}%. Walk me all the way to WACC.',
+    f:'Three steps, and narrate each one. Relever the beta for the target\'s own capital structure: {BU} times one plus 0.75 times {DE} gives a levered beta of {BL}. Then CAPM: {RF}% plus {BL} times {ERP}% gives a cost of equity of {RE}%. Then WACC. A debt-to-equity ratio of {DE} means the capital structure is {WE}% equity and {WD}% debt. The after-tax cost of debt is {RD}% times 0.75, or {ATRD}%. Blend them: {WE}% times {RE}% plus {WD}% times {ATRD}% is a WACC of about {WACC}%. The trap is the weights — a debt-to-equity ratio of {DE} does not mean {DEPCT}% debt. Convert it to debt as a share of total capital first.',
+    h:'Relever first, then CAPM, then WACC. And watch the weights: debt-to-equity is not the same as debt as a share of total capital.',
+    fu:['Why do we unlever the comparables\' betas and then relever, instead of just averaging their levered betas?',
+        'Adding debt raises the cost of equity. So why can adding some debt still lower WACC?'] },
+
+  { id:'ib510', d:'hard', t:'valuation',
+    gen: function () {
+      var SH = 100; var PX = mockPick([20, 25]); var OPT = 10; var K = 10;
+      var DEBT = mockPick([500, 600]); var CASH = mockPick([150, 200]); var PREF = 100; var MI = 50; var INV = mockPick([60, 80]);
+      var PROC = OPT * K; var BUY = PROC / PX; var NET = OPT - BUY; var DIL = SH + NET; var EQ = DIL * PX;
+      return { SH: SH, PX: PX, OPT: OPT, K: K, DEBT: DEBT, CASH: CASH, PREF: PREF, MI: MI, INV: INV,
+               PROC: PROC, BUY: BUY, NET: NET, DIL: DIL, EQ: EQ, EV: EQ + DEBT + PREF + MI - CASH - INV };
+    },
+    q:'{SH} million basic shares trade at ${PX}, and there are {OPT} million options with a ${K} strike. The company has ${DEBT} million of debt, ${CASH} million of cash, ${PREF} million of preferred stock, ${MI} million of noncontrolling interest, and ${INV} million of equity investments in companies it does not control. What is enterprise value?',
+    f:'Diluted equity value first. The options are in the money: {OPT} million times ${K} is ${PROC} million of proceeds, which buys back {BUY} million shares at ${PX}, so {NET} million net new shares. Diluted shares are {DIL} million, and diluted equity value is {DIL} million times ${PX}, or ${EQ} million. Now the bridge. Add debt of ${DEBT} million and preferred of ${PREF} million — both are claims that rank ahead of common equity. Add noncontrolling interest of ${MI} million, because the company consolidates 100% of subsidiaries it only partly owns, so its EBITDA includes earnings that belong to someone else. Subtract cash of ${CASH} million. Subtract the ${INV} million of equity investments, because their earnings are not in EBITDA. Enterprise value is ${EV} million. The consistency rule behind every line: if the earnings are in EBITDA, the claim belongs in enterprise value.',
+    h:'Get diluted equity value with the treasury stock method first. Then, for each other item, ask whether its earnings are inside EBITDA or not.',
+    fu:['Why do we add noncontrolling interest but subtract equity investments?',
+        'Would you use the market value or the book value of the preferred stock, and why?'] },
+
+  { id:'ib511', d:'hard', t:'valuation',
+    gen: function () {
+      var SH = 50; var P = mockPick([20, 24]); var ND = mockPick([200, 300]); var E = mockPick([120, 150]); var PM = mockPick([8, 10]);
+      var EQ = SH * P; var EV = EQ + ND;
+      return { SH: SH, P: P, ND: ND, E: E, PM: PM, EQ: EQ, EV: EV, MULT: EV / E };
+    },
+    q:'Your DCF says the stock is worth ${P} per share. There are {SH} million shares, net debt is ${ND} million, and EBITDA is ${E} million. Peers trade at {PM}x EBITDA. What multiple is your DCF implying, and what would you do with that information?',
+    f:'Rebuild enterprise value from the share price. ${P} times {SH} million shares is ${EQ} million of equity value; add ${ND} million of net debt for ${EV} million of enterprise value. Divide by ${E} million of EBITDA: your DCF implies about {MULT}x. Then use it as a sanity check, which is the real point of the question. If it sits well above the peers at {PM}x, your DCF is assuming something the market is not — faster growth, better margins, a lower discount rate, or a generous terminal value — and you should be able to name which assumption is doing it. If it lands near {PM}x, the two methods are telling a consistent story.',
+    h:'Work backwards: share price to equity value, equity value to enterprise value, then divide by EBITDA.',
+    fu:['If the implied multiple is far above peers, which DCF assumptions would you check first?',
+        'Is it a problem when your DCF and your comps disagree? When is that disagreement actually useful?'] },
+
+  /* ── M&A ── */
+  { id:'ib520', d:'easy', t:'ma',
+    q:'If you wanted to buy an entire company, why would you almost always have to pay more than its current share price?',
+    f:'Because the current share price is what people pay for a small, passive slice — not for control. Owners who are happy holding their shares at today\'s price need a reason to sell, and the buyer is getting something extra: the ability to run the company, change its strategy, and capture savings from combining it with its own business. That extra is called a control premium, and in public deals it often runs somewhere around 20% to 40%. Mention the other side too: if the buyer could not create more value than the market already sees, paying a premium would not make sense.',
+    h:'Think about who is on the other side. Why would a shareholder who is happy owning the stock today agree to sell it to you at the same price?',
+    fu:['What does the buyer get for that premium that an ordinary investor does not?',
+        'What happens to the buyer if it pays a big premium and the savings it expected never show up?'] },
+
+  { id:'ib521', d:'easy', t:'ma',
+    q:'Imagine you own a company and someone wants to buy it. Would you rather be paid in cash or in shares of the buyer\'s stock? Why?',
+    f:'Most sellers prefer cash, because it is certain — the number is the number, and they can walk away. Being paid in the buyer\'s stock means your payout depends on how the combined company does after the deal, so you share in the risk. But stock has upsides worth naming: you keep a stake if you believe the combined business will grow, and the tax bill can sometimes be put off until you sell the shares. A strong answer picks a side, then says what would change your mind — for example, taking stock if you were confident in the buyer.',
+    h:'Think about certainty. With cash, you know exactly what you got. With stock, what does your final payout depend on?',
+    fu:['Why might a buyer prefer to pay in stock instead of cash?',
+        'If the buyer\'s stock falls 20% right after the deal closes, who feels it?'] },
+
+  { id:'ib522', d:'easy', t:'ma',
+    gen: function () {
+      var SH = mockPick([50, 100]); var PX = mockPick([20, 40]); var PREM = mockPick([20, 25, 30]);
+      var OFFER = PX * (1 + PREM / 100);
+      return { SH: SH, PX: PX, PREM: PREM, OFFER: OFFER, TOTAL: SH * OFFER };
+    },
+    q:'A target has {SH} million shares trading at ${PX}. The buyer offers a {PREM}% premium. What is the offer price per share, and what does the buyer pay for all the shares?',
+    f:'Apply the premium to today\'s price: ${PX} times one plus {PREM}% is ${OFFER} per share. Multiply by {SH} million shares to get ${TOTAL} million for all the equity. Then say what that number is — the equity purchase price. If the target has debt, the buyer takes that on too, so the full cost of the business is higher than this.',
+    h:'A {PREM}% premium means paying {PREM}% more than today\'s price. Get the per-share offer first, then scale it up to every share.',
+    fu:['The target also has debt. Does the buyer\'s total cost go up or down, and why?',
+        'Why might the premium be bigger for one target than for another?'] },
+
+  { id:'ib523', d:'easy', t:'ma',
+    gen: function () {
+      var NA = mockPick([200, 300, 400]); var GW = mockPick([100, 150, 200]);
+      return { NA: NA, GW: GW, PRICE: NA + GW };
+    },
+    q:'A company pays ${PRICE} million to buy another company whose assets, minus its liabilities, are worth ${NA} million. How much goodwill does the buyer record, and what does that goodwill represent?',
+    f:'Goodwill is whatever was paid above the value of the things you can identify and count: ${PRICE} million minus ${NA} million is ${GW} million. It represents what the buyer believes it is getting beyond the listed assets — the brand, customer relationships, the team, the savings from combining. It sits on the balance sheet as an asset. Add one line of judgment: if the deal disappoints, that goodwill can be written down, which is the accounting admission that the buyer overpaid.',
+    h:'The buyer paid ${PRICE} million for things it can count and things it cannot. How much is left over after the ${NA} million of countable assets?',
+    fu:['Why would a buyer ever pay more than the value of the assets it can identify?',
+        'What happens to goodwill if the acquired business performs badly?'] },
+
+  { id:'ib524', d:'medium', t:'ma',
+    gen: function () {
+      var PRICE = mockPick([400, 500, 600]); var R = 4; var T = 25; var NIT = mockPick([10, 15, 20]);
+      var PRETAX = PRICE * R / 100; var LOST = PRETAX * (1 - T / 100);
+      var NEWNI = 100 + NIT - LOST; var NEWEPS = NEWNI / 50; var CHG = (NEWEPS / 2 - 1) * 100;
+      var VERDICT = Math.abs(CHG) < 0.05 ? 'roughly neutral' :
+        (CHG > 0 ? 'accretive, by about ' + mockNum(CHG) + '%' : 'dilutive, by about ' + mockNum(-CHG) + '%');
+      return { PRICE: PRICE, R: R, T: T, NIT: NIT, PRETAX: PRETAX, LOST: LOST, NEWNI: NEWNI, NEWEPS: NEWEPS.toFixed(2), VERDICT: VERDICT };
+    },
+    q:'An acquirer earns $100 million with 50 million shares. It buys a target earning ${NIT} million for ${PRICE} million, paying entirely with cash it already has, which currently earns {R}% interest. The tax rate is {T}%. Accretive or dilutive?',
+    f:'Standalone EPS is $100 million over 50 million shares, or $2.00. The cost people forget: that cash was earning {R}%, and it stops once it is spent. ${PRICE} million times {R}% is ${PRETAX} million of pretax interest, or ${LOST} million after tax. Combined net income is $100 million plus the target\'s ${NIT} million, minus the ${LOST} million of lost interest, or ${NEWNI} million. No new shares are issued, so EPS is ${NEWNI} million over 50 million, or ${NEWEPS}. That is {VERDICT} versus $2.00. The shortcut to mention: a cash deal is accretive when the target\'s earnings are bigger than the after-tax interest the cash was earning.',
+    h:'Using cash is not free. What was that ${PRICE} million earning before the deal, and what does the company give up by spending it?',
+    fu:['What is the most the acquirer could pay in cash before this deal turns dilutive?',
+        'Why is cash usually the cheapest way to fund a deal, as far as EPS is concerned?'] },
+
+  { id:'ib525', d:'medium', t:'ma',
+    gen: function () {
+      var c = mockPick([[100, 25], [300, 100], [150, 50], [80, 20]]);
+      var TOT = c[0] + c[1]; var PCT = c[1] / TOT * 100;
+      return { SHA: c[0], NEW: c[1], TOT: TOT, PCT: PCT, APCT: 100 - PCT };
+    },
+    q:'An acquirer has {SHA} million shares outstanding and issues {NEW} million new shares to the target\'s shareholders in an all-stock deal. What percentage of the combined company do the target\'s former shareholders own?',
+    f:'After the deal there are {SHA} million plus {NEW} million, or {TOT} million shares. The target\'s shareholders hold the {NEW} million new ones, so they own {NEW} over {TOT}, or {PCT}%. The acquirer\'s existing holders own the other {APCT}%. The common mistake is dividing {NEW} by {SHA} — that compares new shares to old ones instead of to the combined total.',
+    h:'Count total shares after the deal first. Then ask what slice of that total the target\'s holders were handed.',
+    fu:['Why do the acquirer\'s existing shareholders care about this number?',
+        'How would you judge whether that ownership split is fair, given what each company brings to the combined business?'] },
+
+  { id:'ib526', d:'medium', t:'ma',
+    gen: function () {
+      var SH = mockPick([40, 50]); var OFFER = mockPick([30, 40]); var DEBT = mockPick([300, 500]); var CASH = mockPick([50, 100]);
+      var EQP = SH * OFFER;
+      return { SH: SH, OFFER: OFFER, DEBT: DEBT, CASH: CASH, EQP: EQP, PEV: EQP + DEBT - CASH };
+    },
+    q:'A buyer offers ${OFFER} per share for all {SH} million of a target\'s shares. The target has ${DEBT} million of debt, which the buyer will pay off at closing, and ${CASH} million of cash. What is the total purchase price of the business?',
+    f:'Equity purchase price first: ${OFFER} times {SH} million is ${EQP} million. That buys the shares, but the debt has to be dealt with too — it is being paid off at close, so add ${DEBT} million. The buyer also gets the target\'s ${CASH} million of cash, which offsets the cost, so subtract it. The purchase enterprise value is ${PEV} million. This is the number you would divide by the target\'s EBITDA to get the multiple the buyer actually paid.',
+    h:'The offer price covers the shares. What else does the buyer have to pay for, and what does it get back?',
+    fu:['If the target needs half of its ${CASH} million of cash just to run the business day to day, would you still subtract all of it?',
+        'Why do deal announcements usually quote the multiple on enterprise value rather than on the equity price?'] },
+
+  { id:'ib527', d:'hard', t:'ma',
+    gen: function () {
+      var NIT = mockPick([30, 40, 60]);
+      var NEWNI = 200 + NIT - 15; var NEWEPS = NEWNI / 110; var CHG = (NEWEPS / 2 - 1) * 100;
+      var TYIELD = NIT / 800 * 100;
+      return { NIT: NIT, NEWNI: NEWNI, NEWEPS: NEWEPS.toFixed(2),
+               VERDICT: CHG > 0 ? 'accretive, by about ' + mockNum(CHG) + '%' : 'dilutive, by about ' + mockNum(-CHG) + '%',
+               TYIELD: TYIELD,
+               YIELDLINE: TYIELD > 4.375 ? 'That is above the blended cost, which is why the deal is accretive.' : 'That is below the blended cost, which is why the deal is dilutive.' };
+    },
+    q:'An acquirer earns $200 million with 100 million shares trading at $40. It buys a target earning ${NIT} million for $800 million, paying half with new debt at 5% and half with newly issued stock. The tax rate is 25% and there are no synergies. Accretive or dilutive, and by how much?',
+    f:'Standalone EPS is $200 million over 100 million shares, or $2.00. Split the funding. The $400 million of debt costs 5%, or $20 million of interest — $15 million after tax. The $400 million of stock at $40 a share means 10 million new shares. Pro forma net income is $200 million plus ${NIT} million minus $15 million, or ${NEWNI} million, spread over 110 million shares: ${NEWEPS} per share. That is {VERDICT}. Then give the cross-check. The stock half costs the acquirer its earnings yield — $2.00 of EPS over a $40 price, or 5% — and the debt half costs 3.75% after tax, so the blended cost is about 4.4%. The target\'s earnings yield at this price is ${NIT} million over $800 million, or {TYIELD}%. {YIELDLINE}',
+    h:'Handle the two halves separately: the debt half adds after-tax interest, the stock half adds shares. Then combine them.',
+    fu:['What if the whole $800 million were funded with debt instead? More or less accretive?',
+        'The deal is accretive. Does that make it a good deal?'] },
+
+  { id:'ib528', d:'hard', t:'ma',
+    gen: function () {
+      var NIT = mockPick([12, 14, 16]); var COMB = 100 + NIT; var GAP = 120 - COMB;
+      return { NIT: NIT, COMB: COMB, GAP: GAP, PRETAX: GAP / 0.8 };
+    },
+    q:'An acquirer earns $100 million with 50 million shares. It buys a target earning ${NIT} million by issuing 10 million new shares. The tax rate is 20%. How much in pretax synergies does the combined company need just to keep EPS flat?',
+    f:'Standalone EPS is $100 million over 50 million shares, or $2.00. After the deal there are 60 million shares, so to hold EPS at $2.00 the combined company needs 60 million times $2.00, or $120 million of net income. Without synergies it has $100 million plus ${NIT} million, or ${COMB} million, so it is ${GAP} million short after tax. Synergies are taxed like any other profit, so gross that up: ${GAP} million divided by one minus 20% is ${PRETAX} million of pretax synergies. Finish with judgment: is that number believable next to the two companies\' combined cost base?',
+    h:'Work backwards. What total net income keeps EPS at its standalone level once the new shares exist?',
+    fu:['Why do you have to gross the shortfall up for taxes?',
+        'Would you trust cost synergies or revenue synergies more to close that gap, and why?'] },
+
+  { id:'ib529', d:'hard', t:'ma',
+    gen: function () {
+      var NIT = mockPick([15, 30, 45]); var R = mockPick([5, 8]); var ATR = R * 0.75; var MAX = NIT / (ATR / 100);
+      return { NIT: NIT, R: R, ATR: ATR, MAX: MAX, PE: MAX / NIT };
+    },
+    q:'An acquirer wants to buy a target that earns ${NIT} million a year, funding the whole deal with new debt at {R}%. The tax rate is 25% and there are no synergies. What is the most it can pay before the deal becomes dilutive?',
+    f:'With all debt, no new shares are issued, so the only question is whether the target\'s earnings cover the new after-tax interest. Each dollar borrowed costs {R}% times one minus 25%, or {ATR}% after tax. Break-even is where that after-tax interest equals the target\'s ${NIT} million of earnings: ${NIT} million divided by {ATR}% is ${MAX} million. Pay less and the deal is accretive; pay more and it is dilutive. The shortcut behind it: an all-debt deal is accretive when the target\'s earnings yield at the purchase price is higher than the after-tax cost of debt. At ${MAX} million, that is a P/E of about {PE}x.',
+    h:'No new shares means EPS only changes if net income changes. At what price does the new interest bill exactly eat the target\'s earnings?',
+    fu:['What happens to that maximum price if interest rates rise by two points?',
+        'The acquirer can pay up to that price without dilution. Should it? What is this analysis leaving out?'] },
+
+  /* ── LBO ── */
+  { id:'ib540', d:'easy', t:'lbo',
+    gen: function () {
+      var P = mockPick([400, 500]); var DP = mockPick([20, 25]); var UP = mockPick([10, 20]);
+      var DOWN = P * DP / 100; var LOAN = P - DOWN; var SELL = P * (1 + UP / 100);
+      var GAIN = SELL - P; var LEVRET = GAIN / DOWN * 100;
+      return { P: P, DOWN: DOWN, LOAN: LOAN, SELL: SELL, BACK: SELL - LOAN, GAIN: GAIN, UP: UP, LEVRET: LEVRET, TIMES: LEVRET / UP };
+    },
+    q:'You buy a house for ${P},000, putting ${DOWN},000 down and borrowing the rest. A few years later you sell it for ${SELL},000 and pay back the loan. Ignoring interest, what return did you make on your own money — and what would it have been if you had paid all cash?',
+    f:'With the loan: you put in ${DOWN},000, sold for ${SELL},000, and paid back the ${LOAN},000 loan, so you walk away with ${BACK},000 — a gain of ${GAIN},000 on ${DOWN},000 of your own money, or {LEVRET}%. All cash: you put in ${P},000 and got back ${SELL},000, a {UP}% return. Same house, same price change, but borrowing made your return {TIMES} times bigger, because the whole gain landed on a much smaller amount of your own money. That is the core idea behind a leveraged buyout. Mention the catch: if the house had fallen in value, the loss would be magnified the same way.',
+    h:'Work out how much of your own money went in, and how much you walk away with after paying back the loan.',
+    fu:['What would your return be if the house had fallen {UP}% instead?',
+        'We ignored interest on the loan. How would including it change the answer?'] },
+
+  { id:'ib541', d:'easy', t:'lbo',
+    q:'A private equity firm plans to borrow most of the money it needs to buy a company. Why would it prefer a steady, boring business over a fast-growing startup?',
+    f:'Because borrowed money has to be paid back on a schedule, no matter how the year goes. A steady business — think of a company selling something people buy every month — produces predictable cash, so it can reliably cover interest and chip away at the debt. A fast-growing startup is exciting, but its cash is unpredictable, and it usually needs to spend everything it makes to keep growing, so there is nothing left over for lenders. Missing a debt payment can cost the owners the whole company. End with the trade-off: the firm gives up some upside in exchange for surviving a bad year.',
+    h:'Think about what a loan requires every month. Which kind of business is more likely to have the cash when the payment is due?',
+    fu:['What specific features would make a business especially good at carrying a lot of debt?',
+        'What could go wrong if a firm put heavy debt on a cyclical business, like a car parts maker?'] },
+
+  { id:'ib542', d:'easy', t:'lbo',
+    gen: function () {
+      var P = mockPick([400, 500, 600]); var EQ = P * mockPick([30, 40]) / 100;
+      return { P: P, EQ: EQ, MOIC: P / EQ };
+    },
+    q:'A buyer pays ${P} million for a company, putting in ${EQ} million of its own money and borrowing the rest. Over five years the company uses its own profits to pay off all of the debt, then sells for the same ${P} million it was bought for. How much does the buyer get back, and how many times its money is that?',
+    f:'The company sells for ${P} million and owes nothing, so the whole ${P} million goes to the buyer. It put in ${EQ} million, so it got back ${P} million over ${EQ} million, or about {MOIC} times its money — even though the company\'s value never changed. The point: paying down debt moves value from the lenders to the owner. Every dollar of debt repaid is one more dollar that belongs to the buyer at the end.',
+    h:'At the sale, who gets paid first, and how much are they still owed?',
+    fu:['If the company had paid off only half the debt, what would the buyer get back?',
+        'This return came without the company growing at all. What other ways could the buyer make its money grow?'] },
+
+  { id:'ib543', d:'medium', t:'lbo',
+    gen: function () {
+      var E = mockPick([50, 60]); var M = mockPick([8, 10]); var LEV = mockPick([4, 5]);
+      var PRICE = E * M; var FEES = PRICE * 0.02; var USES = PRICE + FEES; var DEBT = E * LEV; var EQ = USES - DEBT;
+      return { E: E, M: M, LEV: LEV, LEVLOW: LEV - 1, PRICE: PRICE, FEES: FEES, USES: USES, DEBT: DEBT, EQ: EQ, EQPCT: Math.round(EQ / USES * 100) };
+    },
+    q:'A sponsor buys a company with ${E} million of EBITDA at {M}x. Transaction fees are 2% of the purchase price, and lenders will provide {LEV}x EBITDA of debt. Build the sources and uses. How big is the equity check?',
+    f:'Uses first — what the money is spent on. The purchase price is ${E} million times {M}, or ${PRICE} million. Fees are 2% of that, or ${FEES} million. Total uses: ${USES} million. Now sources. Debt is {LEV} times ${E} million, or ${DEBT} million. The sponsor\'s equity fills whatever is left: ${USES} million minus ${DEBT} million, or ${EQ} million, about {EQPCT}% of the total. The detail interviewers listen for is the fees: they are a real use of cash, so they come out of the sponsor\'s check.',
+    h:'The two sides have to match. Total up everything the money is spent on, then subtract what the lenders provide.',
+    fu:['If lenders would only provide {LEVLOW}x, what happens to the equity check and to the sponsor\'s likely returns?',
+        'Why do sponsors care so much about fees if they are only 2% of the price?'] },
+
+  { id:'ib544', d:'medium', t:'lbo',
+    gen: function () {
+      var EBITDA = mockPick([100, 120]); var DA = 20; var CAPEX = mockPick([20, 25]); var DEBT = mockPick([400, 500]); var R = mockPick([5, 8]);
+      var INT = DEBT * R / 100; var EBT = EBITDA - DA - INT; var NI = EBT * 0.75; var FCF = NI + DA - CAPEX;
+      return { EBITDA: EBITDA, DA: DA, CAPEX: CAPEX, DEBT: DEBT, R: R, INT: INT, EBT: EBT, NI: NI, FCF: FCF, END: DEBT - FCF, WC: 10 };
+    },
+    q:'After an LBO, a company has ${EBITDA} million of EBITDA, ${DA} million of D&A, ${CAPEX} million of capex, and ${DEBT} million of debt at {R}% interest. The tax rate is 25%, and working capital does not change. If all free cash flow goes to paying down debt, how much debt is left at the end of year one?',
+    f:'Get to net income first. Interest is ${DEBT} million times {R}%, or ${INT} million. Take ${EBITDA} million of EBITDA, subtract ${DA} million of D&A and ${INT} million of interest, and you have ${EBT} million of pretax income — ${NI} million after 25% tax. Now turn that into cash: add back the ${DA} million of D&A, since no cash left the building, and subtract ${CAPEX} million of capex, since it did. Free cash flow is ${FCF} million. All of it pays down debt, so ${DEBT} million becomes ${END} million. Mention that year-two interest is lower because the balance is lower — that is why paydown speeds up over time.',
+    h:'Reach net income first, then convert it to cash: add back what was not really spent, take off what was.',
+    fu:['Why does the amount of debt repaid usually grow each year, even if EBITDA stays flat?',
+        'What happens to this answer if working capital needs grow by ${WC} million?'] },
+
+  { id:'ib545', d:'medium', t:'lbo',
+    gen: function () {
+      var E = mockPick([50, 100]); var M = mockPick([8, 10]); var DPCT = mockPick([50, 60]); var PAYPCT = mockPick([40, 50]);
+      var EV = E * M; var DEBT = EV * DPCT / 100; var EQ = EV - DEBT; var REM = DEBT * (1 - PAYPCT / 100); var EXEQ = EV - REM;
+      return { E: E, M: M, DPCT: DPCT, PAYPCT: PAYPCT, EV: EV, DEBT: DEBT, EQ: EQ, REM: REM, EXEQ: EXEQ, MOIC: EXEQ / EQ };
+    },
+    q:'A sponsor buys a company with ${E} million of EBITDA at {M}x, funding {DPCT}% with debt. Five years later EBITDA is still ${E} million, the company sells at the same {M}x, and {PAYPCT}% of the debt has been paid down. What is the sponsor\'s money multiple?',
+    f:'Entry: ${E} million times {M} is ${EV} million. Debt is {DPCT}% of that, or ${DEBT} million, so the sponsor puts in ${EQ} million. Exit: same EBITDA, same multiple, so the business is still worth ${EV} million. With {PAYPCT}% of the debt repaid, ${REM} million is still owed, and the sponsor gets ${EV} million minus ${REM} million, or ${EXEQ} million. Money multiple: ${EXEQ} million over ${EQ} million, about {MOIC}x — all of it from debt paydown, with zero growth. Say that out loud; it shows you understand where LBO returns come from.',
+    h:'Entry equity is the price minus the debt. Exit equity is the exit value minus whatever debt is still owed.',
+    fu:['Roughly what IRR is that over five years?',
+        'Now say EBITDA grew 20% over the five years. How does the answer change?'] },
+
+  { id:'ib546', d:'hard', t:'lbo',
+    gen: function () {
+      var DIV = mockPick([40, 50]); var EXIT = mockPick([180, 200]); var TOT = DIV + EXIT;
+      return { EQ: 100, DIV: DIV, EXIT: EXIT, TOT: TOT, MOIC: TOT / 100,
+               IRR_NR: Math.round(mockIrr([-100, 0, 0, 0, 0, TOT]) * 100),
+               IRR_R: Math.round(mockIrr([-100, 0, DIV, 0, 0, EXIT]) * 100) };
+    },
+    q:'A sponsor invests ${EQ} million. In year two it takes a ${DIV} million dividend recap, and in year five it exits for ${EXIT} million. Compare that with a deal that pays nothing until a year-five exit of ${TOT} million. Which has the higher money multiple, which has the higher IRR, and roughly what are they?',
+    f:'The money multiple is identical: ${DIV} million plus ${EXIT} million is ${TOT} million back on ${EQ} million, or {MOIC}x either way. IRR is not. With no recap, {MOIC}x over five years is about {IRR_NR}% a year. With the recap, ${DIV} million comes back in year two instead of year five, and money returned earlier counts for more in an IRR, so the recap version comes out around {IRR_R}%. Show your reasoning with anchors rather than solving exactly: 2x in five years is about 15%, 2.5x is about 20%, and pulling cash forward nudges the IRR up. Then the judgment: the recap lifts IRR without creating any value and adds debt to the company, which is why LPs look at money multiple next to IRR.',
+    h:'Total cash back is the same in both deals. What differs is when it arrives. Which of the two measures cares about timing?',
+    fu:['Why might an LP be skeptical of a fund with high IRRs but modest money multiples?',
+        'What risks does the dividend recap add to the portfolio company itself?'] },
+
+  { id:'ib547', d:'hard', t:'lbo',
+    gen: function () {
+      var G = mockPick([0, 10]); var r1 = function (x) { return Math.round(x); };
+      var debt = 500, e = 100, v = { G: G }, i;
+      for (i = 1; i <= 3; i++) {
+        e = r1(100 * Math.pow(1 + G / 100, i));
+        var INT = r1(debt * 0.08); var F = r1((e - 10 - INT) * 0.75);
+        debt = debt - F;
+        v['E' + i] = e; v['I' + i] = INT; v['F' + i] = F; v['D' + i] = debt;
+      }
+      v.EXEV = e * 8; v.EXEQ = v.EXEV - debt; v.MOIC = v.EXEQ / 320;
+      v.IRR = Math.round((Math.pow(v.EXEQ / 320, 1 / 3) - 1) * 100);
+      return v;
+    },
+    q:'Paper LBO, three years. Entry EBITDA is $100 million, bought at 8x, with $20 million of fees and 5x EBITDA of debt at 8% interest. EBITDA grows {G}% a year. D&A and capex are both $10 million a year, the tax rate is 25%, working capital is flat, and all free cash flow repays debt. The company exits at 8x in year three. What are the money multiple and IRR? Round to the nearest million as you go.',
+    f:'Entry: $100 million times 8 is $800 million, plus $20 million of fees, so $820 million of uses. Debt is 5 times $100 million, or $500 million, leaving $320 million of equity. Each year, free cash flow is EBITDA minus D&A minus interest, times 0.75 — D&A gets added back and capex taken off, and since they are equal they cancel. Year one: EBITDA ${E1} million, interest ${I1} million, free cash flow ${F1} million, debt down to ${D1} million. Year two: EBITDA ${E2} million, interest ${I2} million, free cash flow ${F2} million, debt ${D2} million. Year three: EBITDA ${E3} million, interest ${I3} million, free cash flow ${F3} million, debt ${D3} million. Exit: ${E3} million times 8 is ${EXEV} million; minus ${D3} million of debt leaves ${EXEQ} million for the sponsor. That is about {MOIC}x, or roughly {IRR}% a year over three years. Narrate each step — in a paper LBO the structure matters more than the last decimal.',
+    h:'Set up entry equity first. Then run one year at a time: interest on the starting debt, then free cash flow, then the new debt balance.',
+    fu:['Which of the three return drivers did the most work here?',
+        'How do the returns change if the exit multiple falls to 7x?'] },
+
+  { id:'ib548', d:'hard', t:'lbo',
+    gen: function () {
+      var PAID = mockPick([150, 200]); var EXE = mockPick([140, 150]); var EXM = mockPick([8, 9]); var TARGET = mockPick([2.5, 3]);
+      var REM = 500 - PAID; var EXEV = EXE * EXM; var EXEQ = EXEV - REM; var ENTEQ = EXEQ / TARGET; var ENTEV = ENTEQ + 500;
+      return { PAID: PAID, EXE: EXE, EXM: EXM, TARGET: TARGET, REM: REM, EXEV: EXEV, EXEQ: EXEQ, ENTEQ: ENTEQ, ENTEV: ENTEV, ENTM: ENTEV / 100 };
+    },
+    q:'A sponsor is bidding on a company with $100 million of EBITDA and plans to use $500 million of debt, repaying ${PAID} million of it by exit. It expects ${EXE} million of EBITDA at exit and a {EXM}x exit multiple, and it needs a {TARGET}x money multiple. What is the highest entry multiple it can pay?',
+    f:'Start at the end and work backwards. Exit enterprise value is ${EXE} million times {EXM}, or ${EXEV} million. Debt remaining is $500 million minus ${PAID} million, or ${REM} million, so exit equity is ${EXEQ} million. To earn {TARGET}x, the sponsor can put in at most ${EXEQ} million divided by {TARGET}, or ${ENTEQ} million. Add back the $500 million of debt, and the most it can pay for the business is ${ENTEV} million — about {ENTM}x the $100 million of EBITDA. Say what this number is in practice: the ceiling the deal team takes into the auction. Bid above it and the fund misses its return target.',
+    h:'Begin at exit: exit equity, then the most equity you can invest and still hit {TARGET}x, then add the debt back.',
+    fu:['A rival bids 1x above your ceiling. What would have to be true for you to match it?',
+        'Roughly what IRR does a {TARGET}x money multiple represent over five years?'] },
+
+  { id:'ib549', d:'hard', t:'lbo',
+    gen: function () {
+      var DEBT = mockPick([500, 600]); var E1 = mockPick([130, 150]); var M1 = mockPick([8, 9]); var PAID = mockPick([200, 300]);
+      var EQ0 = 1000 - DEBT; var REM = DEBT - PAID; var EV1 = E1 * M1; var EQ1 = EV1 - REM;
+      var GROWTH = (E1 - 100) * 10; var MULTABS = (10 - M1) * E1;
+      return { DEBT: DEBT, E1: E1, M1: M1, PAID: PAID, EQ0: EQ0, REM: REM, EV1: EV1, EQ1: EQ1, MOIC: EQ1 / EQ0,
+               GAIN: EQ1 - EQ0, GROW_E: E1 - 100, GROWTH: GROWTH, MULTABS: MULTABS };
+    },
+    q:'A sponsor buys a company with $100 million of EBITDA at 10x, using ${DEBT} million of debt. It exits with ${E1} million of EBITDA at {M1}x, having repaid ${PAID} million of debt. What is the money multiple, and how much of the gain came from EBITDA growth, the change in multiple, and debt paydown?',
+    f:'Entry equity: $1,000 million minus ${DEBT} million of debt, or ${EQ0} million. Exit: ${E1} million times {M1} is ${EV1} million; with ${REM} million of debt remaining, exit equity is ${EQ1} million. That is about {MOIC}x, a gain of ${GAIN} million. Now attribute it. EBITDA growth: ${GROW_E} million more EBITDA at the entry multiple of 10x is worth ${GROWTH} million. Multiple change: falling from 10x to {M1}x on ${E1} million of exit EBITDA costs ${MULTABS} million. Debt paydown: ${PAID} million. Check that it adds up: ${GROWTH} million minus ${MULTABS} million plus ${PAID} million is ${GAIN} million. The takeaway: the sponsor made money even though the market paid less per dollar of EBITDA, because operations and debt paydown carried the deal.',
+    h:'Get entry and exit equity first. Then value the EBITDA growth at the entry multiple, and price the multiple change on the exit EBITDA.',
+    fu:['Why do most sponsors refuse to count on multiple expansion in their base case?',
+        'If EBITDA had not grown at all, would this deal still have made money?'] },
+
+  { id:'ib550', d:'hard', t:'lbo',
+    gen: function () {
+      var P = mockPick([100, 200]); var R = mockPick([10, 12]); var g = 1 + R / 100;
+      var B1 = P * g, B2 = B1 * g, B3 = B2 * g;
+      return { P: P, R: R, B1: B1, B2: B2, B3: B3, ACC: B3 - P, SIMPLE: P * R / 100 * 3 };
+    },
+    q:'A company issues ${P} million of PIK notes at {R}%, with interest paid in kind and nothing paid in cash until maturity in three years. What does it owe at maturity?',
+    f:'PIK interest is not paid; it is added to the balance, so it compounds. Year one: ${P} million grows by {R}% to ${B1} million. Year two: interest is charged on that bigger balance, so it grows to ${B2} million. Year three: ${B3} million. That is ${ACC} million of interest the company never paid in cash but still owes — more than the ${SIMPLE} million three years of simple interest would be, because each year\'s interest earns interest. Then the trade-off: PIK protects cash flow today, which is why companies accept it, but the balance grows quietly and eats into the equity at exit.',
+    h:'Nothing is paid along the way. Each year\'s interest is added to what is owed, and next year\'s interest is charged on the new balance.',
+    fu:['Why would a lender accept being paid in kind instead of in cash?',
+        'Where does PIK debt usually sit in the capital structure, and why is its rate usually high?'] },
 ],
 
 /* ── CONSULTING ────────────────────────────────────────────────────── */
@@ -11134,11 +11731,14 @@ hf: [
     f:'Do not treat it as a timing tool — inversions have preceded most recent recessions, but the lag between inversion and downturn has run anywhere from months to over a year, so shorting the market outright off the signal alone is a good way to bleed capital being early. The more disciplined response: start tilting the book toward quality and away from the most cyclical, most leveraged names, since those are what get hurt first and hardest if a slowdown does arrive. Watch credit spreads alongside the curve, since widening spreads are a more immediate confirmation that the market is actually pricing in distress. Size the tilt modestly rather than making a binary bet, and say explicitly what would make you act more aggressively — spreads blowing out, weakening labor data, guidance cuts across a sector — rather than acting on the curve alone.' },
   { id:'hf206', d:'hard', t:'macro', q:'How would a fund actually think about macro risk differently from stock-specific risk when building a portfolio?',
     f:'Stock-specific risk is idiosyncratic — a single name can go to zero for reasons that have nothing to do with any other position in the book, so diversification across enough names genuinely reduces it. Macro risk is systematic — a rate shock, a credit event, a recession hits nearly every position at once, in the same direction, and no amount of diversification across names fixes that, because the risk is common to all of them. A fund handles this by separating the two exposures deliberately: sizing single-name bets based on company-specific conviction, but managing market and rate exposure as a portfolio-level decision, often hedged separately with index shorts or rate instruments rather than left to net out by accident. The practice that ties it together is stress-testing the whole book against specific macro scenarios — a rate shock, a credit freeze — rather than just checking the historical correlation matrix, since correlations that look low in calm markets can converge to one in a real dislocation.' },
-  { id:'hf207', d:'easy', t:'quant', q:'A fund is $500 long and $500 short, on $1,000 of total capital. What is its net exposure?',
-    f:'Net exposure is long minus short: $500 minus $500 is $0, or 0% of capital. That means the fund is market-neutral on a directional basis — a broad market move up or down should not, on its own, make or lose the fund money, since the longs and shorts should offset. It does not mean the fund has no risk: with $1,000 of gross exposure at work, being wrong on the individual longs or shorts still costs money regardless of which way the overall market moves.' },
-  { id:'hf208', d:'easy', t:'quant', q:'You buy a stock at $50 and it rises to $60. What is your percentage gain?',
-    f:'Divide the gain by what you paid: $60 minus $50 is $10, and $10 over $50 is a 20% gain. The rule that trips people up is the same one as any growth calculation — always divide by the starting point, your cost basis, never by the ending price. Dividing by $60 instead would understate the return.' },
-
+  { id:'hf207', d:'easy', t:'quant',
+    gen: function () { var X = mockPick([500, 1000, 2500]); return { X: X, CAP: X * 2 }; },
+    q:'A fund is ${X} long and ${X} short, on ${CAP} of total capital. What is its net exposure?',
+    f:'Net exposure is long minus short: ${X} minus ${X} is $0, or 0% of capital. That means the fund is market-neutral on a directional basis — a broad market move up or down should not, on its own, make or lose the fund money, since the longs and shorts should offset. It does not mean the fund has no risk: with ${CAP} of gross exposure at work, being wrong on the individual longs or shorts still costs money regardless of which way the overall market moves.' },
+  { id:'hf208', d:'easy', t:'quant',
+    gen: function () { var BUY = mockPick([40, 50, 80]); var UP = mockPick([10, 20, 25]); var SELL = BUY * (1 + UP / 100); return { BUY: BUY, SELL: SELL, GAIN: SELL - BUY, UP: UP }; },
+    q:'You buy a stock at ${BUY} and it rises to ${SELL}. What is your percentage gain?',
+    f:'Divide the gain by what you paid: ${SELL} minus ${BUY} is ${GAIN}, and ${GAIN} over ${BUY} is a {UP}% gain. The rule that trips people up is the same one as any growth calculation — always divide by the starting point, your cost basis, never by the ending price. Dividing by ${SELL} instead would understate the return.' },
   { id:'hf209', d:'easy', t:'pitch', q:'What is a \'thesis\' in the context of an investment, in plain terms?',
     f:'A thesis is the specific reason you believe an investment will make money, stated clearly enough that it could actually be proven wrong. It is not just \'I think this company is good\' — it is a concrete claim: the market is underpricing a specific thing, and when that thing becomes visible, the price will move. A real thesis names what has to happen, roughly when, and what would tell you it is not happening. Without that specificity, it is an opinion, not a thesis.' },
   { id:'hf210', d:'easy', t:'pitch', q:'What is the difference between a stock being \'cheap\' and a stock being a \'good investment\'?',
@@ -11162,10 +11762,18 @@ hf: [
     q:'A fund of funds charges 1% management and 10% performance on top of the underlying hedge funds\' own 2% and 20%. If the underlying funds return {GROSS}% gross, what does the end investor actually receive?',
     f:'Layer it step by step, since fees compound rather than add. At the underlying fund: {GROSS}% less the 2% management fee, then less 20% of what remains as a performance fee, leaves about {AFTER1}%. The fund of funds then takes its own 1% management fee and 10% performance fee on top of that, leaving the end investor with roughly {FINAL}%. Say the total cost out loud: on a {GROSS}% gross return, the investor gave up a meaningful share of it to two separate layers of fees just to be two steps removed from the actual investment decision — the central argument against funds of funds, and part of why direct hedge fund allocation has grown at their expense.' },
 
-  { id:'hf215', d:'easy', t:'quant', q:'A fund\'s portfolio is worth $10 million and it charges a 2% annual management fee. How much does that fee cost investors over the year, in dollars?',
-    f:'2% of $10 million is $200,000. Simple multiplication, but say the point out loud: that fee is charged regardless of performance, which is exactly why investors care so much about what a fund actually delivers above and beyond that guaranteed cost.' },
-  { id:'hf216', d:'easy', t:'quant', q:'You have $100,000 to invest. Half goes into a stock that returns 20%, half into one that returns -10%. What is your overall portfolio return?',
-    f:'Weight each return by its share of capital: 50% times 20% is 10 percentage points, plus 50% times -10% is -5 percentage points, for a net 5% portfolio return. The mistake to avoid is simply averaging the two raw numbers — that happens to work here because the weights are equal, but the moment they aren\'t, you have to weight by dollars invested, not by number of positions.' },
+  { id:'hf215', d:'easy', t:'quant',
+    gen: function () { var AUM = mockPick([10, 50, 200]); var FEE = mockPick([1, 1.5, 2]); return { AUM: AUM, FEE: FEE, DOL: AUM * 1000000 * FEE / 100 }; },
+    q:'A fund\'s portfolio is worth ${AUM} million and it charges a {FEE}% annual management fee. How much does that fee cost investors over the year, in dollars?',
+    f:'{FEE}% of ${AUM} million is ${DOL}. Simple multiplication, but say the point out loud: that fee is charged regardless of performance, which is exactly why investors care so much about what a fund actually delivers above and beyond that guaranteed cost.' },
+  { id:'hf216', d:'easy', t:'quant',
+    gen: function () {
+      var W = mockPick([50, 60, 75]); var R1 = mockPick([20, 30]); var R2 = mockPick([-10, -20]);
+      var C1 = W * R1 / 100; var C2 = (100 - W) * R2 / 100;
+      return { W: W, W2: 100 - W, R1: R1, R2: R2, C1: C1, C2: C2, NET: C1 + C2 };
+    },
+    q:'You have $100,000 to invest. {W}% goes into a stock that returns {R1}%, and the other {W2}% goes into one that returns {R2}%. What is your overall portfolio return?',
+    f:'Weight each return by its share of capital: {W}% times {R1}% is {C1} percentage points, plus {W2}% times {R2}% is {C2} percentage points, for a net {NET}% portfolio return. The mistake to avoid is simply averaging the two raw numbers — that only works when the weights are equal. Otherwise you have to weight by dollars invested, not by number of positions.' },
   { id:'hf217', d:'hard', t:'quant',
     gen: function () {
       var RET = mockPick([12, 15, 18, 20]);
@@ -11414,6 +12022,41 @@ hf: [
   q:'A broker requires {MARGIN_PCT}% initial margin on a ${POSITION_SIZE} thousand position. How much cash do you actually need to post, and what is the maximum leverage that margin requirement implies?',
   f:'Required margin: {MARGIN_PCT}% of ${POSITION_SIZE} thousand is ${REQUIRED_MARGIN} thousand in actual cash needed. The implied maximum leverage is 100 divided by the margin percentage: 100 over {MARGIN_PCT} is about {MAX_LEVERAGE}x. A lower margin requirement means more available leverage for the same cash.' },
 
+
+  /* Added with hints (h) and follow-ups (fu). */
+  { id:'hf500', d:'easy', t:'quant',
+    gen: function () {
+      var S = mockPick([40, 50, 80]); var DROP = mockPick([10, 20, 25]); var C = S * (1 - DROP / 100); var UPPX = S * 1.5;
+      return { S: S, C: C, DROP: DROP, PROFIT: S - C, UPPX: UPPX, LOSS: UPPX - S };
+    },
+    q:'You short a stock at ${S} and later buy it back at ${C}. What is your return? And what would it have been if the stock had risen 50% instead?',
+    f:'A short profits when the price falls: you sold at ${S} and bought back at ${C}, so you made ${PROFIT} a share, or {DROP}% of the ${S} you shorted at. If the stock instead rose 50% to ${UPPX}, you would have to buy back at ${UPPX}, losing ${LOSS} a share, or 50%. Then give the point that makes shorting different: a long can lose at most 100%, because a stock cannot go below zero, but a short has no ceiling on losses, because a stock can keep rising. That asymmetry is why shorts are usually sized smaller.',
+    h:'A short is a sale first and a purchase later. Your profit is what you sold for minus what you paid to buy it back.',
+    fu:['What is the most you can make on a short, and what is the most you can lose?',
+        'Besides the price moving against you, what else costs money when you are short a stock?'] },
+
+  { id:'hf501', d:'easy', t:'risk',
+    gen: function () {
+      var DROP = mockPick([20, 25, 50]);
+      return { DROP: DROP, LEFT: 100 - DROP, NEED: DROP / (100 - DROP) * 100 };
+    },
+    q:'A fund loses {DROP}% of its value. What return does it need to get back to where it started?',
+    f:'More than {DROP}%, and that surprise is the point. Say the fund started at $100. After a {DROP}% loss it has ${LEFT}. To get back to $100 it needs to gain ${DROP} on a base of ${LEFT}, which is {NEED}%. Losses and gains are measured from different starting amounts, so a loss always takes a bigger percentage gain to undo — and the gap widens fast as losses grow. That is why good funds care more about avoiding big drawdowns than about chasing big wins.',
+    h:'Pick a starting value, like $100. How much is left after the loss, and what percentage of that smaller amount do you need to earn back?',
+    fu:['What return would it take to recover from a 75% loss?',
+        'Why might an investor prefer a fund that returns 10% a year steadily over one that swings between +30% and −20%?'] },
+
+  { id:'hf502', d:'medium', t:'pitch',
+    gen: function () {
+      var ND = mockPick([300, 400]); var M1 = mockPick([9, 10]);
+      var EQ0 = 800 - ND; var P0 = EQ0 / 20; var EV1 = 100 * M1; var EQ1 = EV1 - ND; var P1 = EQ1 / 20;
+      return { ND: ND, M1: M1, EQ0: EQ0, P0: P0, EV1: EV1, EQ1: EQ1, P1: P1, EVUP: (M1 / 8 - 1) * 100, EQUP: (P1 / P0 - 1) * 100 };
+    },
+    q:'A company has $100 million of EBITDA and trades at 8x EV/EBITDA. It has ${ND} million of net debt and 20 million shares. You think it re-rates to {M1}x. What is your price target, and why does the stock move more than the multiple?',
+    f:'Today: 8 times $100 million is $800 million of enterprise value; subtract ${ND} million of net debt for ${EQ0} million of equity, or ${P0} a share. At {M1}x: enterprise value is ${EV1} million, equity is ${EQ1} million, or ${P1} a share. Enterprise value rose {EVUP}%, but the stock rose {EQUP}%. The reason: the debt stays fixed, so the whole gain in enterprise value lands on the equity, which is a smaller base. Leverage magnifies the equity move in both directions — point out that the same math works against you if the multiple falls.',
+    h:'Get from enterprise value to equity value at both multiples. The net debt does not change — so who gets the whole gain?',
+    fu:['What would the stock be worth if the multiple fell to 7x instead?',
+        'What would have to happen for the market to re-rate this company to {M1}x?'] },
 ],
 
 /* ── PRIVATE EQUITY ────────────────────────────────────────────────── */
@@ -12028,6 +12671,43 @@ pe: [
   q:'Integrating an add-on acquisition is expected to cost ${INTEGRATION_COST} upfront but generate ${SYNERGY_ANNUAL} of annual run-rate synergies once complete. Roughly how long is the payback period on that integration spend?',
   f:'Simple payback: ${INTEGRATION_COST} of cost over ${SYNERGY_ANNUAL} of annual savings is about {PAYBACK_YEARS} years. A short payback like this is exactly what makes bolt-on integration spend an easy approval for a sponsor.' },
 
+
+  /* Added with hints (h) and follow-ups (fu). */
+  { id:'pe500', d:'easy', t:'portfolio',
+    gen: function () {
+      var E = mockPick([20, 40, 50]); var UP = mockPick([2, 5]); var M = mockPick([8, 10, 12]);
+      return { E: E, UP: UP, M: M, VAL: UP * M };
+    },
+    q:'A company the fund owns has ${E} million of EBITDA. The team cuts costs and raises EBITDA by ${UP} million. If buyers value the business at {M}x EBITDA, how much value did that improvement create?',
+    f:'Every extra dollar of EBITDA is worth {M} dollars when the company is sold, so ${UP} million of new EBITDA times {M} is ${VAL} million of added value. This is why PE firms obsess over operating improvements: a change that looks modest on the income statement gets multiplied at exit. Add the check a good investor makes — is the improvement permanent? A one-time cut that reverses next year will not get paid for by a buyer.',
+    h:'If buyers pay {M} dollars for every dollar of EBITDA, what are ${UP} million of new EBITDA worth to them?',
+    fu:['Which kinds of cost cuts would a buyer believe are permanent, and which would it discount?',
+        'Would you rather create that ${UP} million from cost cuts or from new revenue? Why?'] },
+
+  { id:'pe501', d:'medium', t:'fund',
+    gen: function () {
+      var FUND = mockPick([500, 1000]); var INV = FUND * mockPick([60, 70]) / 100;
+      var Y1 = FUND * 0.02; var Y2 = INV * 0.015; var TOT = Y1 * 5 + Y2 * 5;
+      return { FUND: FUND, INVESTED: INV, Y1: Y1, P1: Y1 * 5, Y2: Y2, P2: Y2 * 5, TOT: TOT, PCT: TOT / FUND * 100 };
+    },
+    q:'A ${FUND} million fund charges 2% a year on committed capital during its five-year investment period. After that, the fee steps down to 1.5% a year on invested capital — ${INVESTED} million — for the remaining five years. How much does the GP collect in management fees over the fund\'s life?',
+    f:'Two phases. Investment period: 2% of ${FUND} million is ${Y1} million a year, times five years is ${P1} million. After the step-down, the fee drops to 1.5% and applies only to the ${INVESTED} million actually invested: ${Y2} million a year, times five is ${P2} million. Total fees: ${TOT} million, or about {PCT}% of the fund. Then explain why the step-down exists: once the GP is no longer making new investments, LPs do not want to keep paying full fees on money that was never put to work.',
+    h:'Split the fund\'s life in two. Each half has a different rate and a different base the fee is charged on.',
+    fu:['How does the step-down change the GP\'s incentives late in the fund\'s life?',
+        'Why do LPs care about management fees if carry is where the GP makes most of its money?'] },
+
+  { id:'pe502', d:'medium', t:'diligence',
+    gen: function () {
+      var ARR = mockPick([100, 200]); var CH = mockPick([8, 10]); var DN = 2; var EX = mockPick([15, 20]);
+      var CHA = ARR * CH / 100, DNA = ARR * DN / 100, EXA = ARR * EX / 100; var END = ARR - CHA - DNA + EXA; var NRR = END / ARR * 100;
+      return { ARR: ARR, CHA: CHA, DNA: DNA, EXA: EXA, END: END, NRR: NRR,
+               NRRLINE: NRR > 100 ? 'Above 100% means the existing customer base grows on its own.' : 'Below 100% means the existing customer base shrinks without new sales.' };
+    },
+    q:'A software company starts the year with ${ARR} million of recurring revenue from existing customers. During the year, customers who cancel take away ${CHA} million, some customers downgrade by ${DNA} million, and others expand their contracts by ${EXA} million. Ignoring new customers, what is net revenue retention, and why would a PE buyer care?',
+    f:'Start with ${ARR} million, subtract ${CHA} million of churn and ${DNA} million of downgrades, and add ${EXA} million of expansion: ${END} million. Net revenue retention is ${END} million over ${ARR} million, or {NRR}%. {NRRLINE} For a buyer this is one of the most important numbers in a software deal, because it shows whether the business grows even if the sales team signs nobody new — and that predictability is exactly what supports debt.',
+    h:'Only look at the customers who were there at the start of the year. What happened to their revenue by the end?',
+    fu:['Would you rather own a business with 95% NRR growing 30% from new customers, or one with 115% NRR growing 15%? Why?',
+        'What would you ask management if most of the expansion came from a handful of large customers?'] },
 ],
 
 /* ── BEHAVIORAL ────────────────────────────────────────────────────── */
@@ -14584,7 +15264,10 @@ var MOCK = {
   progress: {},
   sessionSeen: [],
   sessionMastered: [],
-  sessionReview: []
+  sessionReview: [],
+  ratings: {},          // this session: question id -> 'nailed' | 'shaky' | 'missed'
+  topicsTouched: false, // true once the member clicks a Focus chip themselves
+  autoTopics: false     // true while the Easy default is in charge of Focus
 };
 
 /* ── Randomized-number questions ───────────────────────────────────
@@ -14599,6 +15282,19 @@ var MOCK = {
    point is to stop members memorizing one set of numbers, not to make
    the mental math harder than it is in a real interview. */
 function mockPick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+/* IRR for a list of yearly cash flows (year 0 first), by bisection. Only
+   used inside question generators, where the flows are small and well
+   behaved, so a fixed 200 iterations is plenty. */
+function mockIrr(flows) {
+  var lo = -0.99, hi = 10;
+  for (var i = 0; i < 200; i++) {
+    var mid = (lo + hi) / 2, npv = 0;
+    for (var t = 0; t < flows.length; t++) npv += flows[t] / Math.pow(1 + mid, t);
+    if (npv > 0) lo = mid; else hi = mid;
+  }
+  return (lo + hi) / 2;
+}
 
 /* Trims trailing zeros so 7.50 stays 7.50 but 10.00 renders as 10. */
 function mockNum(n) {
@@ -14619,20 +15315,29 @@ function mockMaterialize(q) {
   Object.keys(vars).forEach(function (k) {
     if (typeof vars[k] === 'number') vars[k] = mockNum(vars[k]);
   });
-  return { id: q.id, d: q.d, t: q.t, q: mockFill(q.q, vars), f: mockFill(q.f, vars) };
+  var out = { id: q.id, d: q.d, t: q.t, q: mockFill(q.q, vars), f: mockFill(q.f, vars) };
+  if (q.h) out.h = mockFill(q.h, vars);
+  if (q.fu) out.fu = q.fu.map(function (x) { return mockFill(x, vars); });
+  return out;
 }
 
-/* Difficulty is now picked directly rather than inferred from class year.
-   MOCK.levels holds the tiers currently toggled on; at least one is
-   required before a session can start. The rubric the bank is graded
-   against: easy assumes no prior exposure, medium assumes roughly a
-   semester of it, hard is sophomore-recruiting depth. */
+/* Difficulty is picked directly, and it is relative to the topic rather
+   than to class year: easy means "just learned this topic" (one idea, the
+   topic's basic vocabulary, one step of math at most), medium is the
+   recruiting-standard version, hard is the stretch version. So easy LBO
+   is for someone who just sat through the LBO lecture, not for a fall
+   freshman who hasn't reached it yet — see mockApplyEasyDefault for how
+   Focus handles that case. MOCK.levels holds the tiers toggled on; at
+   least one is required before a session can start. */
 function toggleMockLevel(level) {
   var i = MOCK.levels.indexOf(level);
   if (i === -1) MOCK.levels.push(level); else MOCK.levels.splice(i, 1);
   Array.prototype.forEach.call(document.querySelectorAll('#mock-levels [data-level]'), function (el) {
-    el.classList.toggle('is-on', MOCK.levels.indexOf(el.dataset.level) !== -1);
+    var on = MOCK.levels.indexOf(el.dataset.level) !== -1;
+    el.classList.toggle('is-on', on);
+    el.setAttribute('aria-pressed', on ? 'true' : 'false');
   });
+  mockApplyEasyDefault();
   updateMockStartReadiness();
 }
 
@@ -14652,19 +15357,108 @@ function renderMockTopics(trackId) {
   }
   card.style.display = '';
   box.innerHTML = topics.map(function (t) {
-    return '<button type="button" class="ufa-subfilter" data-topic="' + t.id + '" onclick="toggleMockTopic(\'' + t.id + '\')">' +
-      '<span class="ufa-subfilter-name">' + t.label + '</span>' +
+    return '<button type="button" class="ufa-subfilter ufa-topic" data-topic="' + t.id + '" aria-pressed="false" onclick="toggleMockTopic(\'' + t.id + '\')">' +
+      '<span class="ufa-topic-top"><span class="ufa-subfilter-name">' + t.label + '</span>' +
+        '<span class="ufa-topic-count" data-count-for="' + t.id + '"></span></span>' +
+      (t.spring ? '<span class="ufa-topic-tag">Spring</span>' : '') +
       '</button>';
   }).join('');
+  mockSyncTopicUI();
 }
 
 function toggleMockTopic(id) {
   var i = MOCK.topics.indexOf(id);
   if (i === -1) MOCK.topics.push(id); else MOCK.topics.splice(i, 1);
-  Array.prototype.forEach.call(document.querySelectorAll('#mock-topics [data-topic]'), function (el) {
-    el.classList.toggle('is-on', MOCK.topics.indexOf(el.dataset.topic) !== -1);
-  });
+  // A manual choice always wins: the Easy default never overrides it again
+  // until the member switches tracks.
+  MOCK.topicsTouched = true;
+  MOCK.autoTopics = false;
+  mockSyncTopicUI();
   updateMockStartReadiness();
+}
+
+function mockTopicDefs(track) { return MOCK_TOPICS[track] || []; }
+
+function mockTopicLabel(track, id) {
+  var def = mockTopicDefs(track).filter(function (x) { return x.id === id; })[0];
+  return def ? def.label : '';
+}
+
+function mockSpringTopics(track) {
+  return mockTopicDefs(track).filter(function (t) { return t.spring; });
+}
+
+/* Easy + IB: M&A and LBO are taught in the spring, so a member who picks
+   Easy on its own probably hasn't covered them yet. While the Focus chips
+   are untouched, Easy-only switches the spring topics off (visibly, with a
+   note and a one-click undo). Adding Medium or Hard hands Focus back to
+   the whole track. Tracks with no spring topics are left alone. */
+function mockApplyEasyDefault() {
+  var spring = mockSpringTopics(MOCK.track);
+  if (spring.length && !MOCK.topicsTouched) {
+    var easyOnly = MOCK.levels.length === 1 && MOCK.levels[0] === 'easy';
+    if (easyOnly) {
+      MOCK.topics = mockTopicDefs(MOCK.track).filter(function (t) { return !t.spring; }).map(function (t) { return t.id; });
+      MOCK.autoTopics = true;
+    } else if (MOCK.autoTopics) {
+      MOCK.topics = [];
+      MOCK.autoTopics = false;
+    }
+  }
+  mockSyncTopicUI();
+}
+
+function includeSpringTopics() {
+  mockSpringTopics(MOCK.track).forEach(function (t) {
+    if (MOCK.topics.indexOf(t.id) === -1) MOCK.topics.push(t.id);
+  });
+  MOCK.topicsTouched = true;
+  MOCK.autoTopics = false;
+  mockSyncTopicUI();
+  updateMockStartReadiness();
+}
+
+function mockSyncTopicUI() {
+  Array.prototype.forEach.call(document.querySelectorAll('#mock-topics [data-topic]'), function (el) {
+    var on = MOCK.topics.indexOf(el.dataset.topic) !== -1;
+    el.classList.toggle('is-on', on);
+    el.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
+  var note = document.getElementById('mock-topics-auto');
+  var noteText = document.getElementById('mock-topics-auto-text');
+  if (note) note.style.display = MOCK.autoTopics ? '' : 'none';
+  if (noteText && MOCK.autoTopics) {
+    var names = mockSpringTopics(MOCK.track).map(function (t) { return t.label; });
+    noteText.textContent = names.join(' and ') + (names.length === 1 ? ' is' : ' are') +
+      ' off for Easy because ' + (names.length === 1 ? 'it\u2019s' : 'they\u2019re') + ' covered in the spring.';
+  }
+  var sub = document.getElementById('mock-topics-sub');
+  if (sub) sub.textContent = MOCK.autoTopics
+    ? 'Set for Easy. Change it anytime.'
+    : 'Optional. Leave all off to use the whole track.';
+  mockRefreshTopicCounts();
+}
+
+/* Question counts on the Focus chips follow the chosen difficulty and
+   question type (but not Focus itself), so an empty combination is
+   visible before anyone presses Start. */
+function mockRefreshTopicCounts() {
+  if (!MOCK.track || !MOCK_BANK[MOCK.track]) return;
+  var levels = {};
+  MOCK.levels.forEach(function (d) { levels[d] = true; });
+  var anyLevel = MOCK.levels.length > 0;
+  var counts = {};
+  MOCK_BANK[MOCK.track].forEach(function (q) {
+    if ((anyLevel && !levels[q.d]) || !mockMatchesQType(q)) return;
+    counts[q.t] = (counts[q.t] || 0) + 1;
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('#mock-topics [data-count-for]'), function (el) {
+    var n = counts[el.dataset.countFor] || 0;
+    el.textContent = n;
+    el.setAttribute('aria-label', n + ' question' + (n === 1 ? '' : 's'));
+    var chip = el.closest('[data-topic]');
+    if (chip) chip.classList.toggle('is-empty', n === 0);
+  });
 }
 
 /* A question counts as quantitative if it carries a gen function (it
@@ -14703,21 +15497,26 @@ function mockMatchesQType(q) {
 
 /* A track and at least one difficulty are both required before starting. */
 function updateMockStartReadiness() {
+  var n = updateMockSetupNote();
   var btn = document.getElementById('mock-start-btn');
-  if (btn) btn.disabled = !(MOCK.track && MOCK.levels.length);
-  updateMockSetupNote();
+  if (btn) btn.disabled = !(MOCK.track && MOCK.levels.length && n > 0);
 }
 
 function mockActiveLevels() {
   return MOCK.levels.slice();
 }
 
+/* Fills the sticky start bar with exactly what the session will contain,
+   and returns the pool size so the Start button can disable itself on an
+   empty combination. */
 function updateMockSetupNote() {
+  mockRefreshTopicCounts();
   var note = document.getElementById('mock-setup-note');
-  if (!note) return;
+  if (!note) return 0;
   if (!MOCK.track || !MOCK.levels.length) {
-    note.textContent = 'Pick a track and at least one difficulty to see how many questions are in play.';
-    return;
+    note.innerHTML = '<strong>' + (MOCK.track ? 'Pick a difficulty' : 'Pick a track and a difficulty') + '</strong>' +
+      '<span class="ufa-sub">The number of questions in play will show here.</span>';
+    return 0;
   }
   var t = MOCK_TRACKS.filter(function (x) { return x.id === MOCK.track; })[0];
   var levels = {};
@@ -14734,25 +15533,32 @@ function updateMockSetupNote() {
   var freshCount = pool.filter(function (q) { return !mastered[q.id] && !review[q.id]; }).length;
 
   if (!pool.length) {
-    var reason = (MOCK.topics.length || MOCK.qtype !== 'all') ? 'at this difficulty, focus, and question type — try widening one of them' : 'at this difficulty yet — try selecting another difficulty';
-    note.textContent = 'No ' + t.label + ' questions ' + reason + '.';
-    return;
+    note.innerHTML = '<strong>No questions match</strong><span class="ufa-sub">' +
+      ((MOCK.topics.length || MOCK.qtype !== 'all')
+        ? 'Try another difficulty, or turn on more focus areas.'
+        : 'Try another difficulty.') + '</span>';
+    return 0;
   }
-  var focusTxt = '';
+  var levelNames = ['easy', 'medium', 'hard'].filter(function (d) { return levels[d]; })
+    .map(function (d) { return d.charAt(0).toUpperCase() + d.slice(1); });
+  var unit = MOCK.track === 'cases' ? 'case' : 'question';
+  var head = '<strong>' + pool.length + ' ' + unit + (pool.length === 1 ? '' : 's') + '</strong> in ' +
+    t.label + ', ' + levelNames.join(' and ');
+
+  var subs = [];
   if (MOCK.topics.length) {
-    var topicDefs = MOCK_TOPICS[MOCK.track] || [];
-    var names = MOCK.topics.map(function (id) {
-      var def = topicDefs.filter(function (x) { return x.id === id; })[0];
-      return def ? def.label : id;
-    });
-    focusTxt = ' in ' + names.join(', ');
+    subs.push(mockTopicDefs(MOCK.track)
+      .filter(function (d) { return topicFilter[d.id]; })
+      .map(function (d) { return d.label; }).join(', '));
   }
-  if (MOCK.qtype !== 'all') focusTxt += (focusTxt ? ', ' : ' — ') + (MOCK.qtype === 'quant' ? 'quantitative only' : 'qualitative only');
-  var unit = MOCK.track === 'cases' ? ' case' : ' question';
-  var bits = [pool.length + ' ' + (MOCK.track === 'cases' ? 'worked' : t.label) + unit + (pool.length === 1 ? '' : 's') + ' at this difficulty' + focusTxt];
-  if (reviewCount) bits.push(reviewCount + ' flagged for review');
-  if (!freshCount && !reviewCount) bits.push('you have gotten all of these — uncheck the box above to run them again');
-  note.textContent = bits.join(', ') + '.';
+  if (MOCK.qtype !== 'all') subs.push(MOCK.qtype === 'quant' ? 'Quantitative only' : 'Qualitative only');
+  if (reviewCount) subs.push(reviewCount + ' coming back from earlier sessions');
+  var skip = document.getElementById('mock-skip-seen');
+  if (skip && skip.checked && !freshCount && !reviewCount) {
+    subs.push('You\u2019ve nailed all of these. Uncheck the box to run them again.');
+  }
+  note.innerHTML = head + (subs.length ? '<span class="ufa-sub">' + subs.join(' \u00b7 ') + '</span>' : '');
+  return pool.length;
 }
 
 async function loadMockTab() {
@@ -14795,8 +15601,11 @@ function renderMockTracks() {
 function pickMockTrack(id) {
   MOCK.track = id;
   MOCK.topics = [];
+  MOCK.topicsTouched = false;
+  MOCK.autoTopics = false;
   renderMockTopics(id);
   renderMockQType(id);
+  mockApplyEasyDefault();
 
   // A worked case is a twenty-minute exercise, not a ninety-second answer.
   // Cases carry their own per-step clock, so the per-question control is
@@ -14864,6 +15673,7 @@ function startMock() {
   MOCK.sessionSeen = [];
   MOCK.sessionMastered = [];
   MOCK.sessionReview = [];
+  MOCK.ratings = {};
   MOCK.startedAt = Date.now();
   MOCK.paused = false;
 
@@ -14889,21 +15699,47 @@ function showMockQuestion() {
   if (runEl) runEl.scrollIntoView({ behavior: 'auto', block: 'start' });
 
   document.getElementById('mock-q-text').textContent = q.q;
+  var trackLabel = (MOCK_TRACKS.filter(function (t) { return t.id === MOCK.track; })[0] || {}).label || '';
+  var topicLabel = mockTopicLabel(MOCK.track, q.t);
   document.getElementById('mock-q-meta').innerHTML =
     '<span class="ufa-pill ufa-diff-' + q.d + '">' + q.d + '</span>' +
-    '<span style="font-size:12px;color:#6B7D6B;">' +
-      (MOCK_TRACKS.filter(function (t) { return t.id === MOCK.track; })[0] || {}).label + '</span>';
+    '<span style="font-size:12px;color:#6B7D6B;">' + trackLabel + '</span>' +
+    (topicLabel ? '<span class="ufa-q-topic">' + ufaEsc(topicLabel) + '</span>' : '');
   var left = MOCK.queue.length - MOCK.idx - 1;
   document.getElementById('mock-progress-label').textContent =
     'Question ' + (MOCK.idx + 1) +
     (left ? '  ·  ' + left + ' more available' : '  ·  last one in this pool');
+
+  // Staged reveal: hint (clock keeps running), then answer (clock stops),
+  // then the follow-ups an interviewer might ask next.
   document.getElementById('mock-framework').style.display = 'none';
   document.getElementById('mock-framework-text').textContent = q.f;
-  document.getElementById('mock-reveal-btn').textContent = 'Answer out loud, then reveal \u2193';
+  var fuBox = document.getElementById('mock-followups');
+  var fuList = document.getElementById('mock-followups-list');
+  if (fuBox && fuList) {
+    var fus = q.fu || [];
+    fuList.innerHTML = fus.map(function (x) { return '<li>' + ufaEsc(x) + '</li>'; }).join('');
+    fuBox.style.display = fus.length ? '' : 'none';
+  }
+  var hintBox = document.getElementById('mock-hint');
+  var hintBtn = document.getElementById('mock-hint-btn');
+  var hintText = document.getElementById('mock-hint-text');
+  if (hintBox) hintBox.style.display = 'none';
+  if (hintText) hintText.textContent = q.h || '';
+  if (hintBtn) {
+    hintBtn.style.display = q.h ? '' : 'none';
+    hintBtn.textContent = 'Show a hint';
+    hintBtn.setAttribute('aria-expanded', 'false');
+  }
+  var revealBtn = document.getElementById('mock-reveal-btn');
+  revealBtn.textContent = 'Reveal the answer';
+  revealBtn.setAttribute('aria-expanded', 'false');
   var rh = document.getElementById('mock-reveal-hint');
-  if (rh) rh.textContent = 'Revealing stops the clock.';
+  if (rh) rh.textContent = q.h
+    ? 'The hint keeps the clock running. Revealing the answer stops it.'
+    : 'Revealing the answer stops the clock.';
   var isLast = MOCK.idx >= MOCK.queue.length - 1;
-  document.getElementById('mock-next-btn').textContent = isLast ? 'Finish — that\'s the pool' : 'Next question →';
+  document.getElementById('mock-next-btn').textContent = isLast ? 'Skip and finish' : 'Skip';
 
   if (MOCK.handle) clearInterval(MOCK.handle);
   var timerEl = document.getElementById('mock-timer');
@@ -14936,21 +15772,41 @@ function nextMockQuestion() {
   if (MOCK.track === 'cases') showCase(); else showMockQuestion();
 }
 
-/* Records the member's own verdict on the current question — "got it" means
-   don't surface it again next time "skip seen" is checked; "flag for
-   review" means surface it again ahead of everything else. Either way,
-   advance to the next question (or finish, on the last one). */
+/* Records the member's self-rating. "Nailed it" retires the question when
+   "don't repeat" is on (mastered_ids); "Shaky" and "Missed it" both bring
+   it back first next time (review_ids). The three-way split is kept for
+   this session's summary. Either way, advance to the next question. */
 function answerMockQuestion(verdict) {
   var q = MOCK.queue[MOCK.idx];
+  if (verdict === 'review') verdict = 'missed';
   if (q) {
     var drop = function (arr) { return arr.filter(function (id) { return id !== q.id; }); };
     MOCK.sessionMastered = drop(MOCK.sessionMastered);
     MOCK.sessionReview = drop(MOCK.sessionReview);
-    if (verdict === 'mastered') MOCK.sessionMastered.push(q.id);
-    else if (verdict === 'review') MOCK.sessionReview.push(q.id);
-    // 'next' leaves the question with no verdict — seen, nothing more.
+    delete MOCK.ratings[q.id];
+    if (verdict === 'mastered') {
+      MOCK.sessionMastered.push(q.id);
+      MOCK.ratings[q.id] = 'nailed';
+    } else if (verdict === 'shaky' || verdict === 'missed') {
+      MOCK.sessionReview.push(q.id);
+      MOCK.ratings[q.id] = verdict;
+    }
+    // 'next' (Skip) leaves the question with no rating — seen, nothing more.
   }
+  // Drop focus from the clicked button so the next Space press reveals the
+  // next answer instead of re-clicking this button.
+  if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
   nextMockQuestion();
+}
+
+function toggleMockHint() {
+  var box = document.getElementById('mock-hint');
+  var btn = document.getElementById('mock-hint-btn');
+  if (!box || !btn || btn.style.display === 'none') return;
+  var open = box.style.display !== 'none';
+  box.style.display = open ? 'none' : '';
+  btn.textContent = open ? 'Show the hint' : 'Hide the hint';
+  btn.setAttribute('aria-expanded', open ? 'false' : 'true');
 }
 
 function toggleMockPause() {
@@ -14962,8 +15818,9 @@ function toggleMockFramework() {
   var box = document.getElementById('mock-framework');
   var open = box.style.display !== 'none';
   box.style.display = open ? 'none' : '';
-  document.getElementById('mock-reveal-btn').textContent =
-    open ? 'Show the framework again' : 'Hide framework';
+  var btn = document.getElementById('mock-reveal-btn');
+  btn.textContent = open ? 'Show the answer again' : 'Hide the answer';
+  btn.setAttribute('aria-expanded', open ? 'false' : 'true');
 
   /* Looking at the answer ends the timed attempt, so stop the clock on the
      first reveal. Hiding it again does not restart — you have already seen
@@ -14974,7 +15831,7 @@ function toggleMockFramework() {
     var t = document.getElementById('mock-timer');
     if (t) t.className = 'ufa-timer is-stopped';
     var hint = document.getElementById('mock-reveal-hint');
-    if (hint) hint.textContent = 'Clock stopped. Read the framework, then move on.';
+    if (hint) hint.textContent = 'Clock stopped. Read the answer, then rate how it went.';
   }
   if (!open) box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
@@ -14992,7 +15849,8 @@ async function endMock(early) {
   document.getElementById('mock-review').style.display = 'none';
   document.getElementById('mock-done-stats').textContent =
     answered + (MOCK.track === 'cases' ? ' case' : ' question') + (answered === 1 ? '' : 's') + ' in ' +
-    Math.max(1, Math.round(secs / 60)) + ' minutes.';
+    Math.max(1, Math.round(secs / 60)) + (Math.round(secs / 60) > 1 ? ' minutes.' : ' minute.');
+  mockRenderDoneBreakdown(answered);
 
   // Merge this session's questions into the member's seen list, plus
   // this session's "got it" / "flag for review" verdicts. A question can
@@ -15034,6 +15892,42 @@ function resetMock() {
   if (MOCK.track) pickMockTrack(MOCK.track);
 }
 
+/* Session summary: how many were nailed, shaky, or missed, and which
+   topics the shaky and missed ones came from. */
+function mockRenderDoneBreakdown(answered) {
+  var box = document.getElementById('mock-done-breakdown');
+  if (!box) return;
+  var byId = {};
+  MOCK.queue.forEach(function (q) { byId[q.id] = q; });
+  var tally = { nailed: 0, shaky: 0, missed: 0 };
+  var weak = {};
+  MOCK.sessionSeen.slice(0, Math.max(answered, 0)).forEach(function (id) {
+    var r = MOCK.ratings[id];
+    if (!r) return;
+    tally[r]++;
+    if (r !== 'nailed') {
+      var label = mockTopicLabel(MOCK.track, byId[id] && byId[id].t);
+      if (label) weak[label] = (weak[label] || 0) + 1;
+    }
+  });
+  var rated = tally.nailed + tally.shaky + tally.missed;
+  if (!rated || MOCK.track === 'cases') { box.style.display = 'none'; box.innerHTML = ''; return; }
+  var cell = function (n, label) { return '<div><b>' + n + '</b><span>' + label + '</span></div>'; };
+  var weakNames = Object.keys(weak).sort(function (a, b) { return weak[b] - weak[a]; });
+  var line;
+  if (weakNames.length) {
+    line = 'Worth another pass: ' + weakNames.map(function (k) { return ufaEsc(k) + ' (' + weak[k] + ')'; }).join(', ') + '.';
+  } else if (tally.shaky + tally.missed) {
+    line = (tally.shaky + tally.missed) + ' will come back first next session.';
+  } else {
+    line = 'Nothing shaky this time.';
+  }
+  box.style.display = '';
+  box.innerHTML = '<div class="ufa-done-tally">' +
+      cell(tally.nailed, 'Nailed it') + cell(tally.shaky, 'Shaky') + cell(tally.missed, 'Missed it') +
+    '</div><div class="ufa-done-weak">' + line + '</div>';
+}
+
 function reviewMockSession() {
   var box = document.getElementById('mock-review');
   var open = box.style.display !== 'none';
@@ -15050,12 +15944,21 @@ function reviewMockSession() {
         caseWalkthrough(c) +
       '</div>';
     }
+    var r = MOCK.ratings[q.id];
+    var rateNames = { nailed: 'Nailed it', shaky: 'Shaky', missed: 'Missed it' };
+    var topicLabel = mockTopicLabel(MOCK.track, q.t);
     return '<div class="ufa-card">' +
       '<div class="ufa-q-meta"><span class="ufa-pill ufa-diff-' + q.d + '">' + q.d + '</span>' +
-        '<span style="font-size:12px;color:#6B7D6B;">Question ' + (i + 1) + '</span></div>' +
+        '<span style="font-size:12px;color:#6B7D6B;">Question ' + (i + 1) + '</span>' +
+        (topicLabel ? '<span class="ufa-q-topic">' + ufaEsc(topicLabel) + '</span>' : '') +
+        (r ? '<span class="ufa-pill ufa-rate-' + r + '">' + rateNames[r] + '</span>' : '') + '</div>' +
       '<div style="font-family:\'Playfair Display\',Georgia,serif;font-size:17px;color:#1C2B1C;line-height:1.5;margin-bottom:12px;">' +
         ufaEsc(q.q) + '</div>' +
       '<div style="font-size:13px;color:#4A5A4A;line-height:1.75;">' + ufaEsc(q.f) + '</div>' +
+      ((q.fu && q.fu.length)
+        ? '<div class="ufa-followups"><div class="ufa-label">Possible follow-ups</div><ul>' +
+            q.fu.map(function (x) { return '<li>' + ufaEsc(x) + '</li>'; }).join('') + '</ul></div>'
+        : '') +
     '</div>';
   }).join('');
 }
@@ -15124,6 +16027,24 @@ async function resetMockProgress(track) {
     ? label + ' history cleared — the full question bank is available again.'
     : 'All practice history cleared.');
 }
+
+/* Desktop shortcuts during a question session: Space reveals the answer,
+   H toggles the hint, 1–3 rate it, N skips. Ignored while typing in a
+   field, with modifier keys held, or when no question session is showing. */
+document.addEventListener('keydown', function (e) {
+  var run = document.getElementById('mock-running');
+  if (!run || run.style.display === 'none' || run.offsetParent === null) return;
+  if (e.metaKey || e.ctrlKey || e.altKey || e.repeat) return;
+  var el = e.target;
+  if (el && (/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName) || el.isContentEditable)) return;
+  var k = e.key;
+  if (k === ' ' || k === 'Spacebar') { e.preventDefault(); toggleMockFramework(); }
+  else if (k === 'h' || k === 'H') { e.preventDefault(); toggleMockHint(); }
+  else if (k === '1') { e.preventDefault(); answerMockQuestion('mastered'); }
+  else if (k === '2') { e.preventDefault(); answerMockQuestion('shaky'); }
+  else if (k === '3') { e.preventDefault(); answerMockQuestion('missed'); }
+  else if (k === 'n' || k === 'N') { e.preventDefault(); answerMockQuestion('next'); }
+});
 
 
 /* ══════════════════════════════════════════════════════════════════════
