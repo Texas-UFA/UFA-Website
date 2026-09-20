@@ -9797,7 +9797,7 @@ ib: [
   q:'Net income is ${NI}, D&A is ${DA}, capex is ${CAPEX}, and the increase in net working capital is ${NWC}. What is free cash flow, roughly?',
   f:'Start from net income and adjust for items that do not show up there. Add back D&A of ${DA} since it is a non-cash expense, then subtract the actual cash outlays net income does not capture: capex of ${CAPEX} and the ${NWC} increase in net working capital. That leaves free cash flow of about ${FCF}.' },
 
-{ id:'ib301', d:'easy', t:'accounting',
+{ id:'ib301', d:'medium', t:'accounting',
   gen: function () {
     var AR = mockPick([40,60,80]), REV = mockPick([300,400,500]);
     var DSO = AR / REV * 365;
@@ -10039,7 +10039,7 @@ ib: [
   q:'A company pays ${P} cash upfront for a one-year insurance policy. Walk me through the three statements on the day it pays.',
   f:'Income statement: no impact yet — no expense has been incurred, just cash paid in advance. Cash flow statement: cash down ${P}, reflected as an increase in the prepaid expense asset, an operating use of cash. Balance sheet: cash down ${P}, prepaid insurance — another asset — up ${P}. Total assets are unchanged, just reshuffled from one asset to another; liabilities and equity do not move at all. The expense only shows up gradually on the income statement as the coverage period actually passes.' },
 
-{ id:'ib402', d:'medium', t:'accounting',
+{ id:'ib402', d:'hard', t:'accounting',
   gen: function () {
     var A = mockPick([5,10,15,20]), T = mockPick([20,25,40]);
     var TAX = A * T / 100, NI = A - TAX;
@@ -10057,7 +10057,7 @@ ib: [
   q:'A company records ${A} of stock-based compensation expense. Walk me through the three statements at a {T}% tax rate.',
   f:'Income statement: SBC expense up ${A}, pretax income down ${A}, taxes down ${TAX}, net income down ${NI}. Cash flow statement: start at net income down ${NI}, add back the ${A} of SBC since it is a non-cash expense — no cash actually left the company — for a net cash change of positive ${TAX}. Balance sheet: cash up ${TAX}; on the equity side, retained earnings down ${NI} but additional paid-in capital up ${A}, since the compensation was settled in stock rather than cash, netting to the same ${TAX} increase in equity. It balances. SBC inflates a company\'s reported EBITDA relative to its real economic cost, which is why sophisticated investors add it back to cash flow but still track it closely as a genuine cost of running the business.' },
 
-{ id:'ib404', d:'hard', t:'accounting',
+{ id:'ib404', d:'medium', t:'accounting',
   gen: function () {
     var BOOKVAL = mockPick([20,30,40]), SALEPRICE = mockPick([50,60,70,80]), T = mockPick([20,25]);
     var GAIN = SALEPRICE - BOOKVAL, TAX = GAIN * T / 100, NI = GAIN - TAX;
@@ -10074,7 +10074,7 @@ ib: [
   q:'A company writes down ${A} of goodwill as impaired. Walk me through the three statements, assuming the impairment is not tax-deductible.',
   f:'Income statement: impairment expense up ${A}, pretax income down ${A}. Since goodwill impairment typically is not tax-deductible, there is no tax benefit — net income falls by the full ${A}. Cash flow statement: start at net income down ${A}, add back the ${A} non-cash impairment charge, for a net cash change of exactly zero. Balance sheet: cash is unchanged; goodwill is down ${A}; retained earnings down ${A} on the other side. It balances, with no cash moving at all — impairment is one of the cleanest examples of an expense that is entirely a paper loss, which is exactly why some investors argue it should be looked through when judging operating performance, and others argue overpaying for the original acquisition was the real mistake, not the write-down years later.' },
 
-{ id:'ib406', d:'hard', t:'accounting',
+{ id:'ib406', d:'medium', t:'accounting',
   gen: function () {
     var PURCHASE = mockPick([60,90,120]), LIFE = mockPick([4,5]), T = mockPick([20,25]);
     var ANNUAL_DEP = PURCHASE / LIFE;
@@ -10161,6 +10161,179 @@ ib: [
   },
   q:'A company buys equipment for ${PURCHASE1} in year one, depreciated over {LIFE1} years, and then buys a second piece of equipment for ${PURCHASE2} at the start of year two, depreciated over {LIFE2} years. What is total depreciation expense in year two, and what does that do to net income at a {T}% tax rate?',
   f:'Year two depreciation is not just the new asset\'s depreciation — it is both schedules running at once. The first asset still depreciates at ${PURCHASE1} over {LIFE1} years, or ${DEP1} a year. The second asset adds ${PURCHASE2} over {LIFE2} years, or ${DEP2} a year. Combined, year two depreciation is ${DEP1} plus ${DEP2}, or ${COMBINED_Y2} — a ${COMBINED_Y2} hit to pretax income, saving ${TAX_SAVE_Y2} in taxes, for a net income impact of ${NI_IMPACT_Y2}. Every time a company adds another asset without retiring an old one, depreciation schedules stack on top of each other rather than replacing what came before — exactly why total D&A tends to climb steadily for a growing, capital-intensive business.' },
+
+
+
+{ id:'ib418', d:'hard', t:'accounting',
+  gen: function () {
+    var INV = mockPick([300,400,500]), SALE = mockPick([500,600,700]), T = mockPick([20,25]);
+    var GROSS = SALE - INV;
+    var TAX = GROSS * T / 100;
+    var NI = GROSS - TAX;
+    return { INV:INV, SALE:SALE, T:T, GROSS:GROSS, TAX:TAX, NI:NI };
+  },
+  q:'A retailer buys ${INV} of inventory for products it plans to sell next month, paying cash. Walk me through what happens on the statements when they first buy the inventory, and then when they sell all of it a month later for ${SALE} in cash, combining the two steps, at a {T}% tax rate.',
+  f:'Step one, buying the inventory: cash down ${INV}, inventory up ${INV} — just a swap from one asset to another, no income statement impact yet. Step two, selling it a month later for ${SALE} in cash: revenue of ${SALE} less the ${INV} cost of the inventory being removed from the balance sheet as it is sold, leaves pretax income of ${GROSS}; taxes of ${TAX}; net income of ${NI}. Combining both steps: inventory is back to zero, since it was fully sold; cash is up by ${NI} overall — down ${INV} to buy it, then up the full ${SALE} of sale proceeds less ${TAX} of tax paid; retained earnings is up ${NI}, matching exactly. The purchase itself never touched the income statement — only the sale did, when the cost of that inventory finally got matched against the revenue it generated.' },
+
+{ id:'ib419', d:'hard', t:'accounting',
+  gen: function () {
+    var MONTHLY_REV = mockPick([80,100,120]), OPEX = mockPick([15,20,25]), T = mockPick([20,25]);
+    var PRETAX = MONTHLY_REV - OPEX;
+    var TAX = PRETAX * T / 100;
+    var NI = PRETAX - TAX;
+    var CASH_DOWN = OPEX + TAX;
+    return { MONTHLY_REV:MONTHLY_REV, OPEX:OPEX, T:T, PRETAX:PRETAX, TAX:TAX, NI:NI, CASH_DOWN:CASH_DOWN };
+  },
+  q:'A company was paid upfront in full for a multi-month service contract. One month passes, and it delivers ${MONTHLY_REV} worth of that service, incurring ${OPEX} of operating expenses to deliver it, at a {T}% tax rate. Walk me through what happens on the statements this month.',
+  f:'Income statement: revenue of ${MONTHLY_REV} is recognized now that the service has actually been delivered, less ${OPEX} of operating expenses to deliver it, leaving pretax income of ${PRETAX}; taxes of ${TAX}; net income of ${NI}. Balance sheet: the liability for services still owed goes down ${MONTHLY_REV}, since that much obligation has now been fulfilled; cash goes down ${CASH_DOWN} — the ${OPEX} of expenses plus ${TAX} of tax paid — since no new cash came in this month, it was already collected earlier; retained earnings is up ${NI}. It balances: the ${MONTHLY_REV} liability decrease plus the ${NI} equity increase nets to exactly the ${CASH_DOWN} cash outflow. The cash was already banked long before the revenue shows up — this month is entirely about earning what was already paid for.' },
+
+{ id:'ib420', d:'hard', t:'accounting',
+  gen: function () {
+    var DEBT = mockPick([300,400,500]), RATE = mockPick([8,10]), FACTORY = mockPick([200,300]), T = mockPick([20,25]);
+    var DEP_PCT = 10, PRINCIPAL_PCT = 5;
+    var INTEREST = DEBT * RATE / 100;
+    var DEP = FACTORY * DEP_PCT / 100;
+    var PRETAX_HIT = INTEREST + DEP;
+    var TAX_SAVE = PRETAX_HIT * T / 100;
+    var NI_IMPACT = PRETAX_HIT - TAX_SAVE;
+    var PRINCIPAL_REPAID = DEBT * PRINCIPAL_PCT / 100;
+    return { DEBT:DEBT, RATE:RATE, FACTORY:FACTORY, T:T, DEP_PCT:DEP_PCT, PRINCIPAL_PCT:PRINCIPAL_PCT, INTEREST:INTEREST, DEP:DEP, PRETAX_HIT:PRETAX_HIT, TAX_SAVE:TAX_SAVE, NI_IMPACT:NI_IMPACT, PRINCIPAL_REPAID:PRINCIPAL_REPAID };
+  },
+  q:'One year passes. The company pays {RATE}% interest on its ${DEBT} of debt and depreciates {DEP_PCT}% of its ${FACTORY} factory. It also repays {PRINCIPAL_PCT}% of the debt principal. At a {T}% tax rate, what happens on the statements this year?',
+  f:'Income statement: interest expense of ${INTEREST} plus depreciation of ${DEP} is a combined ${PRETAX_HIT} pretax hit, saving ${TAX_SAVE} in taxes, for a net income impact of ${NI_IMPACT}. Cash flow statement: start at net income down ${NI_IMPACT}, add back the ${DEP} of non-cash depreciation, then subtract ${PRINCIPAL_REPAID} of debt principal repaid — a financing outflow that never touches the income statement at all. Balance sheet: the factory is down ${DEP}, debt is down ${PRINCIPAL_REPAID}, retained earnings is down ${NI_IMPACT}, and cash absorbs the rest. It balances. The detail worth stating explicitly: interest and principal are both cash outflows on the same loan, but only interest ever shows up on the income statement — principal repayment is purely a balance sheet and cash flow event.' },
+
+{ id:'ib421', d:'hard', t:'accounting',
+  gen: function () {
+    var DEALSIZE = mockPick([400,500,600]), TARGET_ASSETS = mockPick([250,300,350]);
+    var DEBT_PORTION = DEALSIZE * 0.5;
+    var STOCK_PORTION = DEALSIZE * 0.5;
+    var PREMIUM = DEALSIZE - TARGET_ASSETS;
+    var GOODWILL = PREMIUM * 0.5;
+    var INTANGIBLES = PREMIUM * 0.5;
+    return { DEALSIZE:DEALSIZE, TARGET_ASSETS:TARGET_ASSETS, DEBT_PORTION:DEBT_PORTION, STOCK_PORTION:STOCK_PORTION, PREMIUM:PREMIUM, GOODWILL:GOODWILL, INTANGIBLES:INTANGIBLES };
+  },
+  q:'Your company acquires another company for ${DEALSIZE}, funded 50% with new debt and 50% with newly issued common stock. The target has ${TARGET_ASSETS} of assets, no liabilities, and ${TARGET_ASSETS} of common shareholders\' equity. Assume the purchase premium splits 50/50 between goodwill and other intangible assets. What happens to your company\'s balance sheet immediately after this acquisition closes?',
+  f:'First, the financing: ${DEBT_PORTION} of new debt and ${STOCK_PORTION} of new common stock are raised — both liabilities-and-equity-side entries, before a dollar is spent on the target; the cash from this financing is unaffected in the end, since it flows straight back out to fund the purchase. Then the purchase: the target\'s own ${TARGET_ASSETS} of net assets come onto the balance sheet, and the ${PREMIUM} premium paid above that — ${DEALSIZE} minus ${TARGET_ASSETS} — splits 50/50 into ${GOODWILL} of goodwill and ${INTANGIBLES} of other intangible assets. Putting it together: total assets rise by the full ${DEALSIZE} — ${TARGET_ASSETS} of the target\'s existing assets plus ${PREMIUM} of newly created goodwill and intangibles; debt is up ${DEBT_PORTION}; common stock is up ${STOCK_PORTION}. It balances, since the ${DEALSIZE} of new financing exactly funds the ${DEALSIZE} of assets added, and the target\'s own pre-deal equity simply disappears — it does not carry over, since the target is being absorbed rather than kept as a separate entity.' },
+
+{ id:'ib422', d:'hard', t:'accounting',
+  gen: function () {
+    var TRUCK = mockPick([40,50,60]), LIFE = mockPick([4,5]), T = mockPick([20,25]);
+    var DEP = TRUCK / LIFE;
+    var TAX_SAVE = DEP * T / 100;
+    var NI_IMPACT = DEP - TAX_SAVE;
+    var CASH_NET = TRUCK - TAX_SAVE;
+    return { TRUCK:TRUCK, LIFE:LIFE, T:T, DEP:DEP, TAX_SAVE:TAX_SAVE, NI_IMPACT:NI_IMPACT, CASH_NET:CASH_NET };
+  },
+  q:'A company buys a ${TRUCK} truck, paying nothing upfront but agreeing to pay the dealer in full in 12 months, interest-free. The truck is depreciated straight-line over {LIFE} years, at a {T}% tax rate. Walk me through what happens on the statements at the moment of purchase, and then after one year has passed and the dealer has been paid in full.',
+  f:'At the moment of purchase: PP&E is up ${TRUCK} and accounts payable is up ${TRUCK} — no cash moves and no income statement impact, since the truck was financed entirely through the dealer rather than paid for upfront. After one year: depreciation of ${DEP} hits the income statement, saving ${TAX_SAVE} in taxes and cutting net income by ${NI_IMPACT}; separately, the full ${TRUCK} payable comes due and gets paid off in cash. Combining both steps: PP&E nets to ${TRUCK} minus ${DEP} of accumulated depreciation; the payable is back to zero, fully settled; cash is down about ${CASH_NET} on net — ${TRUCK} paid to the dealer, offset by ${TAX_SAVE} of tax shield; retained earnings is down ${NI_IMPACT}. It balances. The financing structure — credit instead of cash upfront — delays the cash outflow by a year but never changes the depreciation schedule itself.' },
+
+{ id:'ib423', d:'hard', t:'accounting',
+  gen: function () {
+    var SPEND = mockPick([120,160,200]), LIFE = mockPick([4,5]), T = mockPick([20,25]);
+    var AMORT = SPEND / LIFE;
+    var TAX_SAVE = AMORT * T / 100;
+    var NI_IMPACT = AMORT - TAX_SAVE;
+    var CASH_NET = SPEND - TAX_SAVE;
+    return { SPEND:SPEND, LIFE:LIFE, T:T, AMORT:AMORT, TAX_SAVE:TAX_SAVE, NI_IMPACT:NI_IMPACT, CASH_NET:CASH_NET };
+  },
+  q:'A software company spends ${SPEND} in cash building an internal tool. Accounting rules require it to capitalize this cost as an intangible asset rather than expense it immediately, then amortize it straight-line over {LIFE} years, at a {T}% tax rate. Walk me through what happens on the statements when they spend the cash, and then after one year of amortization, combining both steps.',
+  f:'When the cash is spent: cash is down ${SPEND}, and an intangible asset is up ${SPEND} — no income statement impact yet, since the cost is capitalized rather than expensed. After one year: amortization of ${AMORT} hits the income statement, saving ${TAX_SAVE} in taxes and cutting net income by ${NI_IMPACT}. Combining both steps: the intangible asset is down to ${SPEND} minus ${AMORT}; cash is down about ${CASH_NET} on net — the original ${SPEND} spend, offset by ${TAX_SAVE} of tax shield; retained earnings is down ${NI_IMPACT}. It balances. Capitalizing instead of expensing doesn\'t change how much cash goes out the door in total — it only changes when the expense hits the income statement, spreading it out over {LIFE} years instead of taking it all in year one.' },
+
+
+
+// --- INCOME STATEMENT (4) ---
+{ id:'ib430', d:'easy', t:'accounting',
+  gen: function () {
+    var REV = mockPick([200,300,400,500]), COGS = mockPick([120,150,180,220]);
+    var GP = REV - COGS;
+    return { REV:REV, COGS:COGS, GP:GP };
+  },
+  q:'Just the income statement: revenue is ${REV} and cost of goods sold is ${COGS}. What is gross profit?',
+  f:'Gross profit is revenue minus cost of goods sold: ${REV} minus ${COGS} is ${GP}. Nothing else on the income statement matters yet — gross profit only accounts for the direct cost of producing what was sold, before any operating expenses come off.' },
+
+{ id:'ib431', d:'easy', t:'accounting',
+  gen: function () {
+    var GP = mockPick([80,100,150,200]), OPEX = mockPick([30,40,60,80]);
+    var EBIT = GP - OPEX;
+    return { GP:GP, OPEX:OPEX, EBIT:EBIT };
+  },
+  q:'Just the income statement: gross profit is ${GP} and operating expenses are ${OPEX}. What is operating income, or EBIT?',
+  f:'Operating income is gross profit minus operating expenses: ${GP} minus ${OPEX} is ${EBIT}. This is the profit from the actual core business, before interest or taxes come into play at all.' },
+
+{ id:'ib432', d:'easy', t:'accounting',
+  gen: function () {
+    var PRETAX = mockPick([60,80,100,120]), T = mockPick([20,25,30]);
+    var TAX = PRETAX * T / 100;
+    var NI = PRETAX - TAX;
+    return { PRETAX:PRETAX, T:T, TAX:TAX, NI:NI };
+  },
+  q:'Just the income statement: pretax income is ${PRETAX}, and the tax rate is {T}%. What is net income?',
+  f:'Tax expense is {T}% of pretax income: {T}% of ${PRETAX} is ${TAX}. Net income is what is left over: ${PRETAX} minus ${TAX} is ${NI}. This is the very last line on the income statement — everything above it has already been accounted for.' },
+
+{ id:'ib433', d:'easy', t:'accounting',
+  gen: function () {
+    var NI = mockPick([40,60,80,100]), SHARES = mockPick([20,25,40,50]);
+    var EPS = NI / SHARES;
+    return { NI:NI, SHARES:SHARES, EPS:EPS };
+  },
+  q:'Just the income statement: net income is ${NI} million, and there are {SHARES} million shares outstanding. What is earnings per share?',
+  f:'EPS is net income divided by shares outstanding: ${NI} million over {SHARES} million shares is ${EPS} per share. It is the last calculation that turns a company-wide profit number into something a single shareholder can actually compare to the price of one share.' },
+
+// --- BALANCE SHEET (3) ---
+{ id:'ib434', d:'easy', t:'accounting',
+  gen: function () {
+    var CA = mockPick([80,100,120,150]), CL = mockPick([40,50,60,80]);
+    var WC = CA - CL;
+    return { CA:CA, CL:CL, WC:WC };
+  },
+  q:'Just the balance sheet: current assets are ${CA} and current liabilities are ${CL}. What is working capital?',
+  f:'Working capital is current assets minus current liabilities: ${CA} minus ${CL} is ${WC}. It is a rough read on short-term liquidity — whether the company has enough assets that will turn into cash soon to cover what it owes soon.' },
+
+{ id:'ib435', d:'easy', t:'accounting',
+  gen: function () {
+    var CASH = mockPick([20,30,40]), AR = mockPick([30,40,50]), INV = mockPick([25,35,45]);
+    var TOTAL = CASH + AR + INV;
+    return { CASH:CASH, AR:AR, INV:INV, TOTAL:TOTAL };
+  },
+  q:'Just the balance sheet: cash is ${CASH}, accounts receivable is ${AR}, and inventory is ${INV}. Assuming those are the only current assets, what is total current assets?',
+  f:'Add them up: ${CASH} of cash plus ${AR} of receivables plus ${INV} of inventory is ${TOTAL} of total current assets. These are the three classic current assets — everything the company either already has in cash or expects to convert to cash within about a year.' },
+
+{ id:'ib436', d:'easy', t:'accounting',
+  gen: function () {
+    var LIAB = mockPick([150,200,250,300]), EQUITY = mockPick([100,150,200,250]);
+    var ASSETS = LIAB + EQUITY;
+    return { LIAB:LIAB, EQUITY:EQUITY, ASSETS:ASSETS };
+  },
+  q:'Just the balance sheet: total liabilities are ${LIAB} and total shareholders\' equity is ${EQUITY}. What must total assets be?',
+  f:'The balance sheet has to balance: assets always equal liabilities plus equity. ${LIAB} plus ${EQUITY} is ${ASSETS} — that has to be the total assets figure, whether or not you know what those assets actually are.' },
+
+// --- CASH FLOW STATEMENT (3) ---
+{ id:'ib437', d:'easy', t:'accounting',
+  gen: function () {
+    var CFO = mockPick([60,80,100]), CFI = mockPick([-40,-30,-20]), CFF = mockPick([-20,-10,10]);
+    var NET = CFO + CFI + CFF;
+    return { CFO:CFO, CFI:CFI, CFF:CFF, NET:NET };
+  },
+  q:'Just the cash flow statement: operating cash flow is ${CFO}, investing cash flow is ${CFI}, and financing cash flow is ${CFF}. What is the net change in cash for the period?',
+  f:'Add the three sections together: ${CFO} from operations, ${CFI} from investing, and ${CFF} from financing sums to a net change in cash of ${NET}. Every dollar that moved in or out of the company in the period falls into exactly one of those three buckets.' },
+
+{ id:'ib438', d:'easy', t:'accounting',
+  gen: function () {
+    var BEGIN = mockPick([50,80,100]), CHANGE = mockPick([-20,-10,10,20,30]);
+    var END = BEGIN + CHANGE;
+    return { BEGIN:BEGIN, CHANGE:CHANGE, END:END };
+  },
+  q:'Just the cash flow statement: the company started the period with ${BEGIN} of cash, and the net change in cash for the period was ${CHANGE}. What is the ending cash balance?',
+  f:'Ending cash is simply beginning cash plus the net change: ${BEGIN} plus ${CHANGE} is ${END}. This ending balance is exactly what should show up as cash on the balance sheet at the end of the period — the cash flow statement and the balance sheet always have to agree on this number.' },
+
+{ id:'ib439', d:'easy', t:'accounting',
+  gen: function () {
+    var CFO = mockPick([80,100,120,150]), CAPEX = mockPick([20,30,40,50]);
+    var FCF = CFO - CAPEX;
+    return { CFO:CFO, CAPEX:CAPEX, FCF:FCF };
+  },
+  q:'Just the cash flow statement: operating cash flow is ${CFO}, and capital expenditures are ${CAPEX}. What is free cash flow?',
+  f:'Free cash flow is operating cash flow minus capex: ${CFO} minus ${CAPEX} is ${FCF}. It is the cash the business actually generated after paying for the equipment and infrastructure it needs just to keep running — the cash that is genuinely free to pay down debt, return to shareholders, or reinvest in growth.' },
 
 ],
 
