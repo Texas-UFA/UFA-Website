@@ -5103,8 +5103,8 @@ button[onclick="pubFlipbookNext()"]:hover {
         <div style="height:4px;background:linear-gradient(90deg,#1C2B1C,#3D6B3D);"></div>
         <div style="padding:44px 40px 40px;text-align:center;">
           <div style="font-size:40px;margin-bottom:16px;">⏳</div>
-          <div style="font-family:'Playfair Display',Georgia,serif;font-size:24px;font-weight:500;color:#1C2B1C;margin-bottom:12px;">Account Pending Approval</div>
-          <p style="font-size:14px;color:#6B7D6B;line-height:1.7;margin-bottom:24px;">Your account has been created and is awaiting board approval. A board member will verify your dues payment and approve your account shortly.<br><br>You'll be able to sign in once approved.</p>
+          <div style="font-family:'Playfair Display',Georgia,serif;font-size:24px;font-weight:500;color:#1C2B1C;margin-bottom:12px;">Confirm Your Email</div>
+          <p style="font-size:14px;color:#6B7D6B;line-height:1.7;margin-bottom:24px;">Your account has been created. Check your inbox and click the confirmation link to sign in.<br><br>Once signed in, you can check in to events right away — full portal access (leaderboard, resources, etc.) unlocks once a board member approves your account.</p>
           <a href="#" onclick="showLogin();document.getElementById('portal-pending').style.display='none';" style="font-size:13px;color:#3D6B3D;font-weight:500;">← Back to sign in</a>
         </div>
       </div>
@@ -5813,6 +5813,7 @@ button[onclick="pubFlipbookNext()"]:hover {
           <div class="admin-tab-nav">
             <button onclick="switchAdminTab('sessions')" class="admin-tab active" id="atab-sessions">Sessions</button>
             <button onclick="switchAdminTab('roster')" class="admin-tab" id="atab-roster">Roster <span id="roster-badge" style="display:none;background:#c0392b;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;margin-left:4px;"></span></button>
+            <button onclick="switchAdminTab('attendance')" class="admin-tab" id="atab-attendance">Attendance</button>
             <button onclick="switchAdminTab('analytics')" class="admin-tab" id="atab-analytics">Analytics</button>
             <button onclick="switchAdminTab('announce')" class="admin-tab" id="atab-announce">Announcements</button>
             <button onclick="switchAdminTab('approvals')" class="admin-tab" id="atab-approvals">Approvals <span id="approvals-badge" style="display:none;background:#c0392b;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;margin-left:4px;"></span></button>
@@ -5953,6 +5954,69 @@ button[onclick="pubFlipbookNext()"]:hover {
               <button onclick="exportRoster()" style="background:#fff;border:1px solid rgba(46,74,46,0.2);color:#3A4A3A;font-family:'DM Sans',sans-serif;font-size:13px;padding:9px 16px;border-radius:4px;cursor:pointer;margin-left:auto;">Export CSV</button>
             </div>
             <div id="roster-table" style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;overflow:hidden;overflow-x:auto;">
+              <div style="padding:20px;font-size:13px;color:#6B7D6B;text-align:center;">Loading…</div>
+            </div>
+          </div>
+
+          <!-- Attendance Records -->
+          <div id="atab-content-attendance" style="display:none;">
+            <div class="ufa-card ufa-card-tight" style="margin-bottom:16px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px;">
+                <div>
+                  <div class="ufa-label" style="margin-bottom:2px;">Add a check-in manually</div>
+                  <div style="font-size:12px;color:#6B7D6B;">For someone who forgot to check in, or an in-person attendee who couldn't use the code.</div>
+                </div>
+                <button class="ufa-btn" onclick="toggleManualAttendance()" id="manual-att-toggle-btn">+ Add check-in</button>
+              </div>
+              <div id="manual-att-form" style="display:none;padding-top:8px;border-top:1px solid rgba(46,74,46,0.1);">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+                  <div>
+                    <label style="font-size:12px;font-weight:500;color:#3A4A3A;display:block;margin-bottom:4px;">Member email</label>
+                    <input id="manual-att-email" list="manual-att-email-list" type="text" placeholder="member@utexas.edu" style="width:100%;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;background:#F7F4EE;box-sizing:border-box;">
+                    <datalist id="manual-att-email-list"></datalist>
+                  </div>
+                  <div>
+                    <label style="font-size:12px;font-weight:500;color:#3A4A3A;display:block;margin-bottom:4px;">Session</label>
+                    <select id="manual-att-session" onchange="onManualAttSessionChange()" style="width:100%;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;background:#F7F4EE;box-sizing:border-box;">
+                      <option value="">— Custom (fill in below) —</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label style="font-size:12px;font-weight:500;color:#3A4A3A;display:block;margin-bottom:4px;">Event name</label>
+                    <input id="manual-att-name" type="text" placeholder="Week 5 Meeting" style="width:100%;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;background:#F7F4EE;box-sizing:border-box;">
+                  </div>
+                  <div>
+                    <label style="font-size:12px;font-weight:500;color:#3A4A3A;display:block;margin-bottom:4px;">Date</label>
+                    <input id="manual-att-date" type="text" placeholder="Sep 24th" style="width:100%;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;background:#F7F4EE;box-sizing:border-box;">
+                  </div>
+                  <div>
+                    <label style="font-size:12px;font-weight:500;color:#3A4A3A;display:block;margin-bottom:4px;">Event type</label>
+                    <select id="manual-att-type" style="width:100%;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;background:#F7F4EE;box-sizing:border-box;">
+                      <option value="Meeting">Meeting</option>
+                      <option value="Social">Social</option>
+                      <option value="Speaker">Speaker</option>
+                      <option value="Workshop">Workshop</option>
+                      <option value="Community Service">Community Service</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label style="font-size:12px;font-weight:500;color:#3A4A3A;display:block;margin-bottom:4px;">Points</label>
+                    <input id="manual-att-points" type="number" value="1" min="1" max="10" style="width:100%;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;background:#F7F4EE;box-sizing:border-box;">
+                  </div>
+                </div>
+                <button class="ufa-btn" onclick="addManualAttendance()">Save check-in</button>
+                <div id="manual-att-msg" style="display:none;margin-top:10px;font-size:13px;"></div>
+              </div>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+              <input id="attendance-search" type="text" placeholder="Search by name or email…" oninput="filterAdminAttendance()" style="padding:9px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:13px;background:#fff;width:260px;">
+              <select id="attendance-session-filter" onchange="filterAdminAttendance()" style="padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:13px;background:#fff;">
+                <option value="">All events</option>
+              </select>
+              <span style="font-size:12px;color:#6B7D6B;margin-left:auto;" id="attendance-count-label"></span>
+            </div>
+            <div id="attendance-table" style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;overflow:hidden;overflow-x:auto;">
               <div style="padding:20px;font-size:13px;color:#6B7D6B;text-align:center;">Loading…</div>
             </div>
           </div>
@@ -7629,6 +7693,10 @@ const TYPE_COLORS = {
 
 // ── Tab switching ──
 async function switchPortalTab(tab) {
+  // Pending accounts are restricted to Overview (check-in) only — see
+  // showDashboard(). Guard here too in case something else calls this
+  // directly.
+  if (currentMember && currentMember.status === 'pending') tab = 'overview';
   ['overview','leaderboard','events','profile','recruiting','mock','board','admin'].forEach(t => {
     const btn = document.getElementById('ptab-' + t);
     const content = document.getElementById('ptab-content-' + t);
@@ -7845,13 +7913,14 @@ async function downloadResource(filename, type) {
 }
 
 function switchAdminTab(tab) {
-  ['sessions','roster','analytics','announce','approvals','resumes','boardhours'].forEach(t => {
+  ['sessions','roster','attendance','analytics','announce','approvals','resumes','boardhours'].forEach(t => {
     const btn = document.getElementById('atab-' + t);
     const content = document.getElementById('atab-content-' + t);
     if (btn) btn.classList.toggle('active', t === tab);
     if (content) content.style.display = (t === tab) ? '' : 'none';
   });
   if (tab === 'roster') loadRoster();
+  if (tab === 'attendance') loadAdminAttendance();
   if (tab === 'analytics') loadAnalytics();
   if (tab === 'announce') { loadCurrentAnnouncement(); loadEmailSettings(); }
   if (tab === 'approvals') loadApprovals();
@@ -7905,14 +7974,9 @@ async function portalLogin() {
       if (btn) { btn.textContent='Sign in'; btn.disabled=false; }
       return;
     }
-    // Block pending accounts
-    if (currentMember.status === 'pending') {
-      await sb.auth.signOut();
-      currentUser = null; currentMember = null;
-      err.style.display='block'; err.textContent='Your account is pending board approval. You will be able to sign in once a board member approves your dues payment.';
-      if (btn) { btn.textContent='Sign in'; btn.disabled=false; }
-      return;
-    }
+    // Pending accounts (awaiting board approval) can sign in, but showDashboard()
+    // restricts them to the check-in screen only — see the pending-status
+    // branch in showDashboard().
     showDashboard();
   } catch(e) { err.style.display='block'; err.textContent='Something went wrong: ' + e.message; if (btn) { btn.textContent='Sign in'; btn.disabled=false; } }
 }
@@ -7932,8 +7996,9 @@ async function showDashboard() {
   document.getElementById('portal-welcome-name').textContent = name;
   document.getElementById('portal-welcome-team').textContent = role + ' - ' + currentCycle;
 
+  const isPending = currentMember && currentMember.status === 'pending';
   const BOARD_ROLES = ['Board', 'President'];
-  const isBoard = BOARD_ROLES.includes(role);
+  const isBoard = BOARD_ROLES.includes(role) && !isPending; // never show admin to a pending account, even if role looks like Board
   document.getElementById('ptab-admin').style.display = isBoard ? '' : 'none';
   if (isBoard) loadApprovals(); // populate badge count on login
 
@@ -7941,12 +8006,46 @@ async function showDashboard() {
   loadEmailConfig();
   applyFeatureVisibility();
 
+  // Pending accounts (awaiting board approval) get the Overview tab only,
+  // so they can check in to events, but nothing else — no leaderboard,
+  // roster info, recruiting resources, etc. until a board member approves
+  // them. This overrides whatever applyFeatureVisibility() and the isBoard
+  // check above just set.
+  ['leaderboard','events','profile','recruiting'].forEach(function(t) {
+    var btn = document.getElementById('ptab-' + t);
+    if (btn) btn.style.display = isPending ? 'none' : '';
+  });
+  if (isPending) {
+    ['mock','board','admin'].forEach(function(t) {
+      var btn = document.getElementById('ptab-' + t);
+      if (btn) btn.style.display = 'none';
+    });
+  }
+  showPendingBanner(isPending);
+  if (isPending) switchPortalTab('overview');
+
   const { data: records } = await sb.from('attendance').select('*').eq('email', currentUser.email);
   const attended = records || [];
   updateStats(attended);
   renderBreakdown(attended);
   renderBadges(attended);
   renderHistory(attended);
+}
+
+/** Shows/hides the "you're pending approval, but can still check in" banner
+ *  at the top of the Overview tab. Built once and cached on first call. */
+function showPendingBanner(show) {
+  var el = document.getElementById('pending-approval-banner');
+  if (!el) {
+    var overview = document.getElementById('ptab-content-overview');
+    if (!overview) return;
+    el = document.createElement('div');
+    el.id = 'pending-approval-banner';
+    el.style.cssText = 'display:none;margin-bottom:20px;padding:14px 18px;background:#fffbe6;border:1px solid #f0d060;border-radius:6px;font-size:13px;color:#78450a;line-height:1.6;';
+    el.innerHTML = '⏳ <strong>Your account is pending board approval.</strong> You can check in to events below and it will count once you\'re approved — the leaderboard and other portal features unlock after that.';
+    overview.insertBefore(el, overview.firstChild);
+  }
+  el.style.display = show ? 'block' : 'none';
 }
 
 function updateStats(attended) {
@@ -8012,9 +8111,9 @@ async function renderLeaderboard() {
   var myTierKey = lbTierKey(role, BOARD_TIER_ROLES);
 
   var r1 = await sb.from('attendance').select('email, points');
-  var r2 = await sb.from('members').select('email, name, role');
+  var r2 = await sb.from('members').select('email, name, role, status');
   var allAttendance = r1.data || [];
-  var allMembers    = r2.data || [];
+  var allMembers    = (r2.data || []).filter(function(m){ return m.status !== 'pending'; });
 
   var pointsMap = {};
   allAttendance.forEach(function(r) { pointsMap[r.email] = (pointsMap[r.email]||0) + (r.points||1); });
@@ -8816,6 +8915,179 @@ function exportRoster() {
   a.click();
 }
 
+// ── Admin: Attendance ──
+var allAttendanceData = [];   // flat list of {..attendance row.., memberName}
+var attendanceMemberMap = {}; // email(lower) -> member row, for name lookups + datalist
+var attendanceSessionMap = {}; // code -> session row, for the manual-checkin dropdown
+
+async function loadAdminAttendance() {
+  var r1 = await sb.from('attendance').select('*').order('meeting_date', { ascending: false });
+  var r2 = await sb.from('members').select('email,name').order('name', { ascending: true });
+  var r3 = await sb.from('sessions').select('*').order('meeting_date', { ascending: false });
+  var att     = r1.data || [];
+  var members = r2.data || [];
+  var sessions = r3.data || [];
+
+  attendanceMemberMap = {};
+  members.forEach(function(m){ if (m.email) attendanceMemberMap[m.email.toLowerCase()] = m; });
+
+  attendanceSessionMap = {};
+  sessions.forEach(function(s){ attendanceSessionMap[s.code] = s; });
+
+  allAttendanceData = att.map(function(r) {
+    var m = attendanceMemberMap[(r.email||'').toLowerCase()];
+    return Object.assign({}, r, { memberName: m ? m.name : null });
+  });
+
+  // Populate the member email datalist (for the manual check-in form)
+  var dl = document.getElementById('manual-att-email-list');
+  if (dl) dl.innerHTML = members.map(function(m){ return '<option value="'+ufaEsc(m.email)+'">'+ufaEsc(m.name||'')+'</option>'; }).join('');
+
+  // Populate session dropdowns (manual check-in form + filter)
+  var sessSelect = document.getElementById('manual-att-session');
+  if (sessSelect) {
+    sessSelect.innerHTML = '<option value="">— Custom (fill in below) —</option>'
+      + sessions.map(function(s){ return '<option value="'+ufaEsc(s.code)+'">'+ufaEsc(s.meeting_date||'')+' — '+ufaEsc(s.meeting_name||s.code)+'</option>'; }).join('');
+  }
+  var filterSelect = document.getElementById('attendance-session-filter');
+  if (filterSelect) {
+    var prevVal = filterSelect.value;
+    var seenCodes = {};
+    var uniqueEvents = att.filter(function(r){
+      var key = r.code_used || r.meeting_name;
+      if (seenCodes[key]) return false;
+      seenCodes[key] = true;
+      return true;
+    });
+    filterSelect.innerHTML = '<option value="">All events</option>'
+      + uniqueEvents.map(function(r){ var key=r.code_used||r.meeting_name; return '<option value="'+ufaEsc(key)+'">'+ufaEsc(r.meeting_name||key)+'</option>'; }).join('');
+    filterSelect.value = prevVal || '';
+  }
+
+  renderAdminAttendanceTable(allAttendanceData);
+}
+
+function onManualAttSessionChange() {
+  var code = document.getElementById('manual-att-session').value;
+  var s = attendanceSessionMap[code];
+  if (!s) return; // "Custom" selected — leave fields as typed
+  document.getElementById('manual-att-name').value = s.meeting_name || '';
+  document.getElementById('manual-att-date').value = s.meeting_date || '';
+  document.getElementById('manual-att-type').value = s.event_type || 'Meeting';
+  document.getElementById('manual-att-points').value = s.points || 1;
+}
+
+function toggleManualAttendance() {
+  var form = document.getElementById('manual-att-form');
+  var open = form.style.display === 'none';
+  form.style.display = open ? 'block' : 'none';
+  document.getElementById('manual-att-toggle-btn').textContent = open ? 'Cancel' : '+ Add check-in';
+}
+
+async function addManualAttendance() {
+  var email  = document.getElementById('manual-att-email').value.trim().toLowerCase();
+  var code   = document.getElementById('manual-att-session').value;
+  var name   = document.getElementById('manual-att-name').value.trim();
+  var date   = document.getElementById('manual-att-date').value.trim();
+  var type   = document.getElementById('manual-att-type').value;
+  var points = parseInt(document.getElementById('manual-att-points').value) || 1;
+  var msg    = document.getElementById('manual-att-msg');
+
+  if (!email || !name) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Member email and event name are required.'; return; }
+
+  if (code) {
+    var existRes = await sb.from('attendance').select('*').eq('email', email).eq('code_used', code).maybeSingle();
+    if (existRes.data) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='This member is already checked in to that session.'; return; }
+  }
+
+  var row = { email: email, meeting_name: name, meeting_date: date, event_type: type, points: points };
+  if (code) row.code_used = code;
+
+  var res = await sb.from('attendance').insert(row);
+  if (res.error) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Error: '+res.error.message; return; }
+
+  msg.style.display='block'; msg.style.color='#2e6b2e'; msg.textContent='Check-in added.';
+  document.getElementById('manual-att-email').value = '';
+  document.getElementById('manual-att-session').value = '';
+  document.getElementById('manual-att-name').value = '';
+  document.getElementById('manual-att-date').value = '';
+  document.getElementById('manual-att-points').value = '1';
+  loadAdminAttendance();
+  setTimeout(function(){ msg.style.display='none'; }, 3000);
+}
+
+function filterAdminAttendance() {
+  var search = document.getElementById('attendance-search').value.toLowerCase();
+  var evt    = document.getElementById('attendance-session-filter').value;
+  var filtered = allAttendanceData.filter(function(r){
+    var matchSearch = !search || (r.memberName||'').toLowerCase().includes(search) || (r.email||'').toLowerCase().includes(search);
+    var key = r.code_used || r.meeting_name;
+    var matchEvt = !evt || key === evt;
+    return matchSearch && matchEvt;
+  });
+  renderAdminAttendanceTable(filtered);
+}
+
+function renderAdminAttendanceTable(records) {
+  var el = document.getElementById('attendance-table');
+  var countLabel = document.getElementById('attendance-count-label');
+  if (countLabel) countLabel.textContent = records.length + ' record' + (records.length!==1?'s':'');
+  if (!records.length) { el.innerHTML='<div style="padding:20px;font-size:13px;color:#6B7D6B;text-align:center;">No attendance records found.</div>'; return; }
+
+  var headers = ['Member','Email','Event','Date','Type','Points',''];
+  el.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:13px;">'
+    +'<thead><tr style="background:#f7f7f7;border-bottom:1px solid rgba(46,74,46,0.1);">'
+    +headers.map(function(h){ return '<th style="padding:10px 12px;text-align:left;font-size:11px;font-weight:600;color:#6B7D6B;text-transform:uppercase;letter-spacing:0.06em;white-space:nowrap;">'+h+'</th>'; }).join('')
+    +'</tr></thead><tbody>'
+    +records.map(function(r){
+      var rid = ufaEsc(String(r.id));
+      return '<tr style="border-bottom:1px solid rgba(46,74,46,0.06);" id="att-row-'+rid+'">'
+        +'<td style="padding:10px 12px;font-weight:500;color:#1C2B1C;white-space:nowrap;">'+(ufaEsc(r.memberName)||'--')+'</td>'
+        +'<td style="padding:10px 12px;color:#6B7D6B;font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+ufaEsc(r.email)+'</td>'
+        +'<td style="padding:10px 12px;color:#1C2B1C;white-space:nowrap;">'+ufaEsc(r.meeting_name)+'</td>'
+        +'<td style="padding:10px 12px;color:#6B7D6B;white-space:nowrap;">'+ufaEsc(r.meeting_date)+'</td>'
+        +'<td style="padding:10px 12px;color:#6B7D6B;white-space:nowrap;">'+ufaEsc(r.event_type||'Meeting')+'</td>'
+        +'<td style="padding:10px 12px;font-weight:600;color:#3D6B3D;">'+(r.points||1)+'</td>'
+        +'<td style="padding:10px 12px;white-space:nowrap;">'
+          +'<button onclick="editAttendanceRecord(\''+rid+'\')" style="background:#fff;border:1px solid rgba(46,74,46,0.2);color:#3A4A3A;font-family:\'DM Sans\',sans-serif;font-size:11px;padding:5px 10px;border-radius:4px;cursor:pointer;margin-right:6px;">Edit</button>'
+          +'<button onclick="deleteAttendanceRecord(\''+rid+'\')" style="background:#fff;border:1px solid #f0b4b0;color:#8b2e2e;font-family:\'DM Sans\',sans-serif;font-size:11px;padding:5px 10px;border-radius:4px;cursor:pointer;">Delete</button>'
+        +'</td>'
+      +'</tr>';
+    }).join('')
+    +'</tbody></table>';
+}
+
+async function editAttendanceRecord(id) {
+  var r = allAttendanceData.find(function(x){ return String(x.id) === String(id); });
+  if (!r) return;
+
+  var newName = prompt('Event name:', r.meeting_name);
+  if (newName === null) return;
+  var newDate = prompt('Date:', r.meeting_date);
+  if (newDate === null) return;
+  var newType = prompt('Event type (Meeting/Social/Speaker/Workshop/Community Service):', r.event_type||'Meeting');
+  if (newType === null) return;
+  var newPointsRaw = prompt('Points:', r.points||1);
+  if (newPointsRaw === null) return;
+  var newPoints = parseInt(newPointsRaw);
+  if (isNaN(newPoints) || newPoints < 0) { alert('Please enter a valid number of points.'); return; }
+
+  var res = await sb.from('attendance').update({
+    meeting_name: newName.trim(), meeting_date: newDate.trim(), event_type: newType.trim(), points: newPoints
+  }).eq('id', r.id);
+  if (res.error) { alert('Error updating record: ' + res.error.message); return; }
+  loadAdminAttendance();
+}
+
+async function deleteAttendanceRecord(id) {
+  var r = allAttendanceData.find(function(x){ return String(x.id) === String(id); });
+  if (!r) return;
+  if (!confirm('Delete this check-in for ' + (r.memberName||r.email) + ' — "' + r.meeting_name + '"? This cannot be undone.')) return;
+  var res = await sb.from('attendance').delete().eq('id', r.id);
+  if (res.error) { alert('Error deleting record: ' + res.error.message); return; }
+  loadAdminAttendance();
+}
+
 // ── Admin: Analytics ──
 async function loadAnalytics() {
   var r1 = await sb.from('members').select('email,role');
@@ -8924,14 +9196,8 @@ async function loadAnalytics() {
           showLogin();
           return;
         }
-        if (currentMember.status === 'pending') {
-          await sb.auth.signOut();
-          currentUser = null; currentMember = null;
-          showPage('portal');
-          document.getElementById('portal-login').style.display = 'none';
-          document.getElementById('portal-pending').style.display = 'flex';
-          return;
-        }
+        // Pending accounts can sign in — showDashboard() restricts them to
+        // the check-in screen until a board member approves them.
         showDashboard();
         return;
       }
@@ -8960,13 +9226,8 @@ async function loadAnalytics() {
             showLogin();
             return;
           }
-          if (currentMember.status === 'pending') {
-            await sb.auth.signOut();
-            currentUser = null; currentMember = null;
-            document.getElementById('portal-login').style.display = 'none';
-            document.getElementById('portal-pending').style.display = 'flex';
-            return;
-          }
+          // Pending accounts can sign in — showDashboard() restricts them to
+          // the check-in screen until a board member approves them.
           showDashboard();
         }
         return;
@@ -17904,10 +18165,21 @@ async function portalSignup() {
   // sit unnoticed for a week. Never blocks signup.
   try { await loadEmailConfig(); notifyBoardOfPendingSignup(name, email, role); } catch (e) {}
 
-  // Sign out immediately to prevent auto-session bypassing pending check
-  await sb.auth.signOut();
+  if (data && data.session) {
+    // No email confirmation required — sign them straight into the portal.
+    // showDashboard() restricts pending accounts to the check-in screen
+    // only, until a board member approves them.
+    currentUser = data.session.user;
+    currentMember = await fetchMember(email);
+    document.getElementById('portal-signup').style.display = 'none';
+    showDashboard();
+    return;
+  }
 
-  // Show pending message — do NOT sign them in or show dashboard
+  // Email confirmation is required before Supabase issues a session — they
+  // land in the dashboard (check-in only, pending) as soon as they click
+  // the confirmation link, via the hash/PKCE handling above.
+  await sb.auth.signOut();
   document.getElementById('portal-signup').style.display = 'none';
   document.getElementById('portal-login').style.display = 'flex';
   document.getElementById('login-card').style.display = 'none';
