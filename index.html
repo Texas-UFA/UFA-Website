@@ -5103,8 +5103,8 @@ button[onclick="pubFlipbookNext()"]:hover {
         <div style="height:4px;background:linear-gradient(90deg,#1C2B1C,#3D6B3D);"></div>
         <div style="padding:44px 40px 40px;text-align:center;">
           <div style="font-size:40px;margin-bottom:16px;">⏳</div>
-          <div style="font-family:'Playfair Display',Georgia,serif;font-size:24px;font-weight:500;color:#1C2B1C;margin-bottom:12px;">Account Pending Approval</div>
-          <p style="font-size:14px;color:#6B7D6B;line-height:1.7;margin-bottom:24px;">Your account has been created and is awaiting board approval. A board member will verify your dues payment and approve your account shortly.<br><br>You'll be able to sign in once approved.</p>
+          <div style="font-family:'Playfair Display',Georgia,serif;font-size:24px;font-weight:500;color:#1C2B1C;margin-bottom:12px;">Confirm Your Email</div>
+          <p style="font-size:14px;color:#6B7D6B;line-height:1.7;margin-bottom:24px;">Your account has been created. Check your inbox and click the confirmation link to sign in.<br><br>Once signed in, you can check in to events right away — full portal access (leaderboard, resources, etc.) unlocks once a board member approves your account.</p>
           <a href="#" onclick="showLogin();document.getElementById('portal-pending').style.display='none';" style="font-size:13px;color:#3D6B3D;font-weight:500;">← Back to sign in</a>
         </div>
       </div>
@@ -5820,6 +5820,7 @@ button[onclick="pubFlipbookNext()"]:hover {
           <div class="admin-tab-nav">
             <button onclick="switchAdminTab('sessions')" class="admin-tab active" id="atab-sessions">Sessions</button>
             <button onclick="switchAdminTab('roster')" class="admin-tab" id="atab-roster">Roster <span id="roster-badge" style="display:none;background:#c0392b;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;margin-left:4px;"></span></button>
+            <button onclick="switchAdminTab('attendance')" class="admin-tab" id="atab-attendance">Attendance</button>
             <button onclick="switchAdminTab('analytics')" class="admin-tab" id="atab-analytics">Analytics</button>
             <button onclick="switchAdminTab('announce')" class="admin-tab" id="atab-announce">Announcements</button>
             <button onclick="switchAdminTab('approvals')" class="admin-tab" id="atab-approvals">Approvals <span id="approvals-badge" style="display:none;background:#c0392b;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;margin-left:4px;"></span></button>
@@ -5829,62 +5830,6 @@ button[onclick="pubFlipbookNext()"]:hover {
 
           <!-- Session Codes -->
           <div id="atab-content-sessions">
-            <!-- Recurring Weekly Meeting: set once, and a rolling window of
-                 upcoming weeks stays scheduled automatically. One-off extras
-                 still go through "Create Session Code" below. -->
-            <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:28px;margin-bottom:20px;">
-              <div style="font-size:15px;font-weight:500;color:#1C2B1C;margin-bottom:4px;">Recurring Weekly Meeting</div>
-              <div style="font-size:12px;color:#6B7D6B;margin-bottom:14px;">Set this up once. Every time this admin panel is opened, the schedule tops itself back up automatically — no need to add each week by hand. Use "Create Session Code" below for one-off extras alongside it.</div>
-              <div id="recurring-status" style="font-size:13px;color:#3A4A3A;margin-bottom:16px;">Loading…</div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
-                <div>
-                  <label style="font-size:12px;font-weight:500;color:#3A4A3A;display:block;margin-bottom:4px;">Event Name</label>
-                  <input id="rec-name" type="text" placeholder="General Meeting" style="width:100%;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;background:#F7F4EE;box-sizing:border-box;">
-                </div>
-                <div>
-                  <label style="font-size:12px;font-weight:500;color:#3A4A3A;display:block;margin-bottom:4px;">Code Prefix</label>
-                  <input id="rec-prefix" type="text" placeholder="UFA-WED" maxlength="16" style="width:100%;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;background:#F7F4EE;box-sizing:border-box;text-transform:uppercase;">
-                </div>
-                <div>
-                  <label style="font-size:12px;font-weight:500;color:#3A4A3A;display:block;margin-bottom:4px;">Day of Week</label>
-                  <select id="rec-weekday" style="width:100%;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;background:#F7F4EE;box-sizing:border-box;">
-                    <option value="0">Sunday</option>
-                    <option value="1">Monday</option>
-                    <option value="2">Tuesday</option>
-                    <option value="3" selected>Wednesday</option>
-                    <option value="4">Thursday</option>
-                    <option value="5">Friday</option>
-                    <option value="6">Saturday</option>
-                  </select>
-                </div>
-                <div>
-                  <label style="font-size:12px;font-weight:500;color:#3A4A3A;display:block;margin-bottom:4px;">Event Type</label>
-                  <select id="rec-type" style="width:100%;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;background:#F7F4EE;box-sizing:border-box;">
-                    <option value="Meeting">Meeting</option>
-                    <option value="Social">Social</option>
-                    <option value="Speaker">Speaker</option>
-                    <option value="Workshop">Workshop</option>
-                    <option value="Community Service">Community Service</option>
-                  </select>
-                </div>
-                <div>
-                  <label style="font-size:12px;font-weight:500;color:#3A4A3A;display:block;margin-bottom:4px;">Points</label>
-                  <input id="rec-points" type="number" value="1" min="1" max="10" style="width:100%;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;background:#F7F4EE;box-sizing:border-box;">
-                </div>
-                <div>
-                  <label style="font-size:12px;font-weight:500;color:#3A4A3A;display:block;margin-bottom:4px;">Keep Scheduled</label>
-                  <select id="rec-weeks" style="width:100%;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;background:#F7F4EE;box-sizing:border-box;">
-                    <option value="4">4 weeks ahead</option>
-                    <option value="8" selected>8 weeks ahead</option>
-                    <option value="12">12 weeks ahead</option>
-                    <option value="16">16 weeks ahead</option>
-                  </select>
-                </div>
-              </div>
-              <button onclick="saveRecurringMeeting()" style="background:#3D6B3D;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;padding:10px 24px;border-radius:4px;border:none;cursor:pointer;">Save &amp; schedule</button>
-              <button onclick="stopRecurringMeeting()" id="rec-stop-btn" style="display:none;margin-left:8px;background:#fff;color:#8b2e2e;border:1px solid rgba(200,50,50,0.3);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;padding:10px 20px;border-radius:4px;cursor:pointer;">Stop recurring</button>
-              <div id="recurring-msg" style="display:none;margin-top:10px;font-size:13px;"></div>
-            </div>
             <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:28px;margin-bottom:20px;">
               <div style="font-size:15px;font-weight:500;color:#1C2B1C;margin-bottom:16px;">Create Session Code</div>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
@@ -5903,7 +5848,8 @@ button[onclick="pubFlipbookNext()"]:hover {
                 <div>
                   <label style="font-size:12px;font-weight:500;color:#3A4A3A;display:block;margin-bottom:4px;">Event Type</label>
                   <select id="new-type" style="width:100%;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;background:#F7F4EE;box-sizing:border-box;">
-                    <option value="Meeting">Meeting</option>
+                    <option value="Analyst Meeting">Analyst Meeting</option>
+                    <option value="General Meeting">General Meeting</option>
                     <option value="Social">Social</option>
                     <option value="Speaker">Speaker</option>
                     <option value="Workshop">Workshop</option>
@@ -5917,8 +5863,8 @@ button[onclick="pubFlipbookNext()"]:hover {
                 <div>
                   <label style="font-size:12px;font-weight:500;color:#3A4A3A;display:block;margin-bottom:4px;">Active</label>
                   <select id="new-active" style="width:100%;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;background:#F7F4EE;box-sizing:border-box;">
+                    <option value="false" selected>No, scheduled</option>
                     <option value="true">Yes, live now</option>
-                    <option value="false">No, scheduled</option>
                   </select>
                 </div>
               </div>
@@ -5960,6 +5906,70 @@ button[onclick="pubFlipbookNext()"]:hover {
               <button onclick="exportRoster()" style="background:#fff;border:1px solid rgba(46,74,46,0.2);color:#3A4A3A;font-family:'DM Sans',sans-serif;font-size:13px;padding:9px 16px;border-radius:4px;cursor:pointer;margin-left:auto;">Export CSV</button>
             </div>
             <div id="roster-table" style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;overflow:hidden;overflow-x:auto;">
+              <div style="padding:20px;font-size:13px;color:#6B7D6B;text-align:center;">Loading…</div>
+            </div>
+          </div>
+
+          <!-- Attendance Records -->
+          <div id="atab-content-attendance" style="display:none;">
+            <div class="ufa-card ufa-card-tight" style="margin-bottom:16px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px;">
+                <div>
+                  <div class="ufa-label" style="margin-bottom:2px;">Add a check-in manually</div>
+                  <div style="font-size:12px;color:#6B7D6B;">For someone who forgot to check in, or an in-person attendee who couldn't use the code.</div>
+                </div>
+                <button class="ufa-btn" onclick="toggleManualAttendance()" id="manual-att-toggle-btn">+ Add check-in</button>
+              </div>
+              <div id="manual-att-form" style="display:none;padding-top:8px;border-top:1px solid rgba(46,74,46,0.1);">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+                  <div>
+                    <label style="font-size:12px;font-weight:500;color:#3A4A3A;display:block;margin-bottom:4px;">Member email</label>
+                    <input id="manual-att-email" list="manual-att-email-list" type="text" placeholder="member@utexas.edu" style="width:100%;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;background:#F7F4EE;box-sizing:border-box;">
+                    <datalist id="manual-att-email-list"></datalist>
+                  </div>
+                  <div>
+                    <label style="font-size:12px;font-weight:500;color:#3A4A3A;display:block;margin-bottom:4px;">Session</label>
+                    <select id="manual-att-session" onchange="onManualAttSessionChange()" style="width:100%;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;background:#F7F4EE;box-sizing:border-box;">
+                      <option value="">— Custom (fill in below) —</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label style="font-size:12px;font-weight:500;color:#3A4A3A;display:block;margin-bottom:4px;">Event name</label>
+                    <input id="manual-att-name" type="text" placeholder="Week 5 Meeting" style="width:100%;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;background:#F7F4EE;box-sizing:border-box;">
+                  </div>
+                  <div>
+                    <label style="font-size:12px;font-weight:500;color:#3A4A3A;display:block;margin-bottom:4px;">Date</label>
+                    <input id="manual-att-date" type="text" placeholder="Sep 24th" style="width:100%;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;background:#F7F4EE;box-sizing:border-box;">
+                  </div>
+                  <div>
+                    <label style="font-size:12px;font-weight:500;color:#3A4A3A;display:block;margin-bottom:4px;">Event type</label>
+                    <select id="manual-att-type" style="width:100%;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;background:#F7F4EE;box-sizing:border-box;">
+                      <option value="Analyst Meeting">Analyst Meeting</option>
+                      <option value="General Meeting">General Meeting</option>
+                      <option value="Social">Social</option>
+                      <option value="Speaker">Speaker</option>
+                      <option value="Workshop">Workshop</option>
+                      <option value="Community Service">Community Service</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label style="font-size:12px;font-weight:500;color:#3A4A3A;display:block;margin-bottom:4px;">Points</label>
+                    <input id="manual-att-points" type="number" value="1" min="1" max="10" style="width:100%;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;background:#F7F4EE;box-sizing:border-box;">
+                  </div>
+                </div>
+                <button class="ufa-btn" onclick="addManualAttendance()">Save check-in</button>
+                <div id="manual-att-msg" style="display:none;margin-top:10px;font-size:13px;"></div>
+              </div>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+              <input id="attendance-search" type="text" placeholder="Search by name or email…" oninput="filterAdminAttendance()" style="padding:9px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:13px;background:#fff;width:260px;">
+              <select id="attendance-session-filter" onchange="filterAdminAttendance()" style="padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:13px;background:#fff;">
+                <option value="">All events</option>
+              </select>
+              <span style="font-size:12px;color:#6B7D6B;margin-left:auto;" id="attendance-count-label"></span>
+            </div>
+            <div id="attendance-table" style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;overflow:hidden;overflow-x:auto;">
               <div style="padding:20px;font-size:13px;color:#6B7D6B;text-align:center;">Loading…</div>
             </div>
           </div>
@@ -7630,14 +7640,31 @@ let allRosterData = [];
 
 const TYPE_COLORS = {
   'Meeting':           { bg: '#e6f4e6', color: '#2e6b2e' },
+  'Analyst Meeting':   { bg: '#e6f4e6', color: '#2e6b2e' },
+  'General Meeting':   { bg: '#eaf6fb', color: '#1e6b7a' },
   'Social':            { bg: '#e6eef9', color: '#1e4a8a' },
   'Community Service': { bg: '#fdf0e6', color: '#8a4a1e' },
   'Workshop':          { bg: '#f4e6f4', color: '#6b2e6b' },
   'Speaker':           { bg: '#f4f0e6', color: '#6b5a1e' },
 };
 
+/** Analyst Meeting / General Meeting are both "meeting" for stats and badge
+ *  purposes (meetings-attended count, the Well-Rounded badge's type count,
+ *  etc.) — this keeps that logic working the same for old rows (plain
+ *  "Meeting") and new rows (the split types) without duplicating the list
+ *  of meeting-like type names everywhere. */
+function ufaIsMeetingType(t) {
+  t = t || 'Meeting';
+  return t === 'Meeting' || t === 'Analyst Meeting' || t === 'General Meeting';
+}
+
+
 // ── Tab switching ──
 async function switchPortalTab(tab) {
+  // Pending accounts are restricted to Overview (check-in) only — see
+  // showDashboard(). Guard here too in case something else calls this
+  // directly.
+  if (currentMember && currentMember.status === 'pending') tab = 'overview';
   ['overview','leaderboard','events','profile','recruiting','mock','board','admin'].forEach(t => {
     const btn = document.getElementById('ptab-' + t);
     const content = document.getElementById('ptab-content-' + t);
@@ -7854,13 +7881,14 @@ async function downloadResource(filename, type) {
 }
 
 function switchAdminTab(tab) {
-  ['sessions','roster','analytics','announce','approvals','resumes','boardhours'].forEach(t => {
+  ['sessions','roster','attendance','analytics','announce','approvals','resumes','boardhours'].forEach(t => {
     const btn = document.getElementById('atab-' + t);
     const content = document.getElementById('atab-content-' + t);
     if (btn) btn.classList.toggle('active', t === tab);
     if (content) content.style.display = (t === tab) ? '' : 'none';
   });
   if (tab === 'roster') loadRoster();
+  if (tab === 'attendance') loadAdminAttendance();
   if (tab === 'analytics') loadAnalytics();
   if (tab === 'announce') { loadCurrentAnnouncement(); loadEmailSettings(); }
   if (tab === 'approvals') loadApprovals();
@@ -7914,14 +7942,9 @@ async function portalLogin() {
       if (btn) { btn.textContent='Sign in'; btn.disabled=false; }
       return;
     }
-    // Block pending accounts
-    if (currentMember.status === 'pending') {
-      await sb.auth.signOut();
-      currentUser = null; currentMember = null;
-      err.style.display='block'; err.textContent='Your account is pending board approval. You will be able to sign in once a board member approves your dues payment.';
-      if (btn) { btn.textContent='Sign in'; btn.disabled=false; }
-      return;
-    }
+    // Pending accounts (awaiting board approval) can sign in, but showDashboard()
+    // restricts them to the check-in screen only — see the pending-status
+    // branch in showDashboard().
     showDashboard();
   } catch(e) { err.style.display='block'; err.textContent='Something went wrong: ' + e.message; if (btn) { btn.textContent='Sign in'; btn.disabled=false; } }
 }
@@ -7941,14 +7964,33 @@ async function showDashboard() {
   document.getElementById('portal-welcome-name').textContent = name;
   document.getElementById('portal-welcome-team').textContent = role + ' - ' + currentCycle;
 
+  const isPending = currentMember && currentMember.status === 'pending';
   const BOARD_ROLES = ['Board', 'President'];
-  const isBoard = BOARD_ROLES.includes(role);
+  const isBoard = BOARD_ROLES.includes(role) && !isPending; // never show admin to a pending account, even if role looks like Board
   document.getElementById('ptab-admin').style.display = isBoard ? '' : 'none';
   if (isBoard) loadApprovals(); // populate badge count on login
 
   loadAnnouncement();
   loadEmailConfig();
-  applyFeatureVisibility();
+  await applyFeatureVisibility();
+
+  // Pending accounts (awaiting board approval) get the Overview tab only,
+  // so they can check in to events, but nothing else — no leaderboard,
+  // roster info, recruiting resources, etc. until a board member approves
+  // them. This overrides whatever applyFeatureVisibility() and the isBoard
+  // check above just set.
+  ['leaderboard','events','profile','recruiting'].forEach(function(t) {
+    var btn = document.getElementById('ptab-' + t);
+    if (btn) btn.style.display = isPending ? 'none' : '';
+  });
+  if (isPending) {
+    ['mock','board','admin'].forEach(function(t) {
+      var btn = document.getElementById('ptab-' + t);
+      if (btn) btn.style.display = 'none';
+    });
+  }
+  showPendingBanner(isPending);
+  if (isPending) switchPortalTab('overview');
 
   const { data: records } = await sb.from('attendance').select('*').eq('email', currentUser.email);
   const attended = records || [];
@@ -7958,10 +8000,36 @@ async function showDashboard() {
   renderHistory(attended);
 }
 
+/** Shows/hides the "you're pending approval, but can still check in" banner
+ *  above the Overview tab. Only touches the DOM at all for pending accounts
+ *  — approved members' overview layout is never modified, so any CSS that
+ *  keys off "#ptab-content-overview > div:first-child" (styling the stats
+ *  cards) keeps matching the stats grid exactly as before. */
+function showPendingBanner(show) {
+  var el = document.getElementById('pending-approval-banner');
+  if (!show) {
+    if (el) el.style.display = 'none';
+    return;
+  }
+  if (!el) {
+    var overview = document.getElementById('ptab-content-overview');
+    if (!overview || !overview.parentNode) return;
+    el = document.createElement('div');
+    el.id = 'pending-approval-banner';
+    el.style.cssText = 'margin:0 0 20px;padding:14px 18px;background:#fffbe6;border:1px solid #f0d060;border-radius:6px;font-size:13px;color:#78450a;line-height:1.6;';
+    el.innerHTML = '⏳ <strong>Your account is pending board approval.</strong> You can check in to events below and it will count once you\'re approved — the leaderboard and other portal features unlock after that.';
+    // Inserted as a sibling BEFORE the overview content div, not as its
+    // first child — this keeps every existing child index inside
+    // #ptab-content-overview untouched.
+    overview.parentNode.insertBefore(el, overview);
+  }
+  el.style.display = 'block';
+}
+
 function updateStats(attended) {
   const totalPoints     = attended.reduce(function(s,r){ return s + (r.points||1); }, 0);
-  const totalMeetings   = attended.filter(function(r){ return (r.event_type||'Meeting') === 'Meeting'; }).length;
-  const totalNonMeeting = attended.filter(function(r){ return (r.event_type||'Meeting') !== 'Meeting'; }).length;
+  const totalMeetings   = attended.filter(function(r){ return ufaIsMeetingType(r.event_type); }).length;
+  const totalNonMeeting = attended.filter(function(r){ return !ufaIsMeetingType(r.event_type); }).length;
   document.getElementById('stat-total-points').textContent      = totalPoints;
   document.getElementById('stat-meetings-attended').textContent = totalMeetings;
   document.getElementById('stat-events-attended').textContent   = totalNonMeeting;
@@ -7984,12 +8052,12 @@ function renderBreakdown(attended) {
 // ── Badges ──
 var BADGES = [
   { id:'first',  label:'First Check-In',   icon:'🎯', desc:'Attended your first event',  test: function(a){ return a.length >= 1; } },
-  { id:'m5',     label:'5 Meetings',        icon:'📅', desc:'Attended 5 meetings',        test: function(a){ return a.filter(function(r){ return (r.event_type||'Meeting')==='Meeting'; }).length >= 5; } },
-  { id:'m10',    label:'10 Meetings',       icon:'🏆', desc:'Attended 10 meetings',       test: function(a){ return a.filter(function(r){ return (r.event_type||'Meeting')==='Meeting'; }).length >= 10; } },
+  { id:'m5',     label:'5 Meetings',        icon:'📅', desc:'Attended 5 meetings',        test: function(a){ return a.filter(function(r){ return ufaIsMeetingType(r.event_type); }).length >= 5; } },
+  { id:'m10',    label:'10 Meetings',       icon:'🏆', desc:'Attended 10 meetings',       test: function(a){ return a.filter(function(r){ return ufaIsMeetingType(r.event_type); }).length >= 10; } },
   { id:'social', label:'Social Butterfly',  icon:'🎉', desc:'Attended a social event',    test: function(a){ return a.some(function(r){ return r.event_type==='Social'; }); } },
   { id:'pt10',   label:'10 Points',         icon:'⭐', desc:'Earned 10 total points',     test: function(a){ return a.reduce(function(s,r){ return s+(r.points||1); },0) >= 10; } },
   { id:'pt25',   label:'25 Points',         icon:'🌟', desc:'Earned 25 total points',     test: function(a){ return a.reduce(function(s,r){ return s+(r.points||1); },0) >= 25; } },
-  { id:'streak', label:'Well-Rounded',      icon:'🔥', desc:'Attended 3+ event types',   test: function(a){ var s=new Set(a.map(function(r){ return r.event_type||'Meeting'; })); return s.size >= 3; } },
+  { id:'streak', label:'Well-Rounded',      icon:'🔥', desc:'Attended 3+ event types',   test: function(a){ var s=new Set(a.map(function(r){ return ufaIsMeetingType(r.event_type) ? 'Meeting' : (r.event_type||'Meeting'); })); return s.size >= 3; } },
 ];
 
 function renderBadges(attended) {
@@ -8021,9 +8089,9 @@ async function renderLeaderboard() {
   var myTierKey = lbTierKey(role, BOARD_TIER_ROLES);
 
   var r1 = await sb.from('attendance').select('email, points');
-  var r2 = await sb.from('members').select('email, name, role');
+  var r2 = await sb.from('members').select('email, name, role, status');
   var allAttendance = r1.data || [];
-  var allMembers    = r2.data || [];
+  var allMembers    = (r2.data || []).filter(function(m){ return m.status !== 'pending'; });
 
   var pointsMap = {};
   allAttendance.forEach(function(r) { pointsMap[r.email] = (pointsMap[r.email]||0) + (r.points||1); });
@@ -8278,19 +8346,37 @@ async function renderUpcoming() {
       : '';
 
     // The date box is a fixed 40px numeral in the normal case ("16" / "SEP").
-    // When meeting_date doesn't match that shape (e.g. it was typed as a
-    // weekday name, or anything else free-text), fall back to a wider box
-    // with smaller, wrapping text instead of letting it overflow into the
-    // title next to it.
+    // When meeting_date doesn't match that shape, we check for two other
+    // known shapes before falling back to generic wrapped text:
+    //  - a bare weekday name ("Tuesday") -- a recurring/no-fixed-date
+    //    session someone described by day rather than date. Shown as a
+    //    same-size stacked box ("TUE" / "WEEKLY") so it doesn't look like
+    //    a rendering bug next to properly-dated rows.
+    //  - anything else free-text, which keeps the smaller wrapping box.
     var isNumericDay = /^\d{1,2}$/.test(dayNum);
-    var dateBlockHtml = isNumericDay
-      ? '<div style="width:40px;text-align:center;flex-shrink:0;">' +
+    var WEEKDAY_ABBR = { sunday:'SUN', monday:'MON', tuesday:'TUE', wednesday:'WED', thursday:'THU', friday:'FRI', saturday:'SAT' };
+    var weekdayAbbr = WEEKDAY_ABBR[(s.meeting_date || '').trim().toLowerCase()];
+    var dateBlockHtml;
+    if (isNumericDay) {
+      // parts[0] is whatever the board member typed for the month -- "Sep"
+      // or the full "September", either is valid input. Always display just
+      // the first 3 letters so a full month name can't overflow this fixed
+      // 40px box and run into the vertical divider next to it.
+      var monthAbbr = (parts[0] || '').slice(0, 3);
+      dateBlockHtml = '<div style="width:40px;text-align:center;flex-shrink:0;">' +
           '<div style="font-size:18px;font-weight:600;color:#1C2B1C;line-height:1;">' + ufaEsc(dayNum) + '</div>' +
-          '<div style="font-size:10px;color:#6B7D6B;text-transform:uppercase;letter-spacing:0.06em;">' + ufaEsc(parts[0] || '') + '</div>' +
-        '</div>'
-      : '<div style="width:56px;text-align:center;flex-shrink:0;overflow:hidden;">' +
+          '<div style="font-size:10px;color:#6B7D6B;text-transform:uppercase;letter-spacing:0.06em;">' + ufaEsc(monthAbbr) + '</div>' +
+        '</div>';
+    } else if (weekdayAbbr) {
+      dateBlockHtml = '<div style="width:40px;text-align:center;flex-shrink:0;">' +
+          '<div style="font-size:18px;font-weight:600;color:#1C2B1C;line-height:1;">' + weekdayAbbr + '</div>' +
+          '<div style="font-size:10px;color:#6B7D6B;text-transform:uppercase;letter-spacing:0.06em;">Weekly</div>' +
+        '</div>';
+    } else {
+      dateBlockHtml = '<div style="width:56px;text-align:center;flex-shrink:0;overflow:hidden;">' +
           '<div style="font-size:11px;font-weight:600;color:#1C2B1C;line-height:1.3;word-break:break-word;">' + ufaEsc(dayNum) + '</div>' +
         '</div>';
+    }
 
     return '<div class="ufa-event-row' + (canOpenMaterials ? ' is-clickable' : '') + '"' + onclick +
       ' style="padding:16px 20px;border-bottom:1px solid rgba(46,74,46,0.08);display:flex;align-items:center;justify-content:space-between;gap:12px;' +
@@ -8302,7 +8388,7 @@ async function renderUpcoming() {
           + '<div style="font-size:14px;font-weight:500;color:#1C2B1C;">' + nameEsc + '</div>'
           + '<div style="display:flex;align-items:center;gap:6px;margin-top:3px;">'
             + '<span style="font-size:11px;font-weight:500;background:' + clr.bg + ';color:' + clr.color + ';padding:2px 8px;border-radius:3px;">' + type + '</span>'
-            + (active ? '<span style="font-size:11px;color:#2e6b2e;font-weight:500;">Live now</span>' : '')
+            + (active ? '<span style="font-size:11px;color:#2e6b2e;font-weight:500;">Live now</span>' : (!clickable ? '<span style="font-size:11px;color:#9a8a4a;font-weight:500;">Scheduled</span>' : ''))
           + '</div>'
         + '</div>'
       + '</div>'
@@ -8661,8 +8747,6 @@ async function clearAnnouncement() {
 
 // ── Admin: Sessions ──
 async function loadAdminSessions() {
-  await ensureRecurringSessions();
-  loadRecurringMeetingUI();
   var el = document.getElementById('sessions-list');
   var res = await sb.from('sessions').select('*').order('meeting_date',{ascending:false});
   var sessions = res.data || [];
@@ -8675,8 +8759,8 @@ async function loadAdminSessions() {
     el.innerHTML = sessions.map(function(s) {
       var active = s.active==='true'||s.active===true;
       var type = s.event_type||'Meeting';
-      var typeColors = { 'Meeting':'#e6f4e6|#2e6b2e', 'Social':'#e6eef9|#1e4a8a', 'Speaker':'#f4f0e6|#6b5a1e', 'Workshop':'#f4e6f4|#6b2e6b', 'Community Service':'#fdf0e6|#8a4a1e' };
-      var tc = (typeColors[type]||'#EEF5EE|#2e6b2e').split('|');
+      var tc0 = TYPE_COLORS[type] || TYPE_COLORS['Meeting'];
+      var tc = [tc0.bg, tc0.color];
       return '<div style="padding:16px;border-bottom:1px solid rgba(46,74,46,0.08);">'
         +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
           +'<div>'
@@ -8721,130 +8805,6 @@ async function loadAdminSessions() {
   }
 }
 
-/* ── Recurring Weekly Meeting ──
-   Turns the Sessions tab from a pure one-at-a-time record book into
-   something closer to a calendar: set the weekday, name, type and points
-   once, save it, and a rolling window of upcoming weeks stays scheduled
-   automatically. One-off extras (socials, speakers, etc.) still go through
-   the "Create Session Code" form above/below and live in the same list. */
-const RECURRING_SETTING_KEY = 'recurring_meeting';
-const REC_DAY_NAMES = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-
-function recFormatDate(d) {
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-}
-function recCodeForDate(prefix, d) {
-  var mm = String(d.getMonth() + 1).padStart(2, '0');
-  var dd = String(d.getDate()).padStart(2, '0');
-  return prefix + '-' + mm + dd;
-}
-
-async function loadRecurringMeetingUI() {
-  var cfgRaw = await ufaGetSetting(RECURRING_SETTING_KEY);
-  var cfg = null;
-  try { cfg = cfgRaw ? JSON.parse(cfgRaw) : null; } catch (e) { cfg = null; }
-  var status = document.getElementById('recurring-status');
-  var stopBtn = document.getElementById('rec-stop-btn');
-  if (cfg) {
-    document.getElementById('rec-name').value = cfg.name || '';
-    document.getElementById('rec-prefix').value = cfg.prefix || '';
-    document.getElementById('rec-weekday').value = String(cfg.weekday);
-    document.getElementById('rec-type').value = cfg.type || 'Meeting';
-    document.getElementById('rec-points').value = cfg.points || 1;
-    document.getElementById('rec-weeks').value = String(cfg.weeksAhead || 8);
-    if (status) status.innerHTML = 'Currently scheduling <strong>' + ufaEsc(cfg.name) + '</strong> every ' +
-      REC_DAY_NAMES[cfg.weekday] + ', kept ' + cfg.weeksAhead + ' weeks out.';
-    if (stopBtn) stopBtn.style.display = '';
-  } else {
-    if (status) status.textContent = 'No recurring meeting set up yet.';
-    if (stopBtn) stopBtn.style.display = 'none';
-  }
-}
-
-async function saveRecurringMeeting() {
-  var name       = document.getElementById('rec-name').value.trim();
-  var prefix     = document.getElementById('rec-prefix').value.trim().toUpperCase().replace(/[^A-Z0-9-]/g, '');
-  var weekday    = parseInt(document.getElementById('rec-weekday').value);
-  var type       = document.getElementById('rec-type').value;
-  var points     = parseInt(document.getElementById('rec-points').value) || 1;
-  var weeksAhead = parseInt(document.getElementById('rec-weeks').value) || 8;
-  var msg = document.getElementById('recurring-msg');
-  if (!name || !prefix) {
-    msg.style.display = 'block'; msg.style.color = '#8b2e2e'; msg.textContent = 'Name and code prefix are required.';
-    return;
-  }
-  var cfg = { name: name, prefix: prefix, weekday: weekday, type: type, points: points, weeksAhead: weeksAhead };
-  var res = await ufaSetSetting(RECURRING_SETTING_KEY, JSON.stringify(cfg));
-  if (res.error) {
-    msg.style.display = 'block'; msg.style.color = '#8b2e2e'; msg.textContent = 'Error saving: ' + res.error.message;
-    return;
-  }
-  var added = await topUpRecurringSessions(cfg);
-  msg.style.display = 'block'; msg.style.color = '#2e6b2e';
-  msg.textContent = 'Saved. Scheduled ' + added + ' upcoming meeting' + (added !== 1 ? 's' : '') + '.';
-  await loadRecurringMeetingUI();
-  await loadAdminSessions();
-  setTimeout(function () { msg.style.display = 'none'; }, 4000);
-}
-
-async function stopRecurringMeeting() {
-  if (!confirm('Stop the recurring meeting? Sessions already scheduled stay on the calendar — this only stops new ones from being added automatically.')) return;
-  await sb.from('app_settings').delete().eq('key', RECURRING_SETTING_KEY);
-  await loadRecurringMeetingUI();
-}
-
-/**
- * Fills in any missing occurrences between today and cfg.weeksAhead weeks
- * out, skipping any date that already has a session under this prefix —
- * so opening the admin panel repeatedly, or changing weeksAhead, never
- * creates duplicates and never touches a session a board member has since
- * edited or renamed. Returns how many were actually inserted.
- */
-async function topUpRecurringSessions(cfg) {
-  if (!cfg || !cfg.prefix) return 0;
-
-  var existing = await sb.from('sessions').select('code').ilike('code', cfg.prefix + '-%');
-  var existingCodes = new Set((existing.data || []).map(function (r) { return r.code; }));
-
-  var today = new Date();
-  today.setHours(0, 0, 0, 0);
-  var d = new Date(today);
-  while (d.getDay() !== cfg.weekday) d.setDate(d.getDate() + 1);
-
-  var horizon = new Date(today);
-  horizon.setDate(horizon.getDate() + cfg.weeksAhead * 7);
-
-  var rows = [];
-  while (d <= horizon) {
-    var code = recCodeForDate(cfg.prefix, d);
-    if (!existingCodes.has(code)) {
-      rows.push({
-        code: code,
-        meeting_name: cfg.name,
-        meeting_date: recFormatDate(d),
-        event_type: cfg.type,
-        points: cfg.points,
-        active: 'false'
-      });
-    }
-    d.setDate(d.getDate() + 7);
-  }
-
-  if (!rows.length) return 0;
-  var ins = await sb.from('sessions').insert(rows);
-  if (ins.error) { console.error('Recurring session insert failed:', ins.error); return 0; }
-  return rows.length;
-}
-
-/** Runs every time the admin Sessions tab loads, so the schedule quietly
- *  tops itself back up without anyone having to remember to click anything. */
-async function ensureRecurringSessions() {
-  var cfgRaw = await ufaGetSetting(RECURRING_SETTING_KEY);
-  if (!cfgRaw) return;
-  var cfg;
-  try { cfg = JSON.parse(cfgRaw); } catch (e) { return; }
-  await topUpRecurringSessions(cfg);
-}
 
 async function createSession() {
   var code   = document.getElementById('new-code').value.trim().toUpperCase();
@@ -9077,6 +9037,179 @@ function exportRoster() {
   a.click();
 }
 
+// ── Admin: Attendance ──
+var allAttendanceData = [];   // flat list of {..attendance row.., memberName}
+var attendanceMemberMap = {}; // email(lower) -> member row, for name lookups + datalist
+var attendanceSessionMap = {}; // code -> session row, for the manual-checkin dropdown
+
+async function loadAdminAttendance() {
+  var r1 = await sb.from('attendance').select('*').order('meeting_date', { ascending: false });
+  var r2 = await sb.from('members').select('email,name').order('name', { ascending: true });
+  var r3 = await sb.from('sessions').select('*').order('meeting_date', { ascending: false });
+  var att     = r1.data || [];
+  var members = r2.data || [];
+  var sessions = r3.data || [];
+
+  attendanceMemberMap = {};
+  members.forEach(function(m){ if (m.email) attendanceMemberMap[m.email.toLowerCase()] = m; });
+
+  attendanceSessionMap = {};
+  sessions.forEach(function(s){ attendanceSessionMap[s.code] = s; });
+
+  allAttendanceData = att.map(function(r) {
+    var m = attendanceMemberMap[(r.email||'').toLowerCase()];
+    return Object.assign({}, r, { memberName: m ? m.name : null });
+  });
+
+  // Populate the member email datalist (for the manual check-in form)
+  var dl = document.getElementById('manual-att-email-list');
+  if (dl) dl.innerHTML = members.map(function(m){ return '<option value="'+ufaEsc(m.email)+'">'+ufaEsc(m.name||'')+'</option>'; }).join('');
+
+  // Populate session dropdowns (manual check-in form + filter)
+  var sessSelect = document.getElementById('manual-att-session');
+  if (sessSelect) {
+    sessSelect.innerHTML = '<option value="">— Custom (fill in below) —</option>'
+      + sessions.map(function(s){ return '<option value="'+ufaEsc(s.code)+'">'+ufaEsc(s.meeting_date||'')+' — '+ufaEsc(s.meeting_name||s.code)+'</option>'; }).join('');
+  }
+  var filterSelect = document.getElementById('attendance-session-filter');
+  if (filterSelect) {
+    var prevVal = filterSelect.value;
+    var seenCodes = {};
+    var uniqueEvents = att.filter(function(r){
+      var key = r.code_used || r.meeting_name;
+      if (seenCodes[key]) return false;
+      seenCodes[key] = true;
+      return true;
+    });
+    filterSelect.innerHTML = '<option value="">All events</option>'
+      + uniqueEvents.map(function(r){ var key=r.code_used||r.meeting_name; return '<option value="'+ufaEsc(key)+'">'+ufaEsc(r.meeting_name||key)+'</option>'; }).join('');
+    filterSelect.value = prevVal || '';
+  }
+
+  renderAdminAttendanceTable(allAttendanceData);
+}
+
+function onManualAttSessionChange() {
+  var code = document.getElementById('manual-att-session').value;
+  var s = attendanceSessionMap[code];
+  if (!s) return; // "Custom" selected — leave fields as typed
+  document.getElementById('manual-att-name').value = s.meeting_name || '';
+  document.getElementById('manual-att-date').value = s.meeting_date || '';
+  document.getElementById('manual-att-type').value = s.event_type || 'Meeting';
+  document.getElementById('manual-att-points').value = s.points || 1;
+}
+
+function toggleManualAttendance() {
+  var form = document.getElementById('manual-att-form');
+  var open = form.style.display === 'none';
+  form.style.display = open ? 'block' : 'none';
+  document.getElementById('manual-att-toggle-btn').textContent = open ? 'Cancel' : '+ Add check-in';
+}
+
+async function addManualAttendance() {
+  var email  = document.getElementById('manual-att-email').value.trim().toLowerCase();
+  var code   = document.getElementById('manual-att-session').value;
+  var name   = document.getElementById('manual-att-name').value.trim();
+  var date   = document.getElementById('manual-att-date').value.trim();
+  var type   = document.getElementById('manual-att-type').value;
+  var points = parseInt(document.getElementById('manual-att-points').value) || 1;
+  var msg    = document.getElementById('manual-att-msg');
+
+  if (!email || !name) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Member email and event name are required.'; return; }
+
+  if (code) {
+    var existRes = await sb.from('attendance').select('*').eq('email', email).eq('code_used', code).maybeSingle();
+    if (existRes.data) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='This member is already checked in to that session.'; return; }
+  }
+
+  var row = { email: email, meeting_name: name, meeting_date: date, event_type: type, points: points };
+  if (code) row.code_used = code;
+
+  var res = await sb.from('attendance').insert(row);
+  if (res.error) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Error: '+res.error.message; return; }
+
+  msg.style.display='block'; msg.style.color='#2e6b2e'; msg.textContent='Check-in added.';
+  document.getElementById('manual-att-email').value = '';
+  document.getElementById('manual-att-session').value = '';
+  document.getElementById('manual-att-name').value = '';
+  document.getElementById('manual-att-date').value = '';
+  document.getElementById('manual-att-points').value = '1';
+  loadAdminAttendance();
+  setTimeout(function(){ msg.style.display='none'; }, 3000);
+}
+
+function filterAdminAttendance() {
+  var search = document.getElementById('attendance-search').value.toLowerCase();
+  var evt    = document.getElementById('attendance-session-filter').value;
+  var filtered = allAttendanceData.filter(function(r){
+    var matchSearch = !search || (r.memberName||'').toLowerCase().includes(search) || (r.email||'').toLowerCase().includes(search);
+    var key = r.code_used || r.meeting_name;
+    var matchEvt = !evt || key === evt;
+    return matchSearch && matchEvt;
+  });
+  renderAdminAttendanceTable(filtered);
+}
+
+function renderAdminAttendanceTable(records) {
+  var el = document.getElementById('attendance-table');
+  var countLabel = document.getElementById('attendance-count-label');
+  if (countLabel) countLabel.textContent = records.length + ' record' + (records.length!==1?'s':'');
+  if (!records.length) { el.innerHTML='<div style="padding:20px;font-size:13px;color:#6B7D6B;text-align:center;">No attendance records found.</div>'; return; }
+
+  var headers = ['Member','Email','Event','Date','Type','Points',''];
+  el.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:13px;">'
+    +'<thead><tr style="background:#f7f7f7;border-bottom:1px solid rgba(46,74,46,0.1);">'
+    +headers.map(function(h){ return '<th style="padding:10px 12px;text-align:left;font-size:11px;font-weight:600;color:#6B7D6B;text-transform:uppercase;letter-spacing:0.06em;white-space:nowrap;">'+h+'</th>'; }).join('')
+    +'</tr></thead><tbody>'
+    +records.map(function(r){
+      var rid = ufaEsc(String(r.id));
+      return '<tr style="border-bottom:1px solid rgba(46,74,46,0.06);" id="att-row-'+rid+'">'
+        +'<td style="padding:10px 12px;font-weight:500;color:#1C2B1C;white-space:nowrap;">'+(ufaEsc(r.memberName)||'--')+'</td>'
+        +'<td style="padding:10px 12px;color:#6B7D6B;font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+ufaEsc(r.email)+'</td>'
+        +'<td style="padding:10px 12px;color:#1C2B1C;white-space:nowrap;">'+ufaEsc(r.meeting_name)+'</td>'
+        +'<td style="padding:10px 12px;color:#6B7D6B;white-space:nowrap;">'+ufaEsc(r.meeting_date)+'</td>'
+        +'<td style="padding:10px 12px;color:#6B7D6B;white-space:nowrap;">'+ufaEsc(r.event_type||'Meeting')+'</td>'
+        +'<td style="padding:10px 12px;font-weight:600;color:#3D6B3D;">'+(r.points||1)+'</td>'
+        +'<td style="padding:10px 12px;white-space:nowrap;">'
+          +'<button onclick="editAttendanceRecord(\''+rid+'\')" style="background:#fff;border:1px solid rgba(46,74,46,0.2);color:#3A4A3A;font-family:\'DM Sans\',sans-serif;font-size:11px;padding:5px 10px;border-radius:4px;cursor:pointer;margin-right:6px;">Edit</button>'
+          +'<button onclick="deleteAttendanceRecord(\''+rid+'\')" style="background:#fff;border:1px solid #f0b4b0;color:#8b2e2e;font-family:\'DM Sans\',sans-serif;font-size:11px;padding:5px 10px;border-radius:4px;cursor:pointer;">Delete</button>'
+        +'</td>'
+      +'</tr>';
+    }).join('')
+    +'</tbody></table>';
+}
+
+async function editAttendanceRecord(id) {
+  var r = allAttendanceData.find(function(x){ return String(x.id) === String(id); });
+  if (!r) return;
+
+  var newName = prompt('Event name:', r.meeting_name);
+  if (newName === null) return;
+  var newDate = prompt('Date:', r.meeting_date);
+  if (newDate === null) return;
+  var newType = prompt('Event type (Analyst Meeting/General Meeting/Social/Speaker/Workshop/Community Service):', r.event_type||'Meeting');
+  if (newType === null) return;
+  var newPointsRaw = prompt('Points:', r.points||1);
+  if (newPointsRaw === null) return;
+  var newPoints = parseInt(newPointsRaw);
+  if (isNaN(newPoints) || newPoints < 0) { alert('Please enter a valid number of points.'); return; }
+
+  var res = await sb.from('attendance').update({
+    meeting_name: newName.trim(), meeting_date: newDate.trim(), event_type: newType.trim(), points: newPoints
+  }).eq('id', r.id);
+  if (res.error) { alert('Error updating record: ' + res.error.message); return; }
+  loadAdminAttendance();
+}
+
+async function deleteAttendanceRecord(id) {
+  var r = allAttendanceData.find(function(x){ return String(x.id) === String(id); });
+  if (!r) return;
+  if (!confirm('Delete this check-in for ' + (r.memberName||r.email) + ' — "' + r.meeting_name + '"? This cannot be undone.')) return;
+  var res = await sb.from('attendance').delete().eq('id', r.id);
+  if (res.error) { alert('Error deleting record: ' + res.error.message); return; }
+  loadAdminAttendance();
+}
+
 // ── Admin: Analytics ──
 async function loadAnalytics() {
   var r1 = await sb.from('members').select('email,role');
@@ -9185,14 +9318,8 @@ async function loadAnalytics() {
           showLogin();
           return;
         }
-        if (currentMember.status === 'pending') {
-          await sb.auth.signOut();
-          currentUser = null; currentMember = null;
-          showPage('portal');
-          document.getElementById('portal-login').style.display = 'none';
-          document.getElementById('portal-pending').style.display = 'flex';
-          return;
-        }
+        // Pending accounts can sign in — showDashboard() restricts them to
+        // the check-in screen until a board member approves them.
         showDashboard();
         return;
       }
@@ -9221,13 +9348,8 @@ async function loadAnalytics() {
             showLogin();
             return;
           }
-          if (currentMember.status === 'pending') {
-            await sb.auth.signOut();
-            currentUser = null; currentMember = null;
-            document.getElementById('portal-login').style.display = 'none';
-            document.getElementById('portal-pending').style.display = 'flex';
-            return;
-          }
+          // Pending accounts can sign in — showDashboard() restricts them to
+          // the check-in screen until a board member approves them.
           showDashboard();
         }
         return;
@@ -14145,7 +14267,17 @@ async function applyRecruitVisibility() {
  * from members until they're published. Called once when the dashboard opens.
  */
 async function applyFeatureVisibility() {
-  if (ufaIsBoard()) return;
+  if (ufaIsBoard()) {
+    // Board/President always see these, regardless of the member-facing
+    // visibility settings below — and regardless of whatever a *previous*
+    // login in this same tab (e.g. a pending test account) last set them
+    // to, since this SPA doesn't reload the page between logins.
+    var boardBtnAlways = document.getElementById('ptab-board');
+    if (boardBtnAlways) boardBtnAlways.style.display = '';
+    var mockBtnAlways = document.getElementById('ptab-mock');
+    if (mockBtnAlways) mockBtnAlways.style.display = '';
+    return;
+  }
   var cur = await ufaGetSetting('visibility_board_hours');
   var btn = document.getElementById('ptab-board');
   if (btn) btn.style.display = (cur && cur.members) ? '' : 'none';
@@ -18165,10 +18297,21 @@ async function portalSignup() {
   // sit unnoticed for a week. Never blocks signup.
   try { await loadEmailConfig(); notifyBoardOfPendingSignup(name, email, role); } catch (e) {}
 
-  // Sign out immediately to prevent auto-session bypassing pending check
-  await sb.auth.signOut();
+  if (data && data.session) {
+    // No email confirmation required — sign them straight into the portal.
+    // showDashboard() restricts pending accounts to the check-in screen
+    // only, until a board member approves them.
+    currentUser = data.session.user;
+    currentMember = await fetchMember(email);
+    document.getElementById('portal-signup').style.display = 'none';
+    showDashboard();
+    return;
+  }
 
-  // Show pending message — do NOT sign them in or show dashboard
+  // Email confirmation is required before Supabase issues a session — they
+  // land in the dashboard (check-in only, pending) as soon as they click
+  // the confirmation link, via the hash/PKCE handling above.
+  await sb.auth.signOut();
   document.getElementById('portal-signup').style.display = 'none';
   document.getElementById('portal-login').style.display = 'flex';
   document.getElementById('login-card').style.display = 'none';
