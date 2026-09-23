@@ -8033,19 +8033,29 @@ async function showDashboard() {
 }
 
 /** Shows/hides the "you're pending approval, but can still check in" banner
- *  at the top of the Overview tab. Built once and cached on first call. */
+ *  above the Overview tab. Only touches the DOM at all for pending accounts
+ *  — approved members' overview layout is never modified, so the existing
+ *  "#ptab-content-overview > div:first-child" CSS (which styles the stats
+ *  cards) keeps matching the stats grid exactly as before. */
 function showPendingBanner(show) {
   var el = document.getElementById('pending-approval-banner');
+  if (!show) {
+    if (el) el.style.display = 'none';
+    return;
+  }
   if (!el) {
     var overview = document.getElementById('ptab-content-overview');
-    if (!overview) return;
+    if (!overview || !overview.parentNode) return;
     el = document.createElement('div');
     el.id = 'pending-approval-banner';
-    el.style.cssText = 'display:none;margin-bottom:20px;padding:14px 18px;background:#fffbe6;border:1px solid #f0d060;border-radius:6px;font-size:13px;color:#78450a;line-height:1.6;';
+    el.style.cssText = 'margin:0 0 20px;padding:14px 18px;background:#fffbe6;border:1px solid #f0d060;border-radius:6px;font-size:13px;color:#78450a;line-height:1.6;';
     el.innerHTML = '⏳ <strong>Your account is pending board approval.</strong> You can check in to events below and it will count once you\'re approved — the leaderboard and other portal features unlock after that.';
-    overview.insertBefore(el, overview.firstChild);
+    // Inserted as a sibling BEFORE the overview content div, not as its
+    // first child — this keeps every existing child index inside
+    // #ptab-content-overview untouched.
+    overview.parentNode.insertBefore(el, overview);
   }
-  el.style.display = show ? 'block' : 'none';
+  el.style.display = 'block';
 }
 
 function updateStats(attended) {
