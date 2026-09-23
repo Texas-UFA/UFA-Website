@@ -8198,16 +8198,28 @@ async function checkIn() {
 // ── Upcoming + Past Events ──
 
 /**
- * Sessions only store meeting_date as free text like "Sep 21" (no year),
- * so to split events into upcoming vs. past we reconstruct a real Date by
- * assuming the current year, then correcting by a year if that guess lands
- * more than ~2 months in the future (handles viewing last semester's
- * events early in a new one).
+ * Sessions only store meeting_date as free text (e.g. "Sep 21"), so to
+ * split events into upcoming vs. past we have to reconstruct a real Date
+ * from that text ourselves.
+ *
+ * This is intentionally strict: it only accepts a "Month Day" shape
+ * (e.g. "Sep 16", "September 3rd"). Anything else -- including a bare
+ * weekday name like "Tuesday" -- returns null rather than guessing,
+ * because JavaScript's built-in Date parser will otherwise silently
+ * accept "Tuesday 2026" and misparse it as January 1, which would
+ * wrongly mark a future event as already past.
+ *
+ * A null result means "we can't confidently date this" and the caller
+ * treats it as upcoming/not-yet-clickable rather than past, so a badly
+ * formatted date can never accidentally unlock the materials uploader.
  */
 function ufaParseSessionDate(meetingDateStr) {
   if (!meetingDateStr) return null;
+  var str = String(meetingDateStr).trim();
+  var m = str.match(/^([A-Za-z]{3,9})\.?\s+(\d{1,2})(?:st|nd|rd|th)?$/);
+  if (!m) return null;
   var now = new Date();
-  var guess = new Date(meetingDateStr + ' ' + now.getFullYear());
+  var guess = new Date(m[1] + ' ' + m[2] + ', ' + now.getFullYear());
   if (isNaN(guess.getTime())) return null;
   var diffDays = (guess - now) / 86400000;
   if (diffDays > 60) guess.setFullYear(now.getFullYear() - 1);
@@ -8257,19 +8269,36 @@ async function renderUpcoming() {
     var dayNum = (parts[1] || '').replace(/(st|nd|rd|th)$/i, '') || s.meeting_date || '--';
     var nameEsc = ufaEsc(s.meeting_name || 'Event');
     var fc = fileCounts[s.code] || 0;
-    var onclick = clickable
+
+    // Only offer the click-to-add-materials affordance when this row has a
+    // genuinely parsed, confirmed-past date -- never on a guess.
+    var canOpenMaterials = clickable && !!s._parsedDate;
+    var onclick = canOpenMaterials
       ? " onclick=\"openEventFilesModal('" + s.code + "','" + encodeURIComponent(s.meeting_name || 'Event') + "','" + encodeURIComponent(s.meeting_date || '') + "')\""
       : '';
-    return '<div class="ufa-event-row' + (clickable ? ' is-clickable' : '') + '"' + onclick +
+
+    // The date box is a fixed 40px numeral in the normal case ("16" / "SEP").
+    // When meeting_date doesn't match that shape (e.g. it was typed as a
+    // weekday name, or anything else free-text), fall back to a wider box
+    // with smaller, wrapping text instead of letting it overflow into the
+    // title next to it.
+    var isNumericDay = /^\d{1,2}$/.test(dayNum);
+    var dateBlockHtml = isNumericDay
+      ? '<div style="width:40px;text-align:center;flex-shrink:0;">' +
+          '<div style="font-size:18px;font-weight:600;color:#1C2B1C;line-height:1;">' + ufaEsc(dayNum) + '</div>' +
+          '<div style="font-size:10px;color:#6B7D6B;text-transform:uppercase;letter-spacing:0.06em;">' + ufaEsc(parts[0] || '') + '</div>' +
+        '</div>'
+      : '<div style="width:56px;text-align:center;flex-shrink:0;overflow:hidden;">' +
+          '<div style="font-size:11px;font-weight:600;color:#1C2B1C;line-height:1.3;word-break:break-word;">' + ufaEsc(dayNum) + '</div>' +
+        '</div>';
+
+    return '<div class="ufa-event-row' + (canOpenMaterials ? ' is-clickable' : '') + '"' + onclick +
       ' style="padding:16px 20px;border-bottom:1px solid rgba(46,74,46,0.08);display:flex;align-items:center;justify-content:space-between;gap:12px;' +
       (done ? 'background:#f7fbf7;' : '') + '">'
-      + '<div style="display:flex;align-items:center;gap:14px;">'
-        + '<div style="width:40px;text-align:center;flex-shrink:0;">'
-          + '<div style="font-size:18px;font-weight:600;color:#1C2B1C;line-height:1;">' + dayNum + '</div>'
-          + '<div style="font-size:10px;color:#6B7D6B;text-transform:uppercase;letter-spacing:0.06em;">' + (parts[0] || '') + '</div>'
-        + '</div>'
+      + '<div style="display:flex;align-items:center;gap:14px;min-width:0;flex:1;">'
+        + dateBlockHtml
         + '<div style="width:1px;align-self:stretch;background:rgba(46,74,46,0.12);flex-shrink:0;"></div>'
-        + '<div>'
+        + '<div style="min-width:0;">'
           + '<div style="font-size:14px;font-weight:500;color:#1C2B1C;">' + nameEsc + '</div>'
           + '<div style="display:flex;align-items:center;gap:6px;margin-top:3px;">'
             + '<span style="font-size:11px;font-weight:500;background:' + clr.bg + ';color:' + clr.color + ';padding:2px 8px;border-radius:3px;">' + type + '</span>'
@@ -8280,7 +8309,8 @@ async function renderUpcoming() {
       + '<div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">'
         + '<span style="font-size:12px;font-weight:600;color:#3D6B3D;background:#EEF5EE;padding:4px 10px;border-radius:3px;">+' + pts + ' pt' + (pts !== 1 ? 's' : '') + '</span>'
         + (done ? '<span style="font-size:11px;color:#2e6b2e;font-weight:500;">Attended</span>' : '')
-        + (clickable ? '<span style="font-size:12px;color:#3D6B3D;font-weight:600;">' + (fc ? fc + ' file' + (fc !== 1 ? 's' : '') + ' →' : 'Add materials →') + '</span>' : '')
+        + (canOpenMaterials ? '<span style="font-size:12px;color:#3D6B3D;font-weight:600;">' + (fc ? fc + ' file' + (fc !== 1 ? 's' : '') + ' →' : 'Add materials →') + '</span>' : '')
+        + (clickable && !s._parsedDate ? '<span style="font-size:11px;color:#B8791B;font-style:italic;">Fix this event\'s date to add materials</span>' : '')
       + '</div>'
     + '</div>';
   }
