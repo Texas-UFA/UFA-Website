@@ -8341,6 +8341,24 @@ function openEventFilesModal(code, encName, encDate) {
   EVENT_MODAL.code = code;
   EVENT_MODAL.name = name;
 
+  var isBoard = ufaIsBoard();
+  var uploadSectionHtml = isBoard
+    ? '<div class="ufa-drop" id="event-file-dropzone" style="margin-top:18px;" onclick="document.getElementById(\'event-file-input\').click()">' +
+        '<div class="ufa-drop-icon">📎</div>' +
+        '<div class="ufa-drop-title">Drag a file here, or click to browse</div>' +
+        '<div class="ufa-drop-sub">Slide decks, PDFs, docs — any file type &middot; 25 MB max</div>' +
+      '</div>' +
+      '<input type="file" id="event-file-input" style="display:none;" onchange="handleEventFilePick(this.files)">' +
+      '<div id="event-file-progress" style="display:none;margin-top:14px;">' +
+        '<div class="ufa-progress"><div class="ufa-progress-bar" id="event-file-progress-bar"></div></div>' +
+      '</div>' +
+      '<div id="event-file-alert" style="margin-top:10px;"></div>'
+    // Non-board members still get a fully working view-only experience --
+    // they just never see the upload control. The database enforces this
+    // independently (see the Storage/RLS policy), so even a modified
+    // client can't bypass it.
+    : '<div class="ufa-note" style="margin-top:14px;">Only board members can add materials here. If something is missing, ask a board member to upload it.</div>';
+
   ufaModal(
     '<div class="ufa-modal-head">' +
       '<div><div class="ufa-modal-title">' + ufaEsc(name) + '</div>' +
@@ -8350,23 +8368,14 @@ function openEventFilesModal(code, encName, encDate) {
     '<div class="ufa-modal-body">' +
       '<div class="ufa-label">Materials from this event</div>' +
       '<div id="event-files-list"><div class="ufa-empty">Loading…</div></div>' +
-      '<div class="ufa-drop" id="event-file-dropzone" style="margin-top:18px;" onclick="document.getElementById(\'event-file-input\').click()">' +
-        '<div class="ufa-drop-icon">📎</div>' +
-        '<div class="ufa-drop-title">Drag a file here, or click to browse</div>' +
-        '<div class="ufa-drop-sub">Slide decks, PDFs, docs — any file type &middot; 25 MB max</div>' +
-      '</div>' +
-      '<input type="file" id="event-file-input" style="display:none;" onchange="handleEventFilePick(this.files)">' +
-      '<div id="event-file-progress" style="display:none;margin-top:14px;">' +
-        '<div class="ufa-progress"><div class="ufa-progress-bar" id="event-file-progress-bar"></div></div>' +
-      '</div>' +
-      '<div id="event-file-alert" style="margin-top:10px;"></div>' +
+      uploadSectionHtml +
     '</div>' +
     '<div class="ufa-modal-foot">' +
       '<button class="ufa-btn-ghost" onclick="ufaCloseModal()">Close</button>' +
     '</div>'
   );
 
-  ufaWireDrop('event-file-dropzone', handleEventFilePick);
+  if (isBoard) ufaWireDrop('event-file-dropzone', handleEventFilePick);
   loadEventFiles(code);
 }
 
@@ -8406,6 +8415,15 @@ function handleEventFilePick(files) {
 }
 
 async function uploadEventFile(file) {
+  // Client-side check only -- the real gate is the Storage/RLS policy in
+  // Supabase, which will refuse a non-board upload regardless of this.
+  // This just avoids a confusing network error for the rare case someone
+  // reaches uploadEventFile() without going through the normal UI.
+  if (!ufaIsBoard()) {
+    ufaAlert('event-file-alert', 'err', 'Only board members can add materials here.');
+    return;
+  }
+
   ufaAlert('event-file-alert', '', '');
   var prog = document.getElementById('event-file-progress');
   var bar = document.getElementById('event-file-progress-bar');
