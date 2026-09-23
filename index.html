@@ -14155,7 +14155,17 @@ async function applyRecruitVisibility() {
  * from members until they're published. Called once when the dashboard opens.
  */
 async function applyFeatureVisibility() {
-  if (ufaIsBoard()) return;
+  if (ufaIsBoard()) {
+    // Board/President always see these, regardless of the member-facing
+    // visibility settings below — and regardless of whatever a *previous*
+    // login in this same tab (e.g. a pending test account) last set them
+    // to, since this SPA doesn't reload the page between logins.
+    var boardBtnAlways = document.getElementById('ptab-board');
+    if (boardBtnAlways) boardBtnAlways.style.display = '';
+    var mockBtnAlways = document.getElementById('ptab-mock');
+    if (mockBtnAlways) mockBtnAlways.style.display = '';
+    return;
+  }
   var cur = await ufaGetSetting('visibility_board_hours');
   var btn = document.getElementById('ptab-board');
   if (btn) btn.style.display = (cur && cur.members) ? '' : 'none';
