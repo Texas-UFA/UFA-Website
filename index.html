@@ -8004,7 +8004,7 @@ async function showDashboard() {
 
   loadAnnouncement();
   loadEmailConfig();
-  applyFeatureVisibility();
+  await applyFeatureVisibility();
 
   // Pending accounts (awaiting board approval) get the Overview tab only,
   // so they can check in to events, but nothing else — no leaderboard,
