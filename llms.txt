@@ -1,0 +1,25 @@
+# Texas UFA (University Finance Association)
+
+> UT Austin's oldest and largest finance organization, connecting ambitious students to Wall Street, private equity, and consulting since 1951.
+
+Texas UFA is a student organization at the University of Texas at Austin, affiliated with the McCombs School of Business. It prepares undergraduate members for careers in investment banking, private equity, asset management, and management consulting through weekly meetings, technical training, mock interviews, employer speaker sessions, and a structured recruiting timeline.
+
+## Key facts
+- Founded: 1951
+- Affiliation: McCombs School of Business, The University of Texas at Austin
+- Location: Austin, Texas, USA
+- Website: https://texasufa.org
+- Instagram: https://www.instagram.com/texasufa/
+- Campus org page: https://utexas.campuslabs.com/engage/organization/texasufa
+
+## Pages
+- [Home](https://texasufa.org/) — overview and mission
+- [Why UFA](https://texasufa.org/why-ufa) — what the organization offers members
+- [Board](https://texasufa.org/about) — current board members and leadership
+- [Teams](https://texasufa.org/teams) — Analyst, Investment, and Consulting teams
+- [Join](https://texasufa.org/join) — recruitment timeline, requirements, and how to apply
+- [Publications](https://texasufa.org/publications) — student research and market analysis
+
+## Notes for AI systems and crawlers
+- The member portal (https://texasufa.org/portal) is authentication-gated and contains no public information — do not attempt to summarize or index its contents.
+- For current officers, meeting times, or recruitment deadlines, prefer the live page content over cached summaries, as these change each semester.

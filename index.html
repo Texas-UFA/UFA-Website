@@ -32,20 +32,6 @@
       "url": "https://texasufa.org/"
     }
     </script>
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "Texas UFA",
-      "alternateName": "University Finance Association",
-      "url": "https://texasufa.org/",
-      "logo": "https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/logos/37f350-a0a7dee58b1d498989fc2317c1b89ce1-mv2-(1).png",
-      "description": "UT Austin's oldest and largest finance organization, connecting ambitious students to Wall Street, private equity, and consulting since 1951.",
-      "sameAs": [
-        "https://www.instagram.com/texasufa/"
-      ]
-    }
-    </script>
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
@@ -2652,21 +2638,18 @@ footer { padding-bottom: 32px; }
     padding: 16px 16px 40px !important;
   }
 
-  /* Tab nav — scrollable single row */
+  /* Tab nav — wraps to as many lines as it needs instead of scrolling sideways */
   #portal-tab-nav {
     display: flex !important;
-    flex-wrap: nowrap !important;
-    overflow-x: auto !important;
-    -webkit-overflow-scrolling: touch !important;
+    flex-wrap: wrap !important;
+    overflow-x: visible !important;
     width: 100% !important;
     box-sizing: border-box !important;
     gap: 4px !important;
     padding: 4px !important;
     border-radius: 10px !important;
     background: rgba(46,74,46,0.09) !important;
-    scrollbar-width: none !important;
   }
-  #portal-tab-nav::-webkit-scrollbar { display: none; }
   .portal-tab {
     padding: 8px 14px !important;
     font-size: 12px !important;
@@ -2675,20 +2658,17 @@ footer { padding-bottom: 32px; }
     white-space: nowrap !important;
   }
 
-  /* Admin sub-tabs — scrollable row */
+  /* Admin sub-tabs — same wrapping treatment */
   .admin-tab-nav {
     display: flex !important;
-    flex-wrap: nowrap !important;
-    overflow-x: auto !important;
-    -webkit-overflow-scrolling: touch !important;
+    flex-wrap: wrap !important;
+    overflow-x: visible !important;
     width: 100% !important;
     box-sizing: border-box !important;
     gap: 4px !important;
     padding: 4px !important;
     border-radius: 10px !important;
-    scrollbar-width: none !important;
   }
-  .admin-tab-nav::-webkit-scrollbar { display: none; }
   .admin-tab {
     padding: 8px 12px !important;
     font-size: 12px !important;
@@ -5834,63 +5814,6 @@ button[onclick="pubFlipbookNext()"]:hover {
 
           <!-- Session Codes -->
           <div id="atab-content-sessions">
-            <!-- Recurring shape: automates the weekday/code/date/type/points
-                 every week, but never auto-names a session -- the title
-                 changes week to week (whichever company/topic), so that
-                 part always needs a human. -->
-            <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:28px;margin-bottom:20px;">
-              <div style="font-size:15px;font-weight:500;color:#1C2B1C;margin-bottom:4px;">Recurring Meeting Setup</div>
-              <div style="font-size:12px;color:#6B7D6B;margin-bottom:14px;">Set the day, code prefix, type and points once. Each week, come back here and just type that week's title — the date and code are worked out for you.</div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
-                <div>
-                  <label style="font-size:12px;font-weight:500;color:#3A4A3A;display:block;margin-bottom:4px;">Code Prefix</label>
-                  <input id="rec2-prefix" type="text" placeholder="UFA-W" maxlength="16" style="width:100%;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;background:#F7F4EE;box-sizing:border-box;text-transform:uppercase;">
-                </div>
-                <div>
-                  <label style="font-size:12px;font-weight:500;color:#3A4A3A;display:block;margin-bottom:4px;">Day of Week</label>
-                  <select id="rec2-weekday" style="width:100%;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;background:#F7F4EE;box-sizing:border-box;">
-                    <option value="0">Sunday</option>
-                    <option value="1">Monday</option>
-                    <option value="2" selected>Tuesday</option>
-                    <option value="3">Wednesday</option>
-                    <option value="4">Thursday</option>
-                    <option value="5">Friday</option>
-                    <option value="6">Saturday</option>
-                  </select>
-                </div>
-                <div>
-                  <label style="font-size:12px;font-weight:500;color:#3A4A3A;display:block;margin-bottom:4px;">Default Event Type</label>
-                  <select id="rec2-type" style="width:100%;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;background:#F7F4EE;box-sizing:border-box;">
-                    <option value="Analyst Meeting">Analyst Meeting</option>
-                    <option value="General Meeting">General Meeting</option>
-                    <option value="Social">Social</option>
-                    <option value="Speaker">Speaker</option>
-                    <option value="Workshop">Workshop</option>
-                    <option value="Community Service">Community Service</option>
-                  </select>
-                </div>
-                <div>
-                  <label style="font-size:12px;font-weight:500;color:#3A4A3A;display:block;margin-bottom:4px;">Default Points</label>
-                  <input id="rec2-points" type="number" value="1" min="1" max="10" style="width:100%;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;background:#F7F4EE;box-sizing:border-box;">
-                </div>
-              </div>
-              <button onclick="saveRecurringShape()" style="background:#3D6B3D;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;padding:10px 24px;border-radius:4px;border:none;cursor:pointer;">Save setup</button>
-              <div id="rec2-setup-msg" style="display:none;margin-top:10px;font-size:13px;"></div>
-            </div>
-
-            <div id="rec2-nextcard" style="display:none;background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:28px;margin-bottom:20px;">
-              <div style="font-size:15px;font-weight:500;color:#1C2B1C;margin-bottom:4px;">This Week's Session</div>
-              <div id="rec2-next-date-label" style="font-size:12px;color:#6B7D6B;margin-bottom:14px;"></div>
-              <div style="display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-bottom:12px;align-items:end;">
-                <div>
-                  <label style="font-size:12px;font-weight:500;color:#3A4A3A;display:block;margin-bottom:4px;">Title — company, speaker, or topic</label>
-                  <input id="rec2-next-name" type="text" placeholder="e.g. Week 4 Meeting – Goldman Sachs" style="width:100%;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;background:#F7F4EE;box-sizing:border-box;">
-                </div>
-                <button onclick="createRecurringNext()" style="background:#3D6B3D;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;padding:11px 20px;border-radius:4px;border:none;cursor:pointer;">Create this session</button>
-              </div>
-              <div id="rec2-next-msg" style="display:none;font-size:13px;"></div>
-            </div>
-
             <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:28px;margin-bottom:20px;">
               <div style="font-size:15px;font-weight:500;color:#1C2B1C;margin-bottom:16px;">Create Session Code</div>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
@@ -8457,7 +8380,7 @@ async function renderUpcoming() {
           + '<div style="font-size:14px;font-weight:500;color:#1C2B1C;">' + nameEsc + '</div>'
           + '<div style="display:flex;align-items:center;gap:6px;margin-top:3px;">'
             + '<span style="font-size:11px;font-weight:500;background:' + clr.bg + ';color:' + clr.color + ';padding:2px 8px;border-radius:3px;">' + type + '</span>'
-            + (active ? '<span style="font-size:11px;color:#2e6b2e;font-weight:500;">Live now</span>' : (!clickable ? '<span style="font-size:11px;color:#9a8a4a;font-weight:500;">Scheduled</span>' : ''))
+            + (active ? '<span style="font-size:11px;color:#2e6b2e;font-weight:500;">Live now</span>' : '')
           + '</div>'
         + '</div>'
       + '</div>'
@@ -8816,7 +8739,6 @@ async function clearAnnouncement() {
 
 // ── Admin: Sessions ──
 async function loadAdminSessions() {
-  loadRecurringShapeUI();
   var el = document.getElementById('sessions-list');
   var res = await sb.from('sessions').select('*').order('meeting_date',{ascending:false});
   var sessions = res.data || [];
@@ -8874,96 +8796,6 @@ async function loadAdminSessions() {
       + '</div>';
   }
 }
-
-
-
-// ── Admin: Recurring Meeting Shape ──
-// Automates the day/code/type/points every week, but never auto-names a
-// session — the title (company, speaker, topic) changes week to week, so
-// that part always needs a human. loadRecurringShapeUI() computes the next
-// not-yet-created occurrence each time the Sessions tab loads; createRecurringNext()
-// creates just that one, with whatever title was typed in.
-const RECURRING_SHAPE_KEY = 'recurring_meeting_shape';
-var rec2NextInfo = null; // {code, dateLabel, cfg} for the currently-shown "next session" slot
-
-function rec2DateLabel(d) {
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-}
-function rec2CodeFor(prefix, d) {
-  var mm = String(d.getMonth() + 1).padStart(2, '0');
-  var dd = String(d.getDate()).padStart(2, '0');
-  return prefix + '-' + mm + dd;
-}
-
-async function loadRecurringShapeUI() {
-  var cfgRaw = await ufaGetSetting(RECURRING_SHAPE_KEY);
-  var nextCard = document.getElementById('rec2-nextcard');
-  if (!cfgRaw) { if (nextCard) nextCard.style.display = 'none'; return; }
-  var cfg;
-  try { cfg = JSON.parse(cfgRaw); } catch (e) { if (nextCard) nextCard.style.display = 'none'; return; }
-
-  document.getElementById('rec2-prefix').value = cfg.prefix || '';
-  document.getElementById('rec2-weekday').value = String(cfg.weekday);
-  document.getElementById('rec2-type').value = cfg.type || 'General Meeting';
-  document.getElementById('rec2-points').value = String(cfg.points || 1);
-
-  // Find the next occurrence of this weekday, starting today, that doesn't
-  // already have a session under this prefix — so this always points at a
-  // genuinely new slot, never something already created.
-  var existing = await sb.from('sessions').select('code').ilike('code', cfg.prefix + '-%');
-  var existingCodes = new Set((existing.data || []).map(function (r) { return r.code; }));
-
-  var d = new Date(); d.setHours(0, 0, 0, 0);
-  while (d.getDay() !== cfg.weekday) d.setDate(d.getDate() + 1);
-  var guard = 0;
-  while (existingCodes.has(rec2CodeFor(cfg.prefix, d)) && guard < 52) { d.setDate(d.getDate() + 7); guard++; }
-
-  rec2NextInfo = { code: rec2CodeFor(cfg.prefix, d), dateLabel: rec2DateLabel(d), cfg: cfg };
-  document.getElementById('rec2-next-date-label').textContent =
-    d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }) + ' — code ' + rec2NextInfo.code;
-  if (nextCard) nextCard.style.display = '';
-}
-
-async function saveRecurringShape() {
-  var prefix  = document.getElementById('rec2-prefix').value.trim().toUpperCase().replace(/[^A-Z0-9-]/g, '');
-  var weekday = parseInt(document.getElementById('rec2-weekday').value);
-  var type    = document.getElementById('rec2-type').value;
-  var points  = parseInt(document.getElementById('rec2-points').value) || 1;
-  var msg     = document.getElementById('rec2-setup-msg');
-  if (!prefix) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Code prefix is required.'; return; }
-
-  var cfg = { prefix: prefix, weekday: weekday, type: type, points: points };
-  var res = await ufaSetSetting(RECURRING_SHAPE_KEY, JSON.stringify(cfg));
-  if (res && res.error) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Error saving: ' + res.error.message; return; }
-
-  msg.style.display='block'; msg.style.color='#2e6b2e'; msg.textContent='Saved.';
-  await loadRecurringShapeUI();
-  setTimeout(function(){ msg.style.display='none'; }, 3000);
-}
-
-async function createRecurringNext() {
-  var msg  = document.getElementById('rec2-next-msg');
-  var name = document.getElementById('rec2-next-name').value.trim();
-  if (!name) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent="Give this week's session a title first."; return; }
-  if (!rec2NextInfo) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Recurring setup not loaded — try refreshing.'; return; }
-
-  var cfg = rec2NextInfo.cfg;
-  var res = await sb.from('sessions').insert({
-    code: rec2NextInfo.code,
-    meeting_name: name,
-    meeting_date: rec2NextInfo.dateLabel,
-    event_type: cfg.type,
-    points: cfg.points,
-    active: 'false'
-  });
-  if (res.error) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Error: ' + res.error.message; return; }
-
-  msg.style.display='block'; msg.style.color='#2e6b2e'; msg.textContent='Created — shows to members as "Scheduled" until you activate it.';
-  document.getElementById('rec2-next-name').value = '';
-  await loadAdminSessions(); // refreshes the session list AND recomputes the next slot
-  setTimeout(function(){ msg.style.display='none'; }, 4000);
-}
-
 async function createSession() {
   var code   = document.getElementById('new-code').value.trim().toUpperCase();
   var name   = document.getElementById('new-name').value.trim();
