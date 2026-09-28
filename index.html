@@ -8906,8 +8906,11 @@ async function denyMember(email) {
 
 // ── Admin: Roster ──
 async function loadRosterBadge() {
-  var r = await sb.from('members').select('role');
-  var members = r.data || [];
+  var r = await sb.from('members').select('role, status');
+  // Roster only lists members already accepted into the portal, so the badge
+  // should only count those too (signups still awaiting approval live in the
+  // Approvals tab instead).
+  var members = (r.data || []).filter(function(m){ return m.status !== 'pending'; });
   var pendingCount = members.filter(function(m){ return m.role && m.role.indexOf('-Pending') !== -1; }).length;
   var badge = document.getElementById('roster-badge');
   if (badge) { badge.textContent = pendingCount; badge.style.display = pendingCount > 0 ? 'inline' : 'none'; }
@@ -8920,7 +8923,10 @@ async function loadRoster() {
 
   var r1 = await sb.from('members').select('*').order('name',{ascending:true});
   var r2 = await sb.from('attendance').select('email, points');
-  var members = r1.data || [];
+  // Only members already accepted into the portal belong on the roster.
+  // Brand-new signups still awaiting approval (status 'pending') are handled
+  // in the Approvals tab -- listing them here too was confusing.
+  var members = (r1.data || []).filter(function(m){ return m.status !== 'pending'; });
   var allAtt  = r2.data || [];
   var pointsMap = {};
   allAtt.forEach(function(r){ pointsMap[r.email]=(pointsMap[r.email]||0)+(r.points||1); });
