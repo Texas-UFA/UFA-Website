@@ -8935,7 +8935,10 @@ async function loadRoster() {
   var pendingRoleCount = members.filter(function(m){ return m.role && m.role.indexOf('-Pending') !== -1; }).length;
   var rosterBadge = document.getElementById('roster-badge');
   if (rosterBadge) { rosterBadge.textContent = pendingRoleCount; rosterBadge.style.display = pendingRoleCount > 0 ? 'inline' : 'none'; }
-  renderRosterTable(allRosterData);
+  // Re-apply whatever search / role filter is already set on the controls
+  // (they keep their values while you visit other admin tabs), so leaving
+  // for Approvals and coming back doesn't silently reset the view.
+  filterRoster();
 }
 
 /** Board-facing save for the one shared recruiting-cycle value. Every
