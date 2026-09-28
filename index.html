@@ -9014,7 +9014,18 @@ async function changeMemberRole(email, newRole) {
   // Update local cache so badge color refreshes without re-fetching
   var member = allRosterData.find(function(m){ return m.email === email; });
   if (member) member.role = newRole;
-  renderRosterTable(allRosterData);
+
+  // Keep the red pending-count badge on the Roster tab in sync
+  var pendingRoleCount = allRosterData.filter(function(m){ return m.role && m.role.indexOf('-Pending') !== -1; }).length;
+  var rosterBadge = document.getElementById('roster-badge');
+  if (rosterBadge) { rosterBadge.textContent = pendingRoleCount; rosterBadge.style.display = pendingRoleCount > 0 ? 'inline' : 'none'; }
+
+  // Re-apply whatever search / role filter is currently active, instead of
+  // re-rendering the full list -- otherwise approving someone while filtered
+  // to "Analyst-Pending" would suddenly dump every member back on screen.
+  // (The person you just changed drops out of that filtered view, which is
+  // the expected result: they're no longer pending.)
+  filterRoster();
 }
 
 function exportRoster() {
