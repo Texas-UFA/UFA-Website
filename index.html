@@ -5202,6 +5202,9 @@ button[onclick="pubFlipbookNext()"]:hover {
           <div style="font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:500;color:#1C2B1C;margin-bottom:4px;">Events</div>
           <div style="font-size:13px;color:#6B7D6B;margin-bottom:24px;">Upcoming meetings, and materials from past ones</div>
 
+          <!-- Families: only shown to members who belong to a family (see loadMyFamily) -->
+          <div id="my-family-box" style="display:none;margin-bottom:32px;"></div>
+
           <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:10px;">Upcoming</div>
           <div id="upcoming-events-list" style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;overflow:hidden;margin-bottom:32px;">
             <div style="padding:20px;background:#EEF5EE;font-size:13px;color:#6B7D6B;text-align:center;">Loading events…</div>
@@ -5475,7 +5478,7 @@ button[onclick="pubFlipbookNext()"]:hover {
         <div id="ptab-content-board" style="display:none;">
           <div class="ufa-pane-head">
             <div class="ufa-pane-title">Board Hours</div>
-            <div class="ufa-pane-sub">Email any board member directly, or book a 15 or 30 minute slot with them.</div>
+            <div class="ufa-pane-sub">Email any board member directly, or book a 15 or 30 minute slot with them. <strong>Book a meeting and show up, and you earn +0.5 pts</strong> once your board member confirms it took place.</div>
           </div>
 
           <div id="board-visibility"></div>
@@ -5551,6 +5554,7 @@ button[onclick="pubFlipbookNext()"]:hover {
                 <div class="ufa-set-label">Difficulty<span class="ufa-set-sub">Pick one or more.</span></div>
                 <div class="ufa-set-body">
                   <div id="mock-levels" class="ufa-levels">
+                    <button type="button" class="ufa-level" data-level="intro" aria-pressed="false" onclick="toggleMockLevel('intro')"><span class="ufa-level-dot"></span><span class="ufa-level-name">No experience</span><span class="ufa-level-sub">Brand new to this</span></button>
                     <button type="button" class="ufa-level" data-level="easy" aria-pressed="false" onclick="toggleMockLevel('easy')"><span class="ufa-level-dot"></span><span class="ufa-level-name">Easy</span><span class="ufa-level-sub">Just learned the topic</span></button>
                     <button type="button" class="ufa-level" data-level="medium" aria-pressed="false" onclick="toggleMockLevel('medium')"><span class="ufa-level-dot"></span><span class="ufa-level-name">Medium</span><span class="ufa-level-sub">Recruiting-standard</span></button>
                     <button type="button" class="ufa-level" data-level="hard" aria-pressed="false" onclick="toggleMockLevel('hard')"><span class="ufa-level-dot"></span><span class="ufa-level-name">Hard</span><span class="ufa-level-sub">Stretch questions</span></button>
@@ -5810,6 +5814,7 @@ button[onclick="pubFlipbookNext()"]:hover {
             <button onclick="switchAdminTab('approvals')" class="admin-tab" id="atab-approvals">Approvals <span id="approvals-badge" style="display:none;background:#c0392b;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;margin-left:4px;"></span></button>
             <button onclick="switchAdminTab('resumes')" class="admin-tab" id="atab-resumes">Resumes</button>
             <button onclick="switchAdminTab('boardhours')" class="admin-tab" id="atab-boardhours">Board Hours</button>
+            <button onclick="switchAdminTab('families')" class="admin-tab" id="atab-families">Families <span id="fam-badge" style="display:none;background:#c0392b;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;margin-left:4px;">0</span></button>
           </div>
 
           <!-- Session Codes -->
@@ -5842,7 +5847,7 @@ button[onclick="pubFlipbookNext()"]:hover {
                 </div>
                 <div>
                   <label style="font-size:12px;font-weight:500;color:#3A4A3A;display:block;margin-bottom:4px;">Points</label>
-                  <input id="new-points" type="number" value="1" min="1" max="10" style="width:100%;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;background:#F7F4EE;box-sizing:border-box;">
+                  <input id="new-points" type="number" value="1" min="0.5" step="0.5" max="10" style="width:100%;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;background:#F7F4EE;box-sizing:border-box;">
                 </div>
                 <div>
                   <label style="font-size:12px;font-weight:500;color:#3A4A3A;display:block;margin-bottom:4px;">Active</label>
@@ -5940,7 +5945,7 @@ button[onclick="pubFlipbookNext()"]:hover {
                   </div>
                   <div>
                     <label style="font-size:12px;font-weight:500;color:#3A4A3A;display:block;margin-bottom:4px;">Points</label>
-                    <input id="manual-att-points" type="number" value="1" min="1" max="10" style="width:100%;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;background:#F7F4EE;box-sizing:border-box;">
+                    <input id="manual-att-points" type="number" value="1" min="0.5" step="0.5" max="10" style="width:100%;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;background:#F7F4EE;box-sizing:border-box;">
                   </div>
                 </div>
                 <button class="ufa-btn" onclick="addManualAttendance()">Save check-in</button>
@@ -6143,6 +6148,14 @@ button[onclick="pubFlipbookNext()"]:hover {
             </div>
           </div>
 
+
+          <!-- ── ADMIN: FAMILIES ──
+               Review family meetup photos (approving awards every family
+               member points), and manage who is in which family. -->
+          <div id="atab-content-families" style="display:none;">
+            <div class="ufa-pane-sub" style="margin-bottom:18px;">Families earn points together: when a family uploads a photo of a meetup and you approve it, every member gets the points automatically.</div>
+            <div id="fam-admin-body"><div class="ufa-pane-sub">Loading…</div></div>
+          </div>
 
           <!-- ── ADMIN: BOARD HOURS ──
                Each board member maintains their own card, their weekly
@@ -6770,6 +6783,7 @@ button[onclick="pubFlipbookNext()"]:hover {
 }
 .ufa-q-hint strong { color: #2E4A2E; }
 
+.ufa-diff-intro  { background: #E3F1F5; color: #1E6B7A; }
 .ufa-diff-easy   { background: #E4F0E4; color: #2E6B2E; }
 .ufa-diff-medium { background: #FBF0DC; color: #8A6216; }
 .ufa-diff-hard   { background: #FBE9E7; color: #A33A32; }
@@ -7105,6 +7119,9 @@ button[onclick="pubFlipbookNext()"]:hover {
   color: #2E6B2E;
   transition: background 0.16s;
 }
+.ufa-level[data-level="intro"]  .ufa-level-dot { color: #1E6B7A; }
+.ufa-level.is-disabled { opacity: 0.45; cursor: not-allowed; }
+.ufa-level.is-disabled:hover { border-color: rgba(46,74,46,0.12); }
 .ufa-level[data-level="medium"] .ufa-level-dot { color: #B8791B; }
 .ufa-level[data-level="hard"]   .ufa-level-dot { color: #A33A32; }
 .ufa-level.is-on .ufa-level-dot { background: currentColor; }
@@ -7633,6 +7650,8 @@ const TYPE_COLORS = {
   'Community Service': { bg: '#fdf0e6', color: '#8a4a1e' },
   'Workshop':          { bg: '#f4e6f4', color: '#6b2e6b' },
   'Speaker':           { bg: '#f4f0e6', color: '#6b5a1e' },
+  'Family':            { bg: '#fbeaf0', color: '#8a2e55' },
+  'Board Hours':       { bg: '#e8f0fb', color: '#1e4a8a' },
 };
 
 /** Analyst Meeting / General Meeting are both "meeting" for stats and badge
@@ -7659,7 +7678,7 @@ async function switchPortalTab(tab) {
     if (content) content.style.display = (t === tab) ? '' : 'none';
   });
   if (tab === 'leaderboard') renderLeaderboard();
-  if (tab === 'events') renderUpcoming();
+  if (tab === 'events') { renderUpcoming(); loadMyFamily(); }
   if (tab === 'mock') loadMockTab();
   if (tab === 'profile') {
     if (currentUser && !currentMember) {
@@ -7669,7 +7688,7 @@ async function switchPortalTab(tab) {
     renderProfile();
     loadProfileBadges();
   }
-  if (tab === 'admin') { switchAdminTab('sessions'); loadAdminSessions(); loadRosterBadge(); }
+  if (tab === 'admin') { switchAdminTab('sessions'); loadAdminSessions(); loadRosterBadge(); famLoadBadge(); }
   if (tab === 'recruiting') { groupRecruitingTabs(); switchRecruitTab(recruitTab); }
   if (tab === 'board')      { loadBoardTab(); }
 }
@@ -7868,7 +7887,7 @@ async function downloadResource(filename, type) {
 }
 
 function switchAdminTab(tab) {
-  ['sessions','roster','attendance','analytics','announce','approvals','resumes','boardhours'].forEach(t => {
+  ['sessions','roster','attendance','analytics','announce','approvals','resumes','boardhours','families'].forEach(t => {
     const btn = document.getElementById('atab-' + t);
     const content = document.getElementById('atab-content-' + t);
     if (btn) btn.classList.toggle('active', t === tab);
@@ -7881,6 +7900,7 @@ function switchAdminTab(tab) {
   if (tab === 'approvals') loadApprovals();
   if (tab === 'resumes') loadResumeAdmin();
   if (tab === 'boardhours') loadBoardHoursAdmin();
+  if (tab === 'families') loadFamiliesAdmin();
 }
 
 // ── Member fetch helper (handles case mismatch) ──
@@ -8043,13 +8063,13 @@ function renderBreakdown(attended) {
 
 // ── Badges ──
 var BADGES = [
-  { id:'first',  label:'First Check-In',   icon:'🎯', desc:'Attended your first event',  test: function(a){ return a.length >= 1; } },
+  { id:'first',  label:'First Check-In',   icon:'🎯', desc:'Attended your first event',  test: function(a){ return a.filter(function(r){ return !ufaIsBonusType(r.event_type); }).length >= 1; } },
   { id:'m5',     label:'5 Meetings',        icon:'📅', desc:'Attended 5 meetings',        test: function(a){ return a.filter(function(r){ return ufaIsMeetingType(r.event_type); }).length >= 5; } },
   { id:'m10',    label:'10 Meetings',       icon:'🏆', desc:'Attended 10 meetings',       test: function(a){ return a.filter(function(r){ return ufaIsMeetingType(r.event_type); }).length >= 10; } },
   { id:'social', label:'Social Butterfly',  icon:'🎉', desc:'Attended a social event',    test: function(a){ return a.some(function(r){ return r.event_type==='Social'; }); } },
   { id:'pt10',   label:'10 Points',         icon:'⭐', desc:'Earned 10 total points',     test: function(a){ return a.reduce(function(s,r){ return s+(r.points||1); },0) >= 10; } },
   { id:'pt25',   label:'25 Points',         icon:'🌟', desc:'Earned 25 total points',     test: function(a){ return a.reduce(function(s,r){ return s+(r.points||1); },0) >= 25; } },
-  { id:'streak', label:'Well-Rounded',      icon:'🔥', desc:'Attended 3+ event types',   test: function(a){ var s=new Set(a.map(function(r){ return ufaIsMeetingType(r.event_type) ? 'Meeting' : (r.event_type||'Meeting'); })); return s.size >= 3; } },
+  { id:'streak', label:'Well-Rounded',      icon:'🔥', desc:'Attended 3+ event types',   test: function(a){ var s=new Set(a.filter(function(r){ return !ufaIsBonusType(r.event_type); }).map(function(r){ return ufaIsMeetingType(r.event_type) ? 'Meeting' : (r.event_type||'Meeting'); })); return s.size >= 3; } },
 ];
 
 function renderBadges(attended) {
@@ -8801,7 +8821,7 @@ async function createSession() {
   var name   = document.getElementById('new-name').value.trim();
   var date   = document.getElementById('new-date').value.trim();
   var type   = document.getElementById('new-type').value;
-  var points = parseInt(document.getElementById('new-points').value) || 1;
+  var points = parseFloat(document.getElementById('new-points').value) || 1;
   var active = document.getElementById('new-active').value;
   var msg    = document.getElementById('session-create-msg');
   if (!code||!name) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Code and name are required.'; return; }
@@ -8817,8 +8837,8 @@ async function createSession() {
 async function editPoints(code, currentPoints) {
   var newPoints = prompt('Enter new point value for session ' + code + ':', currentPoints);
   if (newPoints === null) return;
-  newPoints = parseInt(newPoints);
-  if (isNaN(newPoints) || newPoints < 1) { alert('Please enter a valid number greater than 0.'); return; }
+  newPoints = parseFloat(newPoints);
+  if (isNaN(newPoints) || newPoints <= 0) { alert('Please enter a valid number greater than 0.'); return; }
   // Update session points
   var res = await sb.from('sessions').update({ points: newPoints }).eq('code', code);
   if (res.error) { alert('Error updating points: ' + res.error.message); return; }
@@ -9169,7 +9189,7 @@ async function addManualAttendance() {
   var name   = document.getElementById('manual-att-name').value.trim();
   var date   = document.getElementById('manual-att-date').value.trim();
   var type   = document.getElementById('manual-att-type').value;
-  var points = parseInt(document.getElementById('manual-att-points').value) || 1;
+  var points = parseFloat(document.getElementById('manual-att-points').value) || 1;
   var msg    = document.getElementById('manual-att-msg');
 
   if (!email) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Pick a member from the name suggestions first.'; return; }
@@ -9251,7 +9271,7 @@ async function editAttendanceRecord(id) {
   if (newType === null) return;
   var newPointsRaw = prompt('Points:', r.points||1);
   if (newPointsRaw === null) return;
-  var newPoints = parseInt(newPointsRaw);
+  var newPoints = parseFloat(newPointsRaw);
   if (isNaN(newPoints) || newPoints < 0) { alert('Please enter a valid number of points.'); return; }
 
   var res = await sb.from('attendance').update({
@@ -14235,6 +14255,242 @@ cases: [
 
 };
 
+/* "No experience" tier for IB and Consulting (see INTRO_IB / INTRO_CONSULTING). */
+/* IB — "No experience": written for someone who has never taken a finance class.
+   Plain language, one idea per question, and every answer defines its own terms. */
+var INTRO_IB = [
+  /* ── Accounting ── */
+  { id:"ibn1", d:"intro", t:"accounting", q:"What is revenue?",
+    f:"The total amount of money a company brings in from selling its products or services, before any costs are taken out. It is often called the top line because it sits at the very top of the income statement. If a coffee shop sells 100 coffees at $4 each, revenue is $400, even if most of that goes to rent, beans and wages. A good answer makes one thing clear: revenue is not profit.",
+    h:"Think of the money a customer hands over, before the company pays for anything.",
+    fu:["Why is revenue called the top line?", "Can a company have high revenue and still lose money?"] },
+  { id:"ibn2", d:"intro", t:"accounting", q:"What is the difference between revenue and profit?",
+    f:"Revenue is what comes in. Profit is what is left after the costs of running the business are subtracted. A coffee shop that sells $400 of coffee and spends $300 on beans, rent and wages has $100 of profit. Companies can grow revenue every year and still lose money if their costs grow faster, which is why bankers look at both.",
+    h:"Profit is what is left over. Left over from what?",
+    fu:["Give an example of a business with big revenue but small profit.", "Which would you rather grow, revenue or profit, and why?"] },
+  { id:"ibn3", d:"intro", t:"accounting", q:"What is an expense?",
+    f:"Money a company spends to operate: salaries, rent, materials, marketing, electricity, interest on loans, taxes. Expenses are subtracted from revenue to get profit. A helpful split for beginners is costs that scale with sales, like ingredients, and costs that stay roughly the same no matter what, like rent.",
+    h:"Think about everything a business has to pay for just to keep the doors open.",
+    fu:["Which expenses go up when sales go up, and which do not?"] },
+  { id:"ibn4", d:"intro", t:"accounting", q:"In plain English, what is a balance sheet?",
+    f:"A snapshot of a company on one specific day that lists what it owns, what it owes, and what is left over for the owners. What it owns are assets, such as cash, buildings and inventory. What it owes are liabilities, such as loans and bills. The leftover is called equity. The name comes from the fact that it always balances: assets equal liabilities plus equity.",
+    h:"A snapshot is one moment in time, like a photo, not a video.",
+    fu:["Using your own finances, what would your assets and liabilities be?", "Why must it always balance?"] },
+  { id:"ibn5", d:"intro", t:"accounting", q:"What is the difference between an asset and a liability?",
+    f:"An asset is something a company owns that has value, like cash, equipment, buildings or inventory. A liability is something it owes to someone else, like a bank loan, money owed to suppliers, or unpaid wages. The simplest way to remember it: assets are things you have, liabilities are things you owe. If you own a $400,000 house with a $300,000 mortgage, the house is an asset and the mortgage is a liability.",
+    h:"Use a house and a mortgage as your example.",
+    fu:["Is a customer who owes the company money an asset or a liability?"] },
+  { id:"ibn6", d:"intro", t:"accounting", q:"What is cash flow and why is it different from profit?",
+    f:"Cash flow is the actual cash moving into and out of a company. Profit is an accounting number that can include sales that have been made but not yet paid for. A business can look profitable on paper and still run out of cash if customers are slow to pay, which is a common reason healthy-looking businesses still fail. Bankers care about both, but cash is what pays the bills.",
+    h:"Imagine you sold something but the customer has not paid you yet. Do you have the cash?",
+    fu:["Why can a growing company run short of cash?"] },
+  { id:"ibn7", d:"intro", t:"accounting",
+    gen: function () {
+      var U = mockPick([200, 500, 800, 1000]);
+      var P = mockPick([5, 10, 20, 25]);
+      return { U: U, P: P, R: U * P };
+    },
+    q:"A company sells {U} products at ${P} each. What is its revenue?",
+    f:"Revenue is quantity sold times price, so {U} times ${P} is ${R}. Saying the formula out loud before doing the math is what an interviewer wants to hear: revenue equals price times quantity.",
+    h:"Revenue is price times quantity.",
+    fu:["If the company spends ${R} on costs, what is its profit?"] },
+  { id:"ibn8", d:"intro", t:"accounting",
+    gen: function () {
+      var pair = mockPick([[100, 60], [200, 120], [400, 300], [500, 350], [300, 180]]);
+      return { R: pair[0], C: pair[1], P: pair[0] - pair[1] };
+    },
+    q:"A business has ${R} of revenue and ${C} of total costs. What is its profit?",
+    f:"Profit is revenue minus costs: ${R} minus ${C} is ${P}. If costs were higher than revenue the answer would be negative, which is called a loss. A good beginner habit is to say what the number means, such as: the company keeps ${P} out of every ${R} it brings in.",
+    h:"Profit is what is left after subtracting costs from revenue.",
+    fu:["What percentage of revenue is that profit?"] },
+
+  /* ── Valuation ── */
+  { id:"ibn9", d:"intro", t:"valuation", q:"What does it mean to value a company?",
+    f:"To work out what the whole business is worth, which is what a buyer should be willing to pay for it. There is no single correct number, because the answer depends on how much money the company will make in the future and how risky that is. Bankers use a few standard methods to land on a sensible range rather than one exact figure.",
+    h:"Think about how you would decide how much to pay for a lemonade stand.",
+    fu:["Why is a company's value a range and not one exact number?"] },
+  { id:"ibn10", d:"intro", t:"valuation", q:"What is market capitalization?",
+    f:"The value of all of a public company's shares added together: the share price times the number of shares. If a company has 10 million shares trading at $20, its market cap is $200 million. It is the quickest answer to how big the market thinks the company is, and it is often called market cap for short.",
+    h:"It is a multiplication of two numbers about the stock.",
+    fu:["If the share price doubles and nothing else changes, what happens to market cap?"] },
+  { id:"ibn11", d:"intro", t:"valuation",
+    gen: function () {
+      var S = mockPick([5, 10, 20, 50]);
+      var P = mockPick([10, 20, 40, 100]);
+      return { S: S, P: P, M: S * P };
+    },
+    q:"A company has {S} million shares trading at ${P} each. What is its market cap?",
+    f:"Market cap is share price times number of shares: {S} million times ${P} is ${M} million. Keep the units straight when you say it out loud: millions times dollars gives millions of dollars.",
+    h:"Multiply the share price by the number of shares.",
+    fu:["Does market cap tell you what it would cost to buy the whole company, debt included?"] },
+  { id:"ibn12", d:"intro", t:"valuation", q:"Why is a dollar received today worth more than a dollar received next year?",
+    f:"Because a dollar today can be invested or saved and earn a return, so it grows into more than a dollar by next year. There is also risk and inflation: the future dollar might not arrive, and it will probably buy a little less. This idea is called the time value of money, and it is the foundation of almost every valuation method.",
+    h:"What could you do with money in your hand right now that you cannot do with a promise?",
+    fu:["Would you take $100 today or $100 in a year? What about $100 today versus $110 in a year?"] },
+  { id:"ibn13", d:"intro", t:"valuation", q:"What is a multiple, in the context of valuing a company?",
+    f:"A shortcut that compares what a company is worth to how much it earns or sells, so you can compare companies of different sizes. If a company is worth $100 million and earns $10 million a year, it trades at 10 times earnings. If similar companies trade at around 10 times, that is evidence the price is fair. It works like comparing houses by price per square foot.",
+    h:"Think price per square foot when comparing houses of different sizes.",
+    fu:["Why do you compare a company to similar companies and not to any company?"] },
+  { id:"ibn14", d:"intro", t:"valuation", q:"What is the difference between a company's value and its share price?",
+    f:"The share price is the price of one tiny slice of the company. The company's value is the price of all the slices together. A share priced at $500 is not necessarily a bigger or better company than one priced at $5, because the number of shares is different. That is why bankers compare market cap, not share price.",
+    h:"One slice of pizza versus the whole pizza.",
+    fu:["Why can a $5 stock be a much bigger company than a $500 stock?"] },
+  { id:"ibn15", d:"intro", t:"valuation", q:"What does a stock market do?",
+    f:"It is a marketplace where people buy and sell small pieces of public companies, called shares. Companies raise money by selling shares to investors, and investors can later sell those shares to other investors. The price moves up and down as buyers and sellers change their minds about what the company will earn in the future.",
+    h:"Think of it as an auction that runs all day.",
+    fu:["Why does a share price move when nothing about the company's past has changed?"] },
+
+  /* ── M&A (plain-English concepts only) ── */
+  { id:"ibn16", d:"intro", t:"ma", q:"What is a merger?",
+    f:"When two companies combine into one. The usual reasons are to grow faster, save money by removing duplicate work, reach more customers, or buy a capability that would take years to build. In practice, one company is usually the buyer and the other is the target, even when the announcement calls it a partnership.",
+    h:"Two businesses, one result. Why would that be attractive?",
+    fu:["Give one reason a company might want to merge instead of building something itself."] },
+  { id:"ibn17", d:"intro", t:"ma", q:"What is an acquisition?",
+    f:"When one company buys another. The buyer is called the acquirer and the company being bought is the target. The acquirer can pay in cash, in its own shares, or a mix of the two. The target's shareholders receive that payment in exchange for their ownership.",
+    h:"Buyer, target, and payment: those are the three pieces.",
+    fu:["What do the target's shareholders get?"] },
+  { id:"ibn18", d:"intro", t:"ma", q:"What does an investment banker do on a merger or acquisition?",
+    f:"Acts as an adviser. For a company being sold, the banker figures out what it is worth, finds possible buyers, and runs the process to get the best price. For a company buying, the banker finds targets, works out what is a fair price, and helps negotiate and arrange the financing. Bankers do not own the deal. They advise the client who does, and they usually earn a fee, most of it when the deal closes.",
+    h:"Think of a real estate agent, but for companies.",
+    fu:["Why would a company hire a banker instead of negotiating the sale itself?"] },
+  { id:"ibn19", d:"intro", t:"ma", q:"Why might a company want to be acquired?",
+    f:"Because the price offered is often higher than the shares were trading at, because it needs resources it cannot get alone, or because the owners want to cash out after years of work. A founder who built a business over 20 years might sell to retire. Sometimes a company also sells because a bigger partner can help it grow faster than it could by itself.",
+    h:"Consider it from the point of view of the owners.",
+    fu:["Why do buyers usually pay more than the current share price?"] },
+
+  /* ── LBO (plain-English concepts only) ── */
+  { id:"ibn20", d:"intro", t:"lbo", q:"What is debt?",
+    f:"Money that has been borrowed and has to be paid back, usually with interest on top. A company can borrow from a bank or by issuing bonds to investors. Debt is cheaper than raising money from owners because lenders get paid first and take less risk, but it must be repaid on schedule whether or not the business is doing well.",
+    h:"Think of a mortgage or a student loan, but for a company.",
+    fu:["Why does having debt make a company riskier?"] },
+  { id:"ibn21", d:"intro", t:"lbo", q:"What is equity?",
+    f:"Ownership. Equity is the part of a company that belongs to its owners after everything it owes has been subtracted. Owners get paid last, so equity is riskier than debt, but owners also keep all the upside if the company does well. The equity in a house is the home's value minus the mortgage.",
+    h:"If you own a house with a mortgage, what part is actually yours?",
+    fu:["Who gets paid first in a bankruptcy, lenders or owners?"] },
+  { id:"ibn22", d:"intro", t:"lbo", q:"What is a leveraged buyout, in simple terms?",
+    f:"When an investor buys a company using mostly borrowed money, and then uses the company's own cash flow to pay that debt back over time. It is like buying a rental property with a mortgage and letting the rent pay it off. The investor puts in a small amount of their own money, which magnifies the return if things go well and magnifies the loss if they do not.",
+    h:"Compare it to buying a rental property with a mortgage.",
+    fu:["Why does using borrowed money increase the potential return?"] },
+  { id:"ibn23", d:"intro", t:"lbo", q:"What is a private equity firm?",
+    f:"An investment firm that raises money from large investors, such as pension funds, and uses it to buy companies, improve them, and sell them later for a profit, typically after several years. Unlike a bank, which advises, a private equity firm is the buyer and owner. Its goal is for the company to be worth more when it sells than when it bought.",
+    h:"Buy, improve, sell.",
+    fu:["How is private equity different from investment banking?"] },
+
+  /* ── Markets & the job ── */
+  { id:"ibn24", d:"intro", t:"markets", q:"What does an investment bank do?",
+    f:"It helps companies and governments with big financial moves. The two main jobs are advising on deals, such as buying or selling a company, and helping organizations raise money by selling shares or bonds to investors. The bank earns fees for this work. It is different from the bank where you keep a checking account, which takes deposits and makes loans.",
+    h:"This is not the bank where you keep your savings account.",
+    fu:["Who are an investment bank's clients?"] },
+  { id:"ibn25", d:"intro", t:"markets", q:"What is the difference between a stock and a bond?",
+    f:"A stock is a piece of ownership in a company, so you share in its success and its losses. A bond is a loan you make to a company or government, and in return you are paid regular interest and your money back at the end. Stocks can earn more but are riskier, bonds are steadier but the upside is limited.",
+    h:"One is ownership, one is a loan.",
+    fu:["Which would a cautious investor prefer, and why?"] },
+  { id:"ibn26", d:"intro", t:"markets", q:"What is an IPO?",
+    f:"An initial public offering, which is the first time a private company sells its shares to the public and starts trading on a stock exchange. Companies do it to raise a large amount of money and to give early investors a way to cash out. Investment banks manage the process, set the price, and find investors to buy the shares.",
+    h:"The letters stand for initial public offering. What is happening for the first time?",
+    fu:["Why would a company choose to stay private instead?"] },
+  { id:"ibn27", d:"intro", t:"markets", q:"What is the difference between a public and a private company?",
+    f:"A public company's shares trade on a stock exchange, so anyone can buy them, and it must publish its financial results regularly. A private company is owned by a smaller group, such as founders and investors, and does not have to share its numbers. Apple is public. A local family-owned restaurant is private.",
+    h:"Can you buy shares of the company on an app?",
+    fu:["Why does being public mean more scrutiny?"] },
+  { id:"ibn28", d:"intro", t:"markets", q:"What is inflation?",
+    f:"The general rise in prices over time, which means a dollar buys a little less each year. If inflation is 3%, something that cost $100 last year costs about $103 now. It matters for finance because investments have to earn more than inflation just to keep their real value.",
+    h:"Think about what a coffee cost 10 years ago versus today.",
+    fu:["Why would a central bank worry about inflation being too high?"] },
+  { id:"ibn29", d:"intro", t:"markets", q:"What is an interest rate?",
+    f:"The price of borrowing money, shown as a percentage per year. If you borrow $1,000 at 5%, you pay $50 a year for the privilege. For savers it is the reward for lending. Rates move with the economy: they usually go up to cool inflation and come down to encourage spending and investment.",
+    h:"It is the cost of renting money.",
+    fu:["What happens to the cost of a mortgage when interest rates rise?"] },
+  { id:"ibn30", d:"intro", t:"markets", q:"Why do you want to work in investment banking?",
+    f:"There is no single right answer, but a strong beginner answer has three parts. First, something real that drew you in, such as a class, a news story, or a deal you followed. Second, what the job actually involves, which is analysis, long hours and learning quickly, so it shows you did research. Third, what you want from it, such as the training or exposure to different industries. Avoid saying money is the main reason.",
+    h:"What is one specific thing that made you curious about finance?",
+    fu:["What is the part of the job that you think will be hardest?"] }
+];
+
+/* Consulting — "No experience": no case or framework knowledge assumed. */
+var INTRO_CONSULTING = [
+  { id:"con1", d:"intro", q:"What does a management consultant do?",
+    f:"Helps a company solve a business problem it cannot easily solve alone. The consultant gathers information, analyzes it, and recommends what to do, then often helps put the recommendation into practice. Typical problems are how to grow, how to cut costs, whether to enter a new market, or how to fix a struggling part of the business. Clients hire consultants for outside perspective, speed, and extra people.",
+    h:"Think of a doctor for businesses: diagnose, then prescribe.",
+    fu:["Why would a company pay a consultant instead of using its own staff?"] },
+  { id:"con2", d:"intro", q:"What is a case interview?",
+    f:"A conversation where the interviewer gives you a business problem and asks you to work through it out loud. They are not looking for a perfect answer. They want to see how you structure the problem, ask good questions, use numbers sensibly, and explain your thinking clearly. Treat it as a conversation, not an exam.",
+    h:"They care more about how you think than the final answer.",
+    fu:["What do you think an interviewer is actually scoring?"] },
+  { id:"con3", d:"intro", q:"What is a framework, and why do consultants use them?",
+    f:"A framework is a simple way to organize a problem into a few clear categories so nothing important gets missed. For example, to understand why profit is down you might split it into revenue and costs. Consultants use them to stay organized and explain their thinking, but the best ones are customized to the problem instead of recited from memory.",
+    h:"It is a checklist that helps you think in an organized way.",
+    fu:["Why is it a mistake to use the same framework for every problem?"] },
+  { id:"con4", d:"intro", q:"A company's profit has gone down. How would you start thinking about it?",
+    f:"Start with the simple formula: profit equals revenue minus costs. So profit can go down because revenue fell, because costs rose, or both. Then ask which one it is. If revenue fell, was it fewer customers or lower prices? If costs rose, which cost? Starting with a simple split like this is exactly what interviewers want to see.",
+    h:"Profit has just two ingredients. What are they?",
+    fu:["What question would you ask first to narrow it down?"] },
+  { id:"con5", d:"intro", q:"Why is it important to ask questions at the start of a case?",
+    f:"Because the problem you are first given is usually vague, and answering the wrong problem wastes everyone's time. Good opening questions clarify what the company does, what the goal is, and what has changed recently. Asking two or three sharp questions shows you are careful and want to understand before solving.",
+    h:"Imagine a doctor who prescribes treatment before asking where it hurts.",
+    fu:["Give an example of a good clarifying question."] },
+  { id:"con6", d:"intro", q:"What does it mean to structure a problem?",
+    f:"To break a large, messy problem into a few separate pieces that together cover everything, so you can tackle them one at a time. The pieces should not overlap and should not leave anything out. For example, if a restaurant is losing money, you might split the problem into revenue and costs, then split each of those further.",
+    h:"Think of cutting a big pizza into slices, with no slice overlapping another.",
+    fu:["Why do you want the pieces not to overlap?"] },
+  { id:"con7", d:"intro", q:"What is market sizing?",
+    f:"Estimating how big a market is when you do not have exact data, such as how many coffees are sold in a city each day. You break it into pieces you can reasonably guess, do simple math, and check that the result is believable. Interviewers use it to test whether you can structure a problem and work with numbers without panicking.",
+    h:"Break the big unknown into smaller things you can guess.",
+    fu:["Why is it fine for the estimate to be rough?"] },
+  { id:"con8", d:"intro", q:"How many pizzas are sold in your town in a week? Walk me through how you would estimate it.",
+    f:"Start with population, say 50,000 people. Guess that about a third eat a pizza in a given week, so about 17,000 pizza-eating people, and that they average one pizza a week each but often share, so maybe 10,000 pizzas. Say each assumption out loud, use round numbers, and finish with a sanity check, such as whether that would keep the local pizza shops busy. The method and clear communication matter far more than the exact number.",
+    h:"Start with how many people live there, then ask how many of them eat pizza.",
+    fu:["Which of your assumptions are you least sure about?", "How would you check your estimate against reality?"] },
+  { id:"con9", d:"intro", q:"What is a customer segment?",
+    f:"A group of customers who share something that affects how they buy, such as age, income, location, or what they use the product for. Companies split customers into segments because different groups want different things. A gym might have students who want low prices, busy professionals who want convenience, and athletes who want equipment.",
+    h:"Not all customers are the same. How could you group them?",
+    fu:["Why might a business treat two segments differently?"] },
+  { id:"con10", d:"intro", q:"What is a competitor, and why does a consultant look at them?",
+    f:"A competitor is another company selling something similar to the same customers. A consultant looks at competitors to understand how the client compares on price, quality and reach, and to see what could take customers away. A recommendation that ignores what competitors will do in response is rarely a good one.",
+    h:"What happens to your sales if a rival cuts its prices?",
+    fu:["Who are the competitors of a local coffee shop, including less obvious ones?"] },
+  { id:"con11", d:"intro", q:"What is the difference between fixed costs and variable costs?",
+    f:"Fixed costs stay the same no matter how much you sell, such as rent and salaries. Variable costs go up and down with sales, such as ingredients and shipping. It matters because a business with high fixed costs needs a lot of sales to break even but makes money quickly once it passes that point.",
+    h:"Does the rent change if you sell twice as many coffees?",
+    fu:["Which type of cost is easier to cut quickly?"] },
+  { id:"con12", d:"intro", q:"What does it mean for a business to break even?",
+    f:"It is the point where revenue exactly covers costs, so profit is zero. Sell less and it loses money, sell more and it makes money. To find it, you divide fixed costs by the profit earned on each unit sold. Consultants use it to judge whether a new idea can realistically pay for itself.",
+    h:"The business neither makes nor loses money.",
+    fu:["What could a business do to lower its break-even point?"] },
+  { id:"con13", d:"intro",
+    gen: function () {
+      var Q = mockPick([100, 200, 500, 1000]);
+      var P = mockPick([3, 4, 5, 10]);
+      var C = mockPick([1, 2]);
+      return { Q: Q, P: P, C: C, R: Q * P, T: Q * C, F: Q * P - Q * C };
+    },
+    q:"A coffee stand sells {Q} cups a day at ${P} each, and each cup costs ${C} to make. What are its daily revenue, cost and profit?",
+    f:"Revenue is cups times price: {Q} times ${P} is ${R}. Cost is cups times cost per cup: {Q} times ${C} is ${T}. Profit is revenue minus cost, which is ${F} a day. Saying each formula before computing, and stating the final answer with a unit, is the habit to build. A good follow-up thought is that this ignores fixed costs like rent.",
+    h:"Work out revenue first, then cost, then subtract.",
+    fu:["What costs did this calculation leave out?"] },
+  { id:"con14", d:"intro",
+    gen: function () {
+      var R = mockPick([10, 20, 25, 50]);
+      var B = mockPick([200, 400, 500, 1000]);
+      return { R: R, B: B, N: B * R / 100, T: B + B * R / 100 };
+    },
+    q:"A company's sales were ${B} thousand last year and grew {R}% this year. What are sales now?",
+    f:"Growth of {R}% on ${B} thousand is ${N} thousand of new sales. Adding that to the original gives ${T} thousand. A fast way to say it: multiply by one plus the growth rate, so {B} times 1.{R} in your head. Always say the units out loud.",
+    h:"Find the {R}% first, then add it to what they started with.",
+    fu:["If the same growth happened again next year, what would sales be?"] },
+  { id:"con15", d:"intro", q:"Why do you want to work in consulting?",
+    f:"A strong beginner answer has three parts. First, what attracts you about the work itself, such as solving different business problems and working in teams. Second, evidence that you understand the job, which means research, travel or long hours, learning fast, and presenting to senior people. Third, something from your own experience that shows you enjoy that kind of thinking. Keep it specific and honest rather than rehearsed.",
+    h:"Tie it to something you have actually done or enjoyed.",
+    fu:["Which part of the job do you think will be hardest for you?"] },
+  { id:"con16", d:"intro", q:"What makes a good recommendation at the end of a case?",
+    f:"It starts with the answer, not the story. Say what you recommend in one sentence, give the two or three strongest reasons that support it, mention the main risk, and end with the next steps. Interviewers like answers they could repeat to a busy executive in thirty seconds.",
+    h:"If the CEO only had thirty seconds, what would you say?",
+    fu:["Why should the recommendation come before the explanation?"] }
+];
+
+MOCK_BANK.ib.push.apply(MOCK_BANK.ib, INTRO_IB);
+MOCK_BANK.consulting.push.apply(MOCK_BANK.consulting, INTRO_CONSULTING);
+
 
 /* ══════════════════════════════════════════════════════════════════════
    PORTAL v2 — PART A
@@ -16375,7 +16631,7 @@ function showCase() {
   CASE.self = {};
   document.getElementById('case-prompt').textContent = CASE.parsed.prompt;
   document.getElementById('case-meta').innerHTML =
-    '<span class="ufa-pill ufa-diff-' + q.d + '">' + q.d + '</span>' +
+    '<span class="ufa-pill ufa-diff-' + q.d + '">' + mockLevelPill(q.d) + '</span>' +
     '<span style="font-size:12px;color:#6B7D6B;">Worked case ' + (MOCK.idx + 1) + ' of ' + MOCK.queue.length + '</span>' +
     (q.src ? '<span class="ufa-case-src">Adapted from ' + ufaEsc(q.src) + '</span>' : '');
   showCaseStep(0);
@@ -16691,7 +16947,7 @@ function mockSpringTopics(track) {
 function mockApplyEasyDefault() {
   var spring = mockSpringTopics(MOCK.track);
   if (spring.length && !MOCK.topicsTouched) {
-    var easyOnly = MOCK.levels.length === 1 && MOCK.levels[0] === 'easy';
+    var easyOnly = MOCK.levels.length > 0 && MOCK.levels.every(function (l) { return l === 'easy' || l === 'intro'; });
     if (easyOnly) {
       MOCK.topics = mockTopicDefs(MOCK.track).filter(function (t) { return !t.spring; }).map(function (t) { return t.id; });
       MOCK.autoTopics = true;
@@ -16725,11 +16981,11 @@ function mockSyncTopicUI() {
   if (noteText && MOCK.autoTopics) {
     var names = mockSpringTopics(MOCK.track).map(function (t) { return t.label; });
     noteText.textContent = names.join(' and ') + (names.length === 1 ? ' is' : ' are') +
-      ' off for Easy because ' + (names.length === 1 ? 'it\u2019s' : 'they\u2019re') + ' covered in the spring.';
+      ' off for ' + mockBeginnerLabel() + ' because ' + (names.length === 1 ? 'it\u2019s' : 'they\u2019re') + ' covered in the spring.';
   }
   var sub = document.getElementById('mock-topics-sub');
   if (sub) sub.textContent = MOCK.autoTopics
-    ? 'Set for Easy. Change it anytime.'
+    ? 'Set for ' + mockBeginnerLabel() + '. Change it anytime.'
     : 'Optional. Leave all off to use the whole track.';
   mockRefreshTopicCounts();
 }
@@ -16834,8 +17090,8 @@ function updateMockSetupNote() {
         : 'Try another difficulty.') + '</span>';
     return 0;
   }
-  var levelNames = ['easy', 'medium', 'hard'].filter(function (d) { return levels[d]; })
-    .map(function (d) { return d.charAt(0).toUpperCase() + d.slice(1); });
+  var levelNames = MOCK_LEVEL_ORDER.filter(function (d) { return levels[d]; })
+    .map(mockLevelLabel);
   var unit = MOCK.track === 'cases' ? 'case' : 'question';
   var head = '<strong>' + pool.length + ' ' + unit + (pool.length === 1 ? '' : 's') + '</strong> in ' +
     t.label + ', ' + levelNames.join(' and ');
@@ -16900,6 +17156,7 @@ function pickMockTrack(id) {
   MOCK.autoTopics = false;
   renderMockTopics(id);
   renderMockQType(id);
+  mockSyncLevelAvailability();
   mockApplyEasyDefault();
 
   // A worked case is a twenty-minute exercise, not a ninety-second answer.
@@ -16997,7 +17254,7 @@ function showMockQuestion() {
   var trackLabel = (MOCK_TRACKS.filter(function (t) { return t.id === MOCK.track; })[0] || {}).label || '';
   var topicLabel = mockTopicLabel(MOCK.track, q.t);
   document.getElementById('mock-q-meta').innerHTML =
-    '<span class="ufa-pill ufa-diff-' + q.d + '">' + q.d + '</span>' +
+    '<span class="ufa-pill ufa-diff-' + q.d + '">' + mockLevelPill(q.d) + '</span>' +
     '<span style="font-size:12px;color:#6B7D6B;">' + trackLabel + '</span>' +
     (topicLabel ? '<span class="ufa-q-topic">' + ufaEsc(topicLabel) + '</span>' : '');
   var left = MOCK.queue.length - MOCK.idx - 1;
@@ -17232,7 +17489,7 @@ function reviewMockSession() {
     if (MOCK.track === 'cases') {
       var c = caseParse(q);
       return '<div class="ufa-card">' +
-        '<div class="ufa-q-meta"><span class="ufa-pill ufa-diff-' + q.d + '">' + q.d + '</span>' +
+        '<div class="ufa-q-meta"><span class="ufa-pill ufa-diff-' + q.d + '">' + mockLevelPill(q.d) + '</span>' +
           '<span style="font-size:12px;color:#6B7D6B;">Case ' + (i + 1) + '</span></div>' +
         '<div style="font-family:\'Playfair Display\',Georgia,serif;font-size:17px;color:#1C2B1C;line-height:1.5;margin-bottom:14px;">' +
           ufaEsc(c.prompt) + '</div>' +
@@ -17243,7 +17500,7 @@ function reviewMockSession() {
     var rateNames = { nailed: 'Nailed it', shaky: 'Shaky', missed: 'Missed it' };
     var topicLabel = mockTopicLabel(MOCK.track, q.t);
     return '<div class="ufa-card">' +
-      '<div class="ufa-q-meta"><span class="ufa-pill ufa-diff-' + q.d + '">' + q.d + '</span>' +
+      '<div class="ufa-q-meta"><span class="ufa-pill ufa-diff-' + q.d + '">' + mockLevelPill(q.d) + '</span>' +
         '<span style="font-size:12px;color:#6B7D6B;">Question ' + (i + 1) + '</span>' +
         (topicLabel ? '<span class="ufa-q-topic">' + ufaEsc(topicLabel) + '</span>' : '') +
         (r ? '<span class="ufa-pill ufa-rate-' + r + '">' + rateNames[r] + '</span>' : '') + '</div>' +
@@ -19397,6 +19654,743 @@ setTimeout(() => {
   }
 }
 </style>
+<script>
+/* ════════════════════════════════════════════════════════════════
+   FAMILIES — meetup photos that earn every family member points
+   Member side (Events tab):  loadMyFamily(), famSubmitMeetup()
+   Board side  (Admin → Families): loadFamiliesAdmin(), famApprove(),
+        famDeny(), famRevoke(), famCreate(), famAddMember(),
+        famRemoveMember(), famDelete(), famBulkImport()
+   Points are written to the existing `attendance` table as
+   event_type 'Family' with code_used 'FAM-<meetup id>', so they flow
+   into totals, the leaderboard and the dashboard with no other changes,
+   and approving the same meetup twice can never double-award.
+   ════════════════════════════════════════════════════════════════ */
+var FAM_DEFAULT_POINTS = 0.5;
+var FAM_BUCKET = 'family-photos';
+var famAdminData = null;
+
+function famFmtDate(iso) {
+  var p = String(iso || '').split('-');
+  if (p.length !== 3) return String(iso || '');
+  var d = new Date(+p[0], +p[1] - 1, +p[2]);
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+function famFmtDateLong(iso) {
+  var p = String(iso || '').split('-');
+  if (p.length !== 3) return String(iso || '');
+  var d = new Date(+p[0], +p[1] - 1, +p[2]);
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+function famTodayIso() {
+  var d = new Date();
+  var m = String(d.getMonth() + 1).padStart(2, '0');
+  var day = String(d.getDate()).padStart(2, '0');
+  return d.getFullYear() + '-' + m + '-' + day;
+}
+function famPts(n) {
+  n = Number(n);
+  var s = (Math.round(n * 100) / 100).toString();
+  return s + ' pt' + (n === 1 ? '' : 's');
+}
+function famStatusPill(m) {
+  if (m.status === 'approved') return '<span class="ufa-pill ufa-pill-green">Approved &middot; +' + famPts(m.points) + ' each</span>';
+  if (m.status === 'denied')   return '<span class="ufa-pill ufa-pill-red">Not approved</span>';
+  return '<span class="ufa-pill ufa-pill-amber">Waiting for board review</span>';
+}
+
+/** Shrinks a phone photo (often 5–12 MB) to a ~300 KB JPEG before upload. */
+function famResizeImage(file, maxDim, quality) {
+  return new Promise(function (resolve, reject) {
+    var url = URL.createObjectURL(file);
+    var img = new Image();
+    img.onload = function () {
+      var scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+      var c = document.createElement('canvas');
+      c.width = Math.round(img.width * scale);
+      c.height = Math.round(img.height * scale);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url);
+      c.toBlob(function (b) {
+        if (b) resolve(b); else reject(new Error('Could not process that image.'));
+      }, 'image/jpeg', quality);
+    };
+    img.onerror = function () {
+      URL.revokeObjectURL(url);
+      reject(new Error('That image format is not supported. Please use a JPG or PNG.'));
+    };
+    img.src = url;
+  });
+}
+
+/* ───────────────────────── MEMBER SIDE ───────────────────────── */
+
+async function loadMyFamily() {
+  var box = document.getElementById('my-family-box');
+  if (!box) return;
+  var email = ufaEmail();
+  if (!email) { box.style.display = 'none'; return; }
+
+  try {
+    // Small tables, so match the email case-insensitively in JS rather than
+    // with ilike (where "_" in an email would act as a wildcard).
+    var fmRes = await sb.from('family_members').select('family_id, email');
+    if (fmRes.error) throw fmRes.error;
+    var allFm = fmRes.data || [];
+    var mine = allFm.filter(function (r) { return String(r.email).toLowerCase() === email; })[0];
+    if (!mine) { box.style.display = 'none'; return; }
+
+    box.style.display = '';
+    box.innerHTML = '<div class="ufa-card"><div class="ufa-pane-sub">Loading your family…</div></div>';
+
+    var famId = mine.family_id;
+    var results = await Promise.all([
+      sb.from('families').select('*').eq('id', famId).maybeSingle(),
+      sb.from('members').select('email, name, role'),
+      sb.from('family_meetups').select('*').eq('family_id', famId).order('meetup_date', { ascending: false })
+    ]);
+    var family = results[0].data;
+    var roster = results[1].data || [];
+    var meetups = results[2].data || [];
+    if (!family) { box.style.display = 'none'; return; }
+
+    var emails = allFm.filter(function (r) { return r.family_id === famId; })
+      .map(function (r) { return String(r.email).toLowerCase(); });
+    var people = emails.map(function (e) {
+      var m = roster.filter(function (r) { return String(r.email).toLowerCase() === e; })[0];
+      return { email: e, name: m ? m.name : e, role: m ? m.role : '' };
+    });
+
+    var memberChips = people.map(function (p) {
+      return '<span style="display:inline-flex;align-items:center;gap:6px;background:#EEF5EE;border:1px solid rgba(46,74,46,0.14);border-radius:20px;padding:5px 12px;font-size:13px;color:#1C2B1C;">' +
+        ufaEsc(p.name) + (p.role ? ' <span style="font-size:11px;color:#6B7D6B;">' + ufaEsc(p.role) + '</span>' : '') + '</span>';
+    }).join(' ');
+
+    var history = meetups.length ? meetups.map(function (m) {
+      return '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 0;border-top:1px solid rgba(46,74,46,0.08);">' +
+        '<div style="min-width:0;flex:1;">' +
+          '<div style="font-size:14px;font-weight:600;color:#1C2B1C;">' + famFmtDateLong(m.meetup_date) + '</div>' +
+          (m.note ? '<div style="font-size:13px;color:#6B7D6B;margin-top:2px;word-break:break-word;">' + ufaEsc(m.note) + '</div>' : '') +
+          (m.status === 'denied' && m.review_note ? '<div style="font-size:12px;color:#A33A32;margin-top:4px;">Board note: ' + ufaEsc(m.review_note) + '</div>' : '') +
+        '</div>' + famStatusPill(m) + '</div>';
+    }).join('') : '<div style="font-size:13px;color:#6B7D6B;padding-top:6px;">No meetups submitted yet. Be the first!</div>';
+
+    box.innerHTML =
+      '<div class="ufa-card">' +
+        '<div class="ufa-label" style="margin-bottom:4px;">My Family</div>' +
+        '<div style="font-family:\'Playfair Display\',Georgia,serif;font-size:22px;font-weight:500;color:#1C2B1C;margin-bottom:12px;">' + ufaEsc(family.name) + '</div>' +
+        '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">' + memberChips + '</div>' +
+        '<div class="ufa-alert ufa-alert-info" style="margin-bottom:16px;">Meet up with your family and upload a photo of you together. ' +
+          'Once the board approves it, <strong>everyone in your family earns +' + FAM_DEFAULT_POINTS + ' pts</strong>.</div>' +
+        '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:12px;">' +
+          '<div><div class="ufa-label">Date of meetup</div>' +
+            '<input id="fam-date" type="date" class="ufa-input" value="' + famTodayIso() + '" max="' + famTodayIso() + '"></div>' +
+          '<div><div class="ufa-label">Photo of your family together</div>' +
+            '<input id="fam-photo" type="file" accept="image/*" class="ufa-input"></div>' +
+        '</div>' +
+        '<div style="margin-bottom:12px;"><div class="ufa-label">What did you do? <span style="text-transform:none;letter-spacing:0;color:#6B7D6B;">(optional)</span></div>' +
+          '<input id="fam-note" type="text" maxlength="140" class="ufa-input" placeholder="Dinner at Torchy\'s, study session at PCL…"></div>' +
+        '<div id="fam-msg" class="ufa-alert" style="display:none;margin-bottom:12px;"></div>' +
+        '<button id="fam-submit-btn" class="ufa-btn" onclick="famSubmitMeetup(\'' + famId + '\')">Submit meetup</button>' +
+        '<div style="margin-top:24px;"><div class="ufa-label" style="margin-bottom:2px;">Your family\'s meetups</div>' + history + '</div>' +
+      '</div>';
+  } catch (e) {
+    console.error('loadMyFamily', e);
+    box.style.display = '';
+    box.innerHTML = '<div class="ufa-alert ufa-alert-err">Could not load your family right now. If this keeps happening, tell the board.</div>';
+  }
+}
+
+function famMemberMsg(kind, text) {
+  var el = document.getElementById('fam-msg');
+  if (!el) return;
+  el.className = 'ufa-alert ' + (kind === 'ok' ? 'ufa-alert-ok' : 'ufa-alert-err');
+  el.style.display = 'block';
+  el.textContent = text;
+}
+
+async function famSubmitMeetup(familyId) {
+  var btn = document.getElementById('fam-submit-btn');
+  var date = document.getElementById('fam-date').value;
+  var note = document.getElementById('fam-note').value.trim();
+  var fileEl = document.getElementById('fam-photo');
+  var file = fileEl && fileEl.files && fileEl.files[0];
+
+  if (!date) return famMemberMsg('err', 'Pick the date you met up.');
+  if (date > famTodayIso()) return famMemberMsg('err', 'The meetup date can\'t be in the future.');
+  if (!file) return famMemberMsg('err', 'Add a photo of your family together.');
+  if (!/^image\//.test(file.type)) return famMemberMsg('err', 'That file is not an image.');
+  if (file.size > 25 * 1048576) return famMemberMsg('err', 'That photo is too large (25 MB max).');
+
+  btn.disabled = true; btn.textContent = 'Uploading…';
+  var uploadedPath = null;
+  try {
+    // One meetup per family per day (a denied one can be re-submitted).
+    var dup = await sb.from('family_meetups').select('id, status')
+      .eq('family_id', familyId).eq('meetup_date', date).neq('status', 'denied');
+    if (dup.error) throw dup.error;
+    if (dup.data && dup.data.length) {
+      famMemberMsg('err', 'Your family already has a meetup submitted for that date.');
+      return;
+    }
+
+    var blob = await famResizeImage(file, 1600, 0.82);
+    uploadedPath = familyId + '/' + Date.now() + '.jpg';
+    var up = await sb.storage.from(FAM_BUCKET).upload(uploadedPath, blob, { contentType: 'image/jpeg', upsert: false });
+    if (up.error) throw up.error;
+
+    var ins = await sb.from('family_meetups').insert({
+      family_id: familyId,
+      submitted_by: ufaEmail(),
+      meetup_date: date,
+      note: note || null,
+      photo_path: uploadedPath,
+      status: 'pending'
+    });
+    if (ins.error) throw ins.error;
+    uploadedPath = null; // saved successfully, don't clean up
+
+    await loadMyFamily();
+    famMemberMsg('ok', 'Submitted! Your family earns points once the board approves it.');
+  } catch (e) {
+    console.error('famSubmitMeetup', e);
+    if (uploadedPath) { try { await sb.storage.from(FAM_BUCKET).remove([uploadedPath]); } catch (_) {} }
+    famMemberMsg('err', (e && e.message) ? 'Could not submit: ' + e.message : 'Could not submit. Please try again.');
+  } finally {
+    var b = document.getElementById('fam-submit-btn');
+    if (b) { b.disabled = false; b.textContent = 'Submit meetup'; }
+  }
+}
+
+/* ───────────────────────── BOARD SIDE ───────────────────────── */
+
+function famAdminMsg(kind, text) {
+  var el = document.getElementById('fam-admin-msg');
+  if (!el) return;
+  el.className = 'ufa-alert ' + (kind === 'ok' ? 'ufa-alert-ok' : (kind === 'info' ? 'ufa-alert-info' : 'ufa-alert-err'));
+  el.style.display = 'block';
+  el.style.whiteSpace = 'pre-line';
+  el.textContent = text;
+  el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+async function famLoadBadge() {
+  try {
+    var r = await sb.from('family_meetups').select('id', { count: 'exact', head: true }).eq('status', 'pending');
+    var badge = document.getElementById('fam-badge');
+    if (!badge) return;
+    var n = r.count || 0;
+    badge.textContent = n;
+    badge.style.display = n > 0 ? 'inline-block' : 'none';
+  } catch (_) {}
+}
+
+function famRosterLookup(roster) {
+  var byEmail = {}, byName = {};
+  roster.forEach(function (m) {
+    byEmail[String(m.email).toLowerCase()] = m;
+    var key = String(m.name || '').toLowerCase().replace(/\s+/g, ' ').trim();
+    if (!key) return;
+    (byName[key] = byName[key] || []).push(m);
+  });
+  return { byEmail: byEmail, byName: byName };
+}
+
+/** Accepts "Jane Doe (jd123@utexas.edu)", a bare email, or an exact full name. */
+function famResolvePerson(text, lookup) {
+  var t = String(text || '').trim();
+  if (!t) return { error: 'empty' };
+  var paren = t.match(/\(([^()]+@[^()]+)\)\s*$/);
+  var emailGuess = (paren ? paren[1] : t).toLowerCase().trim();
+  if (lookup.byEmail[emailGuess]) return { member: lookup.byEmail[emailGuess] };
+  var key = t.replace(/\s*\([^()]*\)\s*$/, '').toLowerCase().replace(/\s+/g, ' ').trim();
+  var hits = lookup.byName[key] || [];
+  if (hits.length === 1) return { member: hits[0] };
+  if (hits.length > 1) return { error: 'ambiguous' };
+  return { error: 'notfound' };
+}
+
+async function loadFamiliesAdmin() {
+  var host = document.getElementById('fam-admin-body');
+  if (!host) return;
+  host.innerHTML = '<div class="ufa-pane-sub">Loading…</div>';
+  try {
+    var res = await Promise.all([
+      sb.from('families').select('*').order('name'),
+      sb.from('family_members').select('*'),
+      sb.from('family_meetups').select('*').order('meetup_date', { ascending: false }),
+      sb.from('members').select('email, name, role, status')
+    ]);
+    for (var i = 0; i < res.length; i++) if (res[i].error) throw res[i].error;
+    famAdminData = { families: res[0].data || [], fmembers: res[1].data || [], meetups: res[2].data || [], roster: res[3].data || [] };
+    await famRenderAdmin();
+    famLoadBadge();
+  } catch (e) {
+    console.error('loadFamiliesAdmin', e);
+    host.innerHTML = '<div class="ufa-alert ufa-alert-err">Could not load families: ' + ufaEsc(e && e.message ? e.message : e) +
+      '<br>Make sure <strong>family-points-setup.sql</strong> has been run in Supabase.</div>';
+  }
+}
+
+async function famRenderAdmin() {
+  var d = famAdminData;
+  var host = document.getElementById('fam-admin-body');
+  var lookup = famRosterLookup(d.roster);
+  var famById = {};
+  d.families.forEach(function (f) { famById[f.id] = f; });
+
+  function membersOf(fid) {
+    return d.fmembers.filter(function (r) { return r.family_id === fid; }).map(function (r) {
+      var m = lookup.byEmail[String(r.email).toLowerCase()];
+      return { email: r.email, name: m ? m.name : r.email, role: m ? m.role : '' };
+    });
+  }
+
+  var pending = d.meetups.filter(function (m) { return m.status === 'pending'; });
+  var reviewed = d.meetups.filter(function (m) { return m.status !== 'pending'; }).slice(0, 25);
+
+  // Signed photo URLs, one round trip for everything we are about to show.
+  var paths = pending.concat(reviewed).map(function (m) { return m.photo_path; });
+  var urlByPath = {};
+  if (paths.length) {
+    try {
+      var su = await sb.storage.from(FAM_BUCKET).createSignedUrls(paths, 3600);
+      (su.data || []).forEach(function (r) { if (r.signedUrl) urlByPath[r.path] = r.signedUrl; });
+    } catch (_) {}
+  }
+  function thumb(m, size) {
+    var u = urlByPath[m.photo_path];
+    return u
+      ? '<a href="' + ufaEsc(u) + '" target="_blank" rel="noopener"><img src="' + ufaEsc(u) + '" alt="Family meetup photo" loading="lazy" style="width:' + size + 'px;height:' + size + 'px;object-fit:cover;border-radius:8px;display:block;border:1px solid rgba(46,74,46,0.14);"></a>'
+      : '<div style="width:' + size + 'px;height:' + size + 'px;border-radius:8px;background:#EDEDEA;display:flex;align-items:center;justify-content:center;font-size:11px;color:#6B7D6B;text-align:center;">No photo</div>';
+  }
+  function whoLine(m) {
+    var f = famById[m.family_id];
+    var subm = lookup.byEmail[String(m.submitted_by).toLowerCase()];
+    return { fam: f ? f.name : '(deleted family)', by: subm ? subm.name : m.submitted_by };
+  }
+
+  // 1) Review queue
+  var queueHtml = pending.length ? pending.map(function (m) {
+    var w = whoLine(m);
+    var names = membersOf(m.family_id).map(function (p) { return ufaEsc(p.name); }).join(', ');
+    return '<div style="display:flex;gap:16px;flex-wrap:wrap;padding:16px;border-top:1px solid rgba(46,74,46,0.08);">' +
+      thumb(m, 120) +
+      '<div style="flex:1;min-width:220px;">' +
+        '<div style="font-size:15px;font-weight:600;color:#1C2B1C;">' + ufaEsc(w.fam) + ' <span style="font-weight:400;color:#6B7D6B;font-size:13px;">&middot; ' + famFmtDateLong(m.meetup_date) + '</span></div>' +
+        '<div style="font-size:12px;color:#6B7D6B;margin-top:3px;">Submitted by ' + ufaEsc(w.by) + '</div>' +
+        '<div style="font-size:12px;color:#6B7D6B;margin-top:3px;">Will award: ' + (names || '<em>no members</em>') + '</div>' +
+        (m.note ? '<div style="font-size:13px;color:#1C2B1C;margin-top:6px;">&ldquo;' + ufaEsc(m.note) + '&rdquo;</div>' : '') +
+        '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px;">' +
+          '<label style="font-size:12px;color:#6B7D6B;">Points each</label>' +
+          '<input id="fam-pts-' + m.id + '" type="number" step="0.5" min="0" max="10" value="' + FAM_DEFAULT_POINTS + '" class="ufa-input" style="width:80px;">' +
+          '<button class="ufa-btn ufa-btn-sm" data-id="' + m.id + '" onclick="famApprove(this.dataset.id)">Approve &amp; award</button>' +
+          '<button class="ufa-btn-ghost ufa-btn-sm ufa-btn-danger" data-id="' + m.id + '" onclick="famDeny(this.dataset.id)">Deny</button>' +
+        '</div>' +
+      '</div></div>';
+  }).join('') : '<div style="padding:20px;font-size:13px;color:#6B7D6B;text-align:center;">Nothing waiting for review.</div>';
+
+  // 2) Families
+  var famHtml = d.families.length ? d.families.map(function (f) {
+    var ms = membersOf(f.id);
+    var chips = ms.length ? ms.map(function (p) {
+      return '<span style="display:inline-flex;align-items:center;gap:6px;background:#EEF5EE;border:1px solid rgba(46,74,46,0.14);border-radius:20px;padding:4px 6px 4px 12px;font-size:13px;color:#1C2B1C;">' +
+        ufaEsc(p.name) + (p.role ? ' <span style="font-size:11px;color:#6B7D6B;">' + ufaEsc(p.role) + '</span>' : '') +
+        '<button title="Remove from family" data-fid="' + f.id + '" data-email="' + ufaEsc(p.email) + '" onclick="famRemoveMember(this.dataset.fid,this.dataset.email)" style="border:none;background:none;cursor:pointer;color:#A33A32;font-size:16px;line-height:1;padding:0 6px;">&times;</button></span>';
+    }).join(' ') : '<span style="font-size:13px;color:#6B7D6B;">No members yet</span>';
+    return '<div style="padding:16px;border-top:1px solid rgba(46,74,46,0.08);">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px;">' +
+        '<div style="font-size:15px;font-weight:600;color:#1C2B1C;">' + ufaEsc(f.name) + ' <span style="font-weight:400;color:#6B7D6B;font-size:12px;">&middot; ' + ms.length + ' member' + (ms.length === 1 ? '' : 's') + '</span></div>' +
+        '<button class="ufa-btn-ghost ufa-btn-sm ufa-btn-danger" data-id="' + f.id + '" onclick="famDelete(this.dataset.id)">Delete family</button>' +
+      '</div>' +
+      '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;">' + chips + '</div>' +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
+        '<input id="fam-add-' + f.id + '" list="fam-roster-list" class="ufa-input" style="flex:1;min-width:200px;" placeholder="Add a member — start typing a name">' +
+        '<button class="ufa-btn-ghost ufa-btn-sm" data-id="' + f.id + '" onclick="famAddMember(this.dataset.id)">Add</button>' +
+      '</div></div>';
+  }).join('') : '<div style="padding:20px;font-size:13px;color:#6B7D6B;text-align:center;">No families yet. Create one below or paste a list.</div>';
+
+  // 3) Recently reviewed
+  var reviewedHtml = reviewed.length ? reviewed.map(function (m) {
+    var w = whoLine(m);
+    return '<div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:12px 16px;border-top:1px solid rgba(46,74,46,0.08);">' +
+      thumb(m, 48) +
+      '<div style="flex:1;min-width:160px;"><div style="font-size:14px;font-weight:600;color:#1C2B1C;">' + ufaEsc(w.fam) + '</div>' +
+      '<div style="font-size:12px;color:#6B7D6B;">' + famFmtDateLong(m.meetup_date) + (m.reviewed_by ? ' &middot; reviewed by ' + ufaEsc(m.reviewed_by) : '') + '</div></div>' +
+      famStatusPill(m) +
+      (m.status === 'approved' ? '<button class="ufa-btn-ghost ufa-btn-sm ufa-btn-danger" data-id="' + m.id + '" onclick="famRevoke(this.dataset.id)">Revoke points</button>' : '') +
+      '</div>';
+  }).join('') : '<div style="padding:20px;font-size:13px;color:#6B7D6B;text-align:center;">Nothing reviewed yet.</div>';
+
+  var datalist = '<datalist id="fam-roster-list">' + d.roster.filter(function (m) { return m.name; }).sort(function (a, b) {
+    return String(a.name).localeCompare(String(b.name));
+  }).map(function (m) {
+    return '<option value="' + ufaEsc(m.name + ' (' + m.email + ')') + '"></option>';
+  }).join('') + '</datalist>';
+
+  var box = 'background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;overflow:hidden;margin-bottom:28px;';
+  host.innerHTML = datalist +
+    '<div id="fam-admin-msg" class="ufa-alert" style="display:none;margin-bottom:16px;"></div>' +
+    '<div class="ufa-label">Needs review (' + pending.length + ')</div><div style="' + box + '">' + queueHtml + '</div>' +
+    '<div class="ufa-label">Families (' + d.families.length + ')</div><div style="' + box + '">' + famHtml + '</div>' +
+    '<div class="ufa-label">Create a family</div>' +
+    '<div class="ufa-card ufa-card-tight" style="margin-bottom:28px;"><div style="display:flex;gap:8px;flex-wrap:wrap;">' +
+      '<input id="fam-new-name" class="ufa-input" style="flex:1;min-width:200px;" placeholder="Family name (e.g. The Bulls)" onkeydown="if(event.key===\'Enter\')famCreate()">' +
+      '<button class="ufa-btn ufa-btn-sm" onclick="famCreate()">Create</button></div></div>' +
+    '<div class="ufa-label">Or paste many at once</div>' +
+    '<div class="ufa-card ufa-card-tight" style="margin-bottom:28px;">' +
+      '<div class="ufa-pane-sub" style="margin-bottom:10px;">One family per line: <code>Family name: Full Name, Full Name, Full Name</code>. Names must match the roster exactly (or use emails). Anything that doesn\'t match is reported back and skipped.</div>' +
+      '<textarea id="fam-bulk" class="ufa-textarea" rows="6" style="width:100%;margin-bottom:10px;" placeholder="The Bulls: Aaron Jacob, Abigail Jacob, Adam Que"></textarea>' +
+      '<button class="ufa-btn ufa-btn-sm" onclick="famBulkImport()">Import families</button></div>' +
+    '<div class="ufa-label">Recently reviewed</div><div style="' + box + '">' + reviewedHtml + '</div>';
+}
+
+async function famCreate() {
+  if (!ufaIsBoard()) return;
+  var inp = document.getElementById('fam-new-name');
+  var name = inp.value.trim();
+  if (!name) return famAdminMsg('err', 'Give the family a name.');
+  var r = await sb.from('families').insert({ name: name });
+  if (r.error) return famAdminMsg('err', 'Could not create family: ' + r.error.message);
+  await loadFamiliesAdmin();
+  famAdminMsg('ok', 'Created "' + name + '". Add members below.');
+}
+
+async function famAddMember(familyId) {
+  if (!ufaIsBoard()) return;
+  var inp = document.getElementById('fam-add-' + familyId);
+  var lookup = famRosterLookup(famAdminData.roster);
+  var res = famResolvePerson(inp.value, lookup);
+  if (res.error === 'empty') return famAdminMsg('err', 'Type a name and pick one from the suggestions.');
+  if (res.error === 'ambiguous') return famAdminMsg('err', 'More than one member has that name. Pick the entry with their email from the suggestions.');
+  if (res.error) return famAdminMsg('err', 'No roster member matches "' + inp.value.trim() + '".');
+  var email = res.member.email; // exact string stored in `members`, so points line up on the leaderboard
+  var existing = famAdminData.fmembers.filter(function (r) { return String(r.email).toLowerCase() === String(email).toLowerCase(); })[0];
+  if (existing) {
+    var f = famAdminData.families.filter(function (x) { return x.id === existing.family_id; })[0];
+    return famAdminMsg('err', res.member.name + ' is already in ' + (f ? '"' + f.name + '"' : 'another family') + '. Remove them there first.');
+  }
+  var r = await sb.from('family_members').insert({ family_id: familyId, email: email });
+  if (r.error) return famAdminMsg('err', 'Could not add: ' + r.error.message);
+  await loadFamiliesAdmin();
+  famAdminMsg('ok', 'Added ' + res.member.name + '.');
+}
+
+async function famRemoveMember(familyId, email) {
+  if (!ufaIsBoard()) return;
+  if (!confirm('Remove this person from the family? Points already awarded stay.')) return;
+  var r = await sb.from('family_members').delete().eq('family_id', familyId).eq('email', email).select();
+  if (r.error) return famAdminMsg('err', 'Could not remove: ' + r.error.message);
+  if (!r.data || !r.data.length) return famAdminMsg('err', 'Could not remove (permission issue).');
+  await loadFamiliesAdmin();
+}
+
+async function famDelete(familyId) {
+  if (!ufaIsBoard()) return;
+  if (!confirm('Delete this family and all of its meetup submissions? Points already awarded to members stay.')) return;
+  var r = await sb.from('family_meetups').select('photo_path').eq('family_id', familyId);
+  var paths = (r.data || []).map(function (x) { return x.photo_path; });
+  var del = await sb.from('families').delete().eq('id', familyId).select();
+  if (del.error) return famAdminMsg('err', 'Could not delete: ' + del.error.message);
+  if (!del.data || !del.data.length) return famAdminMsg('err', 'Could not delete (permission issue).');
+  if (paths.length) { try { await sb.storage.from(FAM_BUCKET).remove(paths); } catch (_) {} }
+  await loadFamiliesAdmin();
+}
+
+async function famBulkImport() {
+  if (!ufaIsBoard()) return;
+  var raw = document.getElementById('fam-bulk').value;
+  var lines = raw.split(/\r?\n/).map(function (l) { return l.trim(); }).filter(Boolean);
+  if (!lines.length) return famAdminMsg('err', 'Paste at least one line.');
+
+  var lookup = famRosterLookup(famAdminData.roster);
+  var taken = {};
+  famAdminData.fmembers.forEach(function (r) { taken[String(r.email).toLowerCase()] = true; });
+  var famByName = {};
+  famAdminData.families.forEach(function (f) { famByName[f.name.toLowerCase()] = f; });
+
+  var report = [], added = 0, createdFams = 0;
+  for (var i = 0; i < lines.length; i++) {
+    var idx = lines[i].indexOf(':');
+    if (idx < 1) { report.push('Skipped (no "Family: names" format): ' + lines[i]); continue; }
+    var famName = lines[i].slice(0, idx).trim();
+    var people = lines[i].slice(idx + 1).split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+
+    var fam = famByName[famName.toLowerCase()];
+    if (!fam) {
+      var cr = await sb.from('families').insert({ name: famName }).select().single();
+      if (cr.error) { report.push('Could not create "' + famName + '": ' + cr.error.message); continue; }
+      fam = cr.data; famByName[famName.toLowerCase()] = fam; createdFams++;
+    }
+    for (var j = 0; j < people.length; j++) {
+      var res = famResolvePerson(people[j], lookup);
+      if (res.error === 'notfound')  { report.push('Not on roster: "' + people[j] + '" (' + famName + ')'); continue; }
+      if (res.error === 'ambiguous') { report.push('More than one match for "' + people[j] + '" — use their email (' + famName + ')'); continue; }
+      if (res.error) continue;
+      var em = String(res.member.email).toLowerCase();
+      if (taken[em]) { report.push(res.member.name + ' is already in a family — skipped (' + famName + ')'); continue; }
+      var ins = await sb.from('family_members').insert({ family_id: fam.id, email: res.member.email });
+      if (ins.error) { report.push('Could not add ' + res.member.name + ': ' + ins.error.message); continue; }
+      taken[em] = true; added++;
+    }
+  }
+  await loadFamiliesAdmin();
+  famAdminMsg(report.length ? 'info' : 'ok',
+    'Created ' + createdFams + ' famil' + (createdFams === 1 ? 'y' : 'ies') + ', added ' + added + ' member' + (added === 1 ? '' : 's') + '.' +
+    (report.length ? '\n\nNeeds attention:\n' + report.join('\n') : ''));
+}
+
+async function famApprove(meetupId) {
+  if (!ufaIsBoard()) return;
+  var d = famAdminData;
+  var m = d.meetups.filter(function (x) { return x.id === meetupId; })[0];
+  if (!m) return;
+  var fam = d.families.filter(function (f) { return f.id === m.family_id; })[0];
+  var ptsEl = document.getElementById('fam-pts-' + meetupId);
+  var pts = parseFloat(ptsEl ? ptsEl.value : FAM_DEFAULT_POINTS);
+  if (isNaN(pts) || pts <= 0) return famAdminMsg('err', 'Enter a points value greater than 0.');
+
+  var emails = d.fmembers.filter(function (r) { return r.family_id === m.family_id; }).map(function (r) { return r.email; });
+  if (!emails.length) return famAdminMsg('err', 'This family has no members, so there is no one to award.');
+
+  var code = 'FAM-' + m.id;
+  try {
+    // Already-awarded check makes approving idempotent (double-click, retry, etc.).
+    var ex = await sb.from('attendance').select('email').eq('code_used', code);
+    if (ex.error) throw ex.error;
+    var have = {};
+    (ex.data || []).forEach(function (r) { have[String(r.email).toLowerCase()] = true; });
+
+    var rows = emails.filter(function (e) { return !have[String(e).toLowerCase()]; }).map(function (e) {
+      return {
+        email: e,
+        meeting_name: 'Family Meetup — ' + (fam ? fam.name : 'Family'),
+        meeting_date: famFmtDate(m.meetup_date),
+        event_type: 'Family',
+        points: pts,
+        code_used: code
+      };
+    });
+    if (rows.length) {
+      var ins = await sb.from('attendance').insert(rows);
+      if (ins.error) throw ins.error;
+    }
+    var up = await sb.from('family_meetups').update({
+      status: 'approved', points: pts, reviewed_by: ufaEmail(), reviewed_at: new Date().toISOString(), review_note: null
+    }).eq('id', m.id).select();
+    if (up.error) throw up.error;
+    if (!up.data || !up.data.length) throw new Error('Points were added but the status could not be saved (permission issue).');
+
+    await loadFamiliesAdmin();
+    famAdminMsg('ok', 'Approved. ' + emails.length + ' member' + (emails.length === 1 ? '' : 's') + ' of ' + (fam ? fam.name : 'the family') + ' earned +' + famPts(pts) + ' each.');
+  } catch (e) {
+    console.error('famApprove', e);
+    famAdminMsg('err', 'Could not approve: ' + (e && e.message ? e.message : e));
+  }
+}
+
+async function famDeny(meetupId) {
+  if (!ufaIsBoard()) return;
+  var reason = prompt('Optional note to the family (e.g. "Photo doesn\'t show everyone"):', '');
+  if (reason === null) return;
+  var up = await sb.from('family_meetups').update({
+    status: 'denied', review_note: reason.trim() || null, reviewed_by: ufaEmail(), reviewed_at: new Date().toISOString()
+  }).eq('id', meetupId).select();
+  if (up.error || !up.data || !up.data.length) return famAdminMsg('err', 'Could not deny: ' + (up.error ? up.error.message : 'permission issue'));
+  await loadFamiliesAdmin();
+  famAdminMsg('ok', 'Denied.' );
+}
+
+async function famRevoke(meetupId) {
+  if (!ufaIsBoard()) return;
+  if (!confirm('Take the points back from every member and mark this meetup as not approved?')) return;
+  var code = 'FAM-' + meetupId;
+  var del = await sb.from('attendance').delete().eq('code_used', code).select();
+  if (del.error) return famAdminMsg('err', 'Could not revoke: ' + del.error.message);
+  var up = await sb.from('family_meetups').update({
+    status: 'denied', review_note: 'Points were revoked by the board.', reviewed_by: ufaEmail(), reviewed_at: new Date().toISOString()
+  }).eq('id', meetupId).select();
+  if (up.error) return famAdminMsg('err', 'Points were removed but the status could not be updated: ' + up.error.message);
+  await loadFamiliesAdmin();
+  famAdminMsg('ok', 'Revoked. Removed points from ' + ((del.data || []).length) + ' member(s).');
+}
+
+/* ════════════════════════════════════════════════════════════════
+   BOARD HOURS POINTS — a member earns +0.5 when they book a meeting
+   AND the board member who hosted it confirms it happened.
+   Why the host confirms: booking alone can't be rewarded (someone could
+   book and never show), and the host is the one person who knows.
+   The outcome is stored on the booking (outcome = completed | no_show)
+   so the booking status and the double-booking guard are untouched.
+   Points are written to `attendance` as event_type 'Board Hours' with
+   code_used 'BH-<booking id>', so confirming twice can't double-award.
+   ════════════════════════════════════════════════════════════════ */
+var BH_POINTS = 0.5;
+var BH_LOOKBACK_DAYS = 45;
+
+/* Events that are bonus points rather than real attendance: they count
+   toward totals but not toward "first check-in" or "well-rounded". */
+function ufaIsBonusType(t) { return t === 'Family' || t === 'Board Hours'; }
+
+(function wrapBoardBookings() {
+  var original = refreshMyBoardBookings;
+  refreshMyBoardBookings = async function () {
+    await original();
+    await bhRenderPast();
+  };
+})();
+
+function bhEnsurePastBox() {
+  var box = document.getElementById('bp-bookings-past');
+  if (box) return box;
+  var upcoming = document.getElementById('bp-bookings');
+  if (!upcoming || !upcoming.parentNode) return null;
+  var card = document.createElement('div');
+  card.className = 'ufa-card';
+  card.innerHTML = '<div class="ufa-label">Past meetings &mdash; did it happen?</div>' +
+    '<div class="ufa-pane-sub" style="margin-bottom:12px;">Confirm meetings that took place and the member earns +' + BH_POINTS + ' pts. ' +
+    'Mark a no-show if they did not turn up. Only you can record this for your own meetings.</div>' +
+    '<div id="bp-bookings-past"></div>';
+  upcoming.parentNode.parentNode.insertBefore(card, upcoming.parentNode.nextSibling);
+  return document.getElementById('bp-bookings-past');
+}
+
+async function bhRenderPast() {
+  var box = bhEnsurePastBox();
+  if (!box) return;
+  var since = new Date(Date.now() - BH_LOOKBACK_DAYS * 86400000).toISOString();
+  var r = await sb.from('bookings').select('*')
+    .eq('board_email', ufaEmail()).eq('status', 'booked')
+    .lt('end_ts', new Date().toISOString()).gt('end_ts', since)
+    .order('start_ts', { ascending: false });
+  var rows = r.data || [];
+  if (!rows.length) {
+    box.innerHTML = '<div class="ufa-empty" style="padding:20px;">No recent past meetings.</div>';
+    return;
+  }
+  var todo = rows.filter(function (b) { return !b.outcome; });
+  var done = rows.filter(function (b) { return b.outcome; });
+
+  function row(b) {
+    var right;
+    if (b.outcome === 'completed') right = '<span class="ufa-pill ufa-pill-green">Completed &middot; +' + BH_POINTS + ' pts</span>';
+    else if (b.outcome === 'no_show') right = '<span class="ufa-pill ufa-pill-grey">No-show</span>';
+    else right =
+      '<button class="ufa-btn ufa-btn-sm" data-id="' + b.id + '" onclick="bhMarkOutcome(this.dataset.id,\'completed\')">Completed (+' + BH_POINTS + ')</button>' +
+      '<button class="ufa-btn-ghost ufa-btn-sm" data-id="' + b.id + '" onclick="bhMarkOutcome(this.dataset.id,\'no_show\')">No-show</button>';
+    return '<div class="ufa-booking-row">' +
+      '<div class="ufa-booking-when">' + ufaDateTime(b.start_ts) + '</div>' +
+      '<div style="flex:1;min-width:170px;">' +
+        '<div style="font-size:13px;font-weight:600;color:#1C2B1C;">' + ufaEsc(b.member_name || b.member_email) +
+          ' <span style="font-weight:400;color:#6B7D6B;">&middot; ' + b.duration_min + ' min</span></div>' +
+        (b.topic ? '<div style="font-size:12px;color:#6B7D6B;margin-top:3px;">' + ufaEsc(b.topic) + '</div>' : '') +
+      '</div>' + right + '</div>';
+  }
+  box.innerHTML =
+    (todo.length ? todo.map(row).join('') : '<div class="ufa-empty" style="padding:14px;">All caught up.</div>') +
+    (done.length ? '<div class="ufa-label" style="margin:16px 0 6px;">Already recorded</div>' + done.slice(0, 10).map(row).join('') : '');
+}
+
+async function bhMarkOutcome(id, outcome) {
+  if (outcome !== 'completed' && outcome !== 'no_show') return;
+  var alertId = 'boardhours-alert';
+  try {
+    var r = await sb.from('bookings').select('*').eq('id', id).maybeSingle();
+    var b = r.data;
+    if (!b) return ufaAlert(alertId, 'err', 'Could not find that meeting.');
+    if (String(b.board_email).toLowerCase() !== ufaEmail()) return ufaAlert(alertId, 'err', 'Only the host can record this meeting.');
+    if (new Date(b.end_ts) > new Date()) return ufaAlert(alertId, 'err', 'That meeting has not finished yet.');
+    if (b.outcome) return ufaAlert(alertId, 'err', 'This meeting has already been recorded.');
+
+    if (outcome === 'completed' && !window.confirm('Confirm this meeting with ' + (b.member_name || b.member_email) + ' took place? They will earn +' + BH_POINTS + ' pts.')) return;
+
+    // Claim the meeting first. ".is('outcome', null)" means that if two clicks
+    // race, only one of them matches a row, so points can only be awarded once.
+    var claim = await sb.from('bookings').update({
+      outcome: outcome, outcome_at: new Date().toISOString(), outcome_by: ufaEmail()
+    }).eq('id', id).is('outcome', null).select();
+    if (claim.error) {
+      var missing = /outcome/i.test(claim.error.message || '');
+      return ufaAlert(alertId, 'err', missing
+        ? 'Board hours points are not set up in the database yet. Run board-hours-points.sql in Supabase first.'
+        : 'Could not save: ' + claim.error.message);
+    }
+    if (!claim.data || !claim.data.length) return ufaAlert(alertId, 'err', 'This meeting was already recorded.');
+
+    if (outcome === 'completed') {
+      // Use the member's email exactly as stored in `members` so the points
+      // line up on the leaderboard (it matches on the exact string).
+      var mr = await sb.from('members').select('email');
+      var lower = String(b.member_email).toLowerCase();
+      var hit = (mr.data || []).filter(function (m) { return String(m.email).toLowerCase() === lower; })[0];
+      var memberEmail = hit ? hit.email : b.member_email;
+      var code = 'BH-' + b.id;
+
+      var ex = await sb.from('attendance').select('email').eq('code_used', code);
+      var already = (ex.data || []).some(function (x) { return String(x.email).toLowerCase() === lower; });
+      if (!already) {
+        var ins = await sb.from('attendance').insert({
+          email: memberEmail,
+          meeting_name: 'Board Hours — ' + (myBoardProfile && myBoardProfile.name ? myBoardProfile.name : 'Board member'),
+          meeting_date: new Date(b.start_ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+          event_type: 'Board Hours',
+          points: BH_POINTS,
+          code_used: code
+        });
+        if (ins.error) {
+          // Undo the claim so the host can simply try again.
+          await sb.from('bookings').update({ outcome: null, outcome_at: null, outcome_by: null }).eq('id', id);
+          return ufaAlert(alertId, 'err', 'Could not award the points: ' + ins.error.message);
+        }
+      }
+      ufaAlert(alertId, 'ok', 'Recorded. ' + (b.member_name || b.member_email) + ' earned +' + BH_POINTS + ' pts.');
+    } else {
+      ufaAlert(alertId, 'ok', 'Marked as a no-show. No points awarded.');
+    }
+    try { await bhRenderPast(); } catch (_) { /* the points are saved; a refresh will show the new state */ }
+  } catch (e) {
+    console.error('bhMarkOutcome', e);
+    ufaAlert(alertId, 'err', 'Something went wrong: ' + (e && e.message ? e.message : e));
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════
+   MOCK INTERVIEW — "No experience" difficulty
+   A fourth tier below Easy, for people who have never taken a finance
+   or consulting class. Only tracks that have such questions offer it.
+   ════════════════════════════════════════════════════════════════ */
+var MOCK_LEVEL_ORDER = ['intro', 'easy', 'medium', 'hard'];
+
+function mockLevelLabel(d) {
+  if (d === 'intro') return 'No experience';
+  return String(d || '').charAt(0).toUpperCase() + String(d || '').slice(1);
+}
+/** Lower-case form used inside the small difficulty pills. */
+function mockLevelPill(d) { return d === 'intro' ? 'no experience' : d; }
+
+function mockSyncLevelAvailability() {
+  var bank = MOCK.track ? MOCK_BANK[MOCK.track] : null;
+  var has = !MOCK.track || (Array.isArray(bank) && bank.some(function (q) { return q.d === 'intro'; }));
+  var btn = document.querySelector('#mock-levels [data-level="intro"]');
+  if (!btn) return;
+  btn.disabled = !has;
+  btn.classList.toggle('is-disabled', !has);
+  btn.title = has ? '' : 'No experience questions are available for this track yet.';
+  if (!has) {
+    var i = MOCK.levels.indexOf('intro');
+    if (i !== -1) MOCK.levels.splice(i, 1);
+    btn.classList.remove('is-on');
+    btn.setAttribute('aria-pressed', 'false');
+  }
+}
+
+/** Names for the beginner levels currently chosen, e.g. "No experience and Easy". */
+function mockBeginnerLabel() {
+  return MOCK_LEVEL_ORDER.filter(function (d) { return MOCK.levels.indexOf(d) !== -1; })
+    .map(mockLevelLabel).join(' and ');
+}
+
+</script>
 </body>
 </html>
 <!-- PORTAL_SCRIPT_MARKER -->
