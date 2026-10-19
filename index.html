@@ -5826,6 +5826,7 @@ button[onclick="pubFlipbookNext()"]:hover {
             <button onclick="switchAdminTab('approvals')" class="admin-tab" id="atab-approvals">Approvals <span id="approvals-badge" style="display:none;background:#c0392b;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;margin-left:4px;"></span></button>
             <button onclick="switchAdminTab('resumes')" class="admin-tab" id="atab-resumes">Resumes</button>
             <button onclick="switchAdminTab('boardhours')" class="admin-tab" id="atab-boardhours">Board Hours</button>
+            <button onclick="switchAdminTab('engagement')" class="admin-tab" id="atab-engagement">Engagement</button>
             <button onclick="switchAdminTab('learn')" class="admin-tab" id="atab-learn">Ask &amp; Learn</button>
             <button onclick="switchAdminTab('families')" class="admin-tab" id="atab-families">Families <span id="fam-badge" style="display:none;background:#c0392b;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;margin-left:4px;">0</span></button>
           </div>
@@ -6177,6 +6178,9 @@ button[onclick="pubFlipbookNext()"]:hover {
             <div class="ufa-pane-sub" style="margin-bottom:18px;">Anonymous Q&amp;A, word cloud, word of the week, and the Market Watch guide. Board only until you publish it.</div>
             <div id="learn-admin-body"><div class="ufa-pane-sub">Loading…</div></div>
           </div>
+
+          <!-- ── ADMIN: ENGAGEMENT ── filled in by loadEngagement() -->
+          <div id="atab-content-engagement" style="display:none;"></div>
 
           <!-- ── ADMIN: BOARD HOURS ──
                Each board member maintains their own card, their weekly
@@ -7673,6 +7677,7 @@ const TYPE_COLORS = {
   'Speaker':           { bg: '#f4f0e6', color: '#6b5a1e' },
   'Family':            { bg: '#fbeaf0', color: '#8a2e55' },
   'Board Hours':       { bg: '#e8f0fb', color: '#1e4a8a' },
+  'Mock Interview':    { bg: '#eef3e2', color: '#4a6b1e' },
 };
 
 /** Analyst Meeting / General Meeting are both "meeting" for stats and badge
@@ -7910,7 +7915,7 @@ async function downloadResource(filename, type) {
 }
 
 function switchAdminTab(tab) {
-  ['sessions','roster','attendance','analytics','announce','approvals','resumes','boardhours','families','learn'].forEach(t => {
+  ['sessions','roster','attendance','analytics','announce','approvals','resumes','boardhours','engagement','families','learn'].forEach(t => {
     const btn = document.getElementById('atab-' + t);
     const content = document.getElementById('atab-content-' + t);
     if (btn) btn.classList.toggle('active', t === tab);
@@ -7923,6 +7928,7 @@ function switchAdminTab(tab) {
   if (tab === 'approvals') loadApprovals();
   if (tab === 'resumes') loadResumeAdmin();
   if (tab === 'boardhours') loadBoardHoursAdmin();
+  if (tab === 'engagement') loadEngagement();
   if (tab === 'families') loadFamiliesAdmin();
   if (tab === 'learn') loadLearnAdmin();
 }
@@ -8029,6 +8035,7 @@ async function showDashboard() {
   renderBreakdown(attended);
   renderBadges(attended);
   renderHistory(attended);
+  if (!isPending) ufaSyncCredits();
 }
 
 /** Shows/hides the "you're pending approval, but can still check in" banner
@@ -15931,11 +15938,14 @@ async function confirmBooking() {
     topic: topic.trim()
   }, BK.board.name, (currentMember && currentMember.name) || ufaEmail());
 
+  var credit = null;
+  try { credit = await ufaSyncCredits(); } catch (_) { /* the booking is saved; credit will sync on next load */ }
   ufaCloseModal();
   await loadBoardTab();
   if (BK.board) renderBookingWeek();
   ufaAlert('board-alert', 'ok',
-    'Booked with ' + BK.board.name + ' for ' + ufaDateTime(start) + '. A confirmation is on its way to your email.');
+    'Booked with ' + BK.board.name + ' for ' + ufaDateTime(start) + '. A confirmation is on its way to your email.' +
+    (credit && credit.newlyBoard ? ' You earned +' + CREDIT_POINTS + ' pts for signing up.' : ''));
 }
 
 async function cancelBooking(id) {
@@ -15953,7 +15963,9 @@ async function cancelBooking(id) {
   }
   await loadBoardTab();
   if (BK.board) renderBookingWeek();
-  ufaAlert('board-alert', 'ok', 'Meeting canceled.');
+  var cr = null;
+  try { cr = await ufaSyncCredits(); } catch (_) { /* credit reconciles on next load */ }
+  ufaAlert('board-alert', 'ok', 'Meeting canceled.' + (cr && cr.tookBack ? ' Your sign-up credit was taken back.' : ''));
 }
 
 
@@ -17434,6 +17446,8 @@ async function endMock(early) {
     Math.max(1, Math.round(secs / 60)) + (Math.round(secs / 60) > 1 ? ' minutes.' : ' minute.');
   mockRenderDoneBreakdown(answered);
 
+  try { await ufaEnsureMockBaseline(); } catch (_) { /* logging is best effort */ }
+
   // Merge this session's questions into the member's seen list, plus
   // this session's "got it" / "flag for review" verdicts. A question can
   // only carry one verdict at a time, so a fresh verdict this session
@@ -17464,6 +17478,7 @@ async function endMock(early) {
   MOCK.progress[MOCK.track] = row;
   renderMockTracks();
   renderMockStats();
+  ufaFinishMockSession(secs, answered);
 }
 
 function resetMock() {
@@ -17588,8 +17603,10 @@ async function resetMockProgress(track) {
   if (!confirm('Reset your practice history for ' + label + '?\n\n' +
                'Questions you marked as known or flagged for review become ' +
                'available again, and your session count resets. ' +
+               'Your progress toward point credits is kept. ' +
                'This cannot be undone.')) return;
 
+  try { await ufaEnsureMockBaseline(); } catch (_) { /* best effort */ }
   var q = sb.from('mock_progress').delete().eq('email', ufaEmail());
   if (track) q = q.eq('industry', track);
   var r = await q;
@@ -20412,21 +20429,21 @@ async function famRenderAdmin() {
 }
 
 /* ════════════════════════════════════════════════════════════════
-   BOARD HOURS POINTS — a member earns +0.5 when they book a meeting
-   AND the board member who hosted it confirms it happened.
-   Why the host confirms: booking alone can't be rewarded (someone could
-   book and never show), and the host is the one person who knows.
-   The outcome is stored on the booking (outcome = completed | no_show)
-   so the booking status and the double-booking guard are untouched.
-   Points are written to `attendance` as event_type 'Board Hours' with
-   code_used 'BH-<booking id>', so confirming twice can't double-award.
+   BOARD HOURS POINTS — a member earns +0.5 ONCE, the first time they
+   sign up for a board hours slot (see ONE-TIME CREDITS below).
+   The host still records the outcome (completed | no_show) on the booking.
+   A no-show takes the sign-up credit back; the member can earn it again
+   with their next booking. Completed meetings no longer pay points.
+   Credits are written to `attendance` as event_type 'Board Hours' with
+   code_used 'BH-SIGNUP-<booking id>'. Older 'BH-<booking id>' rows from
+   the previous per-meeting scheme are left alone.
    ════════════════════════════════════════════════════════════════ */
 var BH_POINTS = 0.5;
 var BH_LOOKBACK_DAYS = 45;
 
 /* Events that are bonus points rather than real attendance: they count
    toward totals but not toward "first check-in" or "well-rounded". */
-function ufaIsBonusType(t) { return t === 'Family' || t === 'Board Hours'; }
+function ufaIsBonusType(t) { return t === 'Family' || t === 'Board Hours' || t === 'Mock Interview'; }
 
 (function wrapBoardBookings() {
   var original = refreshMyBoardBookings;
@@ -20444,8 +20461,8 @@ function bhEnsurePastBox() {
   var card = document.createElement('div');
   card.className = 'ufa-card';
   card.innerHTML = '<div class="ufa-label">Past meetings &mdash; did it happen?</div>' +
-    '<div class="ufa-pane-sub" style="margin-bottom:12px;">Confirm meetings that took place and the member earns +' + BH_POINTS + ' pts. ' +
-    'Mark a no-show if they did not turn up. Only you can record this for your own meetings.</div>' +
+    '<div class="ufa-pane-sub" style="margin-bottom:12px;">Record whether each meeting happened. Marking a no-show takes back the member\u2019s one-time sign-up credit (+' + BH_POINTS + ' pts). ' +
+    'Only you can record this for your own meetings.</div>' +
     '<div id="bp-bookings-past"></div>';
   upcoming.parentNode.parentNode.insertBefore(card, upcoming.parentNode.nextSibling);
   return document.getElementById('bp-bookings-past');
@@ -20469,10 +20486,10 @@ async function bhRenderPast() {
 
   function row(b) {
     var right;
-    if (b.outcome === 'completed') right = '<span class="ufa-pill ufa-pill-green">Completed &middot; +' + BH_POINTS + ' pts</span>';
+    if (b.outcome === 'completed') right = '<span class="ufa-pill ufa-pill-green">Completed</span>';
     else if (b.outcome === 'no_show') right = '<span class="ufa-pill ufa-pill-grey">No-show</span>';
     else right =
-      '<button class="ufa-btn ufa-btn-sm" data-id="' + b.id + '" onclick="bhMarkOutcome(this.dataset.id,\'completed\')">Completed (+' + BH_POINTS + ')</button>' +
+      '<button class="ufa-btn ufa-btn-sm" data-id="' + b.id + '" onclick="bhMarkOutcome(this.dataset.id,\'completed\')">Completed</button>' +
       '<button class="ufa-btn-ghost ufa-btn-sm" data-id="' + b.id + '" onclick="bhMarkOutcome(this.dataset.id,\'no_show\')">No-show</button>';
     return '<div class="ufa-booking-row">' +
       '<div class="ufa-booking-when">' + ufaDateTime(b.start_ts) + '</div>' +
@@ -20498,8 +20515,6 @@ async function bhMarkOutcome(id, outcome) {
     if (new Date(b.end_ts) > new Date()) return ufaAlert(alertId, 'err', 'That meeting has not finished yet.');
     if (b.outcome) return ufaAlert(alertId, 'err', 'This meeting has already been recorded.');
 
-    if (outcome === 'completed' && !window.confirm('Confirm this meeting with ' + (b.member_name || b.member_email) + ' took place? They will earn +' + BH_POINTS + ' pts.')) return;
-
     // Claim the meeting first. ".is('outcome', null)" means that if two clicks
     // race, only one of them matches a row, so points can only be awarded once.
     var claim = await sb.from('bookings').update({
@@ -20514,40 +20529,529 @@ async function bhMarkOutcome(id, outcome) {
     if (!claim.data || !claim.data.length) return ufaAlert(alertId, 'err', 'This meeting was already recorded.');
 
     if (outcome === 'completed') {
-      // Use the member's email exactly as stored in `members` so the points
-      // line up on the leaderboard (it matches on the exact string).
-      var mr = await sb.from('members').select('email');
-      var lower = String(b.member_email).toLowerCase();
-      var hit = (mr.data || []).filter(function (m) { return String(m.email).toLowerCase() === lower; })[0];
-      var memberEmail = hit ? hit.email : b.member_email;
-      var code = 'BH-' + b.id;
-
-      var ex = await sb.from('attendance').select('email').eq('code_used', code);
-      var already = (ex.data || []).some(function (x) { return String(x.email).toLowerCase() === lower; });
-      if (!already) {
-        var ins = await sb.from('attendance').insert({
-          email: memberEmail,
-          meeting_name: 'Board Hours — ' + (myBoardProfile && myBoardProfile.name ? myBoardProfile.name : 'Board member'),
-          meeting_date: new Date(b.start_ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-          event_type: 'Board Hours',
-          points: BH_POINTS,
-          code_used: code
-        });
-        if (ins.error) {
-          // Undo the claim so the host can simply try again.
-          await sb.from('bookings').update({ outcome: null, outcome_at: null, outcome_by: null }).eq('id', id);
-          return ufaAlert(alertId, 'err', 'Could not award the points: ' + ins.error.message);
-        }
-      }
-      ufaAlert(alertId, 'ok', 'Recorded. ' + (b.member_name || b.member_email) + ' earned +' + BH_POINTS + ' pts.');
+      ufaAlert(alertId, 'ok', 'Recorded as completed.');
     } else {
-      ufaAlert(alertId, 'ok', 'Marked as a no-show. No points awarded.');
+      // No-show: take back the one-time sign-up credit this booking earned.
+      // If the member has another upcoming booking, their next sync re-awards it.
+      var del = await sb.from('attendance').delete().eq('code_used', 'BH-SIGNUP-' + b.id).select();
+      var took = !del.error && del.data && del.data.length;
+      ufaAlert(alertId, 'ok', 'Marked as a no-show.' + (took ? ' Their sign-up credit (+' + BH_POINTS + ' pts) was taken back.' : ''));
     }
     try { await bhRenderPast(); } catch (_) { /* the points are saved; a refresh will show the new state */ }
   } catch (e) {
     console.error('bhMarkOutcome', e);
     ufaAlert(alertId, 'err', 'Something went wrong: ' + (e && e.message ? e.message : e));
   }
+}
+
+/* ════════════════════════════════════════════════════════════════
+   ONE-TIME CREDITS (each member earns each of these once)
+     · Mock interview, 30 min:  +0.5  (30 cumulative minutes AND 10 questions)
+     · Mock interview, 3 hours: +1    (180 cumulative minutes AND 30 questions)
+     · Board hours sign-up:     +0.5  (first booking; taken back if that
+       booking is a no-show or the member cancels it, and re-earned by the
+       next booking)
+   Minutes and questions count every session ever logged in `mock_sessions`,
+   and Reset never touches that table, so wiping practice history does not
+   cost anyone their progress. The first time a member syncs, their existing
+   `mock_progress` totals are saved as a one-time 'baseline' row, which is
+   how people who practiced before this shipped get credited.
+   If the table does not exist yet, the code falls back to `mock_progress`.
+   ufaSyncCredits() is idempotent: it inserts only what is missing, so it is
+   safe after a booking, a session, a cancel, and on every Overview load.
+   Credits are rows in `attendance`, so the leaderboard needs no changes.
+   ════════════════════════════════════════════════════════════════ */
+var CREDIT_POINTS = 0.5;
+var CREDIT_MOCK_MINUTES = 30;
+var CREDIT_MOCK_QUESTIONS = 10;
+var CREDIT_MOCK3_POINTS = 1;
+var CREDIT_MOCK3_MINUTES = 180;
+var CREDIT_MOCK3_QUESTIONS = 30;
+var creditSyncBusy = false;
+var CREDIT_STATE = null;
+var MOCK_BASELINE_PROMISE = null;
+
+/* Questions worked in one mock_progress row. Cases have no per-case rating,
+   so cases opened count; other tracks count questions rated (not skipped). */
+function ufaMockWorkedFromProgress(p) {
+  return p.industry === 'cases'
+    ? (p.seen_ids || []).length
+    : (p.mastered_ids || []).length + (p.review_ids || []).length;
+}
+
+function ufaEnsureMockBaseline() {
+  if (MOCK_BASELINE_PROMISE) return MOCK_BASELINE_PROMISE;
+  MOCK_BASELINE_PROMISE = (async function () {
+    var email = ufaEmail();
+    var ex = await sb.from('mock_sessions').select('id').eq('email', email).eq('kind', 'baseline').limit(1);
+    if (ex.error) return false;                         // table not created yet
+    if (ex.data && ex.data.length) return true;
+    var pr = await sb.from('mock_progress').select('industry, total_sec, seen_ids, mastered_ids, review_ids').eq('email', email);
+    var sec = 0, qs = 0;
+    (pr.data || []).forEach(function (p) { sec += p.total_sec || 0; qs += ufaMockWorkedFromProgress(p); });
+    var ins = await sb.from('mock_sessions').insert({
+      email: email, industry: 'all', kind: 'baseline', duration_sec: sec, worked: qs, answered: qs
+    });
+    // A duplicate means another tab beat us to it, which is fine.
+    return !ins.error || /duplicate|unique/i.test(ins.error.message || '');
+  })();
+  MOCK_BASELINE_PROMISE.then(function (ok) { if (!ok) MOCK_BASELINE_PROMISE = null; });
+  return MOCK_BASELINE_PROMISE;
+}
+
+async function ufaMockLifetime() {
+  var email = ufaEmail();
+  if (await ufaEnsureMockBaseline()) {
+    var r = await sb.from('mock_sessions').select('duration_sec, worked').eq('email', email);
+    if (!r.error) {
+      var sec = 0, qs = 0;
+      (r.data || []).forEach(function (x) { sec += x.duration_sec || 0; qs += x.worked || 0; });
+      return { sec: sec, qs: qs };
+    }
+  }
+  var pr = await sb.from('mock_progress').select('industry, total_sec, seen_ids, mastered_ids, review_ids').eq('email', email);
+  var s2 = 0, q2 = 0;
+  (pr.data || []).forEach(function (p) { s2 += p.total_sec || 0; q2 += ufaMockWorkedFromProgress(p); });
+  return { sec: s2, qs: q2 };
+}
+
+async function ufaSyncCredits() {
+  var out = { hasMock: false, hasMock3: false, hasBoard: false,
+              newlyMock: false, newlyMock3: false, newlyBoard: false, tookBack: false,
+              mockSec: 0, mockQs: 0 };
+  if (creditSyncBusy || !currentUser || !currentMember || currentMember.status === 'pending') return CREDIT_STATE || out;
+  creditSyncBusy = true;
+  try {
+    var email = currentUser.email;
+    var lower = String(email).toLowerCase();
+    var today = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    var ar = await sb.from('attendance').select('event_type, code_used').eq('email', email);
+    if (ar.error) throw ar.error;
+    var rows = ar.data || [];
+
+    // 1. Take back sign-up credits whose booking was a no-show, or that the member canceled.
+    var br = await sb.from('bookings').select('id, outcome, status, start_ts, cancelled_by').eq('member_email', ufaEmail());
+    var bks = br.data || [];
+    var byId = {};
+    bks.forEach(function (b) { byId[String(b.id)] = b; });
+    var credits = rows.filter(function (r) { return /^BH-SIGNUP-/.test(String(r.code_used || '')); });
+    for (var i = 0; i < credits.length; i++) {
+      var c = credits[i];
+      var b = byId[String(c.code_used).replace('BH-SIGNUP-', '')];
+      var canceledByMember = b && b.status === 'cancelled' && String(b.cancelled_by || '').toLowerCase() === lower;
+      if (b && (b.outcome === 'no_show' || canceledByMember)) {
+        var d = await sb.from('attendance').delete().eq('email', email).eq('code_used', c.code_used).select();
+        if (!d.error && d.data && d.data.length) {
+          rows = rows.filter(function (x) { return x !== c; });
+          out.tookBack = true;
+        }
+      }
+    }
+
+    out.hasBoard = rows.some(function (r) { return r.event_type === 'Board Hours'; });
+    out.hasMock  = rows.some(function (r) { return r.code_used === 'MOCK-30'; });
+    out.hasMock3 = rows.some(function (r) { return r.code_used === 'MOCK-180'; });
+
+    async function award(code, name, type, pts) {
+      var ins = await sb.from('attendance').insert({
+        email: email, meeting_name: name, meeting_date: today, event_type: type, points: pts, code_used: code
+      });
+      return !ins.error;
+    }
+
+    // 2. Mock interview milestones.
+    var life = await ufaMockLifetime();
+    out.mockSec = life.sec; out.mockQs = life.qs;
+    if (!out.hasMock && life.sec >= CREDIT_MOCK_MINUTES * 60 && life.qs >= CREDIT_MOCK_QUESTIONS) {
+      if (await award('MOCK-30', 'Mock Interview \u2014 first ' + CREDIT_MOCK_MINUTES + ' minutes', 'Mock Interview', CREDIT_POINTS)) {
+        out.hasMock = true; out.newlyMock = true;
+      }
+    }
+    if (!out.hasMock3 && life.sec >= CREDIT_MOCK3_MINUTES * 60 && life.qs >= CREDIT_MOCK3_QUESTIONS) {
+      if (await award('MOCK-180', 'Mock Interview \u2014 3 hours of practice', 'Mock Interview', CREDIT_MOCK3_POINTS)) {
+        out.hasMock3 = true; out.newlyMock3 = true;
+      }
+    }
+
+    // 3. Board hours: any booking that is still on, or happened (not canceled, not a no-show).
+    if (!out.hasBoard) {
+      var ok = bks.filter(function (x) { return x.status === 'booked' && x.outcome !== 'no_show'; })
+        .sort(function (x, y) { return new Date(y.start_ts) - new Date(x.start_ts); })[0];
+      if (ok && await award('BH-SIGNUP-' + ok.id, 'Board Hours \u2014 sign-up credit', 'Board Hours', CREDIT_POINTS)) {
+        out.hasBoard = true; out.newlyBoard = true;
+      }
+    }
+
+    if (out.newlyMock || out.newlyMock3 || out.newlyBoard || out.tookBack) {
+      var rr = await sb.from('attendance').select('*').eq('email', email);
+      var att = rr.data || [];
+      updateStats(att); renderBreakdown(att); renderBadges(att); renderHistory(att);
+    }
+  } catch (e) {
+    console.error('ufaSyncCredits', e);
+  } finally {
+    creditSyncBusy = false;
+  }
+  CREDIT_STATE = out;
+  ufaRenderCreditsCard();
+  return out;
+}
+
+/* Overview card: what is still available and how close the member is.
+   Hidden once all three are earned. Inserted beside the check-in grid, not
+   inside the stats grid, so the overview's first-child styling still holds. */
+function ufaRenderCreditsCard() {
+  var s = CREDIT_STATE;
+  var grid = document.getElementById('checkin-history-grid');
+  if (!s || !grid || !grid.parentNode) return;
+  var card = document.getElementById('credits-card');
+  if (s.hasMock && s.hasMock3 && s.hasBoard) { if (card) card.style.display = 'none'; return; }
+  if (!card) {
+    card = document.createElement('div');
+    card.id = 'credits-card';
+    card.style.cssText = 'background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:22px 24px;margin-bottom:24px;';
+    grid.parentNode.insertBefore(card, grid);
+  }
+  card.style.display = '';
+
+  function pct(minGoal, qGoal) {
+    return Math.round(Math.min(1, Math.min(s.mockSec / (minGoal * 60), s.mockQs / qGoal)) * 100);
+  }
+  function prog(minGoal, qGoal) {
+    return '<div style="display:flex;align-items:center;gap:10px;margin-top:8px;">' +
+      '<div style="flex:1;max-width:260px;height:6px;background:#EEF5EE;border-radius:3px;overflow:hidden;"><div style="width:' + pct(minGoal, qGoal) + '%;height:100%;background:#3D6B3D;"></div></div>' +
+      '<span style="font-size:12px;color:#6B7D6B;">' + Math.min(minGoal, Math.floor(s.mockSec / 60)) + ' of ' + minGoal + ' min &middot; ' +
+      Math.min(qGoal, s.mockQs) + ' of ' + qGoal + ' questions</span></div>';
+  }
+  function btn(label, tab) {
+    return '<button type="button" onclick="switchPortalTab(\'' + tab + '\')" style="background:#1C2B1C;color:#fff;font:500 13px \'DM Sans\',sans-serif;padding:9px 16px;border:none;border-radius:4px;cursor:pointer;white-space:nowrap;">' + label + '</button>';
+  }
+  function done(pts) {
+    return '<span style="font-size:12px;font-weight:600;color:#2e6b2e;background:#e6f4e6;padding:4px 10px;border-radius:20px;">Earned +' + pts + '</span>';
+  }
+  function row(title, body, right) {
+    return '<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:14px 0;border-top:1px solid rgba(46,74,46,0.08);">' +
+      '<div style="flex:1;min-width:220px;"><div style="font-size:14px;font-weight:600;color:#1C2B1C;">' + title + '</div>' + body + '</div>' + right + '</div>';
+  }
+  var thanks = '<div style="font-size:12px;color:#6B7D6B;margin-top:3px;">Nice work. This one is a one-time credit.</div>';
+
+  card.innerHTML =
+    '<div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:4px;">' +
+      '<div style="font-family:\'Playfair Display\',Georgia,serif;font-size:20px;font-weight:500;color:#1C2B1C;">Easy points</div>' +
+      '<div style="font-size:12px;color:#6B7D6B;">One-time credits</div></div>' +
+    row('Practice ' + CREDIT_MOCK_MINUTES + ' minutes of mock interviews',
+        s.hasMock ? thanks : prog(CREDIT_MOCK_MINUTES, CREDIT_MOCK_QUESTIONS),
+        s.hasMock ? done(CREDIT_POINTS) : btn('Start practicing', 'mock')) +
+    row('Reach 3 hours of mock interview practice',
+        s.hasMock3 ? thanks : prog(CREDIT_MOCK3_MINUTES, CREDIT_MOCK3_QUESTIONS),
+        s.hasMock3 ? done(CREDIT_MOCK3_POINTS) : btn('Keep practicing', 'mock')) +
+    row('Book a board hours slot',
+        s.hasBoard ? thanks : '<div style="font-size:12px;color:#6B7D6B;margin-top:3px;">Book a 15 or 30 minute slot with a board member. Credit is given when you book. A no-show or cancellation takes it back.</div>',
+        s.hasBoard ? done(CREDIT_POINTS) : btn('Find a time', 'board'));
+}
+
+/* Logs one finished mock session (feeds credits and the Engagement tab),
+   then shows the member where they stand. */
+async function ufaFinishMockSession(secs, answered) {
+  try {
+    await ufaEnsureMockBaseline();
+    var r = MOCK.ratings || {};
+    var ids = function (v) { return Object.keys(r).filter(function (k) { return r[k] === v; }); };
+    var n = ids('nailed'), sh = ids('shaky'), mi = ids('missed');
+    await sb.from('mock_sessions').insert({
+      email: ufaEmail(), industry: MOCK.track, kind: 'session',
+      duration_sec: secs, answered: answered,
+      worked: MOCK.track === 'cases' ? answered : n.length + sh.length + mi.length,
+      levels: (MOCK.levels || []).slice(),
+      nailed_ids: n, shaky_ids: sh, missed_ids: mi
+    });
+  } catch (e) { console.error('log mock session', e); }
+  var st = await ufaSyncCredits();
+  var el = document.getElementById('mock-done-stats');
+  if (!el || !st) return;
+  var add = '';
+  if (st.newlyMock) add += ' You earned +' + CREDIT_POINTS + ' pts for your first ' + CREDIT_MOCK_MINUTES + ' minutes of practice.';
+  if (st.newlyMock3) add += ' You earned +' + CREDIT_MOCK3_POINTS + ' pt for reaching 3 hours of practice.';
+  if (!add) {
+    var goalMin = !st.hasMock ? CREDIT_MOCK_MINUTES : CREDIT_MOCK3_MINUTES;
+    var goalQ = !st.hasMock ? CREDIT_MOCK_QUESTIONS : CREDIT_MOCK3_QUESTIONS;
+    var pts = !st.hasMock ? CREDIT_POINTS : CREDIT_MOCK3_POINTS;
+    if (!st.hasMock || !st.hasMock3) {
+      var left = Math.max(0, goalMin - Math.floor(st.mockSec / 60));
+      var qLeft = Math.max(0, goalQ - st.mockQs);
+      var bits = [];
+      if (left) bits.push(left + ' more minute' + (left === 1 ? '' : 's'));
+      if (qLeft) bits.push(qLeft + ' more rated question' + (qLeft === 1 ? '' : 's'));
+      if (bits.length) add = ' ' + bits.join(' and ') + ' to earn +' + pts + ' pt' + (pts === 1 ? '' : 's') + '.';
+    }
+  }
+  if (add) el.textContent += add;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   ENGAGEMENT (admin tab): how much Mock Interview and Board Hours are
+   being used. Mock data comes from `mock_sessions`; board data from
+   `bookings`. Question-level data is anonymous. Names appear only in the
+   nudge list. Needs mock-engagement.sql so the board can read sessions.
+   ════════════════════════════════════════════════════════════════ */
+var ENG = { range: 30 };
+var ENG_NUDGE_DAYS = 21;
+var ENG_NUDGE_EMAILS = [];
+
+function engEnsureCss() {
+  if (document.getElementById('eng-css')) return;
+  var st = document.createElement('style');
+  st.id = 'eng-css';
+  st.textContent =
+    '.eng-chips{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 20px;}' +
+    '.eng-chip{font:500 13px "DM Sans",sans-serif;padding:7px 14px;border:1px solid rgba(46,74,46,.2);border-radius:20px;background:#fff;color:#3A4A3A;cursor:pointer;}' +
+    '.eng-chip.is-on{background:#1C2B1C;color:#fff;border-color:#1C2B1C;}' +
+    '.eng-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:12px;}' +
+    '.eng-tile{background:#fff;border:1px solid rgba(46,74,46,.12);border-radius:8px;padding:16px 18px;}' +
+    '.eng-tile b{display:block;font:500 30px/1.1 "Playfair Display",Georgia,serif;color:#1C2B1C;}' +
+    '.eng-tile span{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#6B7D6B;margin-top:6px;}' +
+    '.eng-tile i{display:block;font-style:normal;font-size:12px;color:#6B7D6B;margin-top:3px;}' +
+    '.eng-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}' +
+    '@media(max-width:860px){.eng-grid{grid-template-columns:1fr;}}' +
+    '.eng-card{background:#fff;border:1px solid rgba(46,74,46,.12);border-radius:8px;padding:20px 22px;}' +
+    '.eng-card h4{font:500 17px "Playfair Display",Georgia,serif;color:#1C2B1C;margin:0 0 4px;}' +
+    '.eng-card p.eng-note{font-size:12px;color:#6B7D6B;margin:0 0 12px;line-height:1.5;}' +
+    '.eng-row{display:flex;align-items:center;gap:10px;padding:7px 0;font-size:13px;color:#1C2B1C;}' +
+    '.eng-row .eng-l{flex:0 0 38%;min-width:0;overflow:hidden;text-overflow:ellipsis;}' +
+    '.eng-row .eng-bar{flex:1;height:6px;background:#EEF5EE;border-radius:3px;overflow:hidden;}' +
+    '.eng-row .eng-bar div{height:100%;background:#3D6B3D;}' +
+    '.eng-row .eng-v{flex:0 0 auto;font-size:12px;color:#6B7D6B;white-space:nowrap;}' +
+    '.eng-q{padding:9px 0;border-top:1px solid rgba(46,74,46,.08);font-size:13px;color:#1C2B1C;line-height:1.45;}' +
+    '.eng-q small{display:block;color:#6B7D6B;font-size:12px;margin-top:3px;}' +
+    '.eng-empty{font-size:13px;color:#6B7D6B;padding:8px 0;}' +
+    '.eng-warn{background:#fffbe6;border:1px solid #f0d060;border-radius:6px;padding:12px 16px;font-size:13px;color:#78450a;line-height:1.55;margin-bottom:16px;}';
+  document.head.appendChild(st);
+}
+
+function engSetRange(d) { ENG.range = d; loadEngagement(); }
+
+async function engFetchAll(build) {
+  var all = [], from = 0, step = 1000;
+  for (var i = 0; i < 20; i++) {
+    var r = await build().range(from, from + step - 1);
+    if (r.error) return { error: r.error, data: all };
+    all = all.concat(r.data || []);
+    if (!r.data || r.data.length < step) break;
+    from += step;
+  }
+  return { data: all };
+}
+
+function engBars(items) {
+  if (!items.length) return '<div class="eng-empty">Nothing yet for this period.</div>';
+  var max = Math.max.apply(null, items.map(function (x) { return x.value; })) || 1;
+  return items.map(function (x) {
+    return '<div class="eng-row"><div class="eng-l" title="' + ufaEsc(x.label) + '">' + ufaEsc(x.label) + '</div>' +
+      '<div class="eng-bar"><div style="width:' + Math.round(x.value / max * 100) + '%;"></div></div>' +
+      '<div class="eng-v">' + ufaEsc(x.text != null ? x.text : String(x.value)) + '</div></div>';
+  }).join('');
+}
+
+function engTile(label, value, sub) {
+  return '<div class="eng-tile"><b>' + ufaEsc(String(value)) + '</b><span>' + ufaEsc(label) + '</span>' +
+    (sub ? '<i>' + ufaEsc(sub) + '</i>' : '') + '</div>';
+}
+
+function engQuestionText(id) {
+  var keys = Object.keys(MOCK_BANK);
+  for (var i = 0; i < keys.length; i++) {
+    var q = MOCK_BANK[keys[i]].filter(function (x) { return x.id === id; })[0];
+    if (q) return { text: String(q.q || '').replace(/\{[A-Za-z0-9_]+\}/g, '\u2026'), track: keys[i] };
+  }
+  return null;
+}
+
+var ENG_STOP = {};
+('a an and the to of for in on at with my me i is it be about how what any some more help want need get like this that from your our can could would should into as or also really just will have has do does their them they we you us if so but not are was were been being than then there here out up').split(' ')
+  .forEach(function (w) { ENG_STOP[w] = true; });
+
+async function loadEngagement() {
+  var root = document.getElementById('atab-content-engagement');
+  if (!root) return;
+  engEnsureCss();
+  root.innerHTML = '<div class="eng-empty" style="padding:24px 0;">Loading&hellip;</div>';
+
+  var res = await Promise.all([
+    engFetchAll(function () { return sb.from('mock_sessions').select('*').order('started_at', { ascending: false }); }),
+    engFetchAll(function () { return sb.from('bookings').select('*').order('start_ts', { ascending: false }); }),
+    engFetchAll(function () { return sb.from('members').select('email, name, status, role'); }),
+    engFetchAll(function () { return sb.from('attendance').select('email, event_type, code_used, points'); }),
+    sb.from('board_profiles').select('email, name')
+  ]);
+  var sessErr = res[0].error;
+  var days = ENG.range;
+  var since = days ? Date.now() - days * 86400000 : 0;
+  function inRange(t) { return !since || new Date(t).getTime() >= since; }
+
+  var sessAll = (res[0].data || []).filter(function (x) { return x.kind === 'session'; });
+  var sess = sessAll.filter(function (x) { return inRange(x.started_at); });
+  var bkAll = res[1].data || [];
+  var bks = bkAll.filter(function (b) { return inRange(b.created_at || b.start_ts); });
+  var members = (res[2].data || []).filter(function (m) { return m.status === 'approved'; });
+  var att = res[3].data || [];
+  var profiles = {};
+  ((res[4] && res[4].data) || []).forEach(function (p) { profiles[String(p.email).toLowerCase()] = p.name; });
+  var rangeLabel = days ? 'last ' + days + ' days' : 'all time';
+
+  // ---- Mock numbers ----
+  var people = {}; sess.forEach(function (x) { people[String(x.email).toLowerCase()] = true; });
+  var peopleN = Object.keys(people).length;
+  var totalSec = sess.reduce(function (a, x) { return a + (x.duration_sec || 0); }, 0);
+  var avgMin = sess.length ? Math.round(totalSec / sess.length / 60) : 0;
+
+  var byTrack = {};
+  sess.forEach(function (x) { byTrack[x.industry] = (byTrack[x.industry] || 0) + 1; });
+  var trackItems = MOCK_TRACKS.map(function (t) { return { label: t.label, value: byTrack[t.id] || 0, text: (byTrack[t.id] || 0) + ' sessions' }; })
+    .filter(function (x) { return x.value; }).sort(function (a, b) { return b.value - a.value; });
+
+  var introPeople = {};
+  sess.forEach(function (x) { if ((x.levels || []).indexOf('intro') !== -1) introPeople[String(x.email).toLowerCase()] = true; });
+
+  var qstat = {};
+  sess.forEach(function (x) {
+    (x.nailed_ids || []).forEach(function (id) { (qstat[id] = qstat[id] || { n: 0, s: 0, m: 0 }).n++; });
+    (x.shaky_ids || []).forEach(function (id) { (qstat[id] = qstat[id] || { n: 0, s: 0, m: 0 }).s++; });
+    (x.missed_ids || []).forEach(function (id) { (qstat[id] = qstat[id] || { n: 0, s: 0, m: 0 }).m++; });
+  });
+  var hardest = Object.keys(qstat).map(function (id) {
+    var q = qstat[id], tot = q.n + q.s + q.m;
+    return { id: id, tot: tot, rate: (q.s + q.m) / tot, q: q };
+  }).filter(function (x) { return x.tot >= 3 && x.rate > 0; })
+    .sort(function (a, b) { return b.rate - a.rate || b.tot - a.tot; }).slice(0, 8);
+
+  var weeks = [];
+  for (var w = 7; w >= 0; w--) {
+    var hi = Date.now() - w * 7 * 86400000, lo = hi - 7 * 86400000;
+    var cnt = sessAll.filter(function (x) { var t = new Date(x.started_at).getTime(); return t >= lo && t < hi; }).length;
+    weeks.push({ label: w === 0 ? 'This week' : w + 'w ago', value: cnt, text: String(cnt) });
+  }
+
+  // ---- Board hours numbers ----
+  var live = bks.filter(function (b) { return b.status === 'booked'; });
+  var completed = live.filter(function (b) { return b.outcome === 'completed'; }).length;
+  var noShows = live.filter(function (b) { return b.outcome === 'no_show'; }).length;
+  var cancelled = bks.filter(function (b) { return b.status === 'cancelled'; }).length;
+  var byHost = {};
+  live.forEach(function (b) { var k = String(b.board_email).toLowerCase(); byHost[k] = (byHost[k] || 0) + 1; });
+  var hostItems = Object.keys(byHost).map(function (k) { return { label: profiles[k] || k, value: byHost[k], text: byHost[k] + ' booked' }; })
+    .sort(function (a, b) { return b.value - a.value; });
+  var words = {};
+  live.forEach(function (b) {
+    String(b.topic || '').toLowerCase().replace(/[^a-z0-9&\s]/g, ' ').split(/\s+/).forEach(function (wd) {
+      if (wd.length > 2 && !ENG_STOP[wd]) words[wd] = (words[wd] || 0) + 1;
+    });
+  });
+  var wordItems = Object.keys(words).map(function (k) { return { label: k, value: words[k], text: String(words[k]) }; })
+    .sort(function (a, b) { return b.value - a.value; }).slice(0, 8);
+  var leads = live.filter(function (b) { return b.created_at; })
+    .map(function (b) { return (new Date(b.start_ts) - new Date(b.created_at)) / 86400000; })
+    .filter(function (d) { return d >= 0; });
+  var avgLead = leads.length ? (leads.reduce(function (a, d) { return a + d; }, 0) / leads.length) : null;
+
+  // ---- Credits ----
+  function distinct(pred) {
+    var seen = {}; att.forEach(function (r) { if (pred(r)) seen[String(r.email).toLowerCase()] = true; });
+    return Object.keys(seen).length;
+  }
+  var c30 = distinct(function (r) { return r.code_used === 'MOCK-30'; });
+  var c180 = distinct(function (r) { return r.code_used === 'MOCK-180'; });
+  var cBoard = distinct(function (r) { return r.event_type === 'Board Hours'; });
+  var N = members.length || 1;
+
+  // ---- Nudge list ----
+  var last = {};
+  function touch(email, t) {
+    var k = String(email).toLowerCase(), ts = new Date(t).getTime();
+    if (!last[k] || ts > last[k]) last[k] = ts;
+  }
+  sessAll.forEach(function (x) { touch(x.email, x.started_at); });
+  bkAll.filter(function (b) { return b.status === 'booked'; }).forEach(function (b) { touch(b.member_email, b.start_ts); });
+  var cutoff = Date.now() - ENG_NUDGE_DAYS * 86400000;
+  var nudge = members.filter(function (m) { return UFA_BOARD_ROLES.indexOf(m.role) === -1; })
+    .filter(function (m) { var t = last[String(m.email).toLowerCase()]; return !t || t < cutoff; })
+    .sort(function (a, b) {
+      var ta = last[String(a.email).toLowerCase()] || 0, tb = last[String(b.email).toLowerCase()] || 0;
+      return ta - tb;
+    });
+  ENG_NUDGE_EMAILS = nudge.map(function (m) { return m.email; });
+  var earliest = sessAll.length ? new Date(sessAll[sessAll.length - 1].started_at) : null;
+
+  // ---- Render ----
+  var html = '';
+  html += '<div class="ufa-label">Engagement</div>' +
+    '<div class="ufa-pane-sub" style="margin-bottom:14px;">How much Mock Interview and Board Hours are being used. Question-level data is anonymous; names appear only in the nudge list.</div>';
+  html += '<div class="eng-chips">' + [[7, 'This week'], [30, '30 days'], [0, 'All time']].map(function (o) {
+    return '<button type="button" class="eng-chip' + (ENG.range === o[0] ? ' is-on' : '') + '" onclick="engSetRange(' + o[0] + ')">' + o[1] + '</button>';
+  }).join('') + '</div>';
+
+  if (sessErr) {
+    html += '<div class="eng-warn"><strong>Mock interview sessions are not being logged yet.</strong> Run <code>mock-engagement.sql</code> in Supabase, then this section fills in as members practice. Board hours below work already.</div>';
+  }
+
+  html += '<div class="eng-tiles">' +
+    engTile('Mock sessions', sess.length, rangeLabel) +
+    engTile('People practicing', peopleN, 'of ' + members.length + ' members') +
+    engTile('Practice hours', (totalSec / 3600).toFixed(1), avgMin ? 'avg ' + avgMin + ' min per session' : '') +
+    engTile('Board hours booked', live.length, completed + ' completed \u00b7 ' + noShows + ' no-show' + (noShows === 1 ? '' : 's')) +
+    engTile('Cancellations', cancelled, rangeLabel) +
+  '</div>';
+
+  html += '<div class="eng-grid">' +
+    '<div class="eng-card"><h4>Mock interview: tracks</h4><p class="eng-note">Sessions per track, ' + rangeLabel + '.</p>' + engBars(trackItems) +
+      '<p class="eng-note" style="margin-top:10px;">' + Object.keys(introPeople).length + ' people used the No experience level.</p></div>' +
+    '<div class="eng-card"><h4>Mock sessions per week</h4><p class="eng-note">Last 8 weeks, all members.</p>' + engBars(weeks) + '</div>' +
+  '</div>';
+
+  html += '<div class="eng-card" style="margin-bottom:16px;"><h4>Hardest questions</h4>' +
+    '<p class="eng-note">Questions members most often rated shaky or missed, with at least 3 ratings. This is a good list to teach from at a workshop.</p>' +
+    (hardest.length ? hardest.map(function (x, i) {
+      var info = engQuestionText(x.id);
+      var t = info ? info.text : x.id;
+      if (t.length > 170) t = t.slice(0, 167) + '\u2026';
+      return '<div class="eng-q">' + (i + 1) + '. ' + ufaEsc(t) + '<small>' + Math.round(x.rate * 100) + '% struggled &middot; ' +
+        x.tot + ' ratings (' + x.q.m + ' missed, ' + x.q.s + ' shaky, ' + x.q.n + ' nailed)</small></div>';
+    }).join('') : '<div class="eng-empty">Not enough ratings yet.</div>') + '</div>';
+
+  html += '<div class="eng-grid">' +
+    '<div class="eng-card"><h4>Board hours: by board member</h4><p class="eng-note">Who is busy and who has open time, ' + rangeLabel + '.</p>' + engBars(hostItems) +
+      (avgLead != null ? '<p class="eng-note" style="margin-top:10px;">Members book about ' + avgLead.toFixed(1) + ' days ahead on average.</p>' : '') + '</div>' +
+    '<div class="eng-card"><h4>Board hours: common words in notes</h4><p class="eng-note">Taken from what members typed as the topic.</p>' + engBars(wordItems) + '</div>' +
+  '</div>';
+
+  html += '<div class="eng-card" style="margin-bottom:16px;"><h4>Credits earned</h4><p class="eng-note">Members who have earned each one-time credit (all time).</p>' +
+    engBars([
+      { label: 'Mock, 30 min (+0.5)', value: c30, text: c30 + ' of ' + members.length + ' \u00b7 ' + Math.round(c30 / N * 100) + '%' },
+      { label: 'Mock, 3 hours (+1)', value: c180, text: c180 + ' of ' + members.length + ' \u00b7 ' + Math.round(c180 / N * 100) + '%' },
+      { label: 'Board hours (+0.5)', value: cBoard, text: cBoard + ' of ' + members.length + ' \u00b7 ' + Math.round(cBoard / N * 100) + '%' }
+    ]) + '</div>';
+
+  html += '<div class="eng-card"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;">' +
+    '<div><h4>Nudge list</h4><p class="eng-note">Approved members with no mock session or board hours booking in ' + ENG_NUDGE_DAYS + '+ days (' + nudge.length + ').</p></div>' +
+    (nudge.length ? '<button type="button" class="eng-chip" onclick="engCopyNudge()">Copy emails</button>' : '') + '</div>' +
+    (nudge.length ? nudge.slice(0, 30).map(function (m) {
+      var t = last[String(m.email).toLowerCase()];
+      return '<div class="eng-row"><div class="eng-l" style="flex-basis:50%;">' + ufaEsc(m.name || m.email) + '</div>' +
+        '<div class="eng-v" style="margin-left:auto;">' + (t ? 'last activity ' + ufaDate(new Date(t).toISOString()) : 'no activity logged') + '</div></div>';
+    }).join('') + (nudge.length > 30 ? '<div class="eng-empty">Showing 30 of ' + nudge.length + '. Use Copy emails for everyone.</div>' : '')
+      : '<div class="eng-empty">Everyone has been active recently.</div>') + '</div>';
+
+  html += '<p class="eng-note" style="margin-top:14px;">' +
+    (earliest ? 'Mock sessions are logged from ' + ufaDate(earliest.toISOString()) + '. Practice before that counts toward credits but has no dates, so it does not appear in the charts or the nudge list.' : 'No mock sessions logged yet.') + '</p>';
+
+  root.innerHTML = html;
+}
+
+function engCopyNudge() {
+  var text = ENG_NUDGE_EMAILS.join(', ');
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(function () { alert('Copied ' + ENG_NUDGE_EMAILS.length + ' emails.'); },
+      function () { prompt('Copy these emails:', text); });
+  } else { prompt('Copy these emails:', text); }
 }
 
 /* ════════════════════════════════════════════════════════════════
