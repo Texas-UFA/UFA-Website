@@ -19754,12 +19754,20 @@ async function loadMyFamily() {
     var meetups = results[2].data || [];
     if (!family) { box.style.display = 'none'; return; }
 
-    var emails = allFm.filter(function (r) { return r.family_id === famId; })
-      .map(function (r) { return String(r.email).toLowerCase(); });
-    var people = emails.map(function (e) {
-      var m = roster.filter(function (r) { return String(r.email).toLowerCase() === e; })[0];
-      return { email: e, name: m ? m.name : e, role: m ? m.role : '' };
+    var people = allFm.filter(function (r) { return r.family_id === famId; }).map(function (r) {
+      var low = String(r.email).toLowerCase();
+      var m = roster.filter(function (x) { return String(x.email).toLowerCase() === low; })[0];
+      return { email: r.email, name: m ? m.name : r.email, role: m ? m.role : '' };
     });
+    var nameByEmail = {};
+    people.forEach(function (p) { nameByEmail[String(p.email).toLowerCase()] = p.name; });
+
+    var attendeeBoxes = people.map(function (p) {
+      var isMe = String(p.email).toLowerCase() === email;
+      return '<label style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid rgba(46,74,46,0.14);border-radius:8px;cursor:pointer;font-size:14px;color:#1C2B1C;background:#fff;">' +
+        '<input type="checkbox" class="fam-att" value="' + ufaEsc(p.email) + '"' + (isMe ? ' checked' : '') + ' style="width:18px;height:18px;accent-color:#3D6B3D;flex:none;">' +
+        '<span>' + ufaEsc(p.name) + (isMe ? ' <span style="color:#6B7D6B;font-size:12px;">(you)</span>' : '') + '</span></label>';
+    }).join('');
 
     var memberChips = people.map(function (p) {
       return '<span style="display:inline-flex;align-items:center;gap:6px;background:#EEF5EE;border:1px solid rgba(46,74,46,0.14);border-radius:20px;padding:5px 12px;font-size:13px;color:#1C2B1C;">' +
@@ -19767,9 +19775,12 @@ async function loadMyFamily() {
     }).join(' ');
 
     var history = meetups.length ? meetups.map(function (m) {
+      var withNames = (m.attendees && m.attendees.length)
+        ? m.attendees.map(function (e) { return nameByEmail[String(e).toLowerCase()] || e; }).join(', ') : '';
       return '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 0;border-top:1px solid rgba(46,74,46,0.08);">' +
         '<div style="min-width:0;flex:1;">' +
           '<div style="font-size:14px;font-weight:600;color:#1C2B1C;">' + famFmtDateLong(m.meetup_date) + '</div>' +
+          (withNames ? '<div style="font-size:12px;color:#6B7D6B;margin-top:2px;">With ' + ufaEsc(withNames) + '</div>' : '') +
           (m.note ? '<div style="font-size:13px;color:#6B7D6B;margin-top:2px;word-break:break-word;">' + ufaEsc(m.note) + '</div>' : '') +
           (m.status === 'denied' && m.review_note ? '<div style="font-size:12px;color:#A33A32;margin-top:4px;">Board note: ' + ufaEsc(m.review_note) + '</div>' : '') +
         '</div>' + famStatusPill(m) + '</div>';
@@ -19781,7 +19792,9 @@ async function loadMyFamily() {
         '<div style="font-family:\'Playfair Display\',Georgia,serif;font-size:22px;font-weight:500;color:#1C2B1C;margin-bottom:12px;">' + ufaEsc(family.name) + '</div>' +
         '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">' + memberChips + '</div>' +
         '<div class="ufa-alert ufa-alert-info" style="margin-bottom:16px;">Meet up with your family and upload a photo of you together. ' +
-          'Once the board approves it, <strong>everyone in your family earns +' + FAM_DEFAULT_POINTS + ' pts</strong>.</div>' +
+          'Check everyone who was there. Once the board approves it, <strong>each person you check earns +' + FAM_DEFAULT_POINTS + ' pts</strong>. Only one of you needs to submit.</div>' +
+        '<div class="ufa-label" style="margin-bottom:6px;">Who was there?</div>' +
+        '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;margin-bottom:16px;">' + attendeeBoxes + '</div>' +
         '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:12px;">' +
           '<div><div class="ufa-label">Date of meetup</div>' +
             '<input id="fam-date" type="date" class="ufa-input" value="' + famTodayIso() + '" max="' + famTodayIso() + '"></div>' +
@@ -19818,6 +19831,11 @@ async function famSubmitMeetup(familyId) {
 
   if (!date) return famMemberMsg('err', 'Pick the date you met up.');
   if (date > famTodayIso()) return famMemberMsg('err', 'The meetup date can\'t be in the future.');
+  var boxes = document.querySelectorAll('#my-family-box .fam-att');
+  var attendees = [];
+  Array.prototype.forEach.call(boxes, function (b) { if (b.checked) attendees.push(b.value); });
+  var need = Math.min(2, boxes.length);
+  if (attendees.length < need) return famMemberMsg('err', 'Check everyone who was at the meetup (at least ' + need + ' people).');
   if (!file) return famMemberMsg('err', 'Add a photo of your family together.');
   if (!/^image\//.test(file.type)) return famMemberMsg('err', 'That file is not an image.');
   if (file.size > 25 * 1048576) return famMemberMsg('err', 'That photo is too large (25 MB max).');
@@ -19844,6 +19862,7 @@ async function famSubmitMeetup(familyId) {
       submitted_by: ufaEmail(),
       meetup_date: date,
       note: note || null,
+      attendees: attendees,
       photo_path: uploadedPath,
       status: 'pending'
     });
@@ -19883,6 +19902,14 @@ async function famLoadBadge() {
     badge.textContent = n;
     badge.style.display = n > 0 ? 'inline-block' : 'none';
   } catch (_) {}
+}
+
+/** The people a meetup awards: those checked as attending (older meetups with none recorded fall back to the whole family). */
+function famAttendees(m, famPeople) {
+  if (!m.attendees || !m.attendees.length) return famPeople;
+  var want = {};
+  m.attendees.forEach(function (e) { want[String(e).toLowerCase()] = true; });
+  return famPeople.filter(function (p) { return want[String(p.email).toLowerCase()]; });
 }
 
 function famRosterLookup(roster) {
@@ -19973,13 +20000,16 @@ async function famRenderAdmin() {
   // 1) Review queue
   var queueHtml = pending.length ? pending.map(function (m) {
     var w = whoLine(m);
-    var names = membersOf(m.family_id).map(function (p) { return ufaEsc(p.name); }).join(', ');
+    var famAll = membersOf(m.family_id);
+    var who2 = famAttendees(m, famAll);
+    var names = who2.map(function (p) { return ufaEsc(p.name); }).join(', ');
+    var ofTotal = (who2.length < famAll.length) ? ' (' + who2.length + ' of ' + famAll.length + ' members)' : ' (whole family)';
     return '<div style="display:flex;gap:16px;flex-wrap:wrap;padding:16px;border-top:1px solid rgba(46,74,46,0.08);">' +
       thumb(m, 120) +
       '<div style="flex:1;min-width:220px;">' +
         '<div style="font-size:15px;font-weight:600;color:#1C2B1C;">' + ufaEsc(w.fam) + ' <span style="font-weight:400;color:#6B7D6B;font-size:13px;">&middot; ' + famFmtDateLong(m.meetup_date) + '</span></div>' +
         '<div style="font-size:12px;color:#6B7D6B;margin-top:3px;">Submitted by ' + ufaEsc(w.by) + '</div>' +
-        '<div style="font-size:12px;color:#6B7D6B;margin-top:3px;">Will award: ' + (names || '<em>no members</em>') + '</div>' +
+        '<div style="font-size:12px;color:#6B7D6B;margin-top:3px;">Checked as attending' + ofTotal + ': ' + (names || '<em>no one</em>') + '</div>' +
         (m.note ? '<div style="font-size:13px;color:#1C2B1C;margin-top:6px;">&ldquo;' + ufaEsc(m.note) + '&rdquo;</div>' : '') +
         '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px;">' +
           '<label style="font-size:12px;color:#6B7D6B;">Points each</label>' +
@@ -20150,8 +20180,9 @@ async function famApprove(meetupId) {
   var pts = parseFloat(ptsEl ? ptsEl.value : FAM_DEFAULT_POINTS);
   if (isNaN(pts) || pts <= 0) return famAdminMsg('err', 'Enter a points value greater than 0.');
 
-  var emails = d.fmembers.filter(function (r) { return r.family_id === m.family_id; }).map(function (r) { return r.email; });
-  if (!emails.length) return famAdminMsg('err', 'This family has no members, so there is no one to award.');
+  var famRows = d.fmembers.filter(function (r) { return r.family_id === m.family_id; });
+  var emails = famAttendees(m, famRows).map(function (r) { return r.email; });
+  if (!emails.length) return famAdminMsg('err', 'No one checked as attending is still in this family, so there is no one to award.');
 
   var code = 'FAM-' + m.id;
   try {
