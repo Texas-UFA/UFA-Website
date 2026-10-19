@@ -19723,11 +19723,6 @@ function famPts(n) {
   var s = (Math.round(n * 100) / 100).toString();
   return s + ' pt' + (n === 1 ? '' : 's');
 }
-function famStatusPill(m) {
-  if (m.status === 'approved') return '<span class="ufa-pill ufa-pill-green">Approved &middot; +' + famPts(m.points) + ' each</span>';
-  if (m.status === 'denied')   return '<span class="ufa-pill ufa-pill-red">Not approved</span>';
-  return '<span class="ufa-pill ufa-pill-amber">Waiting for board review</span>';
-}
 
 /** Shrinks a phone photo (often 5–12 MB) to a ~300 KB JPEG before upload. */
 function famResizeImage(file, maxDim, quality) {
@@ -19755,99 +19750,11 @@ function famResizeImage(file, maxDim, quality) {
 
 /* ───────────────────────── MEMBER SIDE ───────────────────────── */
 
-async function loadMyFamily() {
-  var box = document.getElementById('my-family-box');
-  if (!box) return;
-  var email = ufaEmail();
-  if (!email) { box.style.display = 'none'; return; }
-
-  try {
-    // Small tables, so match the email case-insensitively in JS rather than
-    // with ilike (where "_" in an email would act as a wildcard).
-    var fmRes = await sb.from('family_members').select('family_id, email');
-    if (fmRes.error) throw fmRes.error;
-    var allFm = fmRes.data || [];
-    var mine = allFm.filter(function (r) { return String(r.email).toLowerCase() === email; })[0];
-    if (!mine) { box.style.display = 'none'; return; }
-
-    box.style.display = '';
-    box.innerHTML = '<div class="ufa-card"><div class="ufa-pane-sub">Loading your family…</div></div>';
-
-    var famId = mine.family_id;
-    var results = await Promise.all([
-      sb.from('families').select('*').eq('id', famId).maybeSingle(),
-      sb.from('members').select('email, name, role'),
-      sb.from('family_meetups').select('*').eq('family_id', famId).order('meetup_date', { ascending: false })
-    ]);
-    var family = results[0].data;
-    var roster = results[1].data || [];
-    var meetups = results[2].data || [];
-    if (!family) { box.style.display = 'none'; return; }
-
-    var people = allFm.filter(function (r) { return r.family_id === famId; }).map(function (r) {
-      var low = String(r.email).toLowerCase();
-      var m = roster.filter(function (x) { return String(x.email).toLowerCase() === low; })[0];
-      return { email: r.email, name: m ? m.name : r.email, role: m ? m.role : '' };
-    });
-    var nameByEmail = {};
-    people.forEach(function (p) { nameByEmail[String(p.email).toLowerCase()] = p.name; });
-
-    var attendeeBoxes = people.map(function (p) {
-      var isMe = String(p.email).toLowerCase() === email;
-      return '<label style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid rgba(46,74,46,0.14);border-radius:8px;cursor:pointer;font-size:14px;color:#1C2B1C;background:#fff;">' +
-        '<input type="checkbox" class="fam-att" value="' + ufaEsc(p.email) + '"' + (isMe ? ' checked' : '') + ' style="width:18px;height:18px;accent-color:#3D6B3D;flex:none;">' +
-        '<span>' + ufaEsc(p.name) + (isMe ? ' <span style="color:#6B7D6B;font-size:12px;">(you)</span>' : '') + '</span></label>';
-    }).join('');
-
-    var memberChips = people.map(function (p) {
-      return '<span style="display:inline-flex;align-items:center;gap:6px;background:#EEF5EE;border:1px solid rgba(46,74,46,0.14);border-radius:20px;padding:5px 12px;font-size:13px;color:#1C2B1C;">' +
-        ufaEsc(p.name) + (p.role ? ' <span style="font-size:11px;color:#6B7D6B;">' + ufaEsc(p.role) + '</span>' : '') + '</span>';
-    }).join(' ');
-
-    var history = meetups.length ? meetups.map(function (m) {
-      var withNames = (m.attendees && m.attendees.length)
-        ? m.attendees.map(function (e) { return nameByEmail[String(e).toLowerCase()] || e; }).join(', ') : '';
-      return '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 0;border-top:1px solid rgba(46,74,46,0.08);">' +
-        '<div style="min-width:0;flex:1;">' +
-          '<div style="font-size:14px;font-weight:600;color:#1C2B1C;">' + famFmtDateLong(m.meetup_date) + '</div>' +
-          (withNames ? '<div style="font-size:12px;color:#6B7D6B;margin-top:2px;">With ' + ufaEsc(withNames) + '</div>' : '') +
-          (m.note ? '<div style="font-size:13px;color:#6B7D6B;margin-top:2px;word-break:break-word;">' + ufaEsc(m.note) + '</div>' : '') +
-          (m.status === 'denied' && m.review_note ? '<div style="font-size:12px;color:#A33A32;margin-top:4px;">Board note: ' + ufaEsc(m.review_note) + '</div>' : '') +
-        '</div>' + famStatusPill(m) + '</div>';
-    }).join('') : '<div style="font-size:13px;color:#6B7D6B;padding-top:6px;">No meetups submitted yet. Be the first!</div>';
-
-    box.innerHTML =
-      '<div class="ufa-card">' +
-        '<div class="ufa-label" style="margin-bottom:4px;">My Family</div>' +
-        '<div style="font-family:\'Playfair Display\',Georgia,serif;font-size:22px;font-weight:500;color:#1C2B1C;margin-bottom:12px;">' + ufaEsc(family.name) + '</div>' +
-        '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">' + memberChips + '</div>' +
-        '<div class="ufa-alert ufa-alert-info" style="margin-bottom:16px;">Meet up with your family and upload a photo of you together. ' +
-          'Check everyone who was there. Once the board approves it, <strong>each person you check earns +' + FAM_DEFAULT_POINTS + ' pts</strong>. Only one of you needs to submit.</div>' +
-        '<div class="ufa-label" style="margin-bottom:6px;">Who was there?</div>' +
-        '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;margin-bottom:16px;">' + attendeeBoxes + '</div>' +
-        '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:12px;">' +
-          '<div><div class="ufa-label">Date of meetup</div>' +
-            '<input id="fam-date" type="date" class="ufa-input" value="' + famTodayIso() + '" max="' + famTodayIso() + '"></div>' +
-          '<div><div class="ufa-label">Photo of your family together</div>' +
-            '<input id="fam-photo" type="file" accept="image/*" class="ufa-input"></div>' +
-        '</div>' +
-        '<div style="margin-bottom:12px;"><div class="ufa-label">What did you do? <span style="text-transform:none;letter-spacing:0;color:#6B7D6B;">(optional)</span></div>' +
-          '<input id="fam-note" type="text" maxlength="140" class="ufa-input" placeholder="Dinner at Torchy\'s, study session at PCL…"></div>' +
-        '<div id="fam-msg" class="ufa-alert" style="display:none;margin-bottom:12px;"></div>' +
-        '<button id="fam-submit-btn" class="ufa-btn" onclick="famSubmitMeetup(\'' + famId + '\')">Submit meetup</button>' +
-        '<div style="margin-top:24px;"><div class="ufa-label" style="margin-bottom:2px;">Your family\'s meetups</div>' + history + '</div>' +
-      '</div>';
-  } catch (e) {
-    console.error('loadMyFamily', e);
-    box.style.display = '';
-    box.innerHTML = '<div class="ufa-alert ufa-alert-err">Could not load your family right now. If this keeps happening, tell the board.</div>';
-  }
-}
 
 function famMemberMsg(kind, text) {
   var el = document.getElementById('fam-msg');
   if (!el) return;
-  el.className = 'ufa-alert ' + (kind === 'ok' ? 'ufa-alert-ok' : 'ufa-alert-err');
+  el.className = 'fx-msg ' + (kind === 'ok' ? 'ok' : 'err');
   el.style.display = 'block';
   el.textContent = text;
 }
@@ -19916,7 +19823,7 @@ async function famSubmitMeetup(familyId) {
 function famAdminMsg(kind, text) {
   var el = document.getElementById('fam-admin-msg');
   if (!el) return;
-  el.className = 'ufa-alert ' + (kind === 'ok' ? 'ufa-alert-ok' : (kind === 'info' ? 'ufa-alert-info' : 'ufa-alert-err'));
+  el.className = 'fx-msg ' + (kind === 'ok' ? 'ok' : (kind === 'info' ? 'info' : 'err'));
   el.style.display = 'block';
   el.style.whiteSpace = 'pre-line';
   el.textContent = text;
@@ -19984,129 +19891,11 @@ async function loadFamiliesAdmin() {
     famLoadBadge();
   } catch (e) {
     console.error('loadFamiliesAdmin', e);
-    host.innerHTML = '<div class="ufa-alert ufa-alert-err">Could not load families: ' + ufaEsc(e && e.message ? e.message : e) +
+    host.innerHTML = '<div class="fx-msg err">Could not load families: ' + ufaEsc(e && e.message ? e.message : e) +
       '<br>Make sure <strong>family-points-setup.sql</strong> has been run in Supabase.</div>';
   }
 }
 
-async function famRenderAdmin() {
-  var d = famAdminData;
-  var host = document.getElementById('fam-admin-body');
-  var lookup = famRosterLookup(d.roster);
-  var famById = {};
-  d.families.forEach(function (f) { famById[f.id] = f; });
-
-  function membersOf(fid) {
-    return d.fmembers.filter(function (r) { return r.family_id === fid; }).map(function (r) {
-      var m = lookup.byEmail[String(r.email).toLowerCase()];
-      return { email: r.email, name: m ? m.name : r.email, role: m ? m.role : '' };
-    });
-  }
-
-  var pending = d.meetups.filter(function (m) { return m.status === 'pending'; });
-  var reviewed = d.meetups.filter(function (m) { return m.status !== 'pending'; }).slice(0, 25);
-
-  // Signed photo URLs, one round trip for everything we are about to show.
-  var paths = pending.concat(reviewed).map(function (m) { return m.photo_path; });
-  var urlByPath = {};
-  if (paths.length) {
-    try {
-      var su = await sb.storage.from(FAM_BUCKET).createSignedUrls(paths, 3600);
-      (su.data || []).forEach(function (r) { if (r.signedUrl) urlByPath[r.path] = r.signedUrl; });
-    } catch (_) {}
-  }
-  function thumb(m, size) {
-    var u = urlByPath[m.photo_path];
-    return u
-      ? '<a href="' + ufaEsc(u) + '" target="_blank" rel="noopener"><img src="' + ufaEsc(u) + '" alt="Family meetup photo" loading="lazy" style="width:' + size + 'px;height:' + size + 'px;object-fit:cover;border-radius:8px;display:block;border:1px solid rgba(46,74,46,0.14);"></a>'
-      : '<div style="width:' + size + 'px;height:' + size + 'px;border-radius:8px;background:#EDEDEA;display:flex;align-items:center;justify-content:center;font-size:11px;color:#6B7D6B;text-align:center;">No photo</div>';
-  }
-  function whoLine(m) {
-    var f = famById[m.family_id];
-    var subm = lookup.byEmail[String(m.submitted_by).toLowerCase()];
-    return { fam: f ? f.name : '(deleted family)', by: subm ? subm.name : m.submitted_by };
-  }
-
-  // 1) Review queue
-  var queueHtml = pending.length ? pending.map(function (m) {
-    var w = whoLine(m);
-    var famAll = membersOf(m.family_id);
-    var who2 = famAttendees(m, famAll);
-    var names = who2.map(function (p) { return ufaEsc(p.name); }).join(', ');
-    var ofTotal = (who2.length < famAll.length) ? ' (' + who2.length + ' of ' + famAll.length + ' members)' : ' (whole family)';
-    return '<div style="display:flex;gap:16px;flex-wrap:wrap;padding:16px;border-top:1px solid rgba(46,74,46,0.08);">' +
-      thumb(m, 120) +
-      '<div style="flex:1;min-width:220px;">' +
-        '<div style="font-size:15px;font-weight:600;color:#1C2B1C;">' + ufaEsc(w.fam) + ' <span style="font-weight:400;color:#6B7D6B;font-size:13px;">&middot; ' + famFmtDateLong(m.meetup_date) + '</span></div>' +
-        '<div style="font-size:12px;color:#6B7D6B;margin-top:3px;">Submitted by ' + ufaEsc(w.by) + '</div>' +
-        '<div style="font-size:12px;color:#6B7D6B;margin-top:3px;">Checked as attending' + ofTotal + ': ' + (names || '<em>no one</em>') + '</div>' +
-        (m.note ? '<div style="font-size:13px;color:#1C2B1C;margin-top:6px;">&ldquo;' + ufaEsc(m.note) + '&rdquo;</div>' : '') +
-        '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px;">' +
-          '<label style="font-size:12px;color:#6B7D6B;">Points each</label>' +
-          '<input id="fam-pts-' + m.id + '" type="number" step="0.5" min="0" max="10" value="' + FAM_DEFAULT_POINTS + '" class="ufa-input" style="width:80px;">' +
-          '<button class="ufa-btn ufa-btn-sm" data-id="' + m.id + '" onclick="famApprove(this.dataset.id)">Approve &amp; award</button>' +
-          '<button class="ufa-btn-ghost ufa-btn-sm ufa-btn-danger" data-id="' + m.id + '" onclick="famDeny(this.dataset.id)">Deny</button>' +
-        '</div>' +
-      '</div></div>';
-  }).join('') : '<div style="padding:20px;font-size:13px;color:#6B7D6B;text-align:center;">Nothing waiting for review.</div>';
-
-  // 2) Families
-  var famHtml = d.families.length ? d.families.map(function (f) {
-    var ms = membersOf(f.id);
-    var chips = ms.length ? ms.map(function (p) {
-      return '<span style="display:inline-flex;align-items:center;gap:6px;background:#EEF5EE;border:1px solid rgba(46,74,46,0.14);border-radius:20px;padding:4px 6px 4px 12px;font-size:13px;color:#1C2B1C;">' +
-        ufaEsc(p.name) + (p.role ? ' <span style="font-size:11px;color:#6B7D6B;">' + ufaEsc(p.role) + '</span>' : '') +
-        '<button title="Remove from family" data-fid="' + f.id + '" data-email="' + ufaEsc(p.email) + '" onclick="famRemoveMember(this.dataset.fid,this.dataset.email)" style="border:none;background:none;cursor:pointer;color:#A33A32;font-size:16px;line-height:1;padding:0 6px;">&times;</button></span>';
-    }).join(' ') : '<span style="font-size:13px;color:#6B7D6B;">No members yet</span>';
-    return '<div style="padding:16px;border-top:1px solid rgba(46,74,46,0.08);">' +
-      '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px;">' +
-        '<div style="font-size:15px;font-weight:600;color:#1C2B1C;">' + ufaEsc(f.name) + ' <span style="font-weight:400;color:#6B7D6B;font-size:12px;">&middot; ' + ms.length + ' member' + (ms.length === 1 ? '' : 's') + '</span></div>' +
-        '<div style="display:flex;gap:8px;">' +
-          '<button class="ufa-btn-ghost ufa-btn-sm" data-id="' + f.id + '" onclick="famRename(this.dataset.id)">Rename</button>' +
-          '<button class="ufa-btn-ghost ufa-btn-sm ufa-btn-danger" data-id="' + f.id + '" onclick="famDelete(this.dataset.id)">Delete family</button>' +
-        '</div>' +
-      '</div>' +
-      '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;">' + chips + '</div>' +
-      '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
-        '<input id="fam-add-' + f.id + '" list="fam-roster-list" class="ufa-input" style="flex:1;min-width:200px;" placeholder="Add a member — start typing a name">' +
-        '<button class="ufa-btn-ghost ufa-btn-sm" data-id="' + f.id + '" onclick="famAddMember(this.dataset.id)">Add</button>' +
-      '</div></div>';
-  }).join('') : '<div style="padding:20px;font-size:13px;color:#6B7D6B;text-align:center;">No families yet. Create one below or paste a list.</div>';
-
-  // 3) Recently reviewed
-  var reviewedHtml = reviewed.length ? reviewed.map(function (m) {
-    var w = whoLine(m);
-    return '<div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:12px 16px;border-top:1px solid rgba(46,74,46,0.08);">' +
-      thumb(m, 48) +
-      '<div style="flex:1;min-width:160px;"><div style="font-size:14px;font-weight:600;color:#1C2B1C;">' + ufaEsc(w.fam) + '</div>' +
-      '<div style="font-size:12px;color:#6B7D6B;">' + famFmtDateLong(m.meetup_date) + (m.reviewed_by ? ' &middot; reviewed by ' + ufaEsc(m.reviewed_by) : '') + '</div></div>' +
-      famStatusPill(m) +
-      (m.status === 'approved' ? '<button class="ufa-btn-ghost ufa-btn-sm ufa-btn-danger" data-id="' + m.id + '" onclick="famRevoke(this.dataset.id)">Revoke points</button>' : '') +
-      '</div>';
-  }).join('') : '<div style="padding:20px;font-size:13px;color:#6B7D6B;text-align:center;">Nothing reviewed yet.</div>';
-
-  var datalist = '<datalist id="fam-roster-list">' + d.roster.filter(function (m) { return m.name; }).sort(function (a, b) {
-    return String(a.name).localeCompare(String(b.name));
-  }).map(function (m) {
-    return '<option value="' + ufaEsc(m.name + ' (' + m.email + ')') + '"></option>';
-  }).join('') + '</datalist>';
-
-  var box = 'background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;overflow:hidden;margin-bottom:28px;';
-  host.innerHTML = datalist +
-    '<div id="fam-admin-msg" class="ufa-alert" style="display:none;margin-bottom:16px;"></div>' +
-    '<div class="ufa-label">Needs review (' + pending.length + ')</div><div style="' + box + '">' + queueHtml + '</div>' +
-    '<div class="ufa-label">Families (' + d.families.length + ')</div><div style="' + box + '">' + famHtml + '</div>' +
-    '<div class="ufa-label">Create a family</div>' +
-    '<div class="ufa-card ufa-card-tight" style="margin-bottom:28px;"><div style="display:flex;gap:8px;flex-wrap:wrap;">' +
-      '<input id="fam-new-name" class="ufa-input" style="flex:1;min-width:200px;" placeholder="Family name (e.g. The Bulls)" onkeydown="if(event.key===\'Enter\')famCreate()">' +
-      '<button class="ufa-btn ufa-btn-sm" onclick="famCreate()">Create</button></div></div>' +
-    '<div class="ufa-label">Or paste many at once</div>' +
-    '<div class="ufa-card ufa-card-tight" style="margin-bottom:28px;">' +
-      '<div class="ufa-pane-sub" style="margin-bottom:10px;">One family per line: <code>Family name: Full Name, Full Name, Full Name</code>. Names must match the roster exactly (or use emails). Anything that doesn\'t match is reported back and skipped.</div>' +
-      '<textarea id="fam-bulk" class="ufa-textarea" rows="6" style="width:100%;margin-bottom:10px;" placeholder="The Bulls: Aaron Jacob, Abigail Jacob, Adam Que"></textarea>' +
-      '<button class="ufa-btn ufa-btn-sm" onclick="famBulkImport()">Import families</button></div>' +
-    '<div class="ufa-label">Recently reviewed</div><div style="' + box + '">' + reviewedHtml + '</div>';
-}
 
 async function famCreate() {
   if (!ufaIsBoard()) return;
@@ -20299,6 +20088,329 @@ async function famRevoke(meetupId) {
   famAdminMsg('ok', 'Revoked. Removed points from ' + ((del.data || []).length) + ' member(s).');
 }
 
+/* ───────────── FAMILIES: look & feel ───────────── */
+(function famInjectCss() {
+  if (document.getElementById('fam-css')) return;
+  var st = document.createElement('style');
+  st.id = 'fam-css';
+  st.textContent = `
+.fx-fam{background:#fff;border:1px solid var(--fx-line);border-radius:22px;overflow:hidden;box-shadow:0 18px 44px -28px rgba(28,43,28,.45);}
+.fx-fam-head{background:var(--fx-ink);color:#fff;padding:28px 32px;display:flex;align-items:center;justify-content:space-between;gap:22px;flex-wrap:wrap;}
+.fx-fam-kicker{font-size:13px;color:#9FB59F;margin-bottom:6px;}
+.fx-fam-name{font-family:var(--font-display,Georgia,serif);font-weight:500;font-size:clamp(28px,3.6vw,40px);line-height:1.08;letter-spacing:-.01em;margin:0;color:#fff;}
+.fx-fam-meta{margin-top:10px;font-size:14px;color:#B9C8B9;}
+.fx-fam-meta b{color:var(--fx-chalk);font-weight:500;}
+.fx-fam-body{padding:30px 32px 32px;}
+.fx-fam-lead{display:flex;gap:12px;align-items:flex-start;margin:0 0 22px;color:var(--fx-pine);}
+.fx-fam-lead p{margin:0;font-size:15px;line-height:1.55;color:#3A4A3A;max-width:62ch;}
+.fx-fam-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:24px;margin-bottom:22px;}
+.fx-drop{position:relative;display:flex;align-items:center;justify-content:center;min-height:224px;border:2px dashed rgba(46,74,46,.3);border-radius:18px;background:#FBFAF6;cursor:pointer;overflow:hidden;transition:border-color .15s,background .15s;}
+.fx-drop:hover{border-color:var(--fx-leaf);background:var(--fx-mist);}
+.fx-drop input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;}
+.fx-drop-empty{text-align:center;padding:24px;color:var(--fx-muted);font-size:13.5px;line-height:1.5;}
+.fx-drop-empty b{display:block;color:var(--fx-ink);font-size:15.5px;margin:12px 0 4px;font-weight:500;}
+.fx-drop-empty .circ{display:inline-flex;width:56px;height:56px;border-radius:50%;background:var(--fx-mist);color:var(--fx-pine);align-items:center;justify-content:center;}
+.fx-drop img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;}
+.fx-drop .change{position:absolute;right:12px;bottom:12px;display:none;background:rgba(28,43,28,.85);color:#fff;font:500 12px var(--font-body,sans-serif);padding:7px 12px;border-radius:999px;pointer-events:none;}
+.fx-fam-who{margin:0 0 24px;padding:22px;background:var(--fx-paper);border-radius:18px;}
+.fx-fam-who-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px;}
+.fx-fam-who-head b{display:block;font:500 16px var(--font-body,sans-serif);color:var(--fx-ink);}
+.fx-fam-who-head span{display:block;font-size:13px;color:var(--fx-muted);margin-top:2px;}
+.fx-fam-submit{display:flex;align-items:center;gap:18px;flex-wrap:wrap;}
+.fx-fam-submit small{color:var(--fx-muted);font-size:13px;line-height:1.5;max-width:360px;}
+.fx-hist{margin-top:38px;border-top:1px solid var(--fx-line);padding-top:26px;}
+.fx-hist-row{display:flex;align-items:center;gap:16px;padding:14px 0;border-top:1px solid rgba(46,74,46,.08);}
+.fx-hist-row.first{border-top:0;}
+.fx-date{flex:none;width:54px;text-align:center;border-radius:13px;background:var(--fx-sand);padding:8px 0 7px;color:var(--fx-pine);}
+.fx-date small{display:block;font:500 11px/1 var(--font-body,sans-serif);letter-spacing:.07em;}
+.fx-date b{display:block;font:500 22px/1.05 var(--font-display,Georgia,serif);margin-top:4px;}
+.fx-hist-main{flex:1 1 200px;min-width:0;}
+.fx-hist-title{font:500 15px/1.4 var(--font-body,sans-serif);color:var(--fx-ink);}
+.fx-hist-note{font-size:13.5px;color:var(--fx-muted);margin-top:2px;word-break:break-word;}
+.fx-hist-empty{padding:26px;text-align:center;color:var(--fx-soft);font-size:14px;background:var(--fx-paper);border-radius:14px;}
+
+.fx-rev{display:grid;grid-template-columns:240px minmax(0,1fr);gap:24px;padding:20px;background:#fff;border:1px solid var(--fx-line);border-radius:20px;margin-bottom:16px;}
+.fx-rev-photo{position:relative;border:0;padding:0;background:var(--fx-sand);border-radius:14px;overflow:hidden;cursor:zoom-in;min-height:180px;}
+.fx-rev-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+.fx-rev-photo span{position:absolute;left:10px;bottom:10px;background:rgba(28,43,28,.85);color:#fff;font:500 12px var(--font-body,sans-serif);padding:5px 10px;border-radius:999px;}
+.fx-rev h4{font:500 24px/1.15 var(--font-display,Georgia,serif);margin:0;color:var(--fx-ink);}
+.fx-rev-meta{font-size:13.5px;color:var(--fx-muted);margin-top:6px;display:flex;gap:6px 16px;flex-wrap:wrap;align-items:center;}
+.fx-rev-who{margin:16px 0 0;}
+.fx-rev-who>b{display:block;font:500 13px var(--font-body,sans-serif);margin-bottom:9px;color:var(--fx-ink);}
+.fx-rev-who .row{display:flex;flex-wrap:wrap;gap:8px;}
+.fx-rev-note{margin:14px 0 0;padding:11px 15px;border-left:3px solid var(--fx-brass);background:var(--fx-paper);border-radius:0 12px 12px 0;font-size:14px;line-height:1.5;color:#3A4A3A;}
+.fx-rev-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:18px;padding-top:16px;border-top:1px solid rgba(46,74,46,.1);}
+.fx-rev-actions .pts{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--fx-muted);margin-right:auto;}
+.fx-rev-actions .pts input{width:78px;}
+.fx-empty{padding:34px 20px;text-align:center;color:var(--fx-soft);font-size:14px;background:#fff;border:1px dashed rgba(46,74,46,.22);border-radius:18px;}
+.fx-empty .fx-ico{display:block;margin:0 auto 8px;color:#B6C2B6;}
+.fx-famgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:16px;}
+.fx-famcard{background:#fff;border:1px solid var(--fx-line);border-radius:20px;padding:20px 20px 18px;}
+.fx-famcard-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:14px;}
+.fx-famcard-head h4{font:500 21px/1.15 var(--font-display,Georgia,serif);margin:0;color:var(--fx-ink);}
+.fx-famcard-head small{display:block;font:400 13px var(--font-body,sans-serif);color:var(--fx-muted);margin-top:4px;}
+.fx-famcard .chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;min-height:30px;}
+.fx-famcard .add{display:flex;gap:8px;}
+.fx-add-panel{background:#fff;border:1px solid var(--fx-line);border-radius:20px;margin:0 0 18px;}
+.fx-add-panel>summary{list-style:none;cursor:pointer;padding:16px 20px;display:flex;align-items:center;gap:10px;font:500 15px var(--font-body,sans-serif);color:var(--fx-pine);}
+.fx-add-panel>summary::-webkit-details-marker{display:none;}
+.fx-add-panel[open]>summary{border-bottom:1px solid var(--fx-line);}
+.fx-add-panel .inner{padding:20px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:28px;}
+.fx-add-panel code{background:var(--fx-sand);padding:1px 6px;border-radius:5px;font-size:12.5px;}
+.fx-rec{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:13px 18px;border-top:1px solid rgba(46,74,46,.08);}
+.fx-rec:first-child{border-top:0;}
+.fx-rec .th{width:54px;height:54px;border-radius:11px;overflow:hidden;background:var(--fx-sand);flex:none;display:block;border:0;padding:0;cursor:zoom-in;}
+.fx-rec .th img{width:100%;height:100%;object-fit:cover;display:block;}
+.fx-rec-main{flex:1;min-width:170px;}
+.fx-rec-main b{display:block;font:500 15px var(--font-body,sans-serif);color:var(--fx-ink);}
+.fx-rec-main span{font-size:13px;color:var(--fx-muted);}
+@media(max-width:640px){.fx-hist-row{flex-wrap:wrap;gap:10px 14px;}.fx-hist-row>.fx-pill{margin-left:68px;}}
+@media(max-width:860px){
+  .fx-fam-grid{grid-template-columns:1fr;} .fx-fam-head,.fx-fam-body{padding-left:20px;padding-right:20px;}
+  .fx-rev{grid-template-columns:1fr;} .fx-rev-photo{height:220px;}
+  .fx-add-panel .inner{grid-template-columns:1fr;} .fx-famgrid{grid-template-columns:1fr;}
+}`;
+  document.head.appendChild(st);
+})();
+
+function famDateParts(iso) {
+  var p = String(iso || '').split('-');
+  if (p.length !== 3) return { mon: '', day: String(iso || '') };
+  var d = new Date(+p[0], +p[1] - 1, +p[2]);
+  return { mon: d.toLocaleDateString('en-US', { month: 'short' }).toUpperCase(), day: String(d.getDate()) };
+}
+
+function famStatusPill(m) {
+  if (m.status === 'approved') return fxPill('ok', 'Approved &middot; +' + famPts(m.points) + ' each', 'check');
+  if (m.status === 'denied') return fxPill('no', 'Not approved', 'x');
+  return fxPill('wait', 'Waiting for review', 'clock');
+}
+
+/** Shows the chosen photo inside the drop zone. */
+function famPreview(input) {
+  var drop = input.closest ? input.closest('.fx-drop') : null;
+  if (!drop) return;
+  var img = drop.querySelector('img'), empty = drop.querySelector('.fx-drop-empty'), chg = drop.querySelector('.change');
+  var f = input.files && input.files[0];
+  if (!f) { img.style.display = 'none'; chg.style.display = 'none'; empty.style.display = ''; return; }
+  var r = new FileReader();
+  r.onload = function (e) { img.src = e.target.result; img.style.display = 'block'; chg.style.display = 'block'; empty.style.display = 'none'; };
+  r.readAsDataURL(f);
+}
+
+function famToggleAll(btn) {
+  var boxes = document.querySelectorAll('#my-family-box .fam-att');
+  var all = Array.prototype.every.call(boxes, function (b) { return b.checked; });
+  Array.prototype.forEach.call(boxes, function (b) { b.checked = !all; });
+  if (btn) btn.textContent = all ? 'Select everyone' : 'Clear all';
+}
+
+/* ───────────── MEMBER: "My Family" card ───────────── */
+async function loadMyFamily() {
+  var box = document.getElementById('my-family-box');
+  if (!box) return;
+  var email = ufaEmail();
+  if (!email) { box.style.display = 'none'; return; }
+
+  try {
+    var fmRes = await sb.from('family_members').select('family_id, email');
+    if (fmRes.error) throw fmRes.error;
+    var allFm = fmRes.data || [];
+    var mine = allFm.filter(function (r) { return String(r.email).toLowerCase() === email; })[0];
+    if (!mine) { box.style.display = 'none'; return; }
+
+    box.style.display = '';
+    var famId = mine.family_id;
+    var results = await Promise.all([
+      sb.from('families').select('*').eq('id', famId).maybeSingle(),
+      sb.from('members').select('email, name, role'),
+      sb.from('family_meetups').select('*').eq('family_id', famId).order('meetup_date', { ascending: false })
+    ]);
+    var family = results[0].data;
+    var roster = results[1].data || [];
+    var meetups = results[2].data || [];
+    if (!family) { box.style.display = 'none'; return; }
+
+    var people = allFm.filter(function (r) { return r.family_id === famId; }).map(function (r) {
+      var low = String(r.email).toLowerCase();
+      var m = roster.filter(function (x) { return String(x.email).toLowerCase() === low; })[0];
+      return { email: r.email, name: m ? m.name : r.email, role: m ? m.role : '' };
+    });
+    var nameByEmail = {};
+    people.forEach(function (p) { nameByEmail[String(p.email).toLowerCase()] = p.name; });
+
+    var attendeeBoxes = people.map(function (p) {
+      var isMe = String(p.email).toLowerCase() === email;
+      return '<label class="fx-pick"><input type="checkbox" class="fam-att" value="' + ufaEsc(p.email) + '"' + (isMe ? ' checked' : '') + '>' +
+        '<span class="fx-pick-body">' + fxAvatar(p.name, 30) +
+          '<span>' + ufaEsc(p.name) + (isMe ? ' <span style="opacity:.6;font-weight:400;">(you)</span>' : '') + '</span>' +
+          fxIcon('check', 15, 'fx-tick') + '</span></label>';
+    }).join('');
+
+    var history = meetups.length ? meetups.map(function (m, i) {
+      var dp = famDateParts(m.meetup_date);
+      var withNames = (m.attendees && m.attendees.length)
+        ? m.attendees.map(function (e) { return nameByEmail[String(e).toLowerCase()] || e; }).join(', ') : '';
+      return '<div class="fx-hist-row' + (i === 0 ? ' first' : '') + '">' +
+        '<div class="fx-date"><small>' + ufaEsc(dp.mon) + '</small><b>' + ufaEsc(dp.day) + '</b></div>' +
+        '<div class="fx-hist-main">' +
+          '<div class="fx-hist-title">' + (withNames ? 'With ' + ufaEsc(withNames) : 'Family meetup') + '</div>' +
+          (m.note ? '<div class="fx-hist-note">' + ufaEsc(m.note) + '</div>' : '') +
+          (m.status === 'denied' && m.review_note ? '<div class="fx-hist-note" style="color:#A33A32;">Board note: ' + ufaEsc(m.review_note) + '</div>' : '') +
+        '</div>' + famStatusPill(m) + '</div>';
+    }).join('') : '<div class="fx-hist-empty">No meetups yet. Your first one is worth +' + FAM_DEFAULT_POINTS + ' pts to everyone who is there.</div>';
+
+    box.innerHTML =
+      '<section class="fx-fam">' +
+        '<header class="fx-fam-head">' +
+          '<div><div class="fx-fam-kicker">Your family</div>' +
+            '<h3 class="fx-fam-name">' + ufaEsc(family.name) + '</h3>' +
+            '<div class="fx-fam-meta">' + people.length + ' members &middot; <b>+' + FAM_DEFAULT_POINTS + ' pts each</b> for every approved meetup</div></div>' +
+          fxAvatarStack(people.map(function (p) { return p.name; }), 6, 46, true) +
+        '</header>' +
+        '<div class="fx-fam-body">' +
+          '<div class="fx-fam-lead"><span style="margin-top:2px;">' + fxIcon('sparkle', 22) + '</span>' +
+            '<p>Got together with your family? Add a photo, tick everyone who was there, and send it in. Only one of you needs to submit, and everyone you tick earns the points once the board approves it.</p></div>' +
+          '<div class="fx-fam-grid">' +
+            '<label class="fx-drop" id="fam-drop">' +
+              '<input id="fam-photo" type="file" accept="image/*" onchange="famPreview(this)">' +
+              '<div class="fx-drop-empty"><span class="circ">' + fxIcon('camera', 26) + '</span><b>Add a photo of your family together</b>Tap to choose one. It should show everyone you tick below.</div>' +
+              '<img alt="Preview of your photo"><span class="change">Change photo</span>' +
+            '</label>' +
+            '<div>' +
+              '<label class="fx-field"><span>Date of meetup</span><input id="fam-date" type="date" class="fx-input" value="' + famTodayIso() + '" max="' + famTodayIso() + '"></label>' +
+              '<label class="fx-field"><span>What did you do? <em>(optional)</em></span><input id="fam-note" type="text" maxlength="140" class="fx-input" placeholder="Dinner at Torchy\'s, study session at PCL…"></label>' +
+            '</div>' +
+          '</div>' +
+          '<div class="fx-fam-who">' +
+            '<div class="fx-fam-who-head"><div><b>Who was there?</b><span>Everyone you tick gets the points.</span></div>' +
+              '<button type="button" class="fx-link" onclick="famToggleAll(this)">Select everyone</button></div>' +
+            '<div class="fx-picks">' + attendeeBoxes + '</div>' +
+          '</div>' +
+          '<div id="fam-msg" class="fx-msg" style="display:none;"></div>' +
+          '<div class="fx-fam-submit"><button id="fam-submit-btn" class="fx-btn lg" onclick="famSubmitMeetup(\'' + famId + '\')">Submit for review</button>' +
+            '<small>The board checks the photo, then the points land in everyone\'s total.</small></div>' +
+          '<div class="fx-hist"><h4 class="fx-h3" style="margin-bottom:6px;">Your family\'s meetups</h4>' + history + '</div>' +
+        '</div>' +
+      '</section>';
+  } catch (e) {
+    console.error('loadMyFamily', e);
+    box.style.display = '';
+    box.innerHTML = '<div class="fx-msg err">Could not load your family right now. If this keeps happening, tell the board.</div>';
+  }
+}
+
+/* ───────────── BOARD: Admin → Families ───────────── */
+async function famRenderAdmin() {
+  var d = famAdminData;
+  var host = document.getElementById('fam-admin-body');
+  var lookup = famRosterLookup(d.roster);
+  var famById = {};
+  d.families.forEach(function (f) { famById[f.id] = f; });
+
+  function membersOf(fid) {
+    return d.fmembers.filter(function (r) { return r.family_id === fid; }).map(function (r) {
+      var m = lookup.byEmail[String(r.email).toLowerCase()];
+      return { email: r.email, name: m ? m.name : r.email, role: m ? m.role : '' };
+    });
+  }
+
+  var pending = d.meetups.filter(function (m) { return m.status === 'pending'; });
+  var reviewed = d.meetups.filter(function (m) { return m.status !== 'pending'; }).slice(0, 25);
+
+  var paths = pending.concat(reviewed).map(function (m) { return m.photo_path; });
+  var urlByPath = {};
+  if (paths.length) {
+    try {
+      var su = await sb.storage.from(FAM_BUCKET).createSignedUrls(paths, 3600);
+      (su.data || []).forEach(function (r) { if (r.signedUrl) urlByPath[r.path] = r.signedUrl; });
+    } catch (_) {}
+  }
+  function whoLine(m) {
+    var f = famById[m.family_id];
+    var subm = lookup.byEmail[String(m.submitted_by).toLowerCase()];
+    return { fam: f ? f.name : '(deleted family)', by: subm ? subm.name : m.submitted_by };
+  }
+
+  // 1) Review queue
+  var queueHtml = pending.length ? pending.map(function (m) {
+    var w = whoLine(m);
+    var famAll = membersOf(m.family_id);
+    var who = famAttendees(m, famAll);
+    var u = urlByPath[m.photo_path];
+    var scope = (who.length < famAll.length) ? who.length + ' of ' + famAll.length + ' members' : 'whole family';
+    return '<article class="fx-rev">' +
+      (u ? '<button class="fx-rev-photo" data-url="' + ufaEsc(u) + '" onclick="fxLightbox(this.dataset.url)" aria-label="Enlarge photo"><img src="' + ufaEsc(u) + '" alt="Family meetup photo" loading="lazy"><span>Tap to enlarge</span></button>'
+         : '<div class="fx-rev-photo" style="cursor:default;display:flex;align-items:center;justify-content:center;color:#8A968A;font-size:13px;">No photo</div>') +
+      '<div>' +
+        '<h4>' + ufaEsc(w.fam) + '</h4>' +
+        '<div class="fx-rev-meta"><span>' + fxIcon('calendar', 15) + ' ' + famFmtDateLong(m.meetup_date) + '</span><span>Submitted by ' + ufaEsc(w.by) + '</span></div>' +
+        '<div class="fx-rev-who"><b>Checked as attending &middot; ' + scope + '</b><div class="row">' +
+          (who.length ? who.map(function (p) { return '<span class="fx-who">' + fxAvatar(p.name, 26) + ufaEsc(p.name) + '</span>'; }).join('') : '<span style="color:#8A968A;font-size:13px;">No one</span>') +
+        '</div></div>' +
+        (m.note ? '<div class="fx-rev-note">&ldquo;' + ufaEsc(m.note) + '&rdquo;</div>' : '') +
+        '<div class="fx-rev-actions">' +
+          '<label class="pts">Points each <input id="fam-pts-' + m.id + '" type="number" step="0.5" min="0" max="10" value="' + FAM_DEFAULT_POINTS + '" class="fx-input"></label>' +
+          '<button class="fx-btn danger" data-id="' + m.id + '" onclick="famDeny(this.dataset.id)">Deny</button>' +
+          '<button class="fx-btn" data-id="' + m.id + '" onclick="famApprove(this.dataset.id)">' + fxIcon('check', 16) + ' Approve &amp; award</button>' +
+        '</div>' +
+      '</div></article>';
+  }).join('') : '<div class="fx-empty">' + fxIcon('check', 28) + 'All caught up. Nothing is waiting for review.</div>';
+
+  // 2) Families
+  var totalPeople = d.fmembers.length;
+  var famHtml = d.families.length ? '<div class="fx-famgrid">' + d.families.map(function (f) {
+    var ms = membersOf(f.id);
+    var chips = ms.length ? ms.map(function (p) {
+      return '<span class="fx-who">' + fxAvatar(p.name, 26) + ufaEsc(p.name) +
+        '<button class="x" title="Remove from family" aria-label="Remove ' + ufaEsc(p.name) + '" data-fid="' + f.id + '" data-email="' + ufaEsc(p.email) + '" onclick="famRemoveMember(this.dataset.fid,this.dataset.email)">&times;</button></span>';
+    }).join('') : '<span style="font-size:13px;color:#8A968A;">No members yet. Add the first one below.</span>';
+    return '<article class="fx-famcard">' +
+      '<div class="fx-famcard-head"><div><h4>' + ufaEsc(f.name) + '</h4><small>' + ms.length + ' member' + (ms.length === 1 ? '' : 's') + '</small></div>' +
+        '<div style="display:flex;align-items:center;gap:6px;">' + (ms.length ? fxAvatarStack(ms.map(function (p) { return p.name; }), 4, 30) : '') +
+          '<button class="fx-icon-btn" title="Rename" aria-label="Rename ' + ufaEsc(f.name) + '" data-id="' + f.id + '" onclick="famRename(this.dataset.id)">' + fxIcon('edit', 17) + '</button>' +
+          '<button class="fx-icon-btn danger" title="Delete family" aria-label="Delete ' + ufaEsc(f.name) + '" data-id="' + f.id + '" onclick="famDelete(this.dataset.id)">' + fxIcon('trash', 17) + '</button></div></div>' +
+      '<div class="chips">' + chips + '</div>' +
+      '<div class="add"><input id="fam-add-' + f.id + '" list="fam-roster-list" class="fx-input" placeholder="Add a member…" onkeydown="if(event.key===\'Enter\')famAddMember(\'' + f.id + '\')">' +
+        '<button class="fx-btn ghost" data-id="' + f.id + '" onclick="famAddMember(this.dataset.id)">Add</button></div>' +
+    '</article>';
+  }).join('') + '</div>' : '<div class="fx-empty">' + fxIcon('users', 28) + 'No families yet. Create one below, or paste a whole list at once.</div>';
+
+  // 3) Recently reviewed
+  var reviewedHtml = reviewed.length ? reviewed.map(function (m) {
+    var w = whoLine(m), u = urlByPath[m.photo_path];
+    return '<div class="fx-rec">' +
+      (u ? '<button class="th" data-url="' + ufaEsc(u) + '" onclick="fxLightbox(this.dataset.url)" aria-label="Enlarge photo"><img src="' + ufaEsc(u) + '" alt="" loading="lazy"></button>' : '<span class="th"></span>') +
+      '<div class="fx-rec-main"><b>' + ufaEsc(w.fam) + '</b><span>' + famFmtDateLong(m.meetup_date) + (m.reviewed_by ? ' &middot; reviewed by ' + ufaEsc((lookup.byEmail[String(m.reviewed_by).toLowerCase()] || {}).name || m.reviewed_by) : '') + '</span></div>' +
+      famStatusPill(m) +
+      (m.status === 'approved' ? '<button class="fx-btn sm danger" data-id="' + m.id + '" onclick="famRevoke(this.dataset.id)">Revoke points</button>' : '') +
+      '</div>';
+  }).join('') : '<div class="fx-empty" style="border:0;">Nothing reviewed yet.</div>';
+
+  var datalist = '<datalist id="fam-roster-list">' + d.roster.filter(function (m) { return m.name; }).sort(function (a, b) {
+    return String(a.name).localeCompare(String(b.name));
+  }).map(function (m) {
+    return '<option value="' + ufaEsc(m.name + ' (' + m.email + ')') + '"></option>';
+  }).join('') + '</datalist>';
+
+  host.innerHTML = datalist +
+    '<div id="fam-admin-msg" class="fx-msg" style="display:none;"></div>' +
+    '<div class="fx-stats">' +
+      '<div class="fx-stat' + (pending.length ? ' hot' : '') + '"><b>' + pending.length + '</b><span>Waiting for review</span></div>' +
+      '<div class="fx-stat"><b>' + d.families.length + '</b><span>Families</span></div>' +
+      '<div class="fx-stat"><b>' + totalPeople + '</b><span>People in a family</span></div>' +
+    '</div>' +
+    '<section class="fx-sec"><div class="fx-sec-head"><div><h3 class="fx-h2">Needs review</h3><p class="fx-sub">Compare the photo to the names, then award the points.</p></div></div>' + queueHtml + '</section>' +
+    '<section class="fx-sec"><div class="fx-sec-head"><div><h3 class="fx-h2">Families</h3><p class="fx-sub">Rename, add or remove people any time.</p></div></div>' +
+      '<details class="fx-add-panel"' + (d.families.length ? '' : ' open') + '><summary>' + fxIcon('plus', 18) + ' Add families</summary><div class="inner">' +
+        '<div><h4 class="fx-h3" style="margin-bottom:6px;">One at a time</h4><p class="fx-sub" style="margin-bottom:12px;">Name it, then add people from the card that appears.</p>' +
+          '<div style="display:flex;gap:8px;flex-wrap:wrap;"><input id="fam-new-name" class="fx-input" style="flex:1;min-width:180px;" placeholder="Family name (e.g. The Bulls)" onkeydown="if(event.key===\'Enter\')famCreate()"><button class="fx-btn" onclick="famCreate()">Create</button></div></div>' +
+        '<div><h4 class="fx-h3" style="margin-bottom:6px;">Paste a whole list</h4><p class="fx-sub" style="margin-bottom:12px;">One family per line: <code>Family name: Full Name, Full Name</code>. Names must match the roster (or use emails). Anything that doesn\'t match is reported back.</p>' +
+          '<textarea id="fam-bulk" class="fx-textarea" rows="5" placeholder="The Bulls: Aaron Jacob, Abigail Jacob, Adam Que" style="margin-bottom:10px;"></textarea><button class="fx-btn" onclick="famBulkImport()">Import families</button></div>' +
+      '</div></details>' + famHtml + '</section>' +
+    '<section class="fx-sec"><div class="fx-sec-head"><div><h3 class="fx-h2">Recently reviewed</h3></div></div><div class="fx-panel" style="overflow:hidden;">' + reviewedHtml + '</div></section>';
+}
+
 /* ════════════════════════════════════════════════════════════════
    BOARD HOURS POINTS — a member earns +0.5 when they book a meeting
    AND the board member who hosted it confirms it happened.
@@ -20477,11 +20589,448 @@ function mockBeginnerLabel() {
 </script>
 <script>
 /* ════════════════════════════════════════════════════════════════
+   UFA UI KIT (fx): shared look for Families and Ask & Learn.
+   Built on the site's own tokens (forest green, cream, Playfair + DM Sans)
+   so it sits naturally next to the rest of the portal.
+   ════════════════════════════════════════════════════════════════ */
+(function fxInjectCss() {
+  if (document.getElementById('fx-css')) return;
+  var st = document.createElement('style');
+  st.id = 'fx-css';
+  st.textContent = `
+:root{
+  --fx-ink:#1C2B1C; --fx-pine:#2E4A2E; --fx-leaf:#3D6B3D; --fx-mist:#EEF5EE;
+  --fx-paper:#F7F4EE; --fx-sand:#EDE9E0; --fx-brass:#B8791B; --fx-chalk:#F3E3B8;
+  --fx-line:rgba(46,74,46,.14); --fx-muted:#5F705F; --fx-soft:#8A968A;
+}
+.fx-h2{font-family:var(--font-display,Georgia,serif);font-weight:500;font-size:25px;line-height:1.2;letter-spacing:-.01em;color:var(--fx-ink);margin:0;}
+.fx-h3{font-family:var(--font-display,Georgia,serif);font-weight:500;font-size:19px;line-height:1.25;color:var(--fx-ink);margin:0;}
+.fx-sub{font-size:14px;line-height:1.55;color:var(--fx-muted);margin:4px 0 0;}
+.fx-sec{margin:0 0 34px;}
+.fx-sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:14px;}
+.fx-ico{display:inline-block;vertical-align:-0.2em;flex:none;}
+
+/* buttons */
+.fx-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1.5px solid var(--fx-pine);background:var(--fx-pine);color:#fff;font:500 14px/1 var(--font-body,system-ui,sans-serif);padding:11px 18px;border-radius:10px;cursor:pointer;transition:background .15s,border-color .15s,transform .05s;}
+.fx-btn:hover:not(:disabled){background:var(--fx-leaf);border-color:var(--fx-leaf);}
+.fx-btn:active:not(:disabled){transform:translateY(1px);}
+.fx-btn:disabled{opacity:.5;cursor:not-allowed;}
+.fx-btn.lg{padding:14px 24px;font-size:15px;border-radius:12px;}
+.fx-btn.sm{padding:8px 13px;font-size:13px;border-radius:9px;}
+.fx-btn.ghost{background:#fff;color:var(--fx-pine);border-color:rgba(46,74,46,.28);}
+.fx-btn.ghost:hover:not(:disabled){background:var(--fx-mist);border-color:var(--fx-leaf);}
+.fx-btn.danger{background:#fff;color:#A33A32;border-color:#E4B8B4;}
+.fx-btn.danger:hover:not(:disabled){background:#FBF1F0;border-color:#A33A32;}
+.fx-btn.brass{background:var(--fx-brass);border-color:var(--fx-brass);}
+.fx-icon-btn{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:9px;border:1px solid transparent;background:transparent;color:var(--fx-muted);cursor:pointer;}
+.fx-icon-btn:hover{background:var(--fx-mist);color:var(--fx-pine);}
+.fx-icon-btn.danger:hover{background:#FBF1F0;color:#A33A32;}
+.fx-link{border:0;background:none;color:var(--fx-leaf);font:500 13px var(--font-body,sans-serif);cursor:pointer;padding:4px 0;text-decoration:underline;text-underline-offset:3px;}
+.fx-btn:focus-visible,.fx-icon-btn:focus-visible,.fx-link:focus-visible,.fx-tile:focus-visible,.fx-seg button:focus-visible,.fx-vote:focus-visible{outline:3px solid rgba(61,107,61,.45);outline-offset:2px;}
+
+/* fields */
+.fx-input,.fx-textarea{width:100%;border:1.5px solid rgba(46,74,46,.2);border-radius:10px;background:#fff;padding:11px 14px;font:400 15px/1.45 var(--font-body,system-ui,sans-serif);color:var(--fx-ink);transition:border-color .15s,box-shadow .15s;box-sizing:border-box;}
+.fx-input:focus,.fx-textarea:focus{outline:none;border-color:var(--fx-leaf);box-shadow:0 0 0 4px rgba(61,107,61,.13);}
+.fx-input::placeholder,.fx-textarea::placeholder{color:#9AA79A;}
+.fx-field{display:block;margin:0 0 14px;}
+.fx-field>span{display:block;font:500 13px var(--font-body,sans-serif);color:var(--fx-ink);margin-bottom:6px;}
+.fx-field>span em{font-style:normal;font-weight:400;color:var(--fx-soft);}
+
+/* pills */
+.fx-pill{display:inline-flex;align-items:center;gap:5px;font:500 12px/1 var(--font-body,sans-serif);padding:6px 10px;border-radius:999px;white-space:nowrap;}
+.fx-pill.ok{background:#E4F0E4;color:#2E6B2E;} .fx-pill.wait{background:#FBF0DC;color:#8A6216;}
+.fx-pill.no{background:#FBE9E7;color:#A33A32;} .fx-pill.mute{background:#EDEDEA;color:#5A6459;}
+.fx-pill.info{background:#E4ECF7;color:#1E4A8A;} .fx-pill.dark{background:rgba(255,255,255,.12);color:#F2F5F0;}
+
+/* avatars */
+.fx-av{display:inline-flex;align-items:center;justify-content:center;width:var(--s,32px);height:var(--s,32px);border-radius:50%;font:600 calc(var(--s,32px)*.37)/1 var(--font-body,sans-serif);color:#fff;flex:none;letter-spacing:.02em;}
+.fx-avs{display:inline-flex;align-items:center;}
+.fx-avs .fx-av{margin-left:calc(var(--s,32px)*-.16);box-shadow:0 0 0 2.5px var(--ring,#fff);}
+.fx-avs .fx-av:first-child{margin-left:0;}
+.fx-avs .fx-more{background:var(--fx-sand);color:var(--fx-pine);}
+.fx-avs.dark{--ring:#1C2B1C;} .fx-avs.dark .fx-more{background:rgba(255,255,255,.18);color:#fff;}
+
+/* selectable person chips */
+.fx-picks{display:flex;flex-wrap:wrap;gap:10px;}
+.fx-pick{position:relative;cursor:pointer;}
+.fx-pick input{position:absolute;opacity:0;inset:0;width:100%;height:100%;margin:0;cursor:pointer;}
+.fx-pick-body{display:inline-flex;align-items:center;gap:10px;padding:6px 16px 6px 6px;border:1.5px solid rgba(46,74,46,.2);border-radius:999px;background:#fff;font:500 14px var(--font-body,sans-serif);color:var(--fx-ink);transition:background .15s,border-color .15s,color .15s;}
+.fx-pick:hover .fx-pick-body{border-color:var(--fx-leaf);}
+.fx-pick input:checked+.fx-pick-body{background:var(--fx-pine);border-color:var(--fx-pine);color:#fff;}
+.fx-pick input:focus-visible+.fx-pick-body{outline:3px solid rgba(61,107,61,.45);outline-offset:2px;}
+.fx-pick .fx-tick{display:none;margin-left:2px;}
+.fx-pick input:checked+.fx-pick-body .fx-tick{display:inline-block;}
+.fx-pick input:checked+.fx-pick-body .fx-av{box-shadow:0 0 0 2px rgba(255,255,255,.9);}
+
+/* slim person chip (display only) */
+.fx-who{display:inline-flex;align-items:center;gap:8px;padding:4px 12px 4px 4px;border-radius:999px;background:var(--fx-mist);border:1px solid var(--fx-line);font:500 13px var(--font-body,sans-serif);color:var(--fx-ink);}
+.fx-who .x{border:0;background:none;color:#A33A32;cursor:pointer;font-size:17px;line-height:1;padding:0 2px 0 4px;}
+
+/* generic panel + stats */
+.fx-panel{background:#fff;border:1px solid var(--fx-line);border-radius:16px;}
+.fx-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:0 0 30px;}
+.fx-stat{background:#fff;border:1px solid var(--fx-line);border-radius:14px;padding:16px 18px;}
+.fx-stat b{display:block;font:500 34px/1 var(--font-display,Georgia,serif);color:var(--fx-ink);}
+.fx-stat span{display:block;font-size:13px;color:var(--fx-muted);margin-top:6px;}
+.fx-stat.hot{background:#FBF0DC;border-color:#EBD6A6;} .fx-stat.hot b{color:#8A6216;}
+
+/* messages + empty states */
+.fx-msg{border-radius:12px;padding:12px 15px;font-size:14px;line-height:1.5;border:1px solid transparent;margin:0 0 16px;}
+.fx-msg.ok{background:#EEF6EE;border-color:#C3DFC3;color:#2E6B2E;}
+.fx-msg.err{background:#FBF0EF;border-color:#F0B4B0;color:#8B2E2E;}
+.fx-msg.info{background:#F1F5F9;border-color:#CBD8E4;color:#3A4A5A;}
+.fx-empty{padding:34px 20px;text-align:center;color:var(--fx-soft);font-size:14px;line-height:1.55;background:#fff;border:1px dashed rgba(46,74,46,.22);border-radius:18px;}
+.fx-empty .fx-ico{display:block;margin:0 auto 10px;color:#B6C2B6;}
+
+/* lightbox */
+.fx-lightbox{position:fixed;inset:0;z-index:10000;background:rgba(14,22,14,.88);display:flex;align-items:center;justify-content:center;padding:28px;cursor:zoom-out;}
+.fx-lightbox img{max-width:100%;max-height:100%;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.5);}
+
+@media (prefers-reduced-motion:reduce){.fx-btn,.fx-input,.fx-textarea,.fx-pick-body{transition:none;}}
+`;
+  document.head.appendChild(st);
+})();
+
+/* ───── icons: 24px outline set, currentColor ───── */
+var FX_ICONS = {
+  lock: '<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+  check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  up: '<path d="M6 14l6-6 6 6"/>',
+  search: '<circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/>',
+  camera: '<path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/>',
+  calendar: '<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/>',
+  users: '<circle cx="9" cy="8.5" r="3.2"/><path d="M3.5 19c.6-3.2 2.8-5 5.5-5s4.9 1.8 5.5 5"/><circle cx="17" cy="9.5" r="2.5"/><path d="M16.5 14.2c2.3.2 3.8 1.6 4.3 4.3"/>',
+  x: '<path d="M6 6l12 12M18 6L6 18"/>',
+  trash: '<path d="M5 7h14M10 7V5h4v2M7 7l1 12h8l1-12"/>',
+  edit: '<path d="M4 20l1-4L16.5 4.5a2 2 0 0 1 3 3L8 19l-4 1z"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  image: '<rect x="3.5" y="5" width="17" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M4 17l5-4.5 4 3.5 3-2.5 4 3.5"/>',
+  clock: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
+  screen: '<rect x="3" y="4.5" width="18" height="12" rx="2"/><path d="M8 20h8M12 16.5V20"/>',
+  chat: '<path d="M5 5h14a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1h-7l-4 3.5V16H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/>',
+  book: '<path d="M5 5.5A2.5 2.5 0 0 1 7.5 3H19v15H7.5A2.5 2.5 0 0 0 5 20.5V5.5z"/><path d="M5 20.5A2.5 2.5 0 0 1 7.5 18H19"/>',
+  refresh: '<path d="M20 11a8 8 0 0 0-14-4.5L4 9"/><path d="M4 4v5h5"/><path d="M4 13a8 8 0 0 0 14 4.5L20 15"/><path d="M20 20v-5h-5"/>',
+  sparkle: '<path d="M12 4l1.8 5.2L19 11l-5.2 1.8L12 18l-1.8-5.2L5 11l5.2-1.8z"/>'
+};
+function fxIcon(name, size, extraClass) {
+  return '<svg class="fx-ico' + (extraClass ? ' ' + extraClass : '') + '" width="' + (size || 18) + '" height="' + (size || 18) +
+    '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+    (FX_ICONS[name] || '') + '</svg>';
+}
+
+/* ───── avatars ───── */
+var FX_AV_COLORS = ['#2E6B4F', '#9A6414', '#1E4A8A', '#8A2E55', '#1E6B7A', '#5A4A8A', '#9A4A2B', '#3D6B3D'];
+function fxInitials(name) {
+  var p = String(name || '?').replace(/\(.*?\)/g, '').trim().split(/\s+/).filter(Boolean);
+  if (!p.length) return '?';
+  return (p[0][0] + (p.length > 1 ? p[p.length - 1][0] : '')).toUpperCase();
+}
+function fxColor(name) {
+  var h = 0, s = String(name || '');
+  for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+  return FX_AV_COLORS[h % FX_AV_COLORS.length];
+}
+function fxAvatar(name, size, colorOverride) {
+  return '<span class="fx-av" style="--s:' + (size || 32) + 'px;background:' + (colorOverride || fxColor(name)) + ';" title="' + ufaEsc(name) + '">' + ufaEsc(fxInitials(name)) + '</span>';
+}
+function fxAvatarStack(names, max, size, dark) {
+  max = max || 5;
+  var shown = names.slice(0, max), extra = names.length - shown.length, prev = '';
+  return '<span class="fx-avs' + (dark ? ' dark' : '') + '" style="--s:' + (size || 32) + 'px;">' +
+    shown.map(function (n, i) {
+      // neighbours never share a colour, so every face in a stack is distinct
+      var c = fxColor(n), idx = FX_AV_COLORS.indexOf(c);
+      if (i > 0 && c === prev) { c = FX_AV_COLORS[(idx + 1) % FX_AV_COLORS.length]; }
+      prev = c;
+      return fxAvatar(n, size, c);
+    }).join('') +
+    (extra > 0 ? '<span class="fx-av fx-more" style="--s:' + (size || 32) + 'px;">+' + extra + '</span>' : '') + '</span>';
+}
+function fxPill(kind, text, icon) {
+  return '<span class="fx-pill ' + kind + '">' + (icon ? fxIcon(icon, 13) : '') + text + '</span>';
+}
+
+/* ───── photo lightbox ───── */
+function fxLightbox(url) {
+  if (!url) return;
+  var el = document.createElement('div');
+  el.className = 'fx-lightbox';
+  el.innerHTML = '<img src="' + ufaEsc(url) + '" alt="Family meetup photo">';
+  el.addEventListener('click', function () { el.remove(); });
+  document.addEventListener('keydown', function onKey(e) { if (e.key === 'Escape') { el.remove(); document.removeEventListener('keydown', onKey); } });
+  document.body.appendChild(el);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   MARKET WATCH GUIDE
+   Built from the Fall 2026 Market Watch decks (9/09 through 10/14).
+   It mirrors the real slide layout: tap the box you are looking at and
+   see what its terms mean. Each box lists "the basics" and then
+   "going deeper" concepts.
+
+   To edit: change the text below. Each term is [term, plain-English
+   meaning] or [term, meaning, true] when it is an advanced concept.
+   ════════════════════════════════════════════════════════════════ */
+var GUIDE = [
+  { id: 'macro', title: 'Macro slide', sub: 'The Fed, data, rates and world news', heading: 'Macro Environment',
+    layout: ['fed', 'econ', 'ahead', 'rates', 'world', 'ahead'], boxes: [
+    { key: 'fed', n: 1, title: 'The Fed', blurb: 'What the central bank did and might do next', terms: [
+      ['The Fed and the FOMC', 'The Federal Reserve is the US central bank. The FOMC is the committee that votes on interest rates, about eight times a year.'],
+      ['Rate hike, cut, hold', 'A hike raises interest rates to cool inflation. A cut lowers them to boost growth. A hold means no change.'],
+      ['Target range (like 3.75\u20134.00%)', 'The Fed does not pick one exact rate. It sets a range, a floor and a ceiling, for the rate banks charge each other overnight.'],
+      ['bps (basis points)', 'One hundredth of a percent, so 25 bps is 0.25%.'],
+      ['Hawkish / dovish', 'Hawkish means leaning toward higher rates to fight inflation. Dovish means leaning toward lower rates to support growth.'],
+      ['Higher for longer', 'The idea that rates will stay high for an extended time instead of being cut soon.'],
+      ['Tightening / easing', 'Tightening makes money costlier and harder to borrow (rate hikes). Easing does the opposite (cuts).'],
+      ['Dual mandate', 'The Fed has two jobs: stable prices (it targets 2% inflation) and maximum employment. Hikes fight inflation but can cost jobs, which is why slides say the Fed "must balance" the two.', true],
+      ['Dot plot', 'A chart where each Fed official marks where they expect interest rates to be in the future. It shows how many officials expect more hikes, like "16 of 18 officials."', true],
+      ['Odds of a hike, and "priced in"', 'Traders bet on what the Fed will do, and those bets imply a probability, like "20% chance of a hike." If something is "priced in," the market already expects it, so the announcement barely moves prices. Surprises are what move markets.', true],
+      ['Other central banks', 'The Bank of England (UK) and the European Central Bank set their own rates. When they move differently from the Fed, currencies like the pound and euro can swing against the dollar.', true]
+    ] },
+    { key: 'econ', n: 2, title: 'Economic reports', blurb: 'Data on how the economy is doing', terms: [
+      ['Jobs report (nonfarm payrolls)', 'A monthly report on how many jobs the economy added, not counting farm work. "Added 29k jobs vs. 90k expected" means hiring was far weaker than forecast.'],
+      ['Unemployment rate', 'The share of people who want a job but do not have one.'],
+      ['Consensus / "vs. expected"', 'The average forecast from economists. Markets react to the surprise versus the forecast, not just to the number.'],
+      ['Revisions', 'Reports get corrected later. "Revised down" means an earlier number turned out to be too high.'],
+      ['Wage growth', 'How fast paychecks are rising. If it is lower than inflation, people\u2019s buying power is shrinking.'],
+      ['Consumer confidence', 'A survey of how optimistic households feel about the economy. Falling confidence can signal people will spend less.'],
+      ['Weekly jobless claims', 'How many people filed for unemployment benefits that week. Low numbers mean layoffs are rare.'],
+      ['Retail sales', 'How much shoppers spent at stores and online, a quick read on consumer demand.'],
+      ['Industrial production', 'How much US factories, mines and utilities produced. Falling output can mean weaker demand.'],
+      ['GDP and "annualized rate"', 'GDP is the total value of everything the economy produces. Quarterly growth is quoted "annualized," meaning restated as if that pace lasted a full year, so 2.2% annualized is roughly 0.5% for the quarter.', true],
+      ['PMI / ISM index (the 50 line)', 'Surveys of purchasing managers turned into a score. Above 50 means that part of the economy is expanding. Below 50 means it is shrinking.', true],
+      ['Real vs. nominal', 'Nominal is the raw number. Real is adjusted for inflation. "Real median income" tells you what people can actually buy.', true]
+    ] },
+    { key: 'rates', n: 3, title: 'Rates & inflation', blurb: 'How fast prices rise, and what borrowing costs', terms: [
+      ['Inflation', 'The rate at which prices rise over time. A dollar buys less when inflation is high.'],
+      ['CPI', 'The Consumer Price Index tracks the average change in prices households pay. It is the most-watched inflation number.'],
+      ['Core CPI', 'CPI without food and energy, which swing a lot. It shows the underlying trend.'],
+      ['YoY vs. MoM', 'Year over year compares to the same month last year. Month over month compares to the previous month. "3.7% YoY" means prices are 3.7% higher than a year ago.'],
+      ['10-year Treasury yield', 'The interest rate on 10-year US government debt. It is a benchmark: when it rises, mortgage and business loan rates tend to follow.'],
+      ['Mortgage rates', 'Home-loan rates, which move roughly in step with the 10-year Treasury yield.'],
+      ['Bond sell-off', 'When investors dump bonds, prices fall and yields rise. A bond\u2019s price and its yield move in opposite directions.'],
+      ['PCE and core PCE', 'Another inflation measure, and the one the Fed officially prefers for its 2% target. Core PCE strips out food and energy.', true],
+      ['Sticky inflation', 'Inflation that stays high even after the Fed has raised rates.', true],
+      ['Treasuries vs. dividends', 'When safe Treasuries pay 5%, dividend-paying stocks like utilities look less attractive by comparison, so investors sell them. That is what "Treasuries compete with dividends" means.', true]
+    ] },
+    { key: 'world', n: 4, title: 'World news', blurb: 'Events overseas that move markets', terms: [
+      ['Brent and WTI', 'Two benchmark oil prices, quoted per barrel (bbl). WTI is the US benchmark and Brent is the global one.'],
+      ['Strait of Hormuz', 'A narrow waterway near Iran that roughly a fifth of the world\u2019s oil ships through. Attacks or threats there can push oil prices up fast.'],
+      ['Strategic reserves', 'Emergency oil stockpiles that governments can release to bring prices down.'],
+      ['G7', 'A group of seven large advanced economies: the US, UK, France, Germany, Italy, Japan and Canada.'],
+      ['Tariff and trade agreement', 'A tariff is a tax on imported goods. A free trade agreement lowers or removes them between countries.'],
+      ['Export ban', 'A government blocking sales of a product abroad to keep more at home and hold domestic prices down, like a diesel export ban.'],
+      ['Supply shock', 'A sudden drop in supply, such as pipeline attacks, that sends prices up quickly. It is different from prices rising because demand grew.', true],
+      ['Sovereign debt', 'Debt issued by a government. "France\u2019s debt concerns" means investors worry about its finances, which can hit its bonds, stocks and currency.', true],
+      ['Geopolitical risk', 'Conflict and politics that can disrupt trade or energy supply and make markets nervous.', true]
+    ] },
+    { key: 'ahead', n: 5, title: 'The week ahead', blurb: 'Earnings and events on the calendar', terms: [
+      ['Earnings report', 'A public company\u2019s results for the last three months, released every quarter.'],
+      ['Earnings season', 'The few weeks after each quarter ends when most companies report. The big banks, like JPMorgan, usually go first.'],
+      ['EPS, beat and miss', 'EPS is earnings per share. A "beat" means results came in above what analysts expected. A "miss" means below.'],
+      ['FOMC decision', 'The day the Fed announces its rate decision. "Hold expected" means markets think rates will stay the same.'],
+      ['Midterm elections', 'Elections held halfway through a president\u2019s term. Markets watch them because they can change energy, tax and regulatory policy.'],
+      ['Magnificent 7', 'Seven giant tech-focused companies (Apple, Microsoft, Alphabet, Amazon, Nvidia, Meta and Tesla) that make up a large share of the S&P 500, so their results can move the whole market.', true],
+      ['Guidance', 'A company\u2019s own forecast for the next quarter or year. A stock can fall after a beat if the guidance disappoints.', true],
+      ['Bank earnings as a check-up', 'Banks earn the gap between what they charge on loans and pay on deposits, and they set money aside for loans that may go bad. Their results hint at how consumers and the economy are doing.', true]
+    ] }
+  ] },
+
+  { id: 'equities', title: 'Equities slide', sub: 'Indexes, sectors, movers and news', heading: 'Equities Market',
+    layout: ['chart', 'chart', 'chart', 'chart', 'idx', 'idx', 'movers', 'movers', 'ind', 'ind', 'news', 'news'], cols: 6, boxes: [
+    { key: 'chart', n: 1, title: 'S&P performance this week', blurb: 'How the whole market moved', terms: [
+      ['S&P 500', 'An index of 500 of the largest US public companies. It is the most common stand-in for "the stock market."'],
+      ['Index', 'A basket of stocks tracked as a single number. "The S&P is down 0.75%" means the basket as a whole fell 0.75%.'],
+      ['Percent change, not points', 'Slides show the percent change since the start of the week, which compares fairly across indexes. Raw point moves do not.'],
+      ['YTD', 'Year to date: the change since January 1.'],
+      ['Correction and bear market', 'A correction is a drop of 10% or more from a recent high. A bear market is 20% or more. A bull market is a long stretch of rising prices.', true]
+    ] },
+    { key: 'idx', n: 2, title: 'Equity markets', blurb: 'The major indexes side by side', terms: [
+      ['Dow Jones (DJIA)', 'An index of 30 large, well-known US companies. It is older and narrower than the S&P 500.'],
+      ['Nasdaq', 'An index heavy on technology and growth companies, so tech\u2019s good or bad week shows up here first.'],
+      ['Russell 2000', 'An index of about 2,000 smaller US companies ("small caps"). They tend to be more sensitive to borrowing costs and the economy.'],
+      ['CRSP', 'An index covering nearly the whole US stock market, large and small companies together.'],
+      ['Market cap', 'A company\u2019s total stock-market value: share price times number of shares. Large caps are the biggest companies.'],
+      ['Price-weighted vs. cap-weighted', 'The Dow adds up share prices, so high-priced stocks count for more. The S&P 500 and Nasdaq weight companies by total value, so giants like Nvidia matter most. That is one reason the Dow can rise while the Nasdaq falls.', true]
+    ] },
+    { key: 'movers', n: 3, title: 'Notable equity movers', blurb: 'The week\u2019s biggest winners and losers', terms: [
+      ['Ticker', 'A short code for a stock, like AAPL for Apple or CRWD for CrowdStrike. Movers are listed by ticker.'],
+      ['Gainers and decliners', 'The stocks that rose or fell the most over the week, shown as percent change.'],
+      ['Catalyst', 'A specific event that triggers a big move: an earnings report, a product launch, a deal, an analyst downgrade.', true],
+      ['Consumption-based pricing', 'Customers pay for what they use (like Snowflake\u2019s credits) instead of a flat subscription, so revenue rises as customers use the product more.', true],
+      ['SQL', 'The language used to ask databases questions. It normally takes an engineer, which is why tools that let non-technical people query data in plain English are a selling point.', true]
+    ] },
+    { key: 'ind', n: 4, title: 'Industry performance', blurb: 'Which sectors led and lagged', terms: [
+      ['Sector', 'A group of companies in the same kind of business. The market has 11 sectors, including Technology, Health Care, Financials, Energy, Utilities, Real Estate and Consumer Staples.'],
+      ['Dividend', 'A cash payment a company makes to its shareholders out of profits.'],
+      ['Energy stocks and oil', 'Energy companies tend to rise when oil prices rise, since they earn more per barrel. Airlines and consumers are hurt by the same increase.'],
+      ['Defensive vs. cyclical', 'Defensive sectors (health care, consumer staples, utilities) sell things people need in any economy, so they hold up in rough times. Cyclical sectors (consumer discretionary, industrials) rise and fall with the economy.', true],
+      ['Rotation', 'Investors moving money from one kind of stock to another, such as out of tech and into health care or energy. "Rotating into defensive names" means they are getting more cautious.', true],
+      ['Rate-sensitive sectors', 'Sectors hurt by higher borrowing costs, like utilities and real estate, because they carry a lot of debt and pay dividends that compete with bond yields.', true],
+      ['Capital-intensive', 'Businesses that need lots of expensive equipment or infrastructure, like utilities, so higher borrowing costs hit them hard.', true],
+      ['CapEx and free cash flow (FCF)', 'CapEx is money spent on long-term assets like data centers and equipment. FCF is the cash left after operating costs and CapEx. "Lower CapEx means better future FCF" means spending less leaves more cash for shareholders.', true],
+      ['AI spending', 'Big tech companies are spending heavily on chips and data centers for AI. That lifts chipmakers\u2019 sales, while investors question whether the spending will pay off.', true]
+    ] },
+    { key: 'news', n: 5, title: 'Finance news', blurb: 'Deals, leadership changes, headlines', terms: [
+      ['M&A', 'Mergers and acquisitions: companies combining, or one company buying another. Investment banks earn fees advising on these deals.'],
+      ['Acquire', 'To buy another company. The buyer is the acquirer and the company being bought is the target.'],
+      ['Chairman vs. CEO', 'The chairman leads the board of directors. The CEO runs the company day to day. "Chairman emeritus" is an honorary title for a retired leader.'],
+      ['Surging Treasury yields', 'When yields reach multi-decade highs it reflects expectations for more rate hikes, sticky inflation and heavy bond supply. "Large corporate bond supply" means many companies selling bonds at once, which pushes prices down and yields up.', true]
+    ] }
+  ] },
+
+  { id: 'sentiment', title: 'Sentiment slide', sub: 'Heatmap, commodities and mood', heading: 'Indices, Rates & Sentiment',
+    layout: ['heat', 'comm', 'mkts', 'heat', 'fear', 'stock'], boxes: [
+    { key: 'heat', n: 1, title: 'Stock heatmap', blurb: 'A picture of the whole market', terms: [
+      ['Heatmap', 'A color-coded map of the market: green tiles rose, red tiles fell, and bigger tiles are bigger companies. It shows at a glance which stocks and sectors moved.'],
+      ['Breadth', 'Whether most stocks moved together or only a few did. A market led by a handful of giants can look healthy while most stocks fall.', true]
+    ] },
+    { key: 'comm', n: 2, title: 'Commodities', blurb: 'Crude oil and gold', terms: [
+      ['Crude oil', 'Unrefined oil, priced per barrel. Brent above $100 means oil is expensive, which lifts gas prices and costs for airlines and shippers.'],
+      ['Gold', 'A "safe haven" that investors buy when they are nervous. It pays no interest, so rising yields make it less attractive.'],
+      ['Safe haven', 'An asset people move into when they are worried, because it tends to hold its value.'],
+      ['Opportunity cost', 'What you give up by choosing one thing over another. Gold pays nothing, so when Treasuries pay 5%, holding gold costs you that income.', true]
+    ] },
+    { key: 'mkts', n: 3, title: 'Equity & debt markets', blurb: 'VIX, dollar, Bitcoin and yields', terms: [
+      ['Equity vs. debt markets', 'Equity markets are stocks. Debt markets are bonds and loans.'],
+      ['VIX', 'Often called the "fear gauge." It estimates how much the S&P 500 is expected to swing over the next 30 days. A rising VIX means more nervousness. As a rule of thumb, the teens are calm and 30+ means stress.'],
+      ['DXY (dollar index)', 'The dollar measured against a basket of six major currencies, including the euro and yen. Up means a stronger dollar.'],
+      ['US10Yr', 'Shorthand for the 10-year Treasury yield. Changes are quoted in bps, so "+9 bps" means it rose 0.09 percentage points.'],
+      ['Bitcoin', 'The largest cryptocurrency. Its price swings a lot, and people watch it as a gauge of appetite for risk.']
+    ] },
+    { key: 'fear', n: 4, title: 'Fear & Greed Index', blurb: 'The market\u2019s mood in one number', terms: [
+      ['Fear & Greed Index', 'A 0 to 100 score built from several market signals. Low numbers mean fear (investors selling and avoiding risk). High numbers mean greed (investors buying aggressively). Below 50 leans fearful.'],
+      ['Sentiment', 'The overall mood of investors, which can push prices beyond what the news alone would justify.'],
+      ['Contrarian investing', 'Doing the opposite of the crowd: buying when fear is extreme and getting cautious when greed is extreme.', true]
+    ] },
+    { key: 'stock', n: 5, title: 'Stock of the week', blurb: 'One company in focus', terms: [
+      ['YTD', 'Year to date: the change since January 1. "Up 43% YTD" means the stock has risen 43% so far this year.'],
+      ['Q1\u2013Q4 (fiscal quarters)', 'Companies split the year into four quarters. Q3 is the third, usually July through September for companies whose year matches the calendar.'],
+      ['Valuation after a big run', 'A stock that is up a lot may already reflect the good news, so the question becomes whether it can keep delivering.', true]
+    ] }
+  ] },
+
+  { id: 'short', title: 'Shorthand', sub: 'Abbreviations you will see everywhere', heading: 'Cheat sheet', type: 'list', boxes: [
+    { key: 'abbr', n: 0, title: 'Abbreviations', blurb: 'Quick decoder', terms: [
+      ['YoY, MoM, QoQ', 'Year over year, month over month, quarter over quarter. The period a change is measured against.'],
+      ['YTD', 'Year to date, meaning since January 1.'],
+      ['bps', 'Basis points. 100 bps equals 1 percentage point.'],
+      ['bbl', 'Barrel, the unit oil is priced in.'],
+      ['K, M, B', 'Thousand, million, billion. "162K jobs" is 162,000. "$100M" is 100 million dollars.'],
+      ['% vs. percentage points', 'If unemployment goes from 4.1% to 4.2%, it rose 0.1 percentage points, not 0.1%.'],
+      ['ET', 'Eastern Time. Data often comes out at 8:30 a.m. ET.'],
+      ['Consensus', 'The average forecast from analysts or economists.'],
+      ['Q1\u2013Q4', 'The four quarters of a company\u2019s financial year.']
+    ] }
+  ] }
+];
+
+var learnGuide = { slide: 'macro', box: 'fed', q: '' };
+
+function learnGuideFind(slideId) {
+  return GUIDE.filter(function (s) { return s.id === slideId; })[0] || GUIDE[0];
+}
+
+/** The shell: title, search box, and a body that is redrawn as you tap around. */
+function learnGuideShell() {
+  return '<div class="fx-sec-head">' +
+      '<div><h3 class="fx-h2">Follow along with Market Watch</h3>' +
+        '<p class="fx-sub">Tap the part of the slide you are looking at. Or search a word you just heard.</p></div>' +
+      '<label class="fx-search">' + fxIcon('search', 17) +
+        '<input id="learn-guide-q" type="search" placeholder="Search a term, like &ldquo;dot plot&rdquo;" autocomplete="off" oninput="learnGuideSearch(this.value)" aria-label="Search the Market Watch guide"></label>' +
+    '</div>' +
+    '<div id="learn-guide-body"></div>';
+}
+
+function learnTermRow(t) {
+  return '<div class="fx-term"><dt>' + ufaEsc(t[0]) + '</dt><dd>' + ufaEsc(t[1]) + '</dd></div>';
+}
+
+function learnGuideDraw() {
+  var body = document.getElementById('learn-guide-body');
+  if (!body) return;
+  var q = (learnGuide.q || '').trim().toLowerCase();
+
+  if (q) {
+    var hits = [];
+    GUIDE.forEach(function (s) {
+      s.boxes.forEach(function (b) {
+        b.terms.forEach(function (t) {
+          if ((t[0] + ' ' + t[1]).toLowerCase().indexOf(q) !== -1) hits.push({ s: s, b: b, t: t });
+        });
+      });
+    });
+    body.innerHTML = '<div class="fx-terms fx-results">' +
+      '<div class="fx-terms-head"><h4 class="fx-h3">' + hits.length + ' result' + (hits.length === 1 ? '' : 's') + ' for &ldquo;' + ufaEsc(learnGuide.q.trim()) + '&rdquo;</h4></div>' +
+      (hits.length ? '<dl>' + hits.slice(0, 40).map(function (h) {
+        return '<div class="fx-term"><dt>' + ufaEsc(h.t[0]) + (h.t[2] ? ' <span class="fx-pill mute" style="margin-left:6px;">Going deeper</span>' : '') + '</dt><dd>' + ufaEsc(h.t[1]) + '</dd>' +
+          '<button class="fx-link" data-s="' + h.s.id + '" data-b="' + h.b.key + '" onclick="learnGuideSelect(this.dataset.s,this.dataset.b)">Show where it appears: ' + ufaEsc(h.s.title) + (h.b.n ? ', ' + ufaEsc(h.b.title) : '') + '</button></div>';
+      }).join('') + '</dl>'
+        : '<div class="fx-empty" style="border:0;">' + fxIcon('chat', 26) + 'Nothing matches yet.<br><button class="fx-btn sm" style="margin-top:12px;" onclick="learnAskFromSearch()">Ask it anonymously instead</button></div>') +
+      '</div>';
+    return;
+  }
+
+  var slide = learnGuideFind(learnGuide.slide);
+  var box = slide.boxes.filter(function (b) { return b.key === learnGuide.box; })[0] || slide.boxes[0];
+  learnGuide.box = box.key;
+
+  var tabs = '<div class="fx-seg" role="tablist" aria-label="Which slide">' + GUIDE.map(function (s) {
+    return '<button role="tab" aria-selected="' + (s.id === slide.id) + '" data-s="' + s.id + '" onclick="learnGuideSelect(this.dataset.s)">' + ufaEsc(s.title) + '</button>';
+  }).join('') + '</div>';
+
+  var basics = box.terms.filter(function (t) { return !t[2]; });
+  var deeper = box.terms.filter(function (t) { return t[2]; });
+  var termsPanel = '<div class="fx-terms" id="learn-terms">' +
+    '<div class="fx-terms-head">' + (box.n ? '<span class="fx-badge">' + box.n + '</span>' : '') +
+      '<div><h4 class="fx-h3">' + ufaEsc(box.title) + '</h4><p class="fx-sub" style="margin:2px 0 0;">' + ufaEsc(box.blurb) + '</p></div></div>' +
+    '<dl>' + basics.map(learnTermRow).join('') + '</dl>' +
+    (deeper.length ? '<div class="fx-deeper"><div class="fx-deeper-label">' + fxIcon('sparkle', 15) + ' Going deeper</div><dl>' + deeper.map(learnTermRow).join('') + '</dl></div>' : '') +
+    '</div>';
+
+  if (slide.type === 'list') {
+    body.innerHTML = tabs + termsPanel;
+    return;
+  }
+
+  var tiles = slide.boxes.map(function (b) {
+    return '<button class="fx-tile t-' + b.key + (b.key === box.key ? ' on' : '') + '" aria-pressed="' + (b.key === box.key) + '" data-s="' + slide.id + '" data-b="' + b.key + '" onclick="learnGuideSelect(this.dataset.s,this.dataset.b)">' +
+      '<span class="fx-badge">' + b.n + '</span><span class="fx-tile-t">' + ufaEsc(b.title) + '</span><span class="fx-tile-d">' + ufaEsc(b.blurb) + '</span></button>';
+  }).join('');
+
+  body.innerHTML = tabs + '<div class="fx-gd">' +
+    '<div class="fx-slide s-' + slide.id + '"><div class="fx-slide-top"><span>' + ufaEsc(slide.heading) + '</span><em>' + ufaEsc(slide.sub) + '</em></div><div class="fx-slide-grid">' + tiles + '</div></div>' +
+    termsPanel + '</div>';
+}
+
+function learnGuideSelect(slideId, boxKey) {
+  learnGuide.q = '';
+  var inp = document.getElementById('learn-guide-q');
+  if (inp) inp.value = '';
+  var s = learnGuideFind(slideId);
+  learnGuide.slide = s.id;
+  learnGuide.box = boxKey || s.boxes[0].key;
+  learnGuideDraw();
+}
+function learnGuideSearch(v) { learnGuide.q = v || ''; learnGuideDraw(); }
+
+/** "No result" → turn what they searched into a question for the board. */
+function learnAskFromSearch() {
+  var q = (learnGuide.q || '').trim();
+  var ta = document.getElementById('learn-q-input');
+  if (!ta) return;
+  ta.value = q ? 'What does "' + q + '" mean?' : '';
+  ta.dispatchEvent(new Event('input'));
+  ta.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  ta.focus();
+}
+
+/* ════════════════════════════════════════════════════════════════
    ASK & LEARN
      • Anonymous Q&A with upvotes (the board can see who asked)
      • Word cloud: "words you want explained"
      • Vocabulary word of the week
-     • Market Watch follow-along guide
+     • Market Watch follow-along guide (see learn_guide.js)
      • Projector view for the meeting room (board only)
 
    HIDDEN FROM MEMBERS until the board publishes it. The tab, and the
@@ -20489,42 +21038,142 @@ function mockBeginnerLabel() {
    on in Admin → Ask & Learn (setting key: visibility_learn). The
    database enforces this, see learn-setup.sql.
 
-   Phones: the member screen is built to be a ten-second action, a box
-   and a button, so the room looks at the projector, not at a feed.
+   Phones: the member screen is built so posting is a ten-second action
+   and the room looks at the projector, not at a feed.
    ════════════════════════════════════════════════════════════════ */
 var LEARN_POLL_MS = 6000;
 var LEARN_PROJ_POLL_MS = 4000;
 var learnTimer = null;
 var learnProjTimer = null;
 var learnWcSig = '';
-var LEARN_PALETTE = ['#2E6B2E', '#B8791B', '#1E4A8A', '#8A2E55', '#1E6B7A', '#5A6459'];
+var LEARN_PALETTE = ['#2E4A2E', '#9A6414', '#1E4A8A', '#8A2E55', '#1E6B7A', '#5A4A8A', '#3D6B3D'];
 
 (function learnInjectCss() {
   if (document.getElementById('learn-css')) return;
   var st = document.createElement('style');
   st.id = 'learn-css';
-  st.textContent =
-    '.learn-q{display:flex;gap:14px;align-items:flex-start;padding:14px 0;border-top:1px solid rgba(46,74,46,0.08);}' +
-    '.learn-vote{flex:none;width:52px;border:1px solid rgba(46,74,46,0.18);background:#fff;border-radius:10px;padding:6px 0;cursor:pointer;font-family:inherit;color:#3A4A3A;line-height:1.1;}' +
-    '.learn-vote:hover:not(:disabled){border-color:#3D6B3D;background:#F3F6F3;}' +
-    '.learn-vote.on{background:#E4F0E4;border-color:#3D6B3D;color:#2E6B2E;}' +
-    '.learn-vote:disabled{opacity:.55;cursor:default;}' +
-    '.learn-vote b{display:block;font-size:16px;}' +
-    '.learn-vote span{font-size:10px;letter-spacing:.06em;}' +
-    '.learn-cloud{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:baseline;justify-content:center;padding:14px 4px;min-height:80px;}' +
-    '.learn-cloud span{font-weight:600;line-height:1.15;white-space:nowrap;}' +
-    '.learn-guide details{border-top:1px solid rgba(46,74,46,0.10);padding:4px 0;}' +
-    '.learn-guide summary{cursor:pointer;list-style:none;padding:12px 0;font-weight:600;color:#1C2B1C;font-size:15px;display:flex;justify-content:space-between;align-items:center;gap:12px;}' +
-    '.learn-guide summary::-webkit-details-marker{display:none;}' +
-    '.learn-guide summary::after{content:"+";font-size:20px;color:#6B7D6B;font-weight:400;}' +
-    '.learn-guide details[open] summary::after{content:"\\2212";}' +
-    '.learn-term{padding:10px 0;border-top:1px dashed rgba(46,74,46,0.12);font-size:14px;line-height:1.55;color:#3A4A3A;}' +
-    '.learn-term b{color:#1C2B1C;}' +
-    '#learn-projector{position:fixed;inset:0;z-index:9999;background:#14211A;color:#F2F5F0;overflow:auto;font-family:inherit;}' +
-    '#learn-projector .lp-q{display:flex;gap:18px;align-items:flex-start;padding:16px 0;border-top:1px solid rgba(255,255,255,0.12);font-size:clamp(18px,2.1vw,30px);line-height:1.3;}' +
-    '#learn-projector .lp-votes{flex:none;min-width:64px;text-align:center;font-weight:700;font-size:clamp(20px,2.4vw,34px);color:#9ED19E;}' +
-    '#learn-projector .lp-votes small{display:block;font-size:12px;font-weight:500;letter-spacing:.1em;color:#8FA08F;}' +
-    '#learn-projector button{font-family:inherit;}';
+  st.textContent = `
+.fx-learn-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(300px,1fr);gap:40px;align-items:start;margin-bottom:18px;}
+.fx-side{position:sticky;top:100px;}
+
+/* word of the week */
+.fx-wotw{position:relative;overflow:hidden;background:var(--fx-ink);color:#fff;border-radius:24px;padding:36px 40px 32px;margin:0 0 40px;}
+.fx-wotw::after{content:attr(data-initial);position:absolute;right:30px;top:-34px;font:500 210px/1 var(--font-display,Georgia,serif);color:rgba(255,255,255,.055);pointer-events:none;}
+.fx-wotw-label{display:inline-flex;align-items:center;gap:9px;font:500 14px var(--font-body,sans-serif);color:var(--fx-chalk);margin-bottom:14px;}
+.fx-wotw-label i{width:9px;height:9px;border-radius:50%;background:var(--fx-brass);display:inline-block;}
+.fx-wotw-term{font:500 clamp(40px,6vw,68px)/1.02 var(--font-display,Georgia,serif);letter-spacing:-.02em;margin:0 0 14px;color:#fff;position:relative;}
+.fx-wotw-def{font-size:clamp(17px,1.6vw,20px);line-height:1.6;color:#D4E0D4;max-width:62ch;margin:0;position:relative;}
+.fx-wotw-ex{margin:20px 0 0;padding:2px 0 2px 18px;border-left:3px solid var(--fx-brass);font:italic 400 16.5px/1.6 var(--font-display,Georgia,serif);color:#B9C8B9;max-width:60ch;position:relative;}
+.fx-wotw-past{margin-top:26px;position:relative;}
+.fx-wotw-past summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:8px;font:500 14px var(--font-body,sans-serif);color:var(--fx-chalk);padding:8px 14px;border:1px solid rgba(243,227,184,.35);border-radius:999px;}
+.fx-wotw-past summary::-webkit-details-marker{display:none;}
+.fx-wotw-past[open] summary{background:rgba(243,227,184,.12);}
+.fx-wotw-past dl{margin:14px 0 0;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;}
+.fx-wotw-past .p{background:rgba(255,255,255,.07);border-radius:14px;padding:14px 16px;}
+.fx-wotw-past dt{font:600 15px var(--font-body,sans-serif);color:#fff;}
+.fx-wotw-past dd{margin:4px 0 0;font-size:13.5px;line-height:1.5;color:#B9C8B9;}
+
+/* composer + feed */
+.fx-composer{border:1.5px solid rgba(46,74,46,.22);border-radius:18px;background:#fff;overflow:hidden;transition:border-color .15s,box-shadow .15s;margin-top:16px;}
+.fx-composer:focus-within{border-color:var(--fx-leaf);box-shadow:0 0 0 4px rgba(61,107,61,.13);}
+.fx-composer textarea{display:block;width:100%;border:0;outline:0;resize:none;padding:18px 20px 8px;font:400 17px/1.5 var(--font-body,sans-serif);color:var(--fx-ink);background:transparent;min-height:98px;box-sizing:border-box;}
+.fx-composer textarea::placeholder{color:#9AA79A;}
+.fx-composer-bar{display:flex;align-items:center;gap:14px;padding:10px 12px 12px 20px;background:#FAF8F3;border-top:1px solid rgba(46,74,46,.08);flex-wrap:wrap;}
+.fx-anon{display:inline-flex;align-items:center;gap:7px;font-size:13px;color:var(--fx-muted);margin-right:auto;}
+.fx-count{font-size:12px;color:var(--fx-soft);font-variant-numeric:tabular-nums;}
+.fx-feed-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:34px 0 6px;}
+.fx-q{display:flex;gap:16px;align-items:flex-start;padding:18px 0;border-top:1px solid rgba(46,74,46,.1);}
+.fx-q:first-child{border-top:0;}
+.fx-q p{margin:0;font-size:16.5px;line-height:1.55;color:var(--fx-ink);word-break:break-word;}
+.fx-q.done p{color:#6E7D6E;}
+.fx-q-meta{margin-top:9px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:12.5px;color:var(--fx-soft);}
+.fx-vote{flex:none;width:54px;border:1.5px solid rgba(46,74,46,.18);background:#fff;border-radius:14px;padding:8px 0 9px;cursor:pointer;color:var(--fx-pine);display:flex;flex-direction:column;align-items:center;gap:1px;font-family:inherit;transition:background .15s,border-color .15s,color .15s;}
+.fx-vote b{font:500 18px/1.1 var(--font-display,Georgia,serif);}
+.fx-vote:hover:not(:disabled){border-color:var(--fx-leaf);background:var(--fx-mist);}
+.fx-vote.on{background:var(--fx-pine);border-color:var(--fx-pine);color:#fff;}
+.fx-vote:disabled{opacity:.5;cursor:default;}
+
+/* word cloud */
+.fx-cloudcard{background:var(--fx-paper);border:1px solid var(--fx-line);border-radius:24px;padding:26px 24px 24px;}
+.fx-wc-prompt{font:500 17px/1.4 var(--font-display,Georgia,serif);color:var(--fx-ink);margin:18px 0 10px;}
+.fx-wc-row{display:flex;gap:8px;}
+.fx-wc-hint{font-size:12.5px;color:var(--fx-muted);margin:8px 0 0;}
+.fx-wc-mine{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0 0;}
+.fx-cloudbox{background:#fff;border:1px solid var(--fx-line);border-radius:18px;margin-top:18px;}
+.learn-cloud{display:flex;flex-wrap:wrap;gap:2px 16px;align-items:baseline;justify-content:center;padding:22px 14px;min-height:150px;}
+.learn-cloud span{line-height:1.12;white-space:nowrap;letter-spacing:-.01em;}
+
+/* guide */
+.fx-search{display:flex;align-items:center;gap:8px;border:1.5px solid rgba(46,74,46,.2);background:#fff;border-radius:12px;padding:0 14px;min-width:min(100%,320px);color:var(--fx-muted);transition:border-color .15s,box-shadow .15s;}
+.fx-search:focus-within{border-color:var(--fx-leaf);box-shadow:0 0 0 4px rgba(61,107,61,.13);}
+.fx-search input{border:0;outline:none;padding:12px 0;font:400 15px var(--font-body,sans-serif);width:100%;background:transparent;color:var(--fx-ink);}
+.fx-seg{display:inline-flex;flex-wrap:wrap;gap:2px;background:var(--fx-sand);border-radius:14px;padding:4px;margin:0 0 20px;}
+.fx-seg button{border:0;background:transparent;padding:9px 16px;border-radius:10px;font:500 14px var(--font-body,sans-serif);color:#556655;cursor:pointer;transition:background .15s,color .15s;}
+.fx-seg button:hover{color:var(--fx-ink);}
+.fx-seg button[aria-selected=true]{background:#fff;color:var(--fx-ink);box-shadow:0 1px 3px rgba(28,43,28,.15);}
+.fx-gd{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:24px;align-items:start;}
+.fx-slide{background:#16241A;border-radius:22px;padding:20px 20px 22px;color:#fff;box-shadow:0 22px 44px -28px rgba(0,0,0,.65);position:sticky;top:100px;}
+.fx-slide-top{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:0 4px 16px;flex-wrap:wrap;}
+.fx-slide-top span{font:500 20px var(--font-display,Georgia,serif);}
+.fx-slide-top em{font-style:normal;font-size:12.5px;color:#9FB59F;}
+.fx-slide-grid{display:grid;gap:10px;}
+.s-macro .fx-slide-grid{grid-template-columns:repeat(3,1fr);grid-template-areas:"fed econ ahead" "rates world ahead";}
+.s-macro .t-fed{grid-area:fed;}.s-macro .t-econ{grid-area:econ;}.s-macro .t-ahead{grid-area:ahead;}.s-macro .t-rates{grid-area:rates;}.s-macro .t-world{grid-area:world;}
+.s-equities .fx-slide-grid{grid-template-columns:repeat(6,1fr);}
+.s-equities .t-chart{grid-column:span 4;}.s-equities .t-idx{grid-column:span 2;}
+.s-equities .t-movers,.s-equities .t-ind,.s-equities .t-news{grid-column:span 2;}
+.s-sentiment .fx-slide-grid{grid-template-columns:repeat(3,1fr);grid-template-areas:"heat comm mkts" "heat fear stock";}
+.s-sentiment .t-heat{grid-area:heat;}.s-sentiment .t-comm{grid-area:comm;}.s-sentiment .t-mkts{grid-area:mkts;}.s-sentiment .t-fear{grid-area:fear;}.s-sentiment .t-stock{grid-area:stock;}
+.fx-tile{text-align:left;border-radius:14px;border:1.5px solid rgba(255,255,255,.14);background:rgba(255,255,255,.07);color:#fff;padding:13px 13px 15px;cursor:pointer;display:flex;flex-direction:column;align-items:flex-start;gap:8px;min-height:112px;font-family:inherit;transition:background .15s,border-color .15s,transform .05s;}
+.fx-tile:hover{background:rgba(255,255,255,.14);}
+.fx-tile.on{background:var(--fx-paper);color:var(--fx-ink);border-color:var(--fx-chalk);box-shadow:0 0 0 3px rgba(243,227,184,.4);}
+.fx-badge{display:inline-flex;align-items:center;justify-content:center;width:25px;height:25px;border-radius:50%;background:var(--fx-brass);color:#fff;font:600 12.5px var(--font-body,sans-serif);flex:none;}
+.fx-tile-t{font:600 14.5px/1.25 var(--font-body,sans-serif);}
+.fx-tile-d{font-size:12.5px;line-height:1.4;opacity:.7;}
+.fx-terms{background:#fff;border:1px solid var(--fx-line);border-radius:22px;padding:24px 26px 26px;}
+.fx-terms-head{display:flex;gap:14px;align-items:flex-start;margin-bottom:12px;}
+.fx-terms-head .fx-badge{margin-top:2px;width:30px;height:30px;font-size:14px;}
+.fx-terms dl{margin:0;}
+.fx-term{padding:13px 0;border-top:1px solid rgba(46,74,46,.09);}
+.fx-term:first-child{border-top:0;}
+.fx-term dt{font:600 15.5px var(--font-body,sans-serif);color:var(--fx-ink);}
+.fx-term dd{margin:4px 0 0;font-size:14.5px;line-height:1.62;color:#3A4A3A;}
+.fx-deeper{margin-top:18px;padding:16px 20px 6px;border-radius:16px;background:var(--fx-paper);border-left:3px solid var(--fx-brass);}
+.fx-deeper-label{display:flex;gap:7px;align-items:center;font:600 13.5px var(--font-body,sans-serif);color:#8A6216;margin-bottom:2px;}
+.fx-results{max-width:760px;}
+
+/* admin */
+.fx-qrow{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;padding:16px 20px;border-top:1px solid rgba(46,74,46,.08);}
+.fx-qrow:first-child{border-top:0;}
+.fx-qrow.off{opacity:.55;}
+.fx-qrow .v{flex:none;width:46px;text-align:center;font:500 22px/1 var(--font-display,Georgia,serif);color:var(--fx-pine);}
+.fx-qrow .v small{display:block;font:400 11px var(--font-body,sans-serif);color:var(--fx-soft);margin-top:3px;}
+.fx-qrow .t{flex:1;min-width:220px;}
+.fx-qrow .t p{margin:0;font-size:15px;line-height:1.5;color:var(--fx-ink);}
+.fx-qrow .t small{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--fx-muted);margin-top:6px;flex-wrap:wrap;}
+.fx-qrow .a{display:flex;gap:6px;flex-wrap:wrap;}
+.fx-form-card{background:#fff;border:1px solid var(--fx-line);border-radius:18px;padding:20px;}
+
+/* projector */
+#learn-projector{position:fixed;inset:0;z-index:9999;background:#111D14;color:#F2F5F0;overflow:auto;font-family:var(--font-body,sans-serif);}
+#learn-projector .lp-q{display:flex;gap:22px;align-items:flex-start;padding:20px 0;border-top:1px solid rgba(255,255,255,.12);font-size:clamp(20px,2.3vw,34px);line-height:1.3;}
+#learn-projector .lp-q:first-child{border-top:0;}
+#learn-projector .lp-votes{flex:none;min-width:72px;text-align:center;font:500 clamp(26px,3vw,44px)/1 var(--font-display,Georgia,serif);color:var(--fx-chalk);}
+#learn-projector .lp-votes small{display:block;font:400 12px var(--font-body,sans-serif);letter-spacing:.06em;color:#8FA08F;margin-top:6px;}
+#learn-projector .lp-h{font:500 14px var(--font-body,sans-serif);color:#8FA08F;margin:0 0 8px;}
+#learn-projector button{font-family:inherit;}
+
+@media (max-width:980px){
+  .fx-learn-grid{grid-template-columns:1fr;gap:6px;} .fx-side{position:static;}
+  .fx-gd{grid-template-columns:1fr;} .fx-slide{position:static;}
+  .fx-wotw{padding:28px 24px 26px;border-radius:20px;}
+}
+@media (max-width:640px){
+  .fx-slide-grid{grid-template-columns:1fr 1fr !important;grid-template-areas:none !important;}
+  .fx-slide-grid .fx-tile{grid-area:auto !important;grid-column:auto !important;min-height:96px;}
+  .fx-seg{display:flex;} .fx-seg button{flex:1;padding:9px 8px;font-size:13px;}
+  .fx-wc-row{flex-direction:column;}
+}`;
   document.head.appendChild(st);
 })();
 
@@ -20539,7 +21188,7 @@ function learnMsg(id, kind, text) {
   var el = document.getElementById(id);
   if (!el) return;
   if (!text) { el.style.display = 'none'; return; }
-  el.className = 'ufa-alert ' + (kind === 'ok' ? 'ufa-alert-ok' : (kind === 'info' ? 'ufa-alert-info' : 'ufa-alert-err'));
+  el.className = 'fx-msg ' + (kind === 'ok' ? 'ok' : (kind === 'info' ? 'info' : 'err'));
   el.style.display = 'block';
   el.style.whiteSpace = 'pre-line';
   el.textContent = text;
@@ -20552,137 +21201,21 @@ function learnAgo(iso) {
   return Math.round(s / 86400) + ' d ago';
 }
 
-/* ───────── Market Watch follow-along guide (static: edit here) ───────── */
-var MW_GUIDE = [
-  { title: "Stocks (equities)",
-    intro: "This slide shows how the US stock market did. Stocks are small pieces of ownership in public companies, and an index tracks a group of them as a single number so you can see the market's mood at a glance.",
-    terms: [
-      ["S&P 500", "An index of 500 of the largest US public companies. It is the most common stand-in for \"the US stock market.\""],
-      ["Dow Jones (DJIA)", "An index of 30 large, well-known US companies. It is older and narrower than the S&P 500, so it gives a less complete picture."],
-      ["Nasdaq", "An index heavy on technology and growth companies. When tech does well or badly, the Nasdaq usually moves the most."],
-      ["Index", "A basket of stocks tracked as one number. \"The S&P is up 1%\" means the basket as a whole rose 1%."],
-      ["Sector", "A group of companies in the same kind of business. The market is split into 11 sectors, including Technology, Health Care, Financials, Energy, Utilities and Real Estate."],
-      ["Large cap / small cap", "Market cap is a company's total stock-market value. Large caps are the biggest companies. Small caps (tracked by the Russell 2000) are much smaller and usually swing more."],
-      ["Bull / bear market", "A bull market is a long stretch of rising prices. A bear market usually means prices have fallen 20% or more from a recent high."],
-      ["Correction", "A drop of 10% or more from a recent high. It is smaller than a bear market."],
-      ["YTD", "Year to date: the change since January 1."]
-    ],
-    tip: "Pay attention to the percent change, not the points. A 300-point move means very different things for the Dow and the Nasdaq." },
-
-  { title: "Interest rates & bonds",
-    intro: "Bonds are loans: you lend money to a government or company and get paid interest. Rates matter for almost everything else in markets because they set the price of borrowing.",
-    terms: [
-      ["The Fed", "The Federal Reserve, the US central bank. It sets the interest-rate target the whole economy leans on."],
-      ["Fed funds rate", "The rate banks charge each other for overnight loans. When the Fed \"hikes\" or \"cuts,\" this is the rate it changes."],
-      ["FOMC", "The Fed committee that votes on rates. It meets about eight times a year."],
-      ["Treasury", "A bond issued by the US government, widely seen as one of the safest investments."],
-      ["Yield", "The return you earn on a bond, shown as a yearly percentage. The \"10-year yield\" is the rate on a 10-year Treasury and is a benchmark for things like mortgages."],
-      ["Price vs. yield", "They move in opposite directions: when a bond's price rises, its yield falls, and vice versa."],
-      ["Basis point (bp)", "One hundredth of a percent. A 25 bp cut means rates fell by 0.25%."],
-      ["Yield curve", "A line comparing yields on short-term and long-term Treasuries. An \"inverted\" curve, where short-term yields are higher than long-term ones, has often come before recessions."],
-      ["Hawkish / dovish", "Hawkish means leaning toward higher rates to fight inflation. Dovish means leaning toward lower rates to support growth."]
-    ],
-    tip: "When rates rise, borrowing gets more expensive, and stock prices (especially for fast-growing companies) often come under pressure." },
-
-  { title: "Commodities",
-    intro: "Commodities are raw materials like oil, gold and wheat that are bought and sold in bulk. Their prices say a lot about demand, supply and fear in the economy.",
-    terms: [
-      ["Crude oil (WTI & Brent)", "Two benchmark oil prices, quoted per barrel. WTI is the US benchmark and Brent is the global one."],
-      ["Gold", "Often called a \"safe haven\": investors tend to buy it when they are nervous about the economy or markets."],
-      ["Safe haven", "An asset people move into when they are worried, because it tends to hold its value."],
-      ["Natural gas", "A fuel for heating and electricity. Its price swings a lot with the weather."],
-      ["Copper", "Used in construction and electronics, so its price is sometimes read as a hint about the health of the global economy."],
-      ["Futures", "A contract to buy or sell something at a set price on a future date. Most commodity prices you see on a slide are futures prices."],
-      ["OPEC", "A group of major oil-producing countries that coordinates how much oil they produce, which moves oil prices."]
-    ],
-    tip: "When a price moves, ask whether the cause is supply (less is available) or demand (people want less)." },
-
-  { title: "Currencies (FX)",
-    intro: "Currencies are traded against each other, so every price is a comparison. This slide shows how strong the dollar is relative to other countries' money.",
-    terms: [
-      ["Exchange rate", "How much of one currency it takes to buy another."],
-      ["EUR/USD", "A currency pair. It shows how many US dollars one euro buys, so if it rises, the euro got stronger against the dollar."],
-      ["Dollar index (DXY)", "Measures the dollar against a basket of six major currencies, including the euro and the yen. Up means a stronger dollar."],
-      ["Strong dollar", "Makes imports cheaper for Americans and US exports pricier overseas. It can also reduce the profits US companies earn abroad."]
-    ],
-    tip: "A currency only goes up or down relative to another one, so always ask \"compared to what?\"" },
-
-  { title: "Volatility (the fear gauge)",
-    intro: "Volatility describes how wildly prices are swinging. It tells you how nervous or calm the market is, regardless of whether prices are going up or down.",
-    terms: [
-      ["Volatility", "How big and how fast prices swing. High volatility means large, hard-to-predict moves."],
-      ["VIX", "Often called the fear gauge. It estimates how much the S&P 500 is expected to swing over the next 30 days. Higher means more uncertainty. As a rule of thumb, the teens are calm and 30+ signals real stress."],
-      ["Options", "Contracts that give the right to buy or sell at a set price. The VIX is calculated from S&P 500 options prices."],
-      ["Risk-on / risk-off", "Risk-on means investors feel confident and buy stocks. Risk-off means they get nervous and move into safer assets like Treasuries and gold."]
-    ],
-    tip: "If the VIX jumps while stocks fall, the market is nervous. A low, steady VIX with rising stocks is the opposite." },
-
-  { title: "Economic data",
-    intro: "These reports describe the health of the economy. Markets move when the numbers come in better or worse than economists expected.",
-    terms: [
-      ["GDP", "Gross domestic product: the total value of everything a country produces. Its growth rate is the broadest measure of the economy."],
-      ["Inflation", "The rate at which prices rise over time. A dollar buys less when inflation is high."],
-      ["CPI", "Consumer Price Index: the most-watched inflation number. It tracks the average change in prices households pay."],
-      ["Jobs report", "Released monthly, usually on the first Friday. It shows how many jobs were added and the unemployment rate."],
-      ["Unemployment rate", "The share of people who want to work but cannot find a job."],
-      ["Recession", "A broad, lasting drop in economic activity. Two straight quarters of falling GDP is a common rule of thumb, though in the US a committee makes the official call."],
-      ["Consensus", "The average forecast from economists. Markets react to the surprise versus the forecast, not just to the number."],
-      ["Soft landing", "When the Fed brings inflation down without causing a recession."]
-    ],
-    tip: "Ask \"was it better or worse than expected?\" That surprise is usually what moves markets." },
-
-  { title: "Earnings",
-    intro: "Public companies report their results every three months. These reports often move a single stock more than anything else.",
-    terms: [
-      ["Earnings season", "The few weeks after each quarter ends when most public companies report their results."],
-      ["Revenue", "Total sales, before any costs are taken out."],
-      ["Earnings (net income)", "What is left after costs, interest and taxes. Another word for profit."],
-      ["EPS", "Earnings per share: profit divided by the number of shares."],
-      ["Beat / miss", "Reporting results above (a beat) or below (a miss) what analysts expected."],
-      ["Guidance", "A company's own forecast for future results. A stock can fall after a beat if the guidance disappoints."],
-      ["P/E ratio", "Price-to-earnings: the share price divided by earnings per share. It shows how much investors are paying for each $1 of profit."]
-    ],
-    tip: "The stock reaction depends on results versus expectations, not on whether the results were good in absolute terms." },
-
-  { title: "News decoder",
-    intro: "The news slides change every week, but a lot of the same words keep showing up. This is a decoder for the common ones. If a word is missing, drop it in the question box and the board will explain it.",
-    terms: [
-      ["IPO", "Initial public offering: a private company sells shares to the public for the first time."],
-      ["M&A", "Mergers and acquisitions: companies combining, or one company buying another."],
-      ["Merger vs. acquisition", "In a merger two companies combine into one. In an acquisition one company buys the other."],
-      ["Rally / sell-off", "A rally is a sharp rise in prices. A sell-off is a sharp fall."],
-      ["Upgrade / downgrade", "When an analyst raises or lowers their rating or outlook on a stock."],
-      ["Tariff", "A tax on imported goods."],
-      ["Stimulus", "Government or central bank action meant to boost the economy, such as extra spending or lower rates."],
-      ["Private equity", "Firms that buy companies using investors' money, try to improve them, and sell them later."],
-      ["Share buyback", "When a company buys back its own stock, which reduces the number of shares and can lift earnings per share."],
-      ["Short seller", "An investor betting that a stock will fall."],
-      ["Bankruptcy", "A legal process for a company that cannot pay its debts."]
-    ],
-    tip: "" }
-];
-
-function learnGuideHtml() {
-  return '<div class="learn-guide">' + MW_GUIDE.map(function (t) {
-    return '<details><summary>' + ufaEsc(t.title) + '</summary>' +
-      '<div style="font-size:14px;line-height:1.6;color:#3A4A3A;padding:0 0 10px;">' + ufaEsc(t.intro) + '</div>' +
-      t.terms.map(function (x) {
-        return '<div class="learn-term"><b>' + ufaEsc(x[0]) + '</b> &mdash; ' + ufaEsc(x[1]) + '</div>';
-      }).join('') +
-      (t.tip ? '<div style="margin:10px 0 6px;padding:10px 12px;background:#EEF5EE;border-radius:8px;font-size:13px;color:#2E4A2E;"><b>Listen for:</b> ' + ufaEsc(t.tip) + '</div>' : '') +
-      '</details>';
-  }).join('') + '</div>';
-}
-
-/* ───────── Word cloud rendering (shared by member + projector) ───────── */
+/* ───────── Word cloud rendering (member card + projector) ───────── */
 function learnCloudHtml(rows, minPx, maxPx) {
-  if (!rows || !rows.length) return '<div style="text-align:center;color:#8A968A;font-size:14px;padding:18px 0;">No words yet. Be the first to add one.</div>';
-  var max = rows.reduce(function (m, r) { return Math.max(m, r.n); }, 1);
-  var shown = rows.slice(0, 60).slice().sort(function (a, b) { return a.word < b.word ? -1 : 1; });
-  return '<div class="learn-cloud">' + shown.map(function (r, i) {
-    var size = Math.round(minPx + (maxPx - minPx) * (max === 1 ? 0.35 : (r.n - 1) / (max - 1)));
-    var color = LEARN_PALETTE[(r.word.length + i) % LEARN_PALETTE.length];
-    return '<span style="font-size:' + size + 'px;color:' + color + ';" title="' + r.n + (r.n === 1 ? ' person' : ' people') + '">' + ufaEsc(r.display) + '</span>';
+  if (!rows || !rows.length) return '<div style="text-align:center;color:#8A968A;font-size:14px;padding:34px 18px;">No words yet. Add the first one.</div>';
+  var sorted = rows.slice(0, 40).slice().sort(function (a, b) { return b.n - a.n || (a.word < b.word ? -1 : 1); });
+  var max = sorted[0].n;
+  // biggest words in the middle, smaller ones fanning out to the edges
+  var left = [], right = [];
+  sorted.forEach(function (r, i) { (i % 2 ? left : right).push(r); });
+  var ordered = left.reverse().concat(right);
+  return '<div class="learn-cloud">' + ordered.map(function (r) {
+    var rel = max === 1 ? 0.35 : (r.n - 1) / (max - 1);
+    var size = Math.round(minPx + (maxPx - minPx) * rel);
+    var color = LEARN_PALETTE[(r.word.length + r.n) % LEARN_PALETTE.length];
+    var serif = rel >= 0.45;
+    return '<span style="font-size:' + size + 'px;color:' + color + ';font-family:' + (serif ? "var(--font-display,Georgia,serif)" : "var(--font-body,sans-serif)") + ';font-weight:' + (serif ? 500 : 600) + ';" title="' + r.n + (r.n === 1 ? ' person' : ' people') + '">' + ufaEsc(r.display) + '</span>';
   }).join('') + '</div>';
 }
 
@@ -20695,33 +21228,34 @@ async function loadLearnTab() {
   if (ufaIsBoard()) {
     var cur = await ufaGetSetting('visibility_learn');
     if (!(cur && cur.members)) {
-      banner = '<div class="ufa-alert ufa-alert-info" style="margin-bottom:18px;"><strong>Board preview.</strong> Members cannot see this tab yet. ' +
-        'You can try everything here; publish it from Admin &rarr; Ask &amp; Learn when you are ready.</div>';
+      banner = '<div class="fx-msg info" style="margin-bottom:26px;"><strong>Board preview.</strong> Members cannot see this tab yet. ' +
+        'Try everything here, and publish it from Admin &rarr; Ask &amp; Learn when you are ready.</div>';
     }
   }
   host.innerHTML = banner +
     '<div id="learn-vocab"></div>' +
-    '<div class="ufa-card" style="margin-bottom:22px;">' +
-      '<div class="ufa-label" style="margin-bottom:4px;">Ask a question</div>' +
-      '<div class="ufa-pane-sub" style="margin-bottom:12px;">Anonymous to other members. Nothing is too basic, and chances are someone else is wondering the same thing. Upvote the ones you want answered.</div>' +
-      '<textarea id="learn-q-input" class="ufa-textarea" maxlength="300" rows="2" style="width:100%;margin-bottom:8px;" placeholder="What does that acronym mean? Why did that stock move?"></textarea>' +
-      '<div style="display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;">' +
-        '<span id="learn-q-count" style="font-size:12px;color:#8A968A;">0 / 300</span>' +
-        '<button id="learn-q-btn" class="ufa-btn" onclick="learnSubmitQuestion()">Post anonymously</button>' +
-      '</div>' +
-      '<div id="learn-q-msg" class="ufa-alert" style="display:none;margin-top:12px;"></div>' +
-      '<div id="learn-q-list" style="margin-top:14px;"></div>' +
+    '<div class="fx-learn-grid">' +
+      '<section id="learn-ask" class="fx-sec">' +
+        '<div><h3 class="fx-h2">Ask a question</h3>' +
+          '<p class="fx-sub">Nothing is too basic, and someone else is probably wondering the same thing. Upvote the ones you want answered.</p></div>' +
+        '<div class="fx-composer">' +
+          '<textarea id="learn-q-input" maxlength="300" rows="3" placeholder="What is a dot plot? Why do rising yields hurt utilities?" aria-label="Your question"></textarea>' +
+          '<div class="fx-composer-bar"><span class="fx-anon">' + fxIcon('lock', 15) + 'Anonymous to other members</span>' +
+            '<span id="learn-q-count" class="fx-count">0 / 300</span>' +
+            '<button id="learn-q-btn" class="fx-btn" onclick="learnSubmitQuestion()">Post anonymously</button></div>' +
+        '</div>' +
+        '<div id="learn-q-msg" class="fx-msg" style="display:none;margin-top:12px;"></div>' +
+        '<div class="fx-feed-head"><h4 class="fx-h3">This week\'s questions</h4><span class="fx-sub" style="margin:0;">Most upvoted first</span></div>' +
+        '<div id="learn-q-list"></div>' +
+      '</section>' +
+      '<aside id="learn-wc-card" class="fx-side" style="display:none;"><div class="fx-cloudcard">' +
+        '<h3 class="fx-h2">Word cloud</h3>' +
+        '<p class="fx-sub">Add words you want explained. The biggest ones get covered live.</p>' +
+        '<div id="learn-wc-form"></div>' +
+        '<div id="learn-wc-cloud" class="fx-cloudbox"></div>' +
+      '</div></aside>' +
     '</div>' +
-    '<div class="ufa-card" id="learn-wc-card" style="margin-bottom:22px;display:none;">' +
-      '<div class="ufa-label" style="margin-bottom:4px;">Word cloud</div>' +
-      '<div id="learn-wc-form"></div>' +
-      '<div id="learn-wc-cloud"></div>' +
-    '</div>' +
-    '<div class="ufa-card">' +
-      '<div class="ufa-label" style="margin-bottom:4px;">Market Watch guide</div>' +
-      '<div class="ufa-pane-sub" style="margin-bottom:8px;">Follow along with Market Watch. Tap a topic to see what the terms on the slide mean in plain English.</div>' +
-      learnGuideHtml() +
-    '</div>';
+    '<section id="learn-guide" class="fx-sec" style="margin-top:34px;">' + learnGuideShell() + '</section>';
 
   var ta = document.getElementById('learn-q-input');
   ta.addEventListener('input', function () {
@@ -20729,6 +21263,7 @@ async function loadLearnTab() {
   });
 
   learnWcSig = '';
+  learnGuideDraw();
   await Promise.all([learnRefreshVocab(), learnRefreshQuestions(), learnRefreshCloud()]);
   learnStartPolling();
 }
@@ -20756,42 +21291,42 @@ async function learnRefreshVocab() {
   var cur = rows.filter(function (w) { return w.is_current; })[0];
   var older = rows.filter(function (w) { return !w.is_current; });
   if (!cur && !older.length) { box.innerHTML = ''; return; }
-  box.innerHTML = '<div class="ufa-card" style="margin-bottom:22px;background:#F3F8F3;">' +
-    '<div class="ufa-label" style="margin-bottom:6px;">Word of the week</div>' +
+  box.innerHTML = '<section class="fx-wotw" data-initial="' + ufaEsc(cur ? cur.term.charAt(0).toUpperCase() : 'A') + '">' +
+    '<div class="fx-wotw-label"><i></i>Word of the week</div>' +
     (cur
-      ? '<div style="font-family:\'Playfair Display\',Georgia,serif;font-size:26px;font-weight:500;color:#1C2B1C;">' + ufaEsc(cur.term) + '</div>' +
-        '<div style="font-size:15px;line-height:1.6;color:#3A4A3A;margin-top:6px;">' + ufaEsc(cur.definition) + '</div>' +
-        (cur.example ? '<div style="font-size:14px;color:#6B7D6B;margin-top:8px;font-style:italic;">&ldquo;' + ufaEsc(cur.example) + '&rdquo;</div>' : '')
-      : '<div style="font-size:14px;color:#6B7D6B;">No word this week yet.</div>') +
+      ? '<h3 class="fx-wotw-term">' + ufaEsc(cur.term) + '</h3>' +
+        '<p class="fx-wotw-def">' + ufaEsc(cur.definition) + '</p>' +
+        (cur.example ? '<blockquote class="fx-wotw-ex">&ldquo;' + ufaEsc(cur.example) + '&rdquo;</blockquote>' : '')
+      : '<h3 class="fx-wotw-term" style="font-size:30px;">No word this week yet</h3>') +
     (older.length
-      ? '<details style="margin-top:14px;"><summary style="cursor:pointer;font-size:13px;color:#3D6B3D;font-weight:600;">Past words (' + older.length + ')</summary>' +
-        older.map(function (w) {
-          return '<div class="learn-term"><b>' + ufaEsc(w.term) + '</b> &mdash; ' + ufaEsc(w.definition) + '</div>';
-        }).join('') + '</details>'
+      ? '<details class="fx-wotw-past"><summary>' + fxIcon('book', 16) + ' Past words (' + older.length + ')</summary><dl>' +
+        older.map(function (w) { return '<div class="p"><dt>' + ufaEsc(w.term) + '</dt><dd>' + ufaEsc(w.definition) + '</dd></div>'; }).join('') + '</dl></details>'
       : '') +
-    '</div>';
+    '</section>';
 }
 
 async function learnRefreshQuestions() {
   var box = document.getElementById('learn-q-list');
   if (!box) return;
   var r = await sb.rpc('qa_list');
-  if (r.error) { box.innerHTML = '<div class="ufa-alert ufa-alert-err">' + ufaEsc(learnErr(r.error)) + '</div>'; return; }
+  if (r.error) { box.innerHTML = '<div class="fx-msg err">' + ufaEsc(learnErr(r.error)) + '</div>'; return; }
   var rows = r.data || [];
   if (!rows.length) {
-    box.innerHTML = '<div style="padding:14px 0;border-top:1px solid rgba(46,74,46,0.08);font-size:14px;color:#8A968A;text-align:center;">No questions yet. Ask the first one.</div>';
+    box.innerHTML = '<div class="fx-empty" style="margin-top:8px;">' + fxIcon('chat', 28) + 'No questions yet.<br>Ask the one you have been holding back.</div>';
     return;
   }
+  var topId = (!rows[0].answered && rows[0].votes > 0) ? rows[0].id : null;
   box.innerHTML = rows.map(function (q) {
-    return '<div class="learn-q">' +
-      '<button class="learn-vote' + (q.voted ? ' on' : '') + '" ' + (q.mine ? 'disabled title="You can\'t upvote your own question"' : 'title="Upvote"') +
-        ' data-id="' + q.id + '" onclick="learnVote(this.dataset.id)"><b>' + q.votes + '</b><span>' + (q.voted ? 'VOTED' : 'UPVOTE') + '</span></button>' +
-      '<div style="min-width:0;flex:1;">' +
-        '<div style="font-size:15px;line-height:1.5;color:#1C2B1C;word-break:break-word;">' + ufaEsc(q.body) + '</div>' +
-        '<div style="margin-top:6px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">' +
-          (q.answered ? '<span class="ufa-pill ufa-pill-green">Answered</span>' : '') +
-          (q.mine ? '<span class="ufa-pill ufa-pill-blue">You asked this</span>' : '') +
-          '<span style="font-size:11px;color:#8A968A;">' + learnAgo(q.created_at) + '</span>' +
+    return '<div class="fx-q' + (q.answered ? ' done' : '') + '">' +
+      '<button class="fx-vote' + (q.voted ? ' on' : '') + '" ' + (q.mine ? 'disabled title="You can\'t upvote your own question"' : 'title="' + (q.voted ? 'Take back your upvote' : 'Upvote') + '"') +
+        ' data-id="' + q.id + '" onclick="learnVote(this.dataset.id)" aria-label="' + (q.voted ? 'Upvoted' : 'Upvote') + '. ' + q.votes + ' votes">' +
+        fxIcon('up', 18) + '<b>' + q.votes + '</b></button>' +
+      '<div style="min-width:0;flex:1;"><p>' + ufaEsc(q.body) + '</p>' +
+        '<div class="fx-q-meta">' +
+          (q.answered ? fxPill('ok', 'Answered', 'check') : '') +
+          (q.id === topId ? fxPill('wait', 'Most wanted') : '') +
+          (q.mine ? fxPill('info', 'You asked this') : '') +
+          '<span>' + learnAgo(q.created_at) + '</span>' +
         '</div></div></div>';
   }).join('');
 }
@@ -20826,7 +21361,7 @@ async function learnRefreshCloud() {
   var card = document.getElementById('learn-wc-card');
   var rr = await sb.rpc('wc_current');
   if (card) card.style.display = '';
-  if (rr.error) { form.innerHTML = '<div class="ufa-alert ufa-alert-err">' + ufaEsc(learnErr(rr.error)) + '</div>'; cloud.innerHTML = ''; return; }
+  if (rr.error) { form.innerHTML = '<div class="fx-msg err" style="margin-top:14px;">' + ufaEsc(learnErr(rr.error)) + '</div>'; cloud.innerHTML = ''; return; }
   var round = (rr.data && rr.data[0]) || null;
   if (!round) {
     // Nothing running: hide the whole card, so a one-off cloud leaves no empty box behind
@@ -20842,20 +21377,18 @@ async function learnRefreshCloud() {
     learnWcSig = sig;
     var left = Math.max(0, 3 - mine.length);
     form.innerHTML =
-      '<div style="font-size:15px;color:#1C2B1C;margin-bottom:10px;">' + ufaEsc(round.prompt) + '</div>' +
+      '<div class="fx-wc-prompt">' + ufaEsc(round.prompt) + '</div>' +
       (round.is_open && left > 0
-        ? '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">' +
-            '<input id="learn-wc-input" class="ufa-input" maxlength="40" style="flex:1;min-width:180px;" placeholder="e.g. EBITDA, yield curve" onkeydown="if(event.key===\'Enter\')learnSubmitWord(\'' + round.id + '\',' + left + ')">' +
-            '<button class="ufa-btn" onclick="learnSubmitWord(\'' + round.id + '\',' + left + ')">Add</button></div>' +
-          '<div style="font-size:12px;color:#8A968A;margin-bottom:6px;">You can add ' + left + ' more word' + (left === 1 ? '' : 's') + ' (separate with commas).</div>'
-        : '<div style="font-size:13px;color:#6B7D6B;margin-bottom:6px;">' + (round.is_open ? 'You have added all 3 of your words.' : 'This round is closed.') + '</div>') +
-      (mine.length ? '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;">' + mine.map(function (w) {
-        return '<span class="ufa-pill ufa-pill-blue">' + ufaEsc(w) + '</span>';
-      }).join('') + '</div>' : '') +
-      '<div id="learn-wc-msg" class="ufa-alert" style="display:none;margin:8px 0;"></div>';
+        ? '<div class="fx-wc-row">' +
+            '<input id="learn-wc-input" class="fx-input" maxlength="40" placeholder="e.g. dot plot" aria-label="A word or term" onkeydown="if(event.key===\'Enter\')learnSubmitWord(\'' + round.id + '\',' + left + ')">' +
+            '<button class="fx-btn" onclick="learnSubmitWord(\'' + round.id + '\',' + left + ')">Add</button></div>' +
+          '<p class="fx-wc-hint">You can add ' + left + ' more word' + (left === 1 ? '' : 's') + '. Separate several with commas.</p>'
+        : '<p class="fx-wc-hint">' + (round.is_open ? 'You have added all 3 of your words.' : 'This round is closed.') + '</p>') +
+      (mine.length ? '<div class="fx-wc-mine">' + mine.map(function (w) { return fxPill('info', ufaEsc(w)); }).join('') + '</div>' : '') +
+      '<div id="learn-wc-msg" class="fx-msg" style="display:none;margin:12px 0 0;"></div>';
   }
   var cr = await sb.rpc('wc_counts', { p_round: round.id });
-  cloud.innerHTML = cr.error ? '' : learnCloudHtml(cr.data || [], 15, 40);
+  cloud.innerHTML = cr.error ? '' : learnCloudHtml(cr.data || [], 15, 44);
 }
 
 async function learnSubmitWord(roundId, left) {
@@ -20875,7 +21408,7 @@ async function learnSubmitWord(roundId, left) {
 async function loadLearnAdmin() {
   var host = document.getElementById('learn-admin-body');
   if (!host) return;
-  host.innerHTML = '<div class="ufa-pane-sub">Loading…</div>';
+  host.innerHTML = '<div class="fx-sub">Loading…</div>';
   try {
     var res = await Promise.all([
       sb.from('qa_questions').select('*').order('created_at', { ascending: false }).limit(300),
@@ -20916,91 +21449,90 @@ async function loadLearnAdmin() {
       return (a.hidden - b.hidden) || (a.answered - b.answered) || (b.votes - a.votes) || (new Date(b.created_at) - new Date(a.created_at));
     });
 
-    var box = 'background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;overflow:hidden;margin-bottom:28px;';
+    var panel = 'class="fx-panel" style="overflow:hidden;"';
+    var openQs = qs.filter(function (q) { return !q.hidden && !q.answered; }).length;
 
     var qHtml = qs.length ? qs.map(function (q) {
-      return '<div style="display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap;padding:14px 16px;border-top:1px solid rgba(46,74,46,0.08);' + (q.hidden ? 'opacity:.55;' : '') + '">' +
-        '<div style="flex:none;width:44px;text-align:center;font-weight:700;color:#2E6B2E;">' + q.votes + '<div style="font-size:10px;font-weight:500;color:#8A968A;">votes</div></div>' +
-        '<div style="flex:1;min-width:200px;">' +
-          '<div style="font-size:14px;line-height:1.5;color:#1C2B1C;' + (q.hidden ? 'text-decoration:line-through;' : '') + '">' + ufaEsc(q.body) + '</div>' +
-          '<div style="font-size:12px;color:#6B7D6B;margin-top:4px;">Asked by <b>' + ufaEsc(authorBy[q.id] || 'unknown') + '</b> &middot; ' + learnAgo(q.created_at) +
-            (q.answered ? ' &middot; <span style="color:#2E6B2E;">answered</span>' : '') + (q.hidden ? ' &middot; hidden from members' : '') + '</div>' +
-        '</div>' +
-        '<div style="display:flex;gap:6px;flex-wrap:wrap;">' +
-          '<button class="ufa-btn-ghost ufa-btn-sm" data-id="' + q.id + '" data-a="answer" onclick="learnAdminQ(this.dataset.id,this.dataset.a)">' + (q.answered ? 'Unmark answered' : 'Mark answered') + '</button>' +
-          '<button class="ufa-btn-ghost ufa-btn-sm" data-id="' + q.id + '" data-a="hide" onclick="learnAdminQ(this.dataset.id,this.dataset.a)">' + (q.hidden ? 'Unhide' : 'Hide') + '</button>' +
-          '<button class="ufa-btn-ghost ufa-btn-sm ufa-btn-danger" data-id="' + q.id + '" data-a="delete" onclick="learnAdminQ(this.dataset.id,this.dataset.a)">Delete</button>' +
+      return '<div class="fx-qrow' + (q.hidden ? ' off' : '') + '">' +
+        '<div class="v">' + q.votes + '<small>votes</small></div>' +
+        '<div class="t"><p' + (q.hidden ? ' style="text-decoration:line-through;"' : '') + '>' + ufaEsc(q.body) + '</p>' +
+          '<small>' + fxAvatar(authorBy[q.id] || '?', 20) + '<span>Asked by <b>' + ufaEsc(authorBy[q.id] || 'unknown') + '</b></span><span>' + learnAgo(q.created_at) + '</span>' +
+            (q.answered ? fxPill('ok', 'Answered', 'check') : '') + (q.hidden ? fxPill('mute', 'Hidden from members') : '') + '</small></div>' +
+        '<div class="a">' +
+          '<button class="fx-btn sm ghost" data-id="' + q.id + '" data-a="answer" onclick="learnAdminQ(this.dataset.id,this.dataset.a)">' + (q.answered ? 'Unmark answered' : 'Mark answered') + '</button>' +
+          '<button class="fx-btn sm ghost" data-id="' + q.id + '" data-a="hide" onclick="learnAdminQ(this.dataset.id,this.dataset.a)">' + (q.hidden ? 'Unhide' : 'Hide') + '</button>' +
+          '<button class="fx-icon-btn danger" title="Delete" aria-label="Delete question" data-id="' + q.id + '" data-a="delete" onclick="learnAdminQ(this.dataset.id,this.dataset.a)">' + fxIcon('trash', 17) + '</button>' +
         '</div></div>';
-    }).join('') : '<div style="padding:20px;font-size:13px;color:#6B7D6B;text-align:center;">No questions yet.</div>';
+    }).join('') : '<div class="fx-empty" style="border:0;">' + fxIcon('chat', 26) + 'No questions yet this week.</div>';
 
-    var wcHtml = (round
-      ? '<div style="padding:16px;">' +
-          '<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px;">' +
-            '<div><div style="font-size:15px;font-weight:600;color:#1C2B1C;">' + ufaEsc(round.prompt) + '</div>' +
-            '<div style="font-size:12px;color:#6B7D6B;margin-top:3px;">' + Object.keys(people).length + ' member' + (Object.keys(people).length === 1 ? '' : 's') + ' submitted &middot; ' +
-              (round.is_open ? '<span style="color:#2E6B2E;">open</span>' : 'closed') + '</div></div>' +
-            '<div style="display:flex;gap:6px;"><button class="ufa-btn-ghost ufa-btn-sm" data-id="' + round.id + '" data-open="' + (!round.is_open) + '" onclick="learnRoundToggle(this.dataset.id,this.dataset.open===\'true\')">' + (round.is_open ? 'Close round' : 'Reopen') + '</button>' +
-            '<button class="ufa-btn-ghost ufa-btn-sm ufa-btn-danger" data-id="' + round.id + '" onclick="learnRoundDelete(this.dataset.id)">Delete round</button></div>' +
+    var archivedHtml = archivedQs.length
+      ? '<details style="margin-top:14px;"><summary class="fx-link" style="cursor:pointer;">Past weeks (' + archivedQs.length + ' question' + (archivedQs.length === 1 ? '' : 's') + ')</summary>' +
+        '<div class="fx-panel" style="overflow:hidden;margin-top:10px;">' + archivedQs.map(function (q) {
+          return '<div class="fx-qrow"><div class="v" style="color:#6B7D6B;">' + q.votes + '<small>votes</small></div>' +
+            '<div class="t"><p style="color:#3A4A3A;">' + ufaEsc(q.body) + '</p><small><span>' + ufaEsc(authorBy[q.id] || 'unknown') + '</span><span>week of ' + new Date(q.archived_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + '</span>' + (q.answered ? fxPill('ok', 'Answered', 'check') : '') + '</small></div>' +
+            '<div class="a"><button class="fx-icon-btn danger" title="Delete" aria-label="Delete question" data-id="' + q.id + '" data-a="delete" onclick="learnAdminQ(this.dataset.id,this.dataset.a)">' + fxIcon('trash', 17) + '</button></div></div>';
+        }).join('') + '</div></details>' : '';
+
+    var wcHtml = round
+      ? '<div style="padding:20px 22px;">' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px;">' +
+            '<div><h4 class="fx-h3">' + ufaEsc(round.prompt) + '</h4>' +
+              '<div class="fx-sub" style="margin-top:6px;display:flex;gap:8px;align-items:center;">' + fxPill(round.is_open ? 'ok' : 'mute', round.is_open ? 'Open' : 'Closed') +
+              '<span>' + Object.keys(people).length + ' member' + (Object.keys(people).length === 1 ? '' : 's') + ' submitted</span></div></div>' +
+            '<div style="display:flex;gap:8px;"><button class="fx-btn sm ghost" data-id="' + round.id + '" data-open="' + (!round.is_open) + '" onclick="learnRoundToggle(this.dataset.id,this.dataset.open===\'true\')">' + (round.is_open ? 'Close round' : 'Reopen') + '</button>' +
+            '<button class="fx-btn sm danger" data-id="' + round.id + '" onclick="learnRoundDelete(this.dataset.id)">Delete round</button></div>' +
           '</div>' +
           (wordRows.length ? '<div style="display:flex;flex-wrap:wrap;gap:8px;">' + wordRows.map(function (w) {
-            return '<span style="display:inline-flex;align-items:center;gap:6px;background:#EEF5EE;border:1px solid rgba(46,74,46,0.14);border-radius:20px;padding:4px 6px 4px 12px;font-size:13px;color:#1C2B1C;">' +
-              ufaEsc(w.display) + ' <b style="color:#2E6B2E;">' + w.n + '</b>' +
-              '<button title="Remove this word" data-id="' + round.id + '" data-word="' + ufaEsc(w.word) + '" onclick="learnWordDelete(this.dataset.id,this.dataset.word)" style="border:none;background:none;cursor:pointer;color:#A33A32;font-size:16px;line-height:1;padding:0 6px;">&times;</button></span>';
-          }).join('') + '</div>' : '<div style="font-size:13px;color:#6B7D6B;">No words yet.</div>') +
+            return '<span class="fx-who" style="padding-left:12px;">' + ufaEsc(w.display) + ' <b style="color:var(--fx-pine);">' + w.n + '</b>' +
+              '<button class="x" title="Remove this word" aria-label="Remove ' + ufaEsc(w.display) + '" data-id="' + round.id + '" data-word="' + ufaEsc(w.word) + '" onclick="learnWordDelete(this.dataset.id,this.dataset.word)">&times;</button></span>';
+          }).join('') + '</div>' : '<div class="fx-sub">No words yet.</div>') +
         '</div>'
-      : '<div style="padding:20px;font-size:13px;color:#6B7D6B;text-align:center;">No word round yet. Start one below.</div>');
+      : '<div class="fx-empty" style="border:0;">' + fxIcon('sparkle', 26) + 'No word round yet. Start one below.</div>';
 
     var vHtml = vocab.length ? vocab.map(function (w) {
-      return '<div style="display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap;padding:14px 16px;border-top:1px solid rgba(46,74,46,0.08);">' +
-        '<div style="flex:1;min-width:200px;"><div style="font-size:14px;font-weight:600;color:#1C2B1C;">' + ufaEsc(w.term) +
-          (w.is_current ? ' <span class="ufa-pill ufa-pill-green" style="margin-left:6px;">This week</span>' : '') + '</div>' +
-          '<div style="font-size:13px;color:#3A4A3A;margin-top:3px;line-height:1.5;">' + ufaEsc(w.definition) + '</div>' +
-          (w.example ? '<div style="font-size:12px;color:#6B7D6B;margin-top:3px;font-style:italic;">&ldquo;' + ufaEsc(w.example) + '&rdquo;</div>' : '') + '</div>' +
-        '<div style="display:flex;gap:6px;">' +
-          (w.is_current ? '' : '<button class="ufa-btn-ghost ufa-btn-sm" data-id="' + w.id + '" onclick="learnVocabCurrent(this.dataset.id)">Make this week\'s word</button>') +
-          '<button class="ufa-btn-ghost ufa-btn-sm ufa-btn-danger" data-id="' + w.id + '" onclick="learnVocabDelete(this.dataset.id)">Delete</button></div></div>';
-    }).join('') : '<div style="padding:20px;font-size:13px;color:#6B7D6B;text-align:center;">No words yet. Add the first one below.</div>';
+      return '<div class="fx-qrow"><div class="t"><p style="font-weight:600;">' + ufaEsc(w.term) + (w.is_current ? ' ' + fxPill('ok', 'This week') : '') + '</p>' +
+        '<small style="display:block;font-size:13.5px;color:#3A4A3A;line-height:1.5;">' + ufaEsc(w.definition) + '</small>' +
+        (w.example ? '<small style="font-style:italic;">&ldquo;' + ufaEsc(w.example) + '&rdquo;</small>' : '') + '</div>' +
+        '<div class="a">' + (w.is_current ? '' : '<button class="fx-btn sm ghost" data-id="' + w.id + '" onclick="learnVocabCurrent(this.dataset.id)">Make this week\'s word</button>') +
+        '<button class="fx-icon-btn danger" title="Delete" aria-label="Delete word" data-id="' + w.id + '" onclick="learnVocabDelete(this.dataset.id)">' + fxIcon('trash', 17) + '</button></div></div>';
+    }).join('') : '<div class="fx-empty" style="border:0;">No words yet. Add the first one below.</div>';
 
     host.innerHTML =
       '<div id="learn-visibility" style="margin-bottom:20px;"></div>' +
       '<div id="learn-alert" class="ufa-alert" style="display:none;margin-bottom:16px;"></div>' +
-      '<div id="learn-admin-msg" class="ufa-alert" style="display:none;margin-bottom:16px;"></div>' +
-      '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:26px;">' +
-        '<button class="ufa-btn" onclick="learnOpenProjector()">Open projector view</button>' +
-        '<button class="ufa-btn-ghost" onclick="switchPortalTab(\'learn\')">Preview the member screen</button></div>' +
+      '<div id="learn-admin-msg" class="fx-msg" style="display:none;"></div>' +
+      '<div class="fx-stats">' +
+        '<div class="fx-stat"><b>' + openQs + '</b><span>Open questions this week</span></div>' +
+        '<div class="fx-stat"><b>' + wordRows.length + '</b><span>Different words in the cloud</span></div>' +
+        '<div class="fx-stat"><b>' + vocab.length + '</b><span>Vocabulary words</span></div>' +
+      '</div>' +
+      '<div style="display:flex;gap:10px;flex-wrap:wrap;margin:-6px 0 34px;">' +
+        '<button class="fx-btn lg" onclick="learnOpenProjector()">' + fxIcon('screen', 18) + ' Open projector view</button>' +
+        '<button class="fx-btn lg ghost" onclick="switchPortalTab(\'learn\')">Preview the member screen</button></div>' +
 
-      '<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px;">' +
-        '<div class="ufa-label" style="margin:0;">Questions this week (' + qs.length + ')</div>' +
-        '<button class="ufa-btn-ghost ufa-btn-sm" onclick="learnArchiveWeek()">Start a new week</button></div>' +
-      '<div style="' + box + (archivedQs.length ? 'margin-bottom:12px;' : '') + '">' + qHtml + '</div>' +
-      (archivedQs.length
-        ? '<details style="margin-bottom:28px;"><summary style="cursor:pointer;font-size:13px;color:#3D6B3D;font-weight:600;">Past weeks (' + archivedQs.length + ' question' + (archivedQs.length === 1 ? '' : 's') + ')</summary>' +
-          '<div style="' + box + 'margin-top:10px;margin-bottom:0;">' + archivedQs.map(function (q) {
-            return '<div style="display:flex;gap:14px;align-items:flex-start;padding:12px 16px;border-top:1px solid rgba(46,74,46,0.08);">' +
-              '<div style="flex:none;width:44px;text-align:center;font-weight:700;color:#6B7D6B;">' + q.votes + '<div style="font-size:10px;font-weight:500;color:#8A968A;">votes</div></div>' +
-              '<div style="flex:1;min-width:0;"><div style="font-size:14px;line-height:1.5;color:#3A4A3A;">' + ufaEsc(q.body) + '</div>' +
-              '<div style="font-size:12px;color:#8A968A;margin-top:3px;">' + ufaEsc(authorBy[q.id] || 'unknown') + ' &middot; week of ' + new Date(q.archived_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + (q.answered ? ' &middot; answered' : '') + '</div></div>' +
-              '<button class="ufa-btn-ghost ufa-btn-sm ufa-btn-danger" data-id="' + q.id + '" data-a="delete" onclick="learnAdminQ(this.dataset.id,this.dataset.a)">Delete</button></div>';
-          }).join('') + '</div></details>'
-        : '') +
+      '<section class="fx-sec"><div class="fx-sec-head"><div><h3 class="fx-h2">Questions this week</h3><p class="fx-sub">You can see who asked. Members cannot.</p></div>' +
+        '<button class="fx-btn sm ghost" onclick="learnArchiveWeek()">' + fxIcon('refresh', 15) + ' Start a new week</button></div>' +
+        '<div ' + panel + '>' + qHtml + '</div>' + archivedHtml + '</section>' +
 
-      '<div class="ufa-label">Word cloud</div><div style="' + box + 'margin-bottom:12px;">' + wcHtml + '</div>' +
-      '<div class="ufa-card ufa-card-tight" style="margin-bottom:28px;"><div style="display:flex;gap:8px;flex-wrap:wrap;">' +
-        '<input id="learn-new-prompt" class="ufa-input" style="flex:1;min-width:220px;" value="Words you want explained" maxlength="120">' +
-        '<button class="ufa-btn ufa-btn-sm" onclick="learnRoundCreate()">Start a new round</button></div>' +
-        '<div class="ufa-pane-sub" style="margin-top:8px;">Starting a new round closes the old one. Each member can add up to 3 words.</div></div>' +
+      '<section class="fx-sec"><div class="fx-sec-head"><div><h3 class="fx-h2">Word cloud</h3><p class="fx-sub">Each member can add up to 3 words per round.</p></div></div>' +
+        '<div ' + panel + '>' + wcHtml + '</div>' +
+        '<div class="fx-form-card" style="margin-top:12px;"><div style="display:flex;gap:8px;flex-wrap:wrap;">' +
+          '<input id="learn-new-prompt" class="fx-input" style="flex:1;min-width:220px;" value="Words you want explained" maxlength="120" aria-label="Round prompt">' +
+          '<button class="fx-btn" onclick="learnRoundCreate()">Start a new round</button></div>' +
+          '<p class="fx-sub" style="margin-top:10px;">Starting a new round closes the old one.</p></div></section>' +
 
-      '<div class="ufa-label">Vocabulary word of the week</div><div style="' + box + 'margin-bottom:12px;">' + vHtml + '</div>' +
-      '<div class="ufa-card ufa-card-tight" style="margin-bottom:28px;">' +
-        '<input id="learn-v-term" class="ufa-input" maxlength="60" style="width:100%;margin-bottom:8px;" placeholder="Term (e.g. Yield curve)">' +
-        '<textarea id="learn-v-def" class="ufa-textarea" rows="2" maxlength="400" style="width:100%;margin-bottom:8px;" placeholder="Plain-English definition"></textarea>' +
-        '<input id="learn-v-ex" class="ufa-input" maxlength="200" style="width:100%;margin-bottom:10px;" placeholder="Example sentence (optional)">' +
-        '<button class="ufa-btn ufa-btn-sm" onclick="learnVocabAdd()">Add and make this week\'s word</button></div>';
+      '<section class="fx-sec"><div class="fx-sec-head"><div><h3 class="fx-h2">Vocabulary word of the week</h3><p class="fx-sub">The current word is the big panel at the top of the member screen.</p></div></div>' +
+        '<div ' + panel + '>' + vHtml + '</div>' +
+        '<div class="fx-form-card" style="margin-top:12px;">' +
+          '<input id="learn-v-term" class="fx-input" maxlength="60" style="margin-bottom:10px;" placeholder="Term (for example, Yield curve)" aria-label="Term">' +
+          '<textarea id="learn-v-def" class="fx-textarea" rows="2" maxlength="400" style="margin-bottom:10px;" placeholder="Plain-English definition" aria-label="Definition"></textarea>' +
+          '<input id="learn-v-ex" class="fx-input" maxlength="200" style="margin-bottom:14px;" placeholder="Example sentence (optional)" aria-label="Example">' +
+          '<button class="fx-btn" onclick="learnVocabAdd()">Add and make this week\'s word</button></div></section>';
 
     await renderVisibilityToggle('learn', 'visibility_learn');
   } catch (e) {
     console.error('loadLearnAdmin', e);
-    host.innerHTML = '<div class="ufa-alert ufa-alert-err">Could not load: ' + ufaEsc(learnErr(e)) + '</div>';
+    host.innerHTML = '<div class="fx-msg err">Could not load: ' + ufaEsc(learnErr(e)) + '</div>';
   }
 }
 
@@ -21101,15 +21633,15 @@ async function learnOpenProjector() {
   var el = document.createElement('div');
   el.id = 'learn-projector';
   el.innerHTML =
-    '<div style="max-width:1500px;margin:0 auto;padding:28px 40px 60px;">' +
-      '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:24px;flex-wrap:wrap;margin-bottom:26px;">' +
-        '<div style="font-family:\'Playfair Display\',Georgia,serif;font-size:clamp(22px,2.4vw,34px);">UFA &middot; Ask &amp; Learn</div>' +
-        '<button onclick="learnCloseProjector()" style="background:transparent;border:1px solid rgba(255,255,255,0.3);color:#F2F5F0;border-radius:8px;padding:8px 16px;font-size:14px;cursor:pointer;">Close (Esc)</button>' +
+    '<div style="max-width:1560px;margin:0 auto;padding:30px 48px 70px;">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap;margin-bottom:28px;">' +
+        '<div style="font-family:var(--font-display,Georgia,serif);font-size:clamp(22px,2.2vw,32px);">UFA <span style="color:#6E8A6E;">&middot;</span> Ask &amp; Learn</div>' +
+        '<button onclick="learnCloseProjector()" style="background:transparent;border:1px solid rgba(255,255,255,.3);color:#F2F5F0;border-radius:10px;padding:9px 18px;font-size:14px;cursor:pointer;">Close (Esc)</button>' +
       '</div>' +
-      '<div id="lp-vocab" style="margin-bottom:30px;"></div>' +
-      '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:48px;">' +
-        '<div><div style="font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:#8FA08F;margin-bottom:6px;">Top questions</div><div id="lp-questions"></div></div>' +
-        '<div><div style="font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:#8FA08F;margin-bottom:6px;" id="lp-wc-title">Words you want explained</div><div id="lp-cloud" style="background:#F7F4EE;border-radius:14px;"></div></div>' +
+      '<div id="lp-vocab" style="margin-bottom:38px;"></div>' +
+      '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:56px;align-items:start;">' +
+        '<div><div class="lp-h">Top questions</div><div id="lp-questions"></div></div>' +
+        '<div><div class="lp-h" id="lp-wc-title">Words you want explained</div><div id="lp-cloud" style="background:#F7F4EE;border-radius:22px;"></div></div>' +
       '</div>' +
     '</div>';
   document.body.appendChild(el);
@@ -21138,20 +21670,20 @@ async function learnProjRefresh() {
 
   var qBox = document.getElementById('lp-questions');
   if (qBox) qBox.innerHTML = qs.length ? qs.map(function (q) {
-    return '<div class="lp-q" style="' + (q.answered ? 'opacity:.45;' : '') + '">' +
-      '<div class="lp-votes">' + q.votes + '<small>VOTES</small></div>' +
+    return '<div class="lp-q" style="' + (q.answered ? 'opacity:.42;' : '') + '">' +
+      '<div class="lp-votes">' + q.votes + '<small>votes</small></div>' +
       '<div style="flex:1;min-width:0;word-break:break-word;">' + ufaEsc(q.body) + '</div>' +
-      '<button title="' + (q.answered ? 'Mark as not answered' : 'Mark as answered') + '" data-id="' + q.id + '" onclick="learnAdminQ(this.dataset.id,\'answer\')" ' +
-        'style="flex:none;background:' + (q.answered ? '#2E6B2E' : 'transparent') + ';border:1px solid rgba(255,255,255,0.3);color:#F2F5F0;border-radius:8px;width:40px;height:40px;font-size:18px;cursor:pointer;">&#10003;</button>' +
+      '<button title="' + (q.answered ? 'Mark as not answered' : 'Mark as answered') + '" aria-label="Toggle answered" data-id="' + q.id + '" onclick="learnAdminQ(this.dataset.id,\'answer\')" ' +
+        'style="flex:none;background:' + (q.answered ? '#2E6B2E' : 'transparent') + ';border:1.5px solid rgba(255,255,255,.3);color:#F2F5F0;border-radius:12px;width:46px;height:46px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;">' + fxIcon('check', 22) + '</button>' +
       '</div>';
-  }).join('') : '<div style="padding:18px 0;border-top:1px solid rgba(255,255,255,0.12);font-size:clamp(16px,1.6vw,22px);color:#8FA08F;">Questions will show up here as people post them.</div>';
+  }).join('') : '<div style="padding:18px 0;font-size:clamp(18px,1.8vw,26px);color:#8FA08F;">Questions will show up here as people post them.</div>';
 
   var vBox = document.getElementById('lp-vocab');
   if (vBox) vBox.innerHTML = vocab
-    ? '<div style="background:rgba(255,255,255,0.07);border-radius:14px;padding:18px 26px;">' +
-        '<div style="font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:#8FA08F;margin-bottom:4px;">Word of the week</div>' +
-        '<div style="font-size:clamp(22px,2.6vw,38px);font-weight:600;">' + ufaEsc(vocab.term) + '</div>' +
-        '<div style="font-size:clamp(16px,1.7vw,24px);color:#D6E2D6;margin-top:4px;line-height:1.4;">' + ufaEsc(vocab.definition) + '</div></div>'
+    ? '<div style="background:#0B150E;border:1px solid rgba(243,227,184,.25);border-radius:22px;padding:26px 34px;position:relative;overflow:hidden;">' +
+        '<div class="lp-h" style="color:var(--fx-chalk);display:flex;gap:9px;align-items:center;"><i style="width:9px;height:9px;border-radius:50%;background:var(--fx-brass);display:inline-block;"></i>Word of the week</div>' +
+        '<div style="font:500 clamp(34px,4.4vw,64px)/1.05 var(--font-display,Georgia,serif);letter-spacing:-.02em;">' + ufaEsc(vocab.term) + '</div>' +
+        '<div style="font-size:clamp(18px,1.9vw,28px);color:#D4E0D4;margin-top:10px;line-height:1.45;max-width:70ch;">' + ufaEsc(vocab.definition) + '</div></div>'
     : '';
 
   var cloudBox = document.getElementById('lp-cloud');
@@ -21160,9 +21692,9 @@ async function learnProjRefresh() {
     if (round) {
       if (title) title.textContent = round.prompt;
       var cr = await sb.rpc('wc_counts', { p_round: round.id });
-      cloudBox.innerHTML = learnCloudHtml(cr.error ? [] : (cr.data || []), 22, 78);
+      cloudBox.innerHTML = learnCloudHtml(cr.error ? [] : (cr.data || []), 24, 86);
     } else {
-      cloudBox.innerHTML = '<div style="padding:30px;text-align:center;color:#6B7D6B;font-size:18px;">No word round yet.</div>';
+      cloudBox.innerHTML = '<div style="padding:40px;text-align:center;color:#6B7D6B;font-size:20px;">No word round yet.</div>';
     }
   }
 }
