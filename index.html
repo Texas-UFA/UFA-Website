@@ -5118,6 +5118,7 @@ button[onclick="pubFlipbookNext()"]:hover {
           <button onclick="switchPortalTab('recruiting')" class="portal-tab" id="ptab-recruiting">Recruiting</button>
           <button onclick="switchPortalTab('mock')" class="portal-tab" id="ptab-mock">Mock Interview</button>
           <button onclick="switchPortalTab('board')" class="portal-tab" id="ptab-board">Board Hours</button>
+          <button onclick="switchPortalTab('learn')" class="portal-tab" id="ptab-learn" style="display:none;">Ask &amp; Learn</button>
           <button onclick="switchPortalTab('admin')" class="portal-tab" id="ptab-admin" style="display:none;">Admin</button>
         </div>
       </div>
@@ -5798,6 +5799,17 @@ button[onclick="pubFlipbookNext()"]:hover {
         </div>
 
 
+        <!-- ── ASK & LEARN TAB ──
+             Anonymous Q&A, word cloud, word of the week, Market Watch guide.
+             Board-only until published (setting: visibility_learn). -->
+        <div id="ptab-content-learn" style="display:none;">
+          <div class="ufa-pane-head">
+            <div class="ufa-pane-title">Ask &amp; Learn</div>
+            <div class="ufa-pane-sub">Ask anything anonymously, add words you want explained, and follow along with Market Watch.</div>
+          </div>
+          <div id="learn-body"></div>
+        </div>
+
         <div id="ptab-content-admin" style="display:none;">
           <div style="margin-bottom:24px;">
             <div style="font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:500;color:#1C2B1C;margin-bottom:4px;">Admin Panel</div>
@@ -5814,6 +5826,7 @@ button[onclick="pubFlipbookNext()"]:hover {
             <button onclick="switchAdminTab('approvals')" class="admin-tab" id="atab-approvals">Approvals <span id="approvals-badge" style="display:none;background:#c0392b;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;margin-left:4px;"></span></button>
             <button onclick="switchAdminTab('resumes')" class="admin-tab" id="atab-resumes">Resumes</button>
             <button onclick="switchAdminTab('boardhours')" class="admin-tab" id="atab-boardhours">Board Hours</button>
+            <button onclick="switchAdminTab('learn')" class="admin-tab" id="atab-learn">Ask &amp; Learn</button>
             <button onclick="switchAdminTab('families')" class="admin-tab" id="atab-families">Families <span id="fam-badge" style="display:none;background:#c0392b;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;margin-left:4px;">0</span></button>
           </div>
 
@@ -6155,6 +6168,14 @@ button[onclick="pubFlipbookNext()"]:hover {
           <div id="atab-content-families" style="display:none;">
             <div class="ufa-pane-sub" style="margin-bottom:18px;">Families earn points together: when a family uploads a photo of a meetup and you approve it, every member gets the points automatically.</div>
             <div id="fam-admin-body"><div class="ufa-pane-sub">Loading…</div></div>
+          </div>
+
+          <!-- ── ADMIN: ASK & LEARN ──
+               Moderate questions, run the word cloud, set the word of the week,
+               open the projector view, and publish the feature to members. -->
+          <div id="atab-content-learn" style="display:none;">
+            <div class="ufa-pane-sub" style="margin-bottom:18px;">Anonymous Q&amp;A, word cloud, word of the week, and the Market Watch guide. Board only until you publish it.</div>
+            <div id="learn-admin-body"><div class="ufa-pane-sub">Loading…</div></div>
           </div>
 
           <!-- ── ADMIN: BOARD HOURS ──
@@ -7671,7 +7692,7 @@ async function switchPortalTab(tab) {
   // showDashboard(). Guard here too in case something else calls this
   // directly.
   if (currentMember && currentMember.status === 'pending') tab = 'overview';
-  ['overview','leaderboard','events','profile','recruiting','mock','board','admin'].forEach(t => {
+  ['overview','leaderboard','events','profile','recruiting','mock','board','learn','admin'].forEach(t => {
     const btn = document.getElementById('ptab-' + t);
     const content = document.getElementById('ptab-content-' + t);
     if (btn) btn.classList.toggle('active', t === tab);
@@ -7679,6 +7700,8 @@ async function switchPortalTab(tab) {
   });
   if (tab === 'leaderboard') renderLeaderboard();
   if (tab === 'events') { renderUpcoming(); loadMyFamily(); }
+  if (tab !== 'learn') learnStopPolling();
+  if (tab === 'learn') loadLearnTab();
   if (tab === 'mock') loadMockTab();
   if (tab === 'profile') {
     if (currentUser && !currentMember) {
@@ -7887,7 +7910,7 @@ async function downloadResource(filename, type) {
 }
 
 function switchAdminTab(tab) {
-  ['sessions','roster','attendance','analytics','announce','approvals','resumes','boardhours','families'].forEach(t => {
+  ['sessions','roster','attendance','analytics','announce','approvals','resumes','boardhours','families','learn'].forEach(t => {
     const btn = document.getElementById('atab-' + t);
     const content = document.getElementById('atab-content-' + t);
     if (btn) btn.classList.toggle('active', t === tab);
@@ -7901,6 +7924,7 @@ function switchAdminTab(tab) {
   if (tab === 'resumes') loadResumeAdmin();
   if (tab === 'boardhours') loadBoardHoursAdmin();
   if (tab === 'families') loadFamiliesAdmin();
+  if (tab === 'learn') loadLearnAdmin();
 }
 
 // ── Member fetch helper (handles case mismatch) ──
@@ -7991,7 +8015,7 @@ async function showDashboard() {
     if (btn) btn.style.display = isPending ? 'none' : '';
   });
   if (isPending) {
-    ['mock','board','admin'].forEach(function(t) {
+    ['mock','board','learn','admin'].forEach(function(t) {
       var btn = document.getElementById('ptab-' + t);
       if (btn) btn.style.display = 'none';
     });
@@ -14592,6 +14616,8 @@ async function applyFeatureVisibility() {
     if (boardBtnAlways) boardBtnAlways.style.display = '';
     var mockBtnAlways = document.getElementById('ptab-mock');
     if (mockBtnAlways) mockBtnAlways.style.display = '';
+    var learnBtnAlways = document.getElementById('ptab-learn');
+    if (learnBtnAlways) learnBtnAlways.style.display = '';
     return;
   }
   var cur = await ufaGetSetting('visibility_board_hours');
@@ -14601,6 +14627,10 @@ async function applyFeatureVisibility() {
   var curMock = await ufaGetSetting('visibility_mock');
   var mockBtn = document.getElementById('ptab-mock');
   if (mockBtn) mockBtn.style.display = (curMock && curMock.members) ? '' : 'none';
+
+  var curLearn = await ufaGetSetting('visibility_learn');
+  var learnBtn = document.getElementById('ptab-learn');
+  if (learnBtn) learnBtn.style.display = (curLearn && curLearn.members) ? '' : 'none';
 }
 
 
@@ -17774,7 +17804,7 @@ function handleAlumniCsv(files) {
    be theatre. Saying so plainly beats implying protection that is not there. */
 const DB_ENFORCED_FEATURES = [
   'visibility_alumni',
-  'visibility_board_hours', 'visibility_resume'
+  'visibility_board_hours', 'visibility_resume', 'visibility_learn'
 ];
 
 async function renderVisibilityToggle(uiKey, settingKey) {
@@ -20031,7 +20061,10 @@ async function famRenderAdmin() {
     return '<div style="padding:16px;border-top:1px solid rgba(46,74,46,0.08);">' +
       '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px;">' +
         '<div style="font-size:15px;font-weight:600;color:#1C2B1C;">' + ufaEsc(f.name) + ' <span style="font-weight:400;color:#6B7D6B;font-size:12px;">&middot; ' + ms.length + ' member' + (ms.length === 1 ? '' : 's') + '</span></div>' +
-        '<button class="ufa-btn-ghost ufa-btn-sm ufa-btn-danger" data-id="' + f.id + '" onclick="famDelete(this.dataset.id)">Delete family</button>' +
+        '<div style="display:flex;gap:8px;">' +
+          '<button class="ufa-btn-ghost ufa-btn-sm" data-id="' + f.id + '" onclick="famRename(this.dataset.id)">Rename</button>' +
+          '<button class="ufa-btn-ghost ufa-btn-sm ufa-btn-danger" data-id="' + f.id + '" onclick="famDelete(this.dataset.id)">Delete family</button>' +
+        '</div>' +
       '</div>' +
       '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;">' + chips + '</div>' +
       '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
@@ -20084,6 +20117,26 @@ async function famCreate() {
   if (r.error) return famAdminMsg('err', 'Could not create family: ' + r.error.message);
   await loadFamiliesAdmin();
   famAdminMsg('ok', 'Created "' + name + '". Add members below.');
+}
+
+async function famRename(familyId) {
+  if (!ufaIsBoard()) return;
+  var fam = famAdminData.families.filter(function (f) { return f.id === familyId; })[0];
+  if (!fam) return;
+  var oldName = fam.name;
+  var entered = prompt('New name for "' + oldName + '":', oldName);
+  if (entered === null) return;
+  var name = entered.trim().replace(/\s+/g, ' ');
+  if (!name) return famAdminMsg('err', 'The family needs a name.');
+  if (name.length > 60) return famAdminMsg('err', 'Keep the name under 60 characters.');
+  if (name === fam.name) return;
+  var clash = famAdminData.families.some(function (f) { return f.id !== familyId && f.name.toLowerCase() === name.toLowerCase(); });
+  if (clash) return famAdminMsg('err', 'Another family is already called "' + name + '".');
+  var r = await sb.from('families').update({ name: name }).eq('id', familyId).select();
+  if (r.error) return famAdminMsg('err', 'Could not rename: ' + r.error.message);
+  if (!r.data || !r.data.length) return famAdminMsg('err', 'Could not rename (permission issue).');
+  await loadFamiliesAdmin();
+  famAdminMsg('ok', 'Renamed "' + oldName + '" to "' + name + '". Points already awarded keep the old name in their history.');
 }
 
 async function famAddMember(familyId) {
@@ -20420,6 +20473,703 @@ function mockBeginnerLabel() {
   return MOCK_LEVEL_ORDER.filter(function (d) { return MOCK.levels.indexOf(d) !== -1; })
     .map(mockLevelLabel).join(' and ');
 }
+
+</script>
+<script>
+/* ════════════════════════════════════════════════════════════════
+   ASK & LEARN
+     • Anonymous Q&A with upvotes (the board can see who asked)
+     • Word cloud: "words you want explained"
+     • Vocabulary word of the week
+     • Market Watch follow-along guide
+     • Projector view for the meeting room (board only)
+
+   HIDDEN FROM MEMBERS until the board publishes it. The tab, and the
+   data behind it, are board-only until "Publish to members" is switched
+   on in Admin → Ask & Learn (setting key: visibility_learn). The
+   database enforces this, see learn-setup.sql.
+
+   Phones: the member screen is built to be a ten-second action, a box
+   and a button, so the room looks at the projector, not at a feed.
+   ════════════════════════════════════════════════════════════════ */
+var LEARN_POLL_MS = 6000;
+var LEARN_PROJ_POLL_MS = 4000;
+var learnTimer = null;
+var learnProjTimer = null;
+var learnWcSig = '';
+var LEARN_PALETTE = ['#2E6B2E', '#B8791B', '#1E4A8A', '#8A2E55', '#1E6B7A', '#5A6459'];
+
+(function learnInjectCss() {
+  if (document.getElementById('learn-css')) return;
+  var st = document.createElement('style');
+  st.id = 'learn-css';
+  st.textContent =
+    '.learn-q{display:flex;gap:14px;align-items:flex-start;padding:14px 0;border-top:1px solid rgba(46,74,46,0.08);}' +
+    '.learn-vote{flex:none;width:52px;border:1px solid rgba(46,74,46,0.18);background:#fff;border-radius:10px;padding:6px 0;cursor:pointer;font-family:inherit;color:#3A4A3A;line-height:1.1;}' +
+    '.learn-vote:hover:not(:disabled){border-color:#3D6B3D;background:#F3F6F3;}' +
+    '.learn-vote.on{background:#E4F0E4;border-color:#3D6B3D;color:#2E6B2E;}' +
+    '.learn-vote:disabled{opacity:.55;cursor:default;}' +
+    '.learn-vote b{display:block;font-size:16px;}' +
+    '.learn-vote span{font-size:10px;letter-spacing:.06em;}' +
+    '.learn-cloud{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:baseline;justify-content:center;padding:14px 4px;min-height:80px;}' +
+    '.learn-cloud span{font-weight:600;line-height:1.15;white-space:nowrap;}' +
+    '.learn-guide details{border-top:1px solid rgba(46,74,46,0.10);padding:4px 0;}' +
+    '.learn-guide summary{cursor:pointer;list-style:none;padding:12px 0;font-weight:600;color:#1C2B1C;font-size:15px;display:flex;justify-content:space-between;align-items:center;gap:12px;}' +
+    '.learn-guide summary::-webkit-details-marker{display:none;}' +
+    '.learn-guide summary::after{content:"+";font-size:20px;color:#6B7D6B;font-weight:400;}' +
+    '.learn-guide details[open] summary::after{content:"\\2212";}' +
+    '.learn-term{padding:10px 0;border-top:1px dashed rgba(46,74,46,0.12);font-size:14px;line-height:1.55;color:#3A4A3A;}' +
+    '.learn-term b{color:#1C2B1C;}' +
+    '#learn-projector{position:fixed;inset:0;z-index:9999;background:#14211A;color:#F2F5F0;overflow:auto;font-family:inherit;}' +
+    '#learn-projector .lp-q{display:flex;gap:18px;align-items:flex-start;padding:16px 0;border-top:1px solid rgba(255,255,255,0.12);font-size:clamp(18px,2.1vw,30px);line-height:1.3;}' +
+    '#learn-projector .lp-votes{flex:none;min-width:64px;text-align:center;font-weight:700;font-size:clamp(20px,2.4vw,34px);color:#9ED19E;}' +
+    '#learn-projector .lp-votes small{display:block;font-size:12px;font-weight:500;letter-spacing:.1em;color:#8FA08F;}' +
+    '#learn-projector button{font-family:inherit;}';
+  document.head.appendChild(st);
+})();
+
+function learnErr(e) {
+  var m = (e && e.message) ? e.message : String(e || 'Something went wrong');
+  if (/does not exist|schema cache|Could not find the function|permission denied for (table|function)/i.test(m)) {
+    return 'Ask & Learn is not set up in the database yet. Run learn-setup.sql in Supabase first.';
+  }
+  return m;
+}
+function learnMsg(id, kind, text) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  if (!text) { el.style.display = 'none'; return; }
+  el.className = 'ufa-alert ' + (kind === 'ok' ? 'ufa-alert-ok' : (kind === 'info' ? 'ufa-alert-info' : 'ufa-alert-err'));
+  el.style.display = 'block';
+  el.style.whiteSpace = 'pre-line';
+  el.textContent = text;
+}
+function learnAgo(iso) {
+  var s = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 1000));
+  if (s < 60) return 'just now';
+  if (s < 3600) return Math.round(s / 60) + ' min ago';
+  if (s < 86400) return Math.round(s / 3600) + ' hr ago';
+  return Math.round(s / 86400) + ' d ago';
+}
+
+/* ───────── Market Watch follow-along guide (static: edit here) ───────── */
+var MW_GUIDE = [
+  { title: "Stocks (equities)",
+    intro: "This slide shows how the US stock market did. Stocks are small pieces of ownership in public companies, and an index tracks a group of them as a single number so you can see the market's mood at a glance.",
+    terms: [
+      ["S&P 500", "An index of 500 of the largest US public companies. It is the most common stand-in for \"the US stock market.\""],
+      ["Dow Jones (DJIA)", "An index of 30 large, well-known US companies. It is older and narrower than the S&P 500, so it gives a less complete picture."],
+      ["Nasdaq", "An index heavy on technology and growth companies. When tech does well or badly, the Nasdaq usually moves the most."],
+      ["Index", "A basket of stocks tracked as one number. \"The S&P is up 1%\" means the basket as a whole rose 1%."],
+      ["Sector", "A group of companies in the same kind of business. The market is split into 11 sectors, including Technology, Health Care, Financials, Energy, Utilities and Real Estate."],
+      ["Large cap / small cap", "Market cap is a company's total stock-market value. Large caps are the biggest companies. Small caps (tracked by the Russell 2000) are much smaller and usually swing more."],
+      ["Bull / bear market", "A bull market is a long stretch of rising prices. A bear market usually means prices have fallen 20% or more from a recent high."],
+      ["Correction", "A drop of 10% or more from a recent high. It is smaller than a bear market."],
+      ["YTD", "Year to date: the change since January 1."]
+    ],
+    tip: "Pay attention to the percent change, not the points. A 300-point move means very different things for the Dow and the Nasdaq." },
+
+  { title: "Interest rates & bonds",
+    intro: "Bonds are loans: you lend money to a government or company and get paid interest. Rates matter for almost everything else in markets because they set the price of borrowing.",
+    terms: [
+      ["The Fed", "The Federal Reserve, the US central bank. It sets the interest-rate target the whole economy leans on."],
+      ["Fed funds rate", "The rate banks charge each other for overnight loans. When the Fed \"hikes\" or \"cuts,\" this is the rate it changes."],
+      ["FOMC", "The Fed committee that votes on rates. It meets about eight times a year."],
+      ["Treasury", "A bond issued by the US government, widely seen as one of the safest investments."],
+      ["Yield", "The return you earn on a bond, shown as a yearly percentage. The \"10-year yield\" is the rate on a 10-year Treasury and is a benchmark for things like mortgages."],
+      ["Price vs. yield", "They move in opposite directions: when a bond's price rises, its yield falls, and vice versa."],
+      ["Basis point (bp)", "One hundredth of a percent. A 25 bp cut means rates fell by 0.25%."],
+      ["Yield curve", "A line comparing yields on short-term and long-term Treasuries. An \"inverted\" curve, where short-term yields are higher than long-term ones, has often come before recessions."],
+      ["Hawkish / dovish", "Hawkish means leaning toward higher rates to fight inflation. Dovish means leaning toward lower rates to support growth."]
+    ],
+    tip: "When rates rise, borrowing gets more expensive, and stock prices (especially for fast-growing companies) often come under pressure." },
+
+  { title: "Commodities",
+    intro: "Commodities are raw materials like oil, gold and wheat that are bought and sold in bulk. Their prices say a lot about demand, supply and fear in the economy.",
+    terms: [
+      ["Crude oil (WTI & Brent)", "Two benchmark oil prices, quoted per barrel. WTI is the US benchmark and Brent is the global one."],
+      ["Gold", "Often called a \"safe haven\": investors tend to buy it when they are nervous about the economy or markets."],
+      ["Safe haven", "An asset people move into when they are worried, because it tends to hold its value."],
+      ["Natural gas", "A fuel for heating and electricity. Its price swings a lot with the weather."],
+      ["Copper", "Used in construction and electronics, so its price is sometimes read as a hint about the health of the global economy."],
+      ["Futures", "A contract to buy or sell something at a set price on a future date. Most commodity prices you see on a slide are futures prices."],
+      ["OPEC", "A group of major oil-producing countries that coordinates how much oil they produce, which moves oil prices."]
+    ],
+    tip: "When a price moves, ask whether the cause is supply (less is available) or demand (people want less)." },
+
+  { title: "Currencies (FX)",
+    intro: "Currencies are traded against each other, so every price is a comparison. This slide shows how strong the dollar is relative to other countries' money.",
+    terms: [
+      ["Exchange rate", "How much of one currency it takes to buy another."],
+      ["EUR/USD", "A currency pair. It shows how many US dollars one euro buys, so if it rises, the euro got stronger against the dollar."],
+      ["Dollar index (DXY)", "Measures the dollar against a basket of six major currencies, including the euro and the yen. Up means a stronger dollar."],
+      ["Strong dollar", "Makes imports cheaper for Americans and US exports pricier overseas. It can also reduce the profits US companies earn abroad."]
+    ],
+    tip: "A currency only goes up or down relative to another one, so always ask \"compared to what?\"" },
+
+  { title: "Volatility (the fear gauge)",
+    intro: "Volatility describes how wildly prices are swinging. It tells you how nervous or calm the market is, regardless of whether prices are going up or down.",
+    terms: [
+      ["Volatility", "How big and how fast prices swing. High volatility means large, hard-to-predict moves."],
+      ["VIX", "Often called the fear gauge. It estimates how much the S&P 500 is expected to swing over the next 30 days. Higher means more uncertainty. As a rule of thumb, the teens are calm and 30+ signals real stress."],
+      ["Options", "Contracts that give the right to buy or sell at a set price. The VIX is calculated from S&P 500 options prices."],
+      ["Risk-on / risk-off", "Risk-on means investors feel confident and buy stocks. Risk-off means they get nervous and move into safer assets like Treasuries and gold."]
+    ],
+    tip: "If the VIX jumps while stocks fall, the market is nervous. A low, steady VIX with rising stocks is the opposite." },
+
+  { title: "Economic data",
+    intro: "These reports describe the health of the economy. Markets move when the numbers come in better or worse than economists expected.",
+    terms: [
+      ["GDP", "Gross domestic product: the total value of everything a country produces. Its growth rate is the broadest measure of the economy."],
+      ["Inflation", "The rate at which prices rise over time. A dollar buys less when inflation is high."],
+      ["CPI", "Consumer Price Index: the most-watched inflation number. It tracks the average change in prices households pay."],
+      ["Jobs report", "Released monthly, usually on the first Friday. It shows how many jobs were added and the unemployment rate."],
+      ["Unemployment rate", "The share of people who want to work but cannot find a job."],
+      ["Recession", "A broad, lasting drop in economic activity. Two straight quarters of falling GDP is a common rule of thumb, though in the US a committee makes the official call."],
+      ["Consensus", "The average forecast from economists. Markets react to the surprise versus the forecast, not just to the number."],
+      ["Soft landing", "When the Fed brings inflation down without causing a recession."]
+    ],
+    tip: "Ask \"was it better or worse than expected?\" That surprise is usually what moves markets." },
+
+  { title: "Earnings",
+    intro: "Public companies report their results every three months. These reports often move a single stock more than anything else.",
+    terms: [
+      ["Earnings season", "The few weeks after each quarter ends when most public companies report their results."],
+      ["Revenue", "Total sales, before any costs are taken out."],
+      ["Earnings (net income)", "What is left after costs, interest and taxes. Another word for profit."],
+      ["EPS", "Earnings per share: profit divided by the number of shares."],
+      ["Beat / miss", "Reporting results above (a beat) or below (a miss) what analysts expected."],
+      ["Guidance", "A company's own forecast for future results. A stock can fall after a beat if the guidance disappoints."],
+      ["P/E ratio", "Price-to-earnings: the share price divided by earnings per share. It shows how much investors are paying for each $1 of profit."]
+    ],
+    tip: "The stock reaction depends on results versus expectations, not on whether the results were good in absolute terms." },
+
+  { title: "News decoder",
+    intro: "The news slides change every week, but a lot of the same words keep showing up. This is a decoder for the common ones. If a word is missing, drop it in the question box and the board will explain it.",
+    terms: [
+      ["IPO", "Initial public offering: a private company sells shares to the public for the first time."],
+      ["M&A", "Mergers and acquisitions: companies combining, or one company buying another."],
+      ["Merger vs. acquisition", "In a merger two companies combine into one. In an acquisition one company buys the other."],
+      ["Rally / sell-off", "A rally is a sharp rise in prices. A sell-off is a sharp fall."],
+      ["Upgrade / downgrade", "When an analyst raises or lowers their rating or outlook on a stock."],
+      ["Tariff", "A tax on imported goods."],
+      ["Stimulus", "Government or central bank action meant to boost the economy, such as extra spending or lower rates."],
+      ["Private equity", "Firms that buy companies using investors' money, try to improve them, and sell them later."],
+      ["Share buyback", "When a company buys back its own stock, which reduces the number of shares and can lift earnings per share."],
+      ["Short seller", "An investor betting that a stock will fall."],
+      ["Bankruptcy", "A legal process for a company that cannot pay its debts."]
+    ],
+    tip: "" }
+];
+
+function learnGuideHtml() {
+  return '<div class="learn-guide">' + MW_GUIDE.map(function (t) {
+    return '<details><summary>' + ufaEsc(t.title) + '</summary>' +
+      '<div style="font-size:14px;line-height:1.6;color:#3A4A3A;padding:0 0 10px;">' + ufaEsc(t.intro) + '</div>' +
+      t.terms.map(function (x) {
+        return '<div class="learn-term"><b>' + ufaEsc(x[0]) + '</b> &mdash; ' + ufaEsc(x[1]) + '</div>';
+      }).join('') +
+      (t.tip ? '<div style="margin:10px 0 6px;padding:10px 12px;background:#EEF5EE;border-radius:8px;font-size:13px;color:#2E4A2E;"><b>Listen for:</b> ' + ufaEsc(t.tip) + '</div>' : '') +
+      '</details>';
+  }).join('') + '</div>';
+}
+
+/* ───────── Word cloud rendering (shared by member + projector) ───────── */
+function learnCloudHtml(rows, minPx, maxPx) {
+  if (!rows || !rows.length) return '<div style="text-align:center;color:#8A968A;font-size:14px;padding:18px 0;">No words yet. Be the first to add one.</div>';
+  var max = rows.reduce(function (m, r) { return Math.max(m, r.n); }, 1);
+  var shown = rows.slice(0, 60).slice().sort(function (a, b) { return a.word < b.word ? -1 : 1; });
+  return '<div class="learn-cloud">' + shown.map(function (r, i) {
+    var size = Math.round(minPx + (maxPx - minPx) * (max === 1 ? 0.35 : (r.n - 1) / (max - 1)));
+    var color = LEARN_PALETTE[(r.word.length + i) % LEARN_PALETTE.length];
+    return '<span style="font-size:' + size + 'px;color:' + color + ';" title="' + r.n + (r.n === 1 ? ' person' : ' people') + '">' + ufaEsc(r.display) + '</span>';
+  }).join('') + '</div>';
+}
+
+/* ═════════════════════════ MEMBER TAB ═════════════════════════ */
+
+async function loadLearnTab() {
+  var host = document.getElementById('learn-body');
+  if (!host) return;
+  var banner = '';
+  if (ufaIsBoard()) {
+    var cur = await ufaGetSetting('visibility_learn');
+    if (!(cur && cur.members)) {
+      banner = '<div class="ufa-alert ufa-alert-info" style="margin-bottom:18px;"><strong>Board preview.</strong> Members cannot see this tab yet. ' +
+        'You can try everything here; publish it from Admin &rarr; Ask &amp; Learn when you are ready.</div>';
+    }
+  }
+  host.innerHTML = banner +
+    '<div id="learn-vocab"></div>' +
+    '<div class="ufa-card" style="margin-bottom:22px;">' +
+      '<div class="ufa-label" style="margin-bottom:4px;">Ask a question</div>' +
+      '<div class="ufa-pane-sub" style="margin-bottom:12px;">Anonymous to other members. Nothing is too basic, and chances are someone else is wondering the same thing. Upvote the ones you want answered.</div>' +
+      '<textarea id="learn-q-input" class="ufa-textarea" maxlength="300" rows="2" style="width:100%;margin-bottom:8px;" placeholder="What does that acronym mean? Why did that stock move?"></textarea>' +
+      '<div style="display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;">' +
+        '<span id="learn-q-count" style="font-size:12px;color:#8A968A;">0 / 300</span>' +
+        '<button id="learn-q-btn" class="ufa-btn" onclick="learnSubmitQuestion()">Post anonymously</button>' +
+      '</div>' +
+      '<div id="learn-q-msg" class="ufa-alert" style="display:none;margin-top:12px;"></div>' +
+      '<div id="learn-q-list" style="margin-top:14px;"></div>' +
+    '</div>' +
+    '<div class="ufa-card" id="learn-wc-card" style="margin-bottom:22px;display:none;">' +
+      '<div class="ufa-label" style="margin-bottom:4px;">Word cloud</div>' +
+      '<div id="learn-wc-form"></div>' +
+      '<div id="learn-wc-cloud"></div>' +
+    '</div>' +
+    '<div class="ufa-card">' +
+      '<div class="ufa-label" style="margin-bottom:4px;">Market Watch guide</div>' +
+      '<div class="ufa-pane-sub" style="margin-bottom:8px;">Follow along with Market Watch. Tap a topic to see what the terms on the slide mean in plain English.</div>' +
+      learnGuideHtml() +
+    '</div>';
+
+  var ta = document.getElementById('learn-q-input');
+  ta.addEventListener('input', function () {
+    document.getElementById('learn-q-count').textContent = ta.value.length + ' / 300';
+  });
+
+  learnWcSig = '';
+  await Promise.all([learnRefreshVocab(), learnRefreshQuestions(), learnRefreshCloud()]);
+  learnStartPolling();
+}
+
+function learnStartPolling() {
+  learnStopPolling();
+  learnTimer = setInterval(function () {
+    if (document.hidden) return;
+    var pane = document.getElementById('ptab-content-learn');
+    if (!pane || pane.style.display === 'none' || !document.getElementById('learn-q-list')) { learnStopPolling(); return; }
+    learnRefreshQuestions();
+    learnRefreshCloud();
+  }, LEARN_POLL_MS);
+}
+function learnStopPolling() {
+  if (learnTimer) { clearInterval(learnTimer); learnTimer = null; }
+}
+
+async function learnRefreshVocab() {
+  var box = document.getElementById('learn-vocab');
+  if (!box) return;
+  var r = await sb.from('vocab_words').select('*').order('created_at', { ascending: false }).limit(40);
+  if (r.error) { box.innerHTML = ''; return; }
+  var rows = r.data || [];
+  var cur = rows.filter(function (w) { return w.is_current; })[0];
+  var older = rows.filter(function (w) { return !w.is_current; });
+  if (!cur && !older.length) { box.innerHTML = ''; return; }
+  box.innerHTML = '<div class="ufa-card" style="margin-bottom:22px;background:#F3F8F3;">' +
+    '<div class="ufa-label" style="margin-bottom:6px;">Word of the week</div>' +
+    (cur
+      ? '<div style="font-family:\'Playfair Display\',Georgia,serif;font-size:26px;font-weight:500;color:#1C2B1C;">' + ufaEsc(cur.term) + '</div>' +
+        '<div style="font-size:15px;line-height:1.6;color:#3A4A3A;margin-top:6px;">' + ufaEsc(cur.definition) + '</div>' +
+        (cur.example ? '<div style="font-size:14px;color:#6B7D6B;margin-top:8px;font-style:italic;">&ldquo;' + ufaEsc(cur.example) + '&rdquo;</div>' : '')
+      : '<div style="font-size:14px;color:#6B7D6B;">No word this week yet.</div>') +
+    (older.length
+      ? '<details style="margin-top:14px;"><summary style="cursor:pointer;font-size:13px;color:#3D6B3D;font-weight:600;">Past words (' + older.length + ')</summary>' +
+        older.map(function (w) {
+          return '<div class="learn-term"><b>' + ufaEsc(w.term) + '</b> &mdash; ' + ufaEsc(w.definition) + '</div>';
+        }).join('') + '</details>'
+      : '') +
+    '</div>';
+}
+
+async function learnRefreshQuestions() {
+  var box = document.getElementById('learn-q-list');
+  if (!box) return;
+  var r = await sb.rpc('qa_list');
+  if (r.error) { box.innerHTML = '<div class="ufa-alert ufa-alert-err">' + ufaEsc(learnErr(r.error)) + '</div>'; return; }
+  var rows = r.data || [];
+  if (!rows.length) {
+    box.innerHTML = '<div style="padding:14px 0;border-top:1px solid rgba(46,74,46,0.08);font-size:14px;color:#8A968A;text-align:center;">No questions yet. Ask the first one.</div>';
+    return;
+  }
+  box.innerHTML = rows.map(function (q) {
+    return '<div class="learn-q">' +
+      '<button class="learn-vote' + (q.voted ? ' on' : '') + '" ' + (q.mine ? 'disabled title="You can\'t upvote your own question"' : 'title="Upvote"') +
+        ' data-id="' + q.id + '" onclick="learnVote(this.dataset.id)"><b>' + q.votes + '</b><span>' + (q.voted ? 'VOTED' : 'UPVOTE') + '</span></button>' +
+      '<div style="min-width:0;flex:1;">' +
+        '<div style="font-size:15px;line-height:1.5;color:#1C2B1C;word-break:break-word;">' + ufaEsc(q.body) + '</div>' +
+        '<div style="margin-top:6px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">' +
+          (q.answered ? '<span class="ufa-pill ufa-pill-green">Answered</span>' : '') +
+          (q.mine ? '<span class="ufa-pill ufa-pill-blue">You asked this</span>' : '') +
+          '<span style="font-size:11px;color:#8A968A;">' + learnAgo(q.created_at) + '</span>' +
+        '</div></div></div>';
+  }).join('');
+}
+
+async function learnSubmitQuestion() {
+  var ta = document.getElementById('learn-q-input');
+  var btn = document.getElementById('learn-q-btn');
+  var body = ta.value.replace(/\s+/g, ' ').trim();
+  if (body.length < 3) return learnMsg('learn-q-msg', 'err', 'Type your question first (at least a few characters).');
+  btn.disabled = true;
+  var r = await sb.rpc('qa_submit', { p_body: body });
+  btn.disabled = false;
+  if (r.error) return learnMsg('learn-q-msg', 'err', learnErr(r.error));
+  ta.value = '';
+  document.getElementById('learn-q-count').textContent = '0 / 300';
+  learnMsg('learn-q-msg', 'ok', 'Posted. Other members can\'t see who asked.');
+  setTimeout(function () { learnMsg('learn-q-msg', 'ok', ''); }, 3500);
+  learnRefreshQuestions();
+}
+
+async function learnVote(id) {
+  var r = await sb.rpc('qa_toggle_vote', { p_question: id });
+  if (r.error) { learnMsg('learn-q-msg', 'err', learnErr(r.error)); return; }
+  learnRefreshQuestions();
+}
+
+/* Word cloud: the form only re-renders when the round changes, so typing is never interrupted. */
+async function learnRefreshCloud() {
+  var form = document.getElementById('learn-wc-form');
+  var cloud = document.getElementById('learn-wc-cloud');
+  if (!form || !cloud) return;
+  var card = document.getElementById('learn-wc-card');
+  var rr = await sb.rpc('wc_current');
+  if (card) card.style.display = '';
+  if (rr.error) { form.innerHTML = '<div class="ufa-alert ufa-alert-err">' + ufaEsc(learnErr(rr.error)) + '</div>'; cloud.innerHTML = ''; return; }
+  var round = (rr.data && rr.data[0]) || null;
+  if (!round) {
+    // Nothing running: hide the whole card, so a one-off cloud leaves no empty box behind
+    learnWcSig = 'none';
+    form.innerHTML = '';
+    cloud.innerHTML = '';
+    if (card) card.style.display = 'none';
+    return;
+  }
+  var mine = round.my_words || [];
+  var sig = round.id + '|' + round.is_open + '|' + mine.join('~');
+  if (sig !== learnWcSig) {
+    learnWcSig = sig;
+    var left = Math.max(0, 3 - mine.length);
+    form.innerHTML =
+      '<div style="font-size:15px;color:#1C2B1C;margin-bottom:10px;">' + ufaEsc(round.prompt) + '</div>' +
+      (round.is_open && left > 0
+        ? '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">' +
+            '<input id="learn-wc-input" class="ufa-input" maxlength="40" style="flex:1;min-width:180px;" placeholder="e.g. EBITDA, yield curve" onkeydown="if(event.key===\'Enter\')learnSubmitWord(\'' + round.id + '\',' + left + ')">' +
+            '<button class="ufa-btn" onclick="learnSubmitWord(\'' + round.id + '\',' + left + ')">Add</button></div>' +
+          '<div style="font-size:12px;color:#8A968A;margin-bottom:6px;">You can add ' + left + ' more word' + (left === 1 ? '' : 's') + ' (separate with commas).</div>'
+        : '<div style="font-size:13px;color:#6B7D6B;margin-bottom:6px;">' + (round.is_open ? 'You have added all 3 of your words.' : 'This round is closed.') + '</div>') +
+      (mine.length ? '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;">' + mine.map(function (w) {
+        return '<span class="ufa-pill ufa-pill-blue">' + ufaEsc(w) + '</span>';
+      }).join('') + '</div>' : '') +
+      '<div id="learn-wc-msg" class="ufa-alert" style="display:none;margin:8px 0;"></div>';
+  }
+  var cr = await sb.rpc('wc_counts', { p_round: round.id });
+  cloud.innerHTML = cr.error ? '' : learnCloudHtml(cr.data || [], 15, 40);
+}
+
+async function learnSubmitWord(roundId, left) {
+  var inp = document.getElementById('learn-wc-input');
+  if (!inp) return;
+  var words = inp.value.split(',').map(function (w) { return w.trim(); }).filter(Boolean);
+  if (!words.length) return learnMsg('learn-wc-msg', 'err', 'Type a word or term first.');
+  if (words.length > left) words = words.slice(0, left);
+  var r = await sb.rpc('wc_submit', { p_round: roundId, p_words: words });
+  if (r.error) return learnMsg('learn-wc-msg', 'err', learnErr(r.error));
+  learnWcSig = '';
+  learnRefreshCloud();
+}
+
+/* ═════════════════════════ BOARD: ADMIN TAB ═════════════════════════ */
+
+async function loadLearnAdmin() {
+  var host = document.getElementById('learn-admin-body');
+  if (!host) return;
+  host.innerHTML = '<div class="ufa-pane-sub">Loading…</div>';
+  try {
+    var res = await Promise.all([
+      sb.from('qa_questions').select('*').order('created_at', { ascending: false }).limit(300),
+      sb.from('qa_question_authors').select('*'),
+      sb.from('members').select('email, name'),
+      sb.from('wc_rounds').select('*').order('created_at', { ascending: false }).limit(20),
+      sb.from('vocab_words').select('*').order('created_at', { ascending: false }).limit(60)
+    ]);
+    for (var i = 0; i < res.length; i++) if (res[i].error) throw res[i].error;
+    var allQs = res[0].data || [], authors = res[1].data || [], members = res[2].data || [];
+    var qs = allQs.filter(function (q) { return !q.archived_at; });
+    var archivedQs = allQs.filter(function (q) { return q.archived_at; });
+    var rounds = res[3].data || [], vocab = res[4].data || [];
+
+    var nameBy = {};
+    members.forEach(function (m) { nameBy[String(m.email).toLowerCase()] = m.name || m.email; });
+    var authorBy = {};
+    authors.forEach(function (a) { authorBy[a.question_id] = nameBy[String(a.email).toLowerCase()] || a.email; });
+
+    var round = rounds[0] || null;
+    var subs = [];
+    if (round) {
+      var sr = await sb.from('wc_submissions').select('word, display, email').eq('round_id', round.id);
+      if (sr.error) throw sr.error;
+      subs = sr.data || [];
+    }
+    var byWord = {};
+    subs.forEach(function (s) {
+      var o = byWord[s.word] = byWord[s.word] || { word: s.word, display: s.display, n: 0 };
+      o.n++;
+    });
+    var wordRows = Object.keys(byWord).map(function (k) { return byWord[k]; })
+      .sort(function (a, b) { return b.n - a.n || (a.word < b.word ? -1 : 1); });
+    var people = {};
+    subs.forEach(function (s) { people[s.email] = 1; });
+
+    qs.sort(function (a, b) {
+      return (a.hidden - b.hidden) || (a.answered - b.answered) || (b.votes - a.votes) || (new Date(b.created_at) - new Date(a.created_at));
+    });
+
+    var box = 'background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;overflow:hidden;margin-bottom:28px;';
+
+    var qHtml = qs.length ? qs.map(function (q) {
+      return '<div style="display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap;padding:14px 16px;border-top:1px solid rgba(46,74,46,0.08);' + (q.hidden ? 'opacity:.55;' : '') + '">' +
+        '<div style="flex:none;width:44px;text-align:center;font-weight:700;color:#2E6B2E;">' + q.votes + '<div style="font-size:10px;font-weight:500;color:#8A968A;">votes</div></div>' +
+        '<div style="flex:1;min-width:200px;">' +
+          '<div style="font-size:14px;line-height:1.5;color:#1C2B1C;' + (q.hidden ? 'text-decoration:line-through;' : '') + '">' + ufaEsc(q.body) + '</div>' +
+          '<div style="font-size:12px;color:#6B7D6B;margin-top:4px;">Asked by <b>' + ufaEsc(authorBy[q.id] || 'unknown') + '</b> &middot; ' + learnAgo(q.created_at) +
+            (q.answered ? ' &middot; <span style="color:#2E6B2E;">answered</span>' : '') + (q.hidden ? ' &middot; hidden from members' : '') + '</div>' +
+        '</div>' +
+        '<div style="display:flex;gap:6px;flex-wrap:wrap;">' +
+          '<button class="ufa-btn-ghost ufa-btn-sm" data-id="' + q.id + '" data-a="answer" onclick="learnAdminQ(this.dataset.id,this.dataset.a)">' + (q.answered ? 'Unmark answered' : 'Mark answered') + '</button>' +
+          '<button class="ufa-btn-ghost ufa-btn-sm" data-id="' + q.id + '" data-a="hide" onclick="learnAdminQ(this.dataset.id,this.dataset.a)">' + (q.hidden ? 'Unhide' : 'Hide') + '</button>' +
+          '<button class="ufa-btn-ghost ufa-btn-sm ufa-btn-danger" data-id="' + q.id + '" data-a="delete" onclick="learnAdminQ(this.dataset.id,this.dataset.a)">Delete</button>' +
+        '</div></div>';
+    }).join('') : '<div style="padding:20px;font-size:13px;color:#6B7D6B;text-align:center;">No questions yet.</div>';
+
+    var wcHtml = (round
+      ? '<div style="padding:16px;">' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px;">' +
+            '<div><div style="font-size:15px;font-weight:600;color:#1C2B1C;">' + ufaEsc(round.prompt) + '</div>' +
+            '<div style="font-size:12px;color:#6B7D6B;margin-top:3px;">' + Object.keys(people).length + ' member' + (Object.keys(people).length === 1 ? '' : 's') + ' submitted &middot; ' +
+              (round.is_open ? '<span style="color:#2E6B2E;">open</span>' : 'closed') + '</div></div>' +
+            '<div style="display:flex;gap:6px;"><button class="ufa-btn-ghost ufa-btn-sm" data-id="' + round.id + '" data-open="' + (!round.is_open) + '" onclick="learnRoundToggle(this.dataset.id,this.dataset.open===\'true\')">' + (round.is_open ? 'Close round' : 'Reopen') + '</button>' +
+            '<button class="ufa-btn-ghost ufa-btn-sm ufa-btn-danger" data-id="' + round.id + '" onclick="learnRoundDelete(this.dataset.id)">Delete round</button></div>' +
+          '</div>' +
+          (wordRows.length ? '<div style="display:flex;flex-wrap:wrap;gap:8px;">' + wordRows.map(function (w) {
+            return '<span style="display:inline-flex;align-items:center;gap:6px;background:#EEF5EE;border:1px solid rgba(46,74,46,0.14);border-radius:20px;padding:4px 6px 4px 12px;font-size:13px;color:#1C2B1C;">' +
+              ufaEsc(w.display) + ' <b style="color:#2E6B2E;">' + w.n + '</b>' +
+              '<button title="Remove this word" data-id="' + round.id + '" data-word="' + ufaEsc(w.word) + '" onclick="learnWordDelete(this.dataset.id,this.dataset.word)" style="border:none;background:none;cursor:pointer;color:#A33A32;font-size:16px;line-height:1;padding:0 6px;">&times;</button></span>';
+          }).join('') + '</div>' : '<div style="font-size:13px;color:#6B7D6B;">No words yet.</div>') +
+        '</div>'
+      : '<div style="padding:20px;font-size:13px;color:#6B7D6B;text-align:center;">No word round yet. Start one below.</div>');
+
+    var vHtml = vocab.length ? vocab.map(function (w) {
+      return '<div style="display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap;padding:14px 16px;border-top:1px solid rgba(46,74,46,0.08);">' +
+        '<div style="flex:1;min-width:200px;"><div style="font-size:14px;font-weight:600;color:#1C2B1C;">' + ufaEsc(w.term) +
+          (w.is_current ? ' <span class="ufa-pill ufa-pill-green" style="margin-left:6px;">This week</span>' : '') + '</div>' +
+          '<div style="font-size:13px;color:#3A4A3A;margin-top:3px;line-height:1.5;">' + ufaEsc(w.definition) + '</div>' +
+          (w.example ? '<div style="font-size:12px;color:#6B7D6B;margin-top:3px;font-style:italic;">&ldquo;' + ufaEsc(w.example) + '&rdquo;</div>' : '') + '</div>' +
+        '<div style="display:flex;gap:6px;">' +
+          (w.is_current ? '' : '<button class="ufa-btn-ghost ufa-btn-sm" data-id="' + w.id + '" onclick="learnVocabCurrent(this.dataset.id)">Make this week\'s word</button>') +
+          '<button class="ufa-btn-ghost ufa-btn-sm ufa-btn-danger" data-id="' + w.id + '" onclick="learnVocabDelete(this.dataset.id)">Delete</button></div></div>';
+    }).join('') : '<div style="padding:20px;font-size:13px;color:#6B7D6B;text-align:center;">No words yet. Add the first one below.</div>';
+
+    host.innerHTML =
+      '<div id="learn-visibility" style="margin-bottom:20px;"></div>' +
+      '<div id="learn-alert" class="ufa-alert" style="display:none;margin-bottom:16px;"></div>' +
+      '<div id="learn-admin-msg" class="ufa-alert" style="display:none;margin-bottom:16px;"></div>' +
+      '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:26px;">' +
+        '<button class="ufa-btn" onclick="learnOpenProjector()">Open projector view</button>' +
+        '<button class="ufa-btn-ghost" onclick="switchPortalTab(\'learn\')">Preview the member screen</button></div>' +
+
+      '<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px;">' +
+        '<div class="ufa-label" style="margin:0;">Questions this week (' + qs.length + ')</div>' +
+        '<button class="ufa-btn-ghost ufa-btn-sm" onclick="learnArchiveWeek()">Start a new week</button></div>' +
+      '<div style="' + box + (archivedQs.length ? 'margin-bottom:12px;' : '') + '">' + qHtml + '</div>' +
+      (archivedQs.length
+        ? '<details style="margin-bottom:28px;"><summary style="cursor:pointer;font-size:13px;color:#3D6B3D;font-weight:600;">Past weeks (' + archivedQs.length + ' question' + (archivedQs.length === 1 ? '' : 's') + ')</summary>' +
+          '<div style="' + box + 'margin-top:10px;margin-bottom:0;">' + archivedQs.map(function (q) {
+            return '<div style="display:flex;gap:14px;align-items:flex-start;padding:12px 16px;border-top:1px solid rgba(46,74,46,0.08);">' +
+              '<div style="flex:none;width:44px;text-align:center;font-weight:700;color:#6B7D6B;">' + q.votes + '<div style="font-size:10px;font-weight:500;color:#8A968A;">votes</div></div>' +
+              '<div style="flex:1;min-width:0;"><div style="font-size:14px;line-height:1.5;color:#3A4A3A;">' + ufaEsc(q.body) + '</div>' +
+              '<div style="font-size:12px;color:#8A968A;margin-top:3px;">' + ufaEsc(authorBy[q.id] || 'unknown') + ' &middot; week of ' + new Date(q.archived_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + (q.answered ? ' &middot; answered' : '') + '</div></div>' +
+              '<button class="ufa-btn-ghost ufa-btn-sm ufa-btn-danger" data-id="' + q.id + '" data-a="delete" onclick="learnAdminQ(this.dataset.id,this.dataset.a)">Delete</button></div>';
+          }).join('') + '</div></details>'
+        : '') +
+
+      '<div class="ufa-label">Word cloud</div><div style="' + box + 'margin-bottom:12px;">' + wcHtml + '</div>' +
+      '<div class="ufa-card ufa-card-tight" style="margin-bottom:28px;"><div style="display:flex;gap:8px;flex-wrap:wrap;">' +
+        '<input id="learn-new-prompt" class="ufa-input" style="flex:1;min-width:220px;" value="Words you want explained" maxlength="120">' +
+        '<button class="ufa-btn ufa-btn-sm" onclick="learnRoundCreate()">Start a new round</button></div>' +
+        '<div class="ufa-pane-sub" style="margin-top:8px;">Starting a new round closes the old one. Each member can add up to 3 words.</div></div>' +
+
+      '<div class="ufa-label">Vocabulary word of the week</div><div style="' + box + 'margin-bottom:12px;">' + vHtml + '</div>' +
+      '<div class="ufa-card ufa-card-tight" style="margin-bottom:28px;">' +
+        '<input id="learn-v-term" class="ufa-input" maxlength="60" style="width:100%;margin-bottom:8px;" placeholder="Term (e.g. Yield curve)">' +
+        '<textarea id="learn-v-def" class="ufa-textarea" rows="2" maxlength="400" style="width:100%;margin-bottom:8px;" placeholder="Plain-English definition"></textarea>' +
+        '<input id="learn-v-ex" class="ufa-input" maxlength="200" style="width:100%;margin-bottom:10px;" placeholder="Example sentence (optional)">' +
+        '<button class="ufa-btn ufa-btn-sm" onclick="learnVocabAdd()">Add and make this week\'s word</button></div>';
+
+    await renderVisibilityToggle('learn', 'visibility_learn');
+  } catch (e) {
+    console.error('loadLearnAdmin', e);
+    host.innerHTML = '<div class="ufa-alert ufa-alert-err">Could not load: ' + ufaEsc(learnErr(e)) + '</div>';
+  }
+}
+
+async function learnAdminQ(id, action) {
+  if (!ufaIsBoard()) return;
+  var r;
+  if (action === 'delete') {
+    if (!confirm('Delete this question for good?')) return;
+    r = await sb.from('qa_questions').delete().eq('id', id).select();
+  } else {
+    var cur = await sb.from('qa_questions').select('hidden, answered').eq('id', id).maybeSingle();
+    if (!cur.data) return learnMsg('learn-admin-msg', 'err', 'Could not find that question.');
+    var patch = action === 'hide' ? { hidden: !cur.data.hidden } : { answered: !cur.data.answered };
+    r = await sb.from('qa_questions').update(patch).eq('id', id).select();
+  }
+  if (r.error || !r.data || !r.data.length) return learnMsg('learn-admin-msg', 'err', 'Could not save: ' + (r.error ? learnErr(r.error) : 'permission issue'));
+  if (learnProjectorOpen()) learnProjRefresh();
+  if (learnAdminVisible()) loadLearnAdmin();
+}
+
+async function learnArchiveWeek() {
+  if (!ufaIsBoard()) return;
+  if (!confirm('Start a new week? Every current question disappears for members. You can still see them under "Past weeks" here.')) return;
+  var r = await sb.from('qa_questions').update({ archived_at: new Date().toISOString() }).is('archived_at', null).select();
+  if (r.error) return learnMsg('learn-admin-msg', 'err', 'Could not start a new week: ' + learnErr(r.error));
+  if (learnProjectorOpen()) learnProjRefresh();
+  await loadLearnAdmin();
+  learnMsg('learn-admin-msg', 'ok', 'New week started. ' + (r.data || []).length + ' question' + ((r.data || []).length === 1 ? '' : 's') + ' archived, and members now see a clean list.');
+}
+
+async function learnRoundCreate() {
+  if (!ufaIsBoard()) return;
+  var prompt = (document.getElementById('learn-new-prompt').value || '').trim();
+  if (!prompt) return learnMsg('learn-admin-msg', 'err', 'Give the round a prompt.');
+  await sb.from('wc_rounds').update({ is_open: false }).eq('is_open', true);
+  var r = await sb.from('wc_rounds').insert({ prompt: prompt, is_open: true }).select();
+  if (r.error) return learnMsg('learn-admin-msg', 'err', 'Could not start the round: ' + learnErr(r.error));
+  loadLearnAdmin();
+}
+async function learnRoundToggle(id, open) {
+  if (!ufaIsBoard()) return;
+  if (open) await sb.from('wc_rounds').update({ is_open: false }).eq('is_open', true);
+  var r = await sb.from('wc_rounds').update({ is_open: open }).eq('id', id).select();
+  if (r.error || !r.data || !r.data.length) return learnMsg('learn-admin-msg', 'err', 'Could not change the round.');
+  loadLearnAdmin();
+}
+async function learnRoundDelete(id) {
+  if (!ufaIsBoard()) return;
+  if (!confirm('Delete this round and every word in it?')) return;
+  var r = await sb.from('wc_rounds').delete().eq('id', id).select();
+  if (r.error || !r.data || !r.data.length) return learnMsg('learn-admin-msg', 'err', 'Could not delete the round.');
+  loadLearnAdmin();
+}
+async function learnWordDelete(roundId, word) {
+  if (!ufaIsBoard()) return;
+  var r = await sb.from('wc_submissions').delete().eq('round_id', roundId).eq('word', word).select();
+  if (r.error) return learnMsg('learn-admin-msg', 'err', 'Could not remove the word: ' + learnErr(r.error));
+  if (learnProjectorOpen()) learnProjRefresh();
+  if (learnAdminVisible()) loadLearnAdmin();
+}
+
+async function learnVocabAdd() {
+  if (!ufaIsBoard()) return;
+  var term = document.getElementById('learn-v-term').value.trim();
+  var def = document.getElementById('learn-v-def').value.trim();
+  var ex = document.getElementById('learn-v-ex').value.trim();
+  if (!term || !def) return learnMsg('learn-admin-msg', 'err', 'A word needs a term and a definition.');
+  await sb.from('vocab_words').update({ is_current: false }).eq('is_current', true);
+  var r = await sb.from('vocab_words').insert({ term: term, definition: def, example: ex || null, is_current: true }).select();
+  if (r.error) return learnMsg('learn-admin-msg', 'err', 'Could not add the word: ' + learnErr(r.error));
+  loadLearnAdmin();
+}
+async function learnVocabCurrent(id) {
+  if (!ufaIsBoard()) return;
+  await sb.from('vocab_words').update({ is_current: false }).eq('is_current', true);
+  var r = await sb.from('vocab_words').update({ is_current: true }).eq('id', id).select();
+  if (r.error || !r.data || !r.data.length) return learnMsg('learn-admin-msg', 'err', 'Could not change the word.');
+  loadLearnAdmin();
+}
+async function learnVocabDelete(id) {
+  if (!ufaIsBoard()) return;
+  if (!confirm('Delete this word?')) return;
+  var r = await sb.from('vocab_words').delete().eq('id', id).select();
+  if (r.error || !r.data || !r.data.length) return learnMsg('learn-admin-msg', 'err', 'Could not delete the word.');
+  loadLearnAdmin();
+}
+
+/* ═════════════════════════ PROJECTOR VIEW (board only) ═════════════════════════ */
+
+function learnProjectorOpen() { return !!document.getElementById('learn-projector'); }
+function learnAdminVisible() {
+  var el = document.getElementById('atab-content-learn');
+  return !!el && el.style.display !== 'none';
+}
+
+async function learnOpenProjector() {
+  if (!ufaIsBoard() || learnProjectorOpen()) return;
+  var el = document.createElement('div');
+  el.id = 'learn-projector';
+  el.innerHTML =
+    '<div style="max-width:1500px;margin:0 auto;padding:28px 40px 60px;">' +
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:24px;flex-wrap:wrap;margin-bottom:26px;">' +
+        '<div style="font-family:\'Playfair Display\',Georgia,serif;font-size:clamp(22px,2.4vw,34px);">UFA &middot; Ask &amp; Learn</div>' +
+        '<button onclick="learnCloseProjector()" style="background:transparent;border:1px solid rgba(255,255,255,0.3);color:#F2F5F0;border-radius:8px;padding:8px 16px;font-size:14px;cursor:pointer;">Close (Esc)</button>' +
+      '</div>' +
+      '<div id="lp-vocab" style="margin-bottom:30px;"></div>' +
+      '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:48px;">' +
+        '<div><div style="font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:#8FA08F;margin-bottom:6px;">Top questions</div><div id="lp-questions"></div></div>' +
+        '<div><div style="font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:#8FA08F;margin-bottom:6px;" id="lp-wc-title">Words you want explained</div><div id="lp-cloud" style="background:#F7F4EE;border-radius:14px;"></div></div>' +
+      '</div>' +
+    '</div>';
+  document.body.appendChild(el);
+  document.body.style.overflow = 'hidden';
+  await learnProjRefresh();
+  learnProjTimer = setInterval(function () { if (!document.hidden) learnProjRefresh(); }, LEARN_PROJ_POLL_MS);
+}
+
+function learnCloseProjector() {
+  if (learnProjTimer) { clearInterval(learnProjTimer); learnProjTimer = null; }
+  var el = document.getElementById('learn-projector');
+  if (el) el.remove();
+  document.body.style.overflow = '';
+}
+
+async function learnProjRefresh() {
+  if (!learnProjectorOpen()) return;
+  var res = await Promise.all([
+    sb.from('qa_questions').select('*').eq('hidden', false).is('archived_at', null).order('answered', { ascending: true }).order('votes', { ascending: false }).order('created_at', { ascending: false }).limit(8),
+    sb.from('vocab_words').select('term, definition').eq('is_current', true).maybeSingle(),
+    sb.from('wc_rounds').select('*').order('created_at', { ascending: false }).limit(1)
+  ]);
+  var qs = res[0].data || [];
+  var vocab = res[1].data;
+  var round = (res[2].data || [])[0];
+
+  var qBox = document.getElementById('lp-questions');
+  if (qBox) qBox.innerHTML = qs.length ? qs.map(function (q) {
+    return '<div class="lp-q" style="' + (q.answered ? 'opacity:.45;' : '') + '">' +
+      '<div class="lp-votes">' + q.votes + '<small>VOTES</small></div>' +
+      '<div style="flex:1;min-width:0;word-break:break-word;">' + ufaEsc(q.body) + '</div>' +
+      '<button title="' + (q.answered ? 'Mark as not answered' : 'Mark as answered') + '" data-id="' + q.id + '" onclick="learnAdminQ(this.dataset.id,\'answer\')" ' +
+        'style="flex:none;background:' + (q.answered ? '#2E6B2E' : 'transparent') + ';border:1px solid rgba(255,255,255,0.3);color:#F2F5F0;border-radius:8px;width:40px;height:40px;font-size:18px;cursor:pointer;">&#10003;</button>' +
+      '</div>';
+  }).join('') : '<div style="padding:18px 0;border-top:1px solid rgba(255,255,255,0.12);font-size:clamp(16px,1.6vw,22px);color:#8FA08F;">Questions will show up here as people post them.</div>';
+
+  var vBox = document.getElementById('lp-vocab');
+  if (vBox) vBox.innerHTML = vocab
+    ? '<div style="background:rgba(255,255,255,0.07);border-radius:14px;padding:18px 26px;">' +
+        '<div style="font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:#8FA08F;margin-bottom:4px;">Word of the week</div>' +
+        '<div style="font-size:clamp(22px,2.6vw,38px);font-weight:600;">' + ufaEsc(vocab.term) + '</div>' +
+        '<div style="font-size:clamp(16px,1.7vw,24px);color:#D6E2D6;margin-top:4px;line-height:1.4;">' + ufaEsc(vocab.definition) + '</div></div>'
+    : '';
+
+  var cloudBox = document.getElementById('lp-cloud');
+  var title = document.getElementById('lp-wc-title');
+  if (cloudBox) {
+    if (round) {
+      if (title) title.textContent = round.prompt;
+      var cr = await sb.rpc('wc_counts', { p_round: round.id });
+      cloudBox.innerHTML = learnCloudHtml(cr.error ? [] : (cr.data || []), 22, 78);
+    } else {
+      cloudBox.innerHTML = '<div style="padding:30px;text-align:center;color:#6B7D6B;font-size:18px;">No word round yet.</div>';
+    }
+  }
+}
+
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape' && learnProjectorOpen()) learnCloseProjector();
+});
 
 </script>
 </body>
