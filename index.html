@@ -21515,6 +21515,13 @@ function learnGuideSelect(slideId, boxKey) {
   learnGuide.slide = s.id;
   learnGuide.box = boxKey || s.boxes[0].key;
   learnGuideDraw();
+  if (boxKey) {
+    var t = document.getElementById('learn-terms');
+    if (t) {
+      var r = t.getBoundingClientRect();
+      if (r.top > window.innerHeight * 0.55) window.scrollBy({ top: r.top - 140, behavior: 'smooth' });
+    }
+  }
 }
 function learnGuideSearch(v) { learnGuide.q = v || ''; learnGuideDraw(); }
 
@@ -21557,7 +21564,10 @@ var LEARN_PALETTE = ['#2E4A2E', '#9A6414', '#1E4A8A', '#8A2E55', '#1E6B7A', '#5A
   var st = document.createElement('style');
   st.id = 'learn-css';
   st.textContent = `
-.fx-learn-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(300px,1fr);gap:40px;align-items:start;margin-bottom:18px;}
+.fx-learn-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(300px,1fr);gap:40px;align-items:start;margin-bottom:0;}
+.fx-learn-grid.solo{grid-template-columns:minmax(0,860px);}
+#learn-ask{margin-bottom:0;}
+#learn-guide{margin-top:44px;padding-top:40px;border-top:1px solid var(--fx-line);}
 .fx-side{position:sticky;top:100px;}
 
 /* word of the week */
@@ -21604,6 +21614,8 @@ var LEARN_PALETTE = ['#2E4A2E', '#9A6414', '#1E4A8A', '#8A2E55', '#1E6B7A', '#5A
 .fx-wc-hint{font-size:12.5px;color:var(--fx-muted);margin:8px 0 0;}
 .fx-wc-mine{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0 0;}
 .fx-cloudbox{background:#fff;border:1px solid var(--fx-line);border-radius:18px;margin-top:18px;}
+.learn-pack{position:relative;width:100%;overflow:hidden;}
+.learn-pack span{position:absolute;display:flex;align-items:center;justify-content:center;white-space:nowrap;line-height:1;letter-spacing:-.01em;}
 .learn-cloud{display:flex;flex-wrap:wrap;gap:2px 16px;align-items:baseline;justify-content:center;padding:22px 14px;min-height:150px;}
 .learn-cloud span{line-height:1.12;white-space:nowrap;letter-spacing:-.01em;}
 
@@ -21615,8 +21627,8 @@ var LEARN_PALETTE = ['#2E4A2E', '#9A6414', '#1E4A8A', '#8A2E55', '#1E6B7A', '#5A
 .fx-seg button{border:0;background:transparent;padding:9px 16px;border-radius:10px;font:500 14px var(--font-body,sans-serif);color:#556655;cursor:pointer;transition:background .15s,color .15s;}
 .fx-seg button:hover{color:var(--fx-ink);}
 .fx-seg button[aria-selected=true]{background:#fff;color:var(--fx-ink);box-shadow:0 1px 3px rgba(28,43,28,.15);}
-.fx-gd{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:24px;align-items:start;}
-.fx-slide{background:#16241A;border-radius:22px;padding:20px 20px 22px;color:#fff;box-shadow:0 22px 44px -28px rgba(0,0,0,.65);position:sticky;top:100px;}
+.fx-gd{display:block;}
+.fx-slide{background:#16241A;border-radius:22px;padding:20px 20px 22px;color:#fff;box-shadow:0 22px 44px -28px rgba(0,0,0,.65);margin-bottom:20px;}
 .fx-slide-top{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:0 4px 16px;flex-wrap:wrap;}
 .fx-slide-top span{font:500 20px var(--font-display,Georgia,serif);}
 .fx-slide-top em{font-style:normal;font-size:12.5px;color:#9FB59F;}
@@ -21634,12 +21646,15 @@ var LEARN_PALETTE = ['#2E4A2E', '#9A6414', '#1E4A8A', '#8A2E55', '#1E6B7A', '#5A
 .fx-badge{display:inline-flex;align-items:center;justify-content:center;width:25px;height:25px;border-radius:50%;background:var(--fx-brass);color:#fff;font:600 12.5px var(--font-body,sans-serif);flex:none;}
 .fx-tile-t{font:600 14.5px/1.25 var(--font-body,sans-serif);}
 .fx-tile-d{font-size:12.5px;line-height:1.4;opacity:.7;}
-.fx-terms{background:#fff;border:1px solid var(--fx-line);border-radius:22px;padding:24px 26px 26px;}
+.fx-terms{background:#fff;border:1px solid var(--fx-line);border-radius:22px;padding:24px 28px 26px;scroll-margin-top:90px;}
+.fx-terms dl{column-count:2;column-gap:44px;}
+.fx-results dl{column-count:1;}
+.fx-term{break-inside:avoid;}
 .fx-terms-head{display:flex;gap:14px;align-items:flex-start;margin-bottom:12px;}
 .fx-terms-head .fx-badge{margin-top:2px;width:30px;height:30px;font-size:14px;}
 .fx-terms dl{margin:0;}
-.fx-term{padding:13px 0;border-top:1px solid rgba(46,74,46,.09);}
-.fx-term:first-child{border-top:0;}
+.fx-term{padding:13px 0;border-bottom:1px solid rgba(46,74,46,.09);}
+.fx-term:last-child{border-bottom:0;}
 .fx-term dt{font:600 15.5px var(--font-body,sans-serif);color:var(--fx-ink);}
 .fx-term dd{margin:4px 0 0;font-size:14.5px;line-height:1.62;color:#3A4A3A;}
 .fx-deeper{margin-top:18px;padding:16px 20px 6px;border-radius:16px;background:var(--fx-paper);border-left:3px solid var(--fx-brass);}
@@ -21669,7 +21684,7 @@ var LEARN_PALETTE = ['#2E4A2E', '#9A6414', '#1E4A8A', '#8A2E55', '#1E6B7A', '#5A
 
 @media (max-width:980px){
   .fx-learn-grid{grid-template-columns:1fr;gap:6px;} .fx-side{position:static;}
-  .fx-gd{grid-template-columns:1fr;} .fx-slide{position:static;}
+  .fx-terms dl{column-count:1;} .fx-slide{position:static;}
   .fx-wotw{padding:28px 24px 26px;border-radius:20px;}
 }
 @media (max-width:640px){
@@ -21706,22 +21721,107 @@ function learnAgo(iso) {
 }
 
 /* ───────── Word cloud rendering (member card + projector) ───────── */
-function learnCloudHtml(rows, minPx, maxPx) {
+/* The cloud is packed: words are placed along a spiral from the centre, and
+   the whole thing is scaled up until the box is as full as it can be, so two
+   words fill the space with big type and forty words still fit. The layout is
+   deterministic (same words and size give the same picture), so it does not
+   jump around every time the page refreshes. */
+function learnCloudHtml(rows, minPx, maxPx, height) {
   if (!rows || !rows.length) return '<div style="text-align:center;color:#8A968A;font-size:14px;padding:34px 18px;">No words yet. Add the first one.</div>';
-  var sorted = rows.slice(0, 40).slice().sort(function (a, b) { return b.n - a.n || (a.word < b.word ? -1 : 1); });
-  var max = sorted[0].n;
-  // biggest words in the middle, smaller ones fanning out to the edges
-  var left = [], right = [];
-  sorted.forEach(function (r, i) { (i % 2 ? left : right).push(r); });
-  var ordered = left.reverse().concat(right);
-  return '<div class="learn-cloud">' + ordered.map(function (r) {
-    var rel = max === 1 ? 0.35 : (r.n - 1) / (max - 1);
-    var size = Math.round(minPx + (maxPx - minPx) * rel);
-    var color = LEARN_PALETTE[(r.word.length + r.n) % LEARN_PALETTE.length];
-    var serif = rel >= 0.45;
-    return '<span style="font-size:' + size + 'px;color:' + color + ';font-family:' + (serif ? "var(--font-display,Georgia,serif)" : "var(--font-body,sans-serif)") + ';font-weight:' + (serif ? 500 : 600) + ';" title="' + r.n + (r.n === 1 ? ' person' : ' people') + '">' + ufaEsc(r.display) + '</span>';
-  }).join('') + '</div>';
+  var data = rows.slice(0, 40).map(function (r) { return { w: String(r.word), n: r.n }; });
+  return '<div class="learn-pack" style="height:' + (height || 280) + 'px;" data-min="' + minPx + '" data-max="' + maxPx + '" data-rows="' + encodeURIComponent(JSON.stringify(data)) + '"></div>';
 }
+
+var LEARN_MEASURE = null;
+function learnHash(str) { var h = 0; for (var i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) | 0; return Math.abs(h); }
+function learnFontFamily(serif) { return serif ? '"Playfair Display", Georgia, serif' : '"DM Sans", system-ui, sans-serif'; }
+function learnMeasure(text, px, serif) {
+  if (!LEARN_MEASURE) LEARN_MEASURE = document.createElement('canvas').getContext('2d');
+  LEARN_MEASURE.font = (serif ? '500 ' : '600 ') + px + 'px ' + learnFontFamily(serif);
+  return LEARN_MEASURE.measureText(text).width;
+}
+
+function learnPackLayout(words, W, H, minPx, maxPx) {
+  var max = words[0].n;
+  function rel(r) { return max === 1 ? 0.6 : (r.n - 1) / (max - 1); }
+  function base(r) { return minPx + (maxPx - minPx) * rel(r); }
+  var stretch = Math.max(1, Math.min(2.4, W / H));
+
+  function attempt(k) {
+    var placed = [];
+    for (var i = 0; i < words.length; i++) {
+      var r = words[i];
+      var px = base(r) * k;
+      var serif = rel(r) >= 0.45;
+      var tw = learnMeasure(r.w, px, serif) + 8;
+      var th = px * 1.1;
+      var rot = words.length >= 3 && i > 0 && learnHash(r.w) % 4 === 0;
+      var bw = rot ? th : tw, bh = rot ? tw : th;
+      if (bw > W - 16 || bh > H - 16) return null;
+      var spot = null, theta = (learnHash(r.w) % 628) / 100;
+      for (var step = 0; step < 6000 && !spot; step++) {
+        var rad = 1.9 * theta;
+        var x = W / 2 + rad * Math.cos(theta) * stretch - bw / 2;
+        var y = H / 2 + rad * Math.sin(theta) - bh / 2;
+        theta += 9 / Math.max(rad, 14);
+        if (x < 8 || y < 8 || x + bw > W - 8 || y + bh > H - 8) continue;
+        var hit = false;
+        for (var j = 0; j < placed.length; j++) {
+          var o = placed[j];
+          if (x < o.x + o.bw + 5 && x + bw + 5 > o.x && y < o.y + o.bh + 5 && y + bh + 5 > o.y) { hit = true; break; }
+        }
+        if (!hit) spot = { x: x, y: y };
+      }
+      if (!spot) return null;
+      placed.push({ w: r.w, n: r.n, px: px, serif: serif, rot: rot, x: spot.x, y: spot.y, bw: bw, bh: bh });
+    }
+    return placed;
+  }
+
+  // Largest scale that fits: the biggest word never takes more than ~32% of the height.
+  var hi = (H * 0.32) / base(words[0]);
+  var lo = 0.2;
+  var best = attempt(hi);
+  if (best) return best;
+  var fallback = attempt(lo);
+  for (var it = 0; it < 10; it++) {
+    var mid = (lo + hi) / 2;
+    var res = attempt(mid);
+    if (res) { lo = mid; fallback = res; } else { hi = mid; }
+  }
+  return fallback;
+}
+
+function learnPackClouds(root) {
+  var boxes = (root || document).querySelectorAll('.learn-pack');
+  for (var b = 0; b < boxes.length; b++) {
+    var el = boxes[b];
+    var W = el.clientWidth, H = el.clientHeight;
+    if (!W || !H) continue;
+    var raw = el.getAttribute('data-rows') || '';
+    var sig = raw + '|' + W + 'x' + H;
+    if (el.getAttribute('data-sig') === sig) continue;
+    var words;
+    try { words = JSON.parse(decodeURIComponent(raw)); } catch (e) { continue; }
+    if (!words.length) continue;
+    words.sort(function (x, y) { return y.n - x.n || (x.w < y.w ? -1 : 1); });
+    var placed = learnPackLayout(words, W, H, Number(el.getAttribute('data-min')) || 15, Number(el.getAttribute('data-max')) || 44);
+    if (!placed) continue;
+    el.innerHTML = placed.map(function (r) {
+      var color = LEARN_PALETTE[(r.w.length + r.n) % LEARN_PALETTE.length];
+      return '<span title="' + r.n + (r.n === 1 ? ' person' : ' people') + '" style="left:' + Math.round(r.x) + 'px;top:' + Math.round(r.y) + 'px;width:' + Math.ceil(r.bw) + 'px;height:' + Math.ceil(r.bh) +
+        'px;font-size:' + r.px.toFixed(1) + 'px;color:' + color + ';font-family:' + learnFontFamily(r.serif) + ';font-weight:' + (r.serif ? 500 : 600) + ';' +
+        (r.rot ? 'writing-mode:vertical-rl;transform:rotate(180deg);' : '') + '">' + ufaEsc(r.w) + '</span>';
+    }).join('');
+    el.setAttribute('data-sig', sig);
+  }
+}
+
+var learnPackResizeTimer = null;
+window.addEventListener('resize', function () {
+  clearTimeout(learnPackResizeTimer);
+  learnPackResizeTimer = setTimeout(function () { learnPackClouds(document); }, 150);
+});
 
 /* ═════════════════════════ MEMBER TAB ═════════════════════════ */
 
@@ -21738,7 +21838,7 @@ async function loadLearnTab() {
   }
   host.innerHTML = banner +
     '<div id="learn-vocab"></div>' +
-    '<div class="fx-learn-grid">' +
+    '<div class="fx-learn-grid solo" id="learn-grid">' +
       '<section id="learn-ask" class="fx-sec">' +
         '<div><h3 class="fx-h2">Ask a question</h3>' +
           '<p class="fx-sub">Nothing is too basic, and someone else is probably wondering the same thing. Upvote the ones you want answered.</p></div>' +
@@ -21759,7 +21859,7 @@ async function loadLearnTab() {
         '<div id="learn-wc-cloud" class="fx-cloudbox"></div>' +
       '</div></aside>' +
     '</div>' +
-    '<section id="learn-guide" class="fx-sec" style="margin-top:34px;">' + learnGuideShell() + '</section>';
+    '<section id="learn-guide" class="fx-sec">' + learnGuideShell() + '</section>';
 
   var ta = document.getElementById('learn-q-input');
   ta.addEventListener('input', function () {
@@ -21857,6 +21957,12 @@ async function learnVote(id) {
   learnRefreshQuestions();
 }
 
+/* One column when there is no word cloud to show beside the questions. */
+function learnSyncGrid() {
+  var g = document.getElementById('learn-grid'), c = document.getElementById('learn-wc-card');
+  if (g && c) g.classList.toggle('solo', c.style.display === 'none');
+}
+
 /* Word cloud: the form only re-renders when the round changes, so typing is never interrupted. */
 async function learnRefreshCloud() {
   var form = document.getElementById('learn-wc-form');
@@ -21865,6 +21971,7 @@ async function learnRefreshCloud() {
   var card = document.getElementById('learn-wc-card');
   var rr = await sb.rpc('wc_current');
   if (card) card.style.display = '';
+  learnSyncGrid();
   if (rr.error) { form.innerHTML = '<div class="fx-msg err" style="margin-top:14px;">' + ufaEsc(learnErr(rr.error)) + '</div>'; cloud.innerHTML = ''; return; }
   var round = (rr.data && rr.data[0]) || null;
   if (!round) {
@@ -21873,6 +21980,7 @@ async function learnRefreshCloud() {
     form.innerHTML = '';
     cloud.innerHTML = '';
     if (card) card.style.display = 'none';
+    learnSyncGrid();
     return;
   }
   var mine = round.my_words || [];
@@ -21892,7 +22000,8 @@ async function learnRefreshCloud() {
       '<div id="learn-wc-msg" class="fx-msg" style="display:none;margin:12px 0 0;"></div>';
   }
   var cr = await sb.rpc('wc_counts', { p_round: round.id });
-  cloud.innerHTML = cr.error ? '' : learnCloudHtml(cr.data || [], 15, 44);
+  var cloudHtml = cr.error ? '' : learnCloudHtml(cr.data || [], 15, 44, 300);
+  if (cloud.__html !== cloudHtml) { cloud.__html = cloudHtml; cloud.innerHTML = cloudHtml; learnPackClouds(cloud); }
 }
 
 async function learnSubmitWord(roundId, left) {
@@ -22196,8 +22305,10 @@ async function learnProjRefresh() {
     if (round) {
       if (title) title.textContent = round.prompt;
       var cr = await sb.rpc('wc_counts', { p_round: round.id });
-      cloudBox.innerHTML = learnCloudHtml(cr.error ? [] : (cr.data || []), 24, 86);
+      var pHtml = learnCloudHtml(cr.error ? [] : (cr.data || []), 24, 86, Math.max(440, Math.round(window.innerHeight * 0.58)));
+      if (cloudBox.__html !== pHtml) { cloudBox.__html = pHtml; cloudBox.innerHTML = pHtml; learnPackClouds(cloudBox); }
     } else {
+      cloudBox.__html = null;
       cloudBox.innerHTML = '<div style="padding:40px;text-align:center;color:#6B7D6B;font-size:20px;">No word round yet.</div>';
     }
   }
