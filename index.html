@@ -5183,6 +5183,7 @@ button[onclick="pubFlipbookNext()"]:hover {
         <div id="ptab-content-leaderboard" style="display:none;">
           <div style="font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:500;color:#1C2B1C;margin-bottom:4px;">Leaderboard</div>
           <div style="font-size:13px;color:#6B7D6B;margin-bottom:24px;">Top members by points this semester</div>
+          <div id="lb-family-cup" style="display:none;margin-bottom:28px;"></div>
           <div id="leaderboard-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px;">
             <div>
               <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:12px;">All Members</div>
@@ -5283,22 +5284,27 @@ button[onclick="pubFlipbookNext()"]:hover {
           </div>
 
           <!-- WSJ Access -->
-          <div style="background:#1C2B1C;border-radius:8px;padding:20px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
-            <div>
-              <div style="font-size:15px;font-weight:600;color:#fff;margin-bottom:4px;">Wall Street Journal Access</div>
-              <div style="font-size:13px;color:#A8BCA8;">Complimentary WSJ subscription for UFA members</div>
-            </div>
-            <div style="display:flex;gap:24px;flex-wrap:wrap;">
-              <div>
-                <div style="font-size:11px;color:#A8BCA8;margin-bottom:2px;">USERNAME</div>
-                <div id="wsj-username" style="font-size:14px;font-weight:500;color:#fff;font-family:monospace;">Loading…</div>
+          <div class="res-wsj">
+            <div class="res-wsj-main">
+              <div class="res-wsj-ico">WSJ</div>
+              <div style="min-width:0;">
+                <div class="res-wsj-t">Wall Street Journal access</div>
+                <div class="res-wsj-s">A free subscription for UFA members. Sign in with the shared account.</div>
               </div>
-              <div>
-                <div style="font-size:11px;color:#A8BCA8;margin-bottom:2px;">PASSWORD</div>
-                <div id="wsj-password" style="font-size:14px;font-weight:500;color:#fff;font-family:monospace;">Loading…</div>
-              </div>
-              <a href="https://wsj.com" target="_blank" rel="noopener noreferrer" style="align-self:center;background:#fff;color:#1C2B1C;font-size:13px;font-weight:600;padding:8px 16px;border-radius:4px;text-decoration:none;white-space:nowrap;">Visit WSJ →</a>
             </div>
+            <div class="res-wsj-creds">
+              <div class="res-cred"><div><small>Username</small><code id="wsj-username">Loading…</code></div><button type="button" class="res-copy" onclick="resCopy('wsj-username', this)">Copy</button></div>
+              <div class="res-cred"><div><small>Password</small><code id="wsj-password">Loading…</code></div><button type="button" class="res-copy" onclick="resCopy('wsj-password', this)">Copy</button></div>
+            </div>
+            <a class="res-wsj-btn" href="https://wsj.com" target="_blank" rel="noopener noreferrer">Visit WSJ →</a>
+          </div>
+
+          <div class="res-toolbar">
+            <label class="res-search">
+              <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+              <input id="res-search" type="search" placeholder="Search guides, templates and links" autocomplete="off" oninput="renderResources(currentResourceFilter)" aria-label="Search resources">
+            </label>
+            <span id="res-count" class="res-count"></span>
           </div>
 
           <!-- Filter tabs -->
@@ -5560,6 +5566,7 @@ button[onclick="pubFlipbookNext()"]:hover {
                     <button type="button" class="ufa-level" data-level="medium" aria-pressed="false" onclick="toggleMockLevel('medium')"><span class="ufa-level-dot"></span><span class="ufa-level-name">Medium</span><span class="ufa-level-sub">Recruiting-standard</span></button>
                     <button type="button" class="ufa-level" data-level="hard" aria-pressed="false" onclick="toggleMockLevel('hard')"><span class="ufa-level-dot"></span><span class="ufa-level-name">Hard</span><span class="ufa-level-sub">Stretch questions</span></button>
                   </div>
+                  <button type="button" id="mock-levels-all" class="ufa-selectall" onclick="toggleAllMockLevels()">Select all</button>
                 </div>
               </div>
 
@@ -5800,12 +5807,12 @@ button[onclick="pubFlipbookNext()"]:hover {
 
 
         <!-- ── ASK & LEARN TAB ──
-             Anonymous Q&A, word cloud, word of the week, Market Watch guide.
+             Anonymous Q&A and the Market Watch guide.
              Board-only until published (setting: visibility_learn). -->
         <div id="ptab-content-learn" style="display:none;">
           <div class="ufa-pane-head">
             <div class="ufa-pane-title">Ask &amp; Learn</div>
-            <div class="ufa-pane-sub">Ask anything anonymously, add words you want explained, and follow along with Market Watch.</div>
+            <div class="ufa-pane-sub">Ask anything anonymously, and follow along with Market Watch.</div>
           </div>
           <div id="learn-body"></div>
         </div>
@@ -6172,10 +6179,10 @@ button[onclick="pubFlipbookNext()"]:hover {
           </div>
 
           <!-- ── ADMIN: ASK & LEARN ──
-               Moderate questions, run the word cloud, set the word of the week,
-               open the projector view, and publish the feature to members. -->
+               Moderate questions, open the projector view,
+               and publish the feature to members. -->
           <div id="atab-content-learn" style="display:none;">
-            <div class="ufa-pane-sub" style="margin-bottom:18px;">Anonymous Q&amp;A, word cloud, word of the week, and the Market Watch guide. Board only until you publish it.</div>
+            <div class="ufa-pane-sub" style="margin-bottom:18px;">Anonymous Q&amp;A and the Market Watch guide. Board only until you publish it.</div>
             <div id="learn-admin-body"><div class="ufa-pane-sub">Loading…</div></div>
           </div>
 
@@ -7556,21 +7563,6 @@ button[onclick="pubFlipbookNext()"]:hover {
 #booking-panel { border-radius: 16px !important; }
 
 /* ── Resources ──────────────────────────────────────────────────── */
-#resources-grid { gap: 16px !important; }
-#resources-grid > div {
-  border-radius: 14px !important;
-  border-color: rgba(46,74,46,0.09) !important;
-  box-shadow: 0 1px 2px rgba(28,43,28,0.04), 0 10px 30px -18px rgba(28,43,28,0.25);
-  transition: transform 0.16s, box-shadow 0.16s !important;
-}
-#resources-grid > div:hover { transform: translateY(-2px); }
-#resources-grid > div > div > div:first-child {
-  width: 44px; height: 44px; flex: 0 0 44px;
-  border-radius: 11px;
-  background: #EEF5EE;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 20px !important;
-}
 .res-filter { padding: 7px 15px; }
 
 /* ── Lists (events, history, leaderboard) ───────────────────────── */
@@ -7606,7 +7598,7 @@ button[onclick="pubFlipbookNext()"]:hover {
 
 @media (prefers-reduced-motion: reduce) {
   #portal-dashboard > div:nth-child(3) > div { animation: none; }
-  .ufa-track, .ufa-board-grid .ufa-board-card, #resources-grid > div, .ufa-btn, #checkin-btn { transition: none; }
+  .ufa-track, .ufa-board-grid .ufa-board-card, .ufa-btn, #checkin-btn { transition: none; }
   .ufa-ring-fg, .ufa-timebar > div { transition: none; }
 }
 
@@ -7803,6 +7795,7 @@ async function loadResources() {
   if (resourcesLoaded) return;
   resourcesLoaded = true;
   renderResources('resume');
+  resUpdateCounts();
   loadWsjCreds();
 }
 
@@ -7846,6 +7839,8 @@ function toggleIBMenu() {
 
 function filterResources(cat) {
   currentResourceFilter = cat;
+  var searchBox = document.getElementById('res-search');
+  if (searchBox) searchBox.value = '';
   var isIB = cat === 'ib-long' || cat === 'ib-short' || cat === 'ib-other';
   ['resume','recruiting','consulting','pe','hf'].forEach(function(c) {
     var btn = document.getElementById('rfilt-' + c);
@@ -7865,36 +7860,75 @@ function filterResources(cat) {
   renderResources(cat);
 }
 
+var RES_BADGE = { 'ib-long': 'IB long guide', 'ib-short': 'IB short guide', 'ib-other': 'IB other', recruiting: 'Recruiting', resume: 'Resume', consulting: 'Consulting', pe: 'Private equity', hf: 'Hedge funds' };
+var RES_COLOR = { 'ib-long': '#3D6B3D', 'ib-short': '#4A5A8A', 'ib-other': '#5A5A5A', recruiting: '#8A5A3D', resume: '#2C5F2E', consulting: '#6B3D6B', pe: '#3D5A8A', hf: '#8A3D3D' };
+var RES_ICON = {
+  link: '<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
+  doc:  '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/>'
+};
+
 function renderResources(cat) {
-  const grid = document.getElementById('resources-grid');
-  const loading = document.getElementById('resources-loading');
-  const filtered = cat === 'all' ? RESOURCES : RESOURCES.filter(function(r){ return r.category === cat; });
-  loading.style.display = 'none';
-  var html = '';
-  for (var i = 0; i < filtered.length; i++) {
-    var r = filtered[i];
-    var icon = r.type === 'link' ? '🔗' : r.type === 'docx' ? '📄' : '📕';
-    var badge = {'ib-long':'IB Long','ib-short':'IB Short','ib-other':'IB Other',recruiting:'Recruiting',resume:'Resume',consulting:'Consulting',pe:'Private Equity',hf:'Hedge Funds'}[r.category] || r.category;
-    var badgeColor = {'ib-long':'#3D6B3D','ib-short':'#4A5A8A','ib-other':'#5A5A5A',recruiting:'#8A5A3D',resume:'#2C5F2E',consulting:'#6B3D6B',pe:'#3D5A8A',hf:'#8A3D3D'}[r.category] || '#3D6B3D';
-    var actionAttr = (r.type === 'link')
-      ? 'onclick="window.open(' + "'" + r.url + "'" + ',' + "'" + '_blank' + "'" + ')"'
-      : (r.type === 'pdf-link')
-      ? 'onclick="window.open(' + "'" + r.url + "'" + ',' + "'" + '_blank' + "'" + ')"'
-      : 'onclick="downloadResource(' + "'" + r.file.replace(/'/g, "\'") + "'" + ',' + "'" + r.type + "'" + ')"';
-    var actionLabel = (r.type === 'link') ? 'Open link →' : 'Download →';
-    html += '<div style="background:#fff;border:1px solid #E8EDE8;border-radius:8px;padding:20px;cursor:pointer;transition:box-shadow 0.2s;" onmouseover="this.style.boxShadow=\'0 4px 12px rgba(0,0,0,0.08)\'" onmouseout="this.style.boxShadow=\'\'" ' + actionAttr + '>';
-    html += '<div style="display:flex;align-items:flex-start;gap:12px;">';
-    html += '<div style="font-size:24px;line-height:1;">' + icon + '</div>';
-    html += '<div style="flex:1;min-width:0;">';
-    html += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">';
-    html += '<div style="font-size:14px;font-weight:600;color:#1C2B1C;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + r.name + '</div>';
-    html += '<span style="font-size:10px;font-weight:600;color:#fff;background:' + badgeColor + ';padding:2px 7px;border-radius:10px;white-space:nowrap;flex-shrink:0;">' + badge + '</span>';
-    html += '</div>';
-    html += '<div style="font-size:12px;color:#6B7D6B;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + r.desc + '</div>';
-    html += '<div style="font-size:11px;color:#3D6B3D;margin-top:8px;font-weight:500;">' + actionLabel + '</div>';
-    html += '</div></div></div>';
+  var grid = document.getElementById('resources-grid');
+  var loading = document.getElementById('resources-loading');
+  var qEl = document.getElementById('res-search');
+  var q = qEl ? qEl.value.trim().toLowerCase() : '';
+  var list = q
+    ? RESOURCES.filter(function (r) { return (r.name + ' ' + r.desc + ' ' + (RES_BADGE[r.category] || r.category)).toLowerCase().indexOf(q) !== -1; })
+    : (cat === 'all' ? RESOURCES : RESOURCES.filter(function (r) { return r.category === cat; }));
+  if (loading) loading.style.display = 'none';
+  var count = document.getElementById('res-count');
+  if (count) count.textContent = q ? list.length + ' result' + (list.length === 1 ? '' : 's') + ' across all categories' : list.length + ' resource' + (list.length === 1 ? '' : 's');
+
+  if (!list.length) {
+    grid.innerHTML = '<div class="res-empty">Nothing matches that search. Try a shorter word, or pick a category above.</div>';
+    return;
   }
-  grid.innerHTML = html;
+  grid.innerHTML = list.map(function (r) {
+    var color = RES_COLOR[r.category] || '#3D6B3D';
+    var isLink = r.type === 'link' || r.type === 'pdf-link';
+    var action = r.type === 'link' ? 'Open link →' : r.type === 'pdf-link' ? 'Open PDF →' : 'Download →';
+    var idx = RESOURCES.indexOf(r);
+    return '<div class="res-card" role="button" tabindex="0" onclick="resOpen(' + idx + ')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();resOpen(' + idx + ');}">' +
+      '<div class="res-ico" style="background:' + color + '1A;color:' + color + ';"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (isLink ? RES_ICON.link : RES_ICON.doc) + '</svg></div>' +
+      '<div class="res-body">' +
+        '<div class="res-title">' + ufaEsc(r.name) + '</div>' +
+        '<div class="res-desc">' + ufaEsc(r.desc) + '</div>' +
+        '<div class="res-foot"><span class="res-tag" style="background:' + color + '1A;color:' + color + ';">' + ufaEsc(RES_BADGE[r.category] || r.category) + '</span><span class="res-act">' + action + '</span></div>' +
+      '</div></div>';
+  }).join('');
+}
+
+function resOpen(i) {
+  var r = RESOURCES[i];
+  if (!r) return;
+  if (r.type === 'link' || r.type === 'pdf-link') window.open(r.url, '_blank', 'noopener');
+  else downloadResource(r.file, r.type);
+}
+
+/* Counts on the category chips, so people can see what is in each one. */
+function resUpdateCounts() {
+  var n = {};
+  RESOURCES.forEach(function (r) { n[r.category] = (n[r.category] || 0) + 1; });
+  var ib = (n['ib-long'] || 0) + (n['ib-short'] || 0) + (n['ib-other'] || 0);
+  var set = function (id, label, count, tail) {
+    var el = document.getElementById(id);
+    if (el) el.innerHTML = label + ' <span class="res-n">' + count + '</span>' + (tail || '');
+  };
+  set('rfilt-resume', 'Resume', n.resume || 0);
+  set('rfilt-recruiting', 'Recruiting', n.recruiting || 0);
+  set('rfilt-ib', 'IB Guides', ib, ' ▾');
+  set('rfilt-consulting', 'Consulting', n.consulting || 0);
+  set('rfilt-pe', 'Private Equity', n.pe || 0);
+  set('rfilt-hf', 'Hedge Funds', n.hf || 0);
+}
+
+function resCopy(id, btn) {
+  var el = document.getElementById(id);
+  var text = el ? el.textContent.trim() : '';
+  if (!text || /^(Loading|Unavailable)/.test(text)) return;
+  var done = function () { if (btn) { var old = btn.textContent; btn.textContent = 'Copied'; setTimeout(function () { btn.textContent = old; }, 1400); } };
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, function () { prompt('Copy this:', text); });
+  else prompt('Copy this:', text);
 }
 
 async function downloadResource(filename, type) {
@@ -8131,7 +8165,7 @@ async function renderLeaderboard() {
   var BOARD_TIER_ROLES = ['Board', 'President'];
   var myTierKey = lbTierKey(role, BOARD_TIER_ROLES);
 
-  var r1 = await sb.from('attendance').select('email, points');
+  var r1 = await sb.from('attendance').select('email, points, event_type');
   var r2 = await sb.from('members').select('email, name, role, status');
   var allAttendance = r1.data || [];
   var allMembers    = (r2.data || []).filter(function(m){ return m.status !== 'pending'; });
@@ -8237,6 +8271,79 @@ async function renderLeaderboard() {
     return lbTierKey(m.role, BOARD_TIER_ROLES) === effectiveTier;
   });
   renderList(tierMembers, 'leaderboard-tier');
+  renderFamilyCup(allAttendance);
+}
+
+/* ───────── Leaderboard: Family Cup ─────────
+   Every family's points add up, and the family with the most points wins.
+   A family's total is the family-meetup points earned by its members. */
+var LB_FAMILY = { list: [], myFamily: null, showAll: false };
+function lbFmtPts(n) { return String(Math.round(Number(n) * 100) / 100); }
+
+async function renderFamilyCup(allAttendance) {
+  var box = document.getElementById('lb-family-cup');
+  if (!box) return;
+  try {
+    var res = await Promise.all([
+      sb.from('family_members').select('family_id, email'),
+      sb.from('families').select('id, name')
+    ]);
+    if (res[0].error) throw res[0].error;
+    var fm = res[0].data || [], fams = res[1].data || [];
+    if (!fm.length && !fams.length) { box.style.display = 'none'; return; }
+
+    var earned = {};
+    (allAttendance || []).forEach(function (r) {
+      if (r.event_type !== 'Family') return;
+      var k = String(r.email).toLowerCase();
+      earned[k] = (earned[k] || 0) + (Number(r.points) || 0);
+    });
+    var by = {};
+    fams.forEach(function (f) { by[f.id] = { id: f.id, name: f.name, members: 0, points: 0 }; });
+    fm.forEach(function (r) {
+      var f = by[r.family_id] = by[r.family_id] || { id: r.family_id, name: 'Family', members: 0, points: 0 };
+      f.members++;
+      f.points += earned[String(r.email).toLowerCase()] || 0;
+    });
+    var list = Object.keys(by).map(function (k) { return by[k]; })
+      .sort(function (a, b) { return b.points - a.points || String(a.name).localeCompare(String(b.name)); });
+    var me = String(currentUser && currentUser.email || '').toLowerCase();
+    var mine = fm.filter(function (r) { return String(r.email).toLowerCase() === me; })[0];
+    LB_FAMILY = { list: list, myFamily: mine ? mine.family_id : null, showAll: LB_FAMILY.showAll };
+    box.style.display = '';
+    lbFamilyDraw();
+  } catch (e) {
+    console.error('renderFamilyCup', e);
+    box.style.display = 'none';
+  }
+}
+
+function lbFamilyDraw() {
+  var box = document.getElementById('lb-family-cup');
+  if (!box) return;
+  var list = LB_FAMILY.list, top = list.length ? list[0].points : 0;
+  var shown = LB_FAMILY.showAll ? list : list.slice(0, 8);
+  var lead = (top > 0)
+    ? '<div class="lbf-lead">' + '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v5a4 4 0 0 1-8 0V4z"/><path d="M8 6H4v1a4 4 0 0 0 4 4M16 6h4v1a4 4 0 0 1-4 4M12 13v4M8 21h8M10 17h4"/></svg>' +
+      'In the lead: ' + ufaEsc(list[0].name) + ' &middot; ' + lbFmtPts(top) + (Number(top) === 1 ? ' pt' : ' pts') + '</div>'
+    : '<div class="lbf-lead lbf-quiet">No family has earned points yet</div>';
+  box.innerHTML = '<div class="lbf">' +
+    '<div class="lbf-head"><div><h3 class="lbf-title">Family Cup</h3>' +
+      '<div class="lbf-sub">Every family\'s points add up. The family with the most points wins.</div></div>' + lead + '</div>' +
+    shown.map(function (f, i) {
+      var isMine = LB_FAMILY.myFamily && f.id === LB_FAMILY.myFamily;
+      var medal = (f.points > 0 && i < 3) ? ['🥇', '🥈', '🥉'][i] : '<span class="lbf-n">' + (i + 1) + '</span>';
+      var pct = top > 0 ? Math.max(f.points > 0 ? 2 : 0, f.points / top * 100) : 0;
+      return '<div class="lbf-row' + (isMine ? ' me' : '') + '">' +
+        '<div class="lbf-rank">' + medal + '</div>' +
+        '<div><div class="lbf-name">' + ufaEsc(f.name) + (isMine ? ' <span class="lbf-you">Your family</span>' : '') + '</div>' +
+          '<div class="lbf-meta">' + f.members + ' member' + (f.members === 1 ? '' : 's') + '</div></div>' +
+        '<div class="lbf-bar"><i style="width:' + pct.toFixed(1) + '%;"></i></div>' +
+        '<div class="lbf-pts">' + lbFmtPts(f.points) + (Number(f.points) === 1 ? ' pt' : ' pts') + '</div></div>';
+    }).join('') +
+    (list.length > 8 ? '<button type="button" class="lbf-more" onclick="LB_FAMILY.showAll=!LB_FAMILY.showAll;lbFamilyDraw()">' +
+      (LB_FAMILY.showAll ? 'Show fewer ↑' : 'Show all ' + list.length + ' families ↓') + '</button>' : '') +
+    '</div>';
 }
 
 function onLeaderboardTierPick(val) {
@@ -16944,6 +17051,35 @@ function toggleMockLevel(level) {
   });
   mockApplyEasyDefault();
   updateMockStartReadiness();
+  syncMockSelectAll();
+}
+
+/* "Select all" turns on every difficulty this track offers; pressing it again clears them. */
+function mockLevelButtons() {
+  return Array.prototype.filter.call(document.querySelectorAll('#mock-levels [data-level]'), function (el) {
+    return !el.disabled && el.offsetParent !== null;
+  });
+}
+function syncMockSelectAll() {
+  var btn = document.getElementById('mock-levels-all');
+  if (!btn) return;
+  var btns = mockLevelButtons();
+  var on = btns.filter(function (el) { return MOCK.levels.indexOf(el.dataset.level) !== -1; });
+  btn.textContent = (btns.length && on.length === btns.length) ? 'Clear all' : 'Select all';
+}
+function toggleAllMockLevels() {
+  var btns = mockLevelButtons();
+  var levels = btns.map(function (el) { return el.dataset.level; });
+  var allOn = levels.length && levels.every(function (l) { return MOCK.levels.indexOf(l) !== -1; });
+  MOCK.levels = allOn ? [] : levels.slice();
+  Array.prototype.forEach.call(document.querySelectorAll('#mock-levels [data-level]'), function (el) {
+    var on = MOCK.levels.indexOf(el.dataset.level) !== -1;
+    el.classList.toggle('is-on', on);
+    el.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
+  mockApplyEasyDefault();
+  updateMockStartReadiness();
+  syncMockSelectAll();
 }
 
 /* Focus is a sub-filter on top of track + difficulty, not a third
@@ -17102,6 +17238,7 @@ function mockMatchesQType(q) {
 
 /* A track and at least one difficulty are both required before starting. */
 function updateMockStartReadiness() {
+  try { syncMockSelectAll(); } catch (_) {}
   var n = updateMockSetupNote();
   var btn = document.getElementById('mock-start-btn');
   if (btn) btn.disabled = !(MOCK.track && MOCK.levels.length && n > 0);
@@ -19726,6 +19863,16 @@ setTimeout(() => {
    and approving the same meetup twice can never double-award.
    ════════════════════════════════════════════════════════════════ */
 var FAM_DEFAULT_POINTS = 0.5;
+var FAM_MIN_ATTENDEES = 4;   // a meetup only counts when at least this many people were there
+var FAM_YEAR_CAP = 5;        // most family points one person can earn in a school year
+/* School years run August to July. Returns the calendar year the school year started in. */
+function famSchoolYearStart(iso) {
+  var p = String(iso || '').split('-');
+  var y = +p[0], m = +p[1];
+  if (!y || !m) return 0;
+  return m >= 8 ? y : y - 1;
+}
+function famSchoolYearLabel(startYear) { return startYear + '\u2013' + String(startYear + 1).slice(2); }
 var FAM_BUCKET = 'family-photos';
 var famAdminData = null;
 
@@ -19800,8 +19947,8 @@ async function famSubmitMeetup(familyId) {
   var boxes = document.querySelectorAll('#my-family-box .fam-att');
   var attendees = [];
   Array.prototype.forEach.call(boxes, function (b) { if (b.checked) attendees.push(b.value); });
-  var need = Math.min(2, boxes.length);
-  if (attendees.length < need) return famMemberMsg('err', 'Check everyone who was at the meetup (at least ' + need + ' people).');
+  if (boxes.length < FAM_MIN_ATTENDEES) return famMemberMsg('err', 'A meetup needs at least ' + FAM_MIN_ATTENDEES + ' people to count, and your family has ' + boxes.length + '. Ask the board to add the rest of your family.');
+  if (attendees.length < FAM_MIN_ATTENDEES) return famMemberMsg('err', 'At least ' + FAM_MIN_ATTENDEES + ' people have to be at the meetup for it to count. Tick everyone who was there.');
   if (!file) return famMemberMsg('err', 'Add a photo of your family together.');
   if (!/^image\//.test(file.type)) return famMemberMsg('err', 'That file is not an image.');
   if (file.size > 25 * 1048576) return famMemberMsg('err', 'That photo is too large (25 MB max).');
@@ -19988,14 +20135,26 @@ async function famRemoveMember(familyId, email) {
 
 async function famDelete(familyId) {
   if (!ufaIsBoard()) return;
-  if (!confirm('Delete this family and all of its meetup submissions? Points already awarded to members stay.')) return;
-  var r = await sb.from('family_meetups').select('photo_path').eq('family_id', familyId);
-  var paths = (r.data || []).map(function (x) { return x.photo_path; });
+  if (!confirm('Delete this family? Its meetup submissions are deleted too, and the points those meetups earned are taken back from every member.')) return;
+  var r = await sb.from('family_meetups').select('id, photo_path').eq('family_id', familyId);
+  var meetups = r.data || [];
+  var paths = meetups.map(function (x) { return x.photo_path; }).filter(Boolean);
+  var codes = meetups.map(function (x) { return 'FAM-' + x.id; });
+
   var del = await sb.from('families').delete().eq('id', familyId).select();
   if (del.error) return famAdminMsg('err', 'Could not delete: ' + del.error.message);
   if (!del.data || !del.data.length) return famAdminMsg('err', 'Could not delete (permission issue).');
   if (paths.length) { try { await sb.storage.from(FAM_BUCKET).remove(paths); } catch (_) {} }
+
+  // Take back every point those meetups earned.
+  var removed = 0, pointsErr = null;
+  if (codes.length) {
+    var pr = await sb.from('attendance').delete().in('code_used', codes).select();
+    if (pr.error) pointsErr = pr.error; else removed = (pr.data || []).length;
+  }
   await loadFamiliesAdmin();
+  if (pointsErr) famAdminMsg('err', 'The family was deleted, but its points could not be taken back: ' + pointsErr.message + '. Remove them from Attendance.');
+  else famAdminMsg('ok', 'Family deleted.' + (removed ? ' Took back ' + removed + ' point award' + (removed === 1 ? '' : 's') + ' from its members.' : ''));
 }
 
 async function famBulkImport() {
@@ -20054,8 +20213,10 @@ async function famApprove(meetupId) {
   var famRows = d.fmembers.filter(function (r) { return r.family_id === m.family_id; });
   var emails = famAttendees(m, famRows).map(function (r) { return r.email; });
   if (!emails.length) return famAdminMsg('err', 'No one checked as attending is still in this family, so there is no one to award.');
+  if (emails.length < FAM_MIN_ATTENDEES) return famAdminMsg('err', 'Only ' + emails.length + ' people were at this meetup. It needs at least ' + FAM_MIN_ATTENDEES + ' to count, so it can only be denied.');
 
   var code = 'FAM-' + m.id;
+  var yr = famSchoolYearStart(m.meetup_date);
   try {
     // Already-awarded check makes approving idempotent (double-click, retry, etc.).
     var ex = await sb.from('attendance').select('email').eq('code_used', code);
@@ -20063,15 +20224,36 @@ async function famApprove(meetupId) {
     var have = {};
     (ex.data || []).forEach(function (r) { have[String(r.email).toLowerCase()] = true; });
 
-    var rows = emails.filter(function (e) { return !have[String(e).toLowerCase()]; }).map(function (e) {
-      return {
+    // Family points each person already earned in this school year (August to July).
+    var prior = await sb.from('attendance').select('email, code_used, points').eq('event_type', 'Family').limit(5000);
+    if (prior.error) throw prior.error;
+    var meetupById = {};
+    d.meetups.forEach(function (x) { meetupById[String(x.id)] = x; });
+    var used = {};
+    (prior.data || []).forEach(function (r) {
+      if (r.code_used === code) return;
+      var mm = meetupById[String(r.code_used || '').replace(/^FAM-/, '')];
+      if (!mm || famSchoolYearStart(mm.meetup_date) !== yr) return;
+      var k = String(r.email).toLowerCase();
+      used[k] = (used[k] || 0) + (Number(r.points) || 0);
+    });
+
+    var rows = [], atLimit = 0, trimmed = 0;
+    emails.forEach(function (e) {
+      var k = String(e).toLowerCase();
+      if (have[k]) return;
+      var room = Math.max(0, Math.round((FAM_YEAR_CAP - (used[k] || 0)) * 100) / 100);
+      var grant = Math.min(pts, room);
+      if (grant <= 0) { atLimit++; return; }
+      if (grant < pts) trimmed++;
+      rows.push({
         email: e,
-        meeting_name: 'Family Meetup — ' + (fam ? fam.name : 'Family'),
+        meeting_name: 'Family Meetup \u2014 ' + (fam ? fam.name : 'Family'),
         meeting_date: famFmtDate(m.meetup_date),
         event_type: 'Family',
-        points: pts,
+        points: grant,
         code_used: code
-      };
+      });
     });
     if (rows.length) {
       var ins = await sb.from('attendance').insert(rows);
@@ -20084,7 +20266,10 @@ async function famApprove(meetupId) {
     if (!up.data || !up.data.length) throw new Error('Points were added but the status could not be saved (permission issue).');
 
     await loadFamiliesAdmin();
-    famAdminMsg('ok', 'Approved. ' + emails.length + ' member' + (emails.length === 1 ? '' : 's') + ' of ' + (fam ? fam.name : 'the family') + ' earned +' + famPts(pts) + ' each.');
+    var msg = 'Approved. ' + rows.length + ' member' + (rows.length === 1 ? '' : 's') + ' of ' + (fam ? fam.name : 'the family') + ' earned points.';
+    if (atLimit) msg += ' ' + atLimit + ' already reached the ' + FAM_YEAR_CAP + '-point limit for the ' + famSchoolYearLabel(yr) + ' school year and got nothing.';
+    if (trimmed) msg += ' ' + trimmed + ' got less than the full amount because of that limit.';
+    famAdminMsg((atLimit || trimmed) ? 'info' : 'ok', msg);
   } catch (e) {
     console.error('famApprove', e);
     famAdminMsg('err', 'Could not approve: ' + (e && e.message ? e.message : e));
@@ -20253,11 +20438,21 @@ async function loadMyFamily() {
     var results = await Promise.all([
       sb.from('families').select('*').eq('id', famId).maybeSingle(),
       sb.from('members').select('email, name, role'),
-      sb.from('family_meetups').select('*').eq('family_id', famId).order('meetup_date', { ascending: false })
+      sb.from('family_meetups').select('*').eq('family_id', famId).order('meetup_date', { ascending: false }),
+      sb.from('attendance').select('code_used, points').eq('email', currentUser.email).like('code_used', 'FAM-%')
     ]);
     var family = results[0].data;
     var roster = results[1].data || [];
     var meetups = results[2].data || [];
+    // Family points this person has already earned in the current school year.
+    var thisYear = famSchoolYearStart(famTodayIso());
+    var byMeetup = {};
+    meetups.forEach(function (x) { byMeetup[String(x.id)] = x; });
+    var usedPts = 0;
+    (results[3].data || []).forEach(function (r) {
+      var mm = byMeetup[String(r.code_used || '').replace(/^FAM-/, '')];
+      if (mm && famSchoolYearStart(mm.meetup_date) === thisYear) usedPts += Number(r.points) || 0;
+    });
     if (!family) { box.style.display = 'none'; return; }
 
     var people = allFm.filter(function (r) { return r.family_id === famId; }).map(function (r) {
@@ -20294,12 +20489,12 @@ async function loadMyFamily() {
         '<header class="fx-fam-head">' +
           '<div><div class="fx-fam-kicker">Your family</div>' +
             '<h3 class="fx-fam-name">' + ufaEsc(family.name) + '</h3>' +
-            '<div class="fx-fam-meta">' + people.length + ' members &middot; <b>+' + FAM_DEFAULT_POINTS + ' pts each</b> for every approved meetup</div></div>' +
+            '<div class="fx-fam-meta">' + people.length + ' members &middot; <b>+' + FAM_DEFAULT_POINTS + ' pts each</b> per approved meetup &middot; ' + (Math.round(usedPts * 100) / 100) + ' of ' + FAM_YEAR_CAP + ' pts earned this school year</div></div>' +
           fxAvatarStack(people.map(function (p) { return p.name; }), 6, 46, true) +
         '</header>' +
         '<div class="fx-fam-body">' +
           '<div class="fx-fam-lead"><span style="margin-top:2px;">' + fxIcon('sparkle', 22) + '</span>' +
-            '<p>Got together with your family? Add a photo, tick everyone who was there, and send it in. Only one of you needs to submit, and everyone you tick earns the points once the board approves it.</p></div>' +
+            '<p>Got together with your family? Add a photo, tick everyone who was there, and send it in. Only one of you needs to submit, and everyone you tick earns the points once the board approves it. A meetup counts when at least ' + FAM_MIN_ATTENDEES + ' people are there, and each person can earn up to ' + FAM_YEAR_CAP + ' family points per school year.</p></div>' +
           '<div class="fx-fam-grid">' +
             '<label class="fx-drop" id="fam-drop">' +
               '<input id="fam-photo" type="file" accept="image/*" onchange="famPreview(this)">' +
@@ -20312,7 +20507,7 @@ async function loadMyFamily() {
             '</div>' +
           '</div>' +
           '<div class="fx-fam-who">' +
-            '<div class="fx-fam-who-head"><div><b>Who was there?</b><span>Everyone you tick gets the points.</span></div>' +
+            '<div class="fx-fam-who-head"><div><b>Who was there?</b><span>Everyone you tick gets the points. At least ' + FAM_MIN_ATTENDEES + ' people must be there.</span></div>' +
               '<button type="button" class="fx-link" onclick="famToggleAll(this)">Select everyone</button></div>' +
             '<div class="fx-picks">' + attendeeBoxes + '</div>' +
           '</div>' +
@@ -20377,11 +20572,12 @@ async function famRenderAdmin() {
         '<div class="fx-rev-who"><b>Checked as attending &middot; ' + scope + '</b><div class="row">' +
           (who.length ? who.map(function (p) { return '<span class="fx-who">' + fxAvatar(p.name, 26) + ufaEsc(p.name) + '</span>'; }).join('') : '<span style="color:#8A968A;font-size:13px;">No one</span>') +
         '</div></div>' +
+        (who.length < FAM_MIN_ATTENDEES ? '<div class="fx-msg err" style="margin:10px 0 0;">Only ' + who.length + ' attended. A meetup needs at least ' + FAM_MIN_ATTENDEES + ' people to count, so it can only be denied.</div>' : '') +
         (m.note ? '<div class="fx-rev-note">&ldquo;' + ufaEsc(m.note) + '&rdquo;</div>' : '') +
         '<div class="fx-rev-actions">' +
           '<label class="pts">Points each <input id="fam-pts-' + m.id + '" type="number" step="0.5" min="0" max="10" value="' + FAM_DEFAULT_POINTS + '" class="fx-input"></label>' +
           '<button class="fx-btn danger" data-id="' + m.id + '" onclick="famDeny(this.dataset.id)">Deny</button>' +
-          '<button class="fx-btn" data-id="' + m.id + '" onclick="famApprove(this.dataset.id)">' + fxIcon('check', 16) + ' Approve &amp; award</button>' +
+          '<button class="fx-btn" data-id="' + m.id + '" onclick="famApprove(this.dataset.id)"' + (who.length < FAM_MIN_ATTENDEES ? ' disabled title="Needs at least ' + FAM_MIN_ATTENDEES + ' people"' : '') + '>' + fxIcon('check', 16) + ' Approve &amp; award</button>' +
         '</div>' +
       '</div></article>';
   }).join('') : '<div class="fx-empty">' + fxIcon('check', 28) + 'All caught up. Nothing is waiting for review.</div>';
@@ -20559,7 +20755,7 @@ async function bhMarkOutcome(id, outcome) {
 /* ════════════════════════════════════════════════════════════════
    ONE-TIME CREDITS (each member earns each of these once)
      · Mock interview, 30 min:  +0.5  (30 cumulative minutes AND 10 questions)
-     · Mock interview, 3 hours: +1    (180 cumulative minutes AND 30 questions)
+     · Mock interview, 3 hours: +1    (180 cumulative minutes AND 60 questions)
      · Board hours sign-up:     +0.5  (first booking; taken back if that
        booking is a no-show or the member cancels it, and re-earned by the
        next booking)
@@ -20578,7 +20774,7 @@ var CREDIT_MOCK_MINUTES = 30;
 var CREDIT_MOCK_QUESTIONS = 10;
 var CREDIT_MOCK3_POINTS = 1;
 var CREDIT_MOCK3_MINUTES = 180;
-var CREDIT_MOCK3_QUESTIONS = 30;
+var CREDIT_MOCK3_QUESTIONS = 60;
 var creditSyncBusy = false;
 var CREDIT_STATE = null;
 var MOCK_BASELINE_PROMISE = null;
@@ -20805,7 +21001,8 @@ async function ufaFinishMockSession(secs, answered) {
    being used. Mock data comes from `mock_sessions`; board data from
    `bookings`. Question-level data is anonymous. Needs mock-engagement.sql so the board can read sessions.
    ════════════════════════════════════════════════════════════════ */
-var ENG = { range: 30 };
+var ENG = { range: 30, q: '', sort: 'sec', dir: -1, idle: false };
+var ENG_ROWS = [], ENG_IDLE = [];
 
 function engEnsureCss() {
   if (document.getElementById('eng-css')) return;
@@ -20873,6 +21070,47 @@ function engColumns(items) {
       '<div class="eng-cwrap"><div class="eng-cb" style="height:' + h + '%;"></div></div>' +
       '<div class="eng-cl">' + ufaEsc(x.label) + '</div></div>';
   }).join('') + '</div>';
+}
+
+function engFmtDur(sec) {
+  if (!sec) return '—';
+  var m = Math.round(sec / 60);
+  if (m < 1) return '<1 min';
+  if (m < 60) return m + ' min';
+  var h = Math.floor(m / 60);
+  return h + ' h' + (m % 60 ? ' ' + (m % 60) + ' min' : '');
+}
+function engFilter(v) { ENG.q = v; engRenderPeople(); }
+function engToggleIdle(on) { ENG.idle = !!on; engRenderPeople(); }
+function engSortBy(key) {
+  if (ENG.sort === key) ENG.dir = -ENG.dir; else { ENG.sort = key; ENG.dir = key === 'name' ? 1 : -1; }
+  engRenderPeople();
+}
+function engRenderPeople() {
+  var host = document.getElementById('eng-people');
+  if (!host) return;
+  var rows = ENG_ROWS.concat(ENG.idle ? ENG_IDLE : []);
+  var q = ENG.q.trim().toLowerCase();
+  if (q) rows = rows.filter(function (r) { return (r.name + ' ' + r.email).toLowerCase().indexOf(q) !== -1; });
+  var key = ENG.sort, dir = ENG.dir;
+  rows.sort(function (a, b) {
+    if (key === 'name') return dir * String(a.name).localeCompare(String(b.name));
+    return dir * ((a[key] || 0) - (b[key] || 0)) || String(a.name).localeCompare(String(b.name));
+  });
+  if (!rows.length) {
+    host.innerHTML = '<div class="eng-empty">' + (q ? 'No member matches that search.' : 'Nobody has practiced or booked board hours in this period yet.') + '</div>';
+    return;
+  }
+  function th(label, k, right) {
+    return '<th class="' + (right ? 'r ' : '') + (ENG.sort === k ? 'on' : '') + '" onclick="engSortBy(\'' + k + '\')">' + label + (ENG.sort === k ? (ENG.dir === 1 ? ' \u2191' : ' \u2193') : '') + '</th>';
+  }
+  host.innerHTML = '<div class="eng-tablewrap"><table class="eng-table"><thead><tr>' +
+    th('Member', 'name') + th('Sessions', 'sessions', 1) + th('Practice time', 'sec', 1) + th('Questions', 'worked', 1) + th('Last practiced', 'last', 1) + th('Board hours', 'hours', 1) +
+    '</tr></thead><tbody>' + rows.slice(0, 200).map(function (r) {
+      return '<tr><td><b>' + ufaEsc(r.name) + '</b></td><td class="r">' + (r.sessions || '—') + '</td><td class="r">' + engFmtDur(r.sec) + '</td>' +
+        '<td class="r">' + (r.worked || '—') + '</td><td class="r">' + (r.last ? ufaDate(new Date(r.last).toISOString()) : '—') + '</td><td class="r">' + (r.hours || '—') + '</td></tr>';
+    }).join('') + '</tbody></table></div>' +
+    '<div class="eng-note" style="margin:10px 0 0;">Showing ' + Math.min(rows.length, 200) + ' of ' + rows.length + '. Click a column heading to sort.</div>';
 }
 
 function engTile(label, value, sub) {
@@ -20988,6 +21226,24 @@ async function loadEngagement() {
 
   var earliest = sessAll.length ? new Date(sessAll[sessAll.length - 1].started_at) : null;
 
+  // ---- Who is doing it: one row per member ----
+  var nameByEmail = {};
+  members.forEach(function (m) { nameByEmail[String(m.email).toLowerCase()] = m.name || m.email; });
+  var who = {};
+  function whoRow(email) {
+    var k = String(email).toLowerCase();
+    return who[k] = who[k] || { email: k, name: nameByEmail[k] || email, sessions: 0, sec: 0, worked: 0, last: 0, hours: 0 };
+  }
+  sess.forEach(function (x) {
+    var r = whoRow(x.email), t = new Date(x.started_at).getTime();
+    r.sessions++; r.sec += x.duration_sec || 0; r.worked += x.worked || 0;
+    if (t > r.last) r.last = t;
+  });
+  live.forEach(function (b) { whoRow(b.member_email).hours++; });
+  ENG_ROWS = Object.keys(who).map(function (k) { return who[k]; });
+  ENG_IDLE = members.filter(function (m) { return !who[String(m.email).toLowerCase()]; })
+    .map(function (m) { return { email: String(m.email).toLowerCase(), name: m.name || m.email, sessions: 0, sec: 0, worked: 0, last: 0, hours: 0 }; });
+
   // ---- Render ----
   var html = '';
   html += '<div class="ufa-label">Engagement</div>' +
@@ -21037,10 +21293,17 @@ async function loadEngagement() {
       { label: 'Board hours (+0.5)', value: cBoard, text: cBoard + ' of ' + members.length + ' \u00b7 ' + Math.round(cBoard / N * 100) + '%' }
     ], N) + '</div>';
 
+  html += '<div class="eng-card" style="margin-bottom:16px;"><div class="eng-phead"><div><h4>Who is practicing</h4>' +
+    '<p class="eng-note" style="margin:0;">Mock interview practice and board hours for each member, ' + rangeLabel + '.</p></div>' +
+    '<div class="eng-pctl"><input id="eng-q" class="eng-q" type="search" placeholder="Search a member" value="' + ufaEsc(ENG.q) + '" oninput="engFilter(this.value)" aria-label="Search members">' +
+    '<label class="eng-idle"><input type="checkbox" ' + (ENG.idle ? 'checked ' : '') + 'onchange="engToggleIdle(this.checked)"> Include members with no activity</label></div></div>' +
+    '<div id="eng-people"></div></div>';
+
   html += '<p class="eng-note" style="margin-top:14px;">' +
     (earliest ? 'Mock sessions are logged from ' + ufaDate(earliest.toISOString()) + '. Practice before that counts toward credits but has no dates, so it does not appear in the charts.' : 'No mock sessions logged yet.') + '</p>';
 
   root.innerHTML = html;
+  engRenderPeople();
 }
 
 
@@ -21529,8 +21792,7 @@ function learnAskFromSearch() {
 /* ════════════════════════════════════════════════════════════════
    ASK & LEARN
      • Anonymous Q&A with upvotes (the board can see who asked)
-     • Word cloud: "words you want explained"
-     • Market Watch follow-along guide (see learn_guide.js)
+          • Market Watch follow-along guide (see learn_guide.js)
      • Projector view for the meeting room (board only)
 
    HIDDEN FROM MEMBERS until the board publishes it. The tab, and the
@@ -21545,7 +21807,6 @@ var LEARN_POLL_MS = 6000;
 var LEARN_PROJ_POLL_MS = 4000;
 var learnTimer = null;
 var learnProjTimer = null;
-var learnWcSig = '';
 var LEARN_PALETTE = ['#2E4A2E', '#9A6414', '#1E4A8A', '#8A2E55', '#1E6B7A', '#5A4A8A', '#3D6B3D'];
 
 (function learnInjectCss() {
@@ -21554,27 +21815,11 @@ var LEARN_PALETTE = ['#2E4A2E', '#9A6414', '#1E4A8A', '#8A2E55', '#1E6B7A', '#5A
   st.id = 'learn-css';
   st.textContent = `
 .fx-learn-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(300px,1fr);gap:40px;align-items:start;margin-bottom:0;}
-.fx-learn-grid.solo{grid-template-columns:minmax(0,860px);}
+.fx-learn-grid.solo{grid-template-columns:minmax(0,1fr);}
 #learn-ask{margin-bottom:0;}
 #learn-guide{margin-top:44px;padding-top:40px;border-top:1px solid var(--fx-line);}
 .fx-side{position:sticky;top:100px;}
 
-/* word of the week */
-.fx-wotw{position:relative;overflow:hidden;background:var(--fx-ink);color:#fff;border-radius:24px;padding:36px 40px 32px;margin:0 0 40px;}
-.fx-wotw::after{content:attr(data-initial);position:absolute;right:30px;top:-34px;font:500 210px/1 var(--font-display,Georgia,serif);color:rgba(255,255,255,.055);pointer-events:none;}
-.fx-wotw-label{display:inline-flex;align-items:center;gap:9px;font:500 14px var(--font-body,sans-serif);color:var(--fx-chalk);margin-bottom:14px;}
-.fx-wotw-label i{width:9px;height:9px;border-radius:50%;background:var(--fx-brass);display:inline-block;}
-.fx-wotw-term{font:500 clamp(40px,6vw,68px)/1.02 var(--font-display,Georgia,serif);letter-spacing:-.02em;margin:0 0 14px;color:#fff;position:relative;}
-.fx-wotw-def{font-size:clamp(17px,1.6vw,20px);line-height:1.6;color:#D4E0D4;max-width:62ch;margin:0;position:relative;}
-.fx-wotw-ex{margin:20px 0 0;padding:2px 0 2px 18px;border-left:3px solid var(--fx-brass);font:italic 400 16.5px/1.6 var(--font-display,Georgia,serif);color:#B9C8B9;max-width:60ch;position:relative;}
-.fx-wotw-past{margin-top:26px;position:relative;}
-.fx-wotw-past summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:8px;font:500 14px var(--font-body,sans-serif);color:var(--fx-chalk);padding:8px 14px;border:1px solid rgba(243,227,184,.35);border-radius:999px;}
-.fx-wotw-past summary::-webkit-details-marker{display:none;}
-.fx-wotw-past[open] summary{background:rgba(243,227,184,.12);}
-.fx-wotw-past dl{margin:14px 0 0;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;}
-.fx-wotw-past .p{background:rgba(255,255,255,.07);border-radius:14px;padding:14px 16px;}
-.fx-wotw-past dt{font:600 15px var(--font-body,sans-serif);color:#fff;}
-.fx-wotw-past dd{margin:4px 0 0;font-size:13.5px;line-height:1.5;color:#B9C8B9;}
 
 /* composer + feed */
 .fx-composer{border:1.5px solid rgba(46,74,46,.22);border-radius:18px;background:#fff;overflow:hidden;transition:border-color .15s,box-shadow .15s;margin-top:16px;}
@@ -21596,17 +21841,6 @@ var LEARN_PALETTE = ['#2E4A2E', '#9A6414', '#1E4A8A', '#8A2E55', '#1E6B7A', '#5A
 .fx-vote.on{background:var(--fx-pine);border-color:var(--fx-pine);color:#fff;}
 .fx-vote:disabled{opacity:.5;cursor:default;}
 
-/* word cloud */
-.fx-cloudcard{background:var(--fx-paper);border:1px solid var(--fx-line);border-radius:24px;padding:26px 24px 24px;}
-.fx-wc-prompt{font:500 17px/1.4 var(--font-display,Georgia,serif);color:var(--fx-ink);margin:18px 0 10px;}
-.fx-wc-row{display:flex;gap:8px;}
-.fx-wc-hint{font-size:12.5px;color:var(--fx-muted);margin:8px 0 0;}
-.fx-wc-mine{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0 0;}
-.fx-cloudbox{background:#fff;border:1px solid var(--fx-line);border-radius:18px;margin-top:18px;}
-.learn-pack{position:relative;width:100%;overflow:hidden;}
-.learn-pack span{position:absolute;display:flex;align-items:center;justify-content:center;white-space:nowrap;line-height:1;letter-spacing:-.01em;}
-.learn-cloud{display:flex;flex-wrap:wrap;gap:2px 16px;align-items:baseline;justify-content:center;padding:22px 14px;min-height:150px;}
-.learn-cloud span{line-height:1.12;white-space:nowrap;letter-spacing:-.01em;}
 
 /* guide */
 .fx-search{display:flex;align-items:center;gap:8px;border:1.5px solid rgba(46,74,46,.2);background:#fff;border-radius:12px;padding:0 14px;min-width:min(100%,320px);color:var(--fx-muted);transition:border-color .15s,box-shadow .15s;}
@@ -21670,14 +21904,12 @@ var LEARN_PALETTE = ['#2E4A2E', '#9A6414', '#1E4A8A', '#8A2E55', '#1E6B7A', '#5A
 @media (max-width:980px){
   .fx-learn-grid{grid-template-columns:1fr;gap:6px;} .fx-side{position:static;}
   .fx-terms dl{column-count:1;} .fx-slide{position:static;}
-  .fx-wotw{padding:28px 24px 26px;border-radius:20px;}
 }
 @media (max-width:640px){
   .fx-slide-grid{grid-template-columns:1fr 1fr !important;grid-template-areas:none !important;}
   .fx-slide-grid .fx-tile{grid-area:auto !important;grid-column:auto !important;min-height:96px;}
   .fx-slide-grid .fx-tile:last-child{grid-column:1 / -1 !important;}
   .fx-seg{display:flex;} .fx-seg button{flex:1;padding:9px 8px;font-size:13px;}
-  .fx-wc-row{flex-direction:column;}
 }`;
   document.head.appendChild(st);
 })();
@@ -21705,124 +21937,6 @@ function learnAgo(iso) {
   if (s < 86400) return Math.round(s / 3600) + ' hr ago';
   return Math.round(s / 86400) + ' d ago';
 }
-
-/* ───────── Word cloud rendering (member card + projector) ───────── */
-/* The cloud is packed: words are placed along a spiral from the centre, and
-   the whole thing is scaled up until the box is as full as it can be, so two
-   words fill the space with big type and forty words still fit. The layout is
-   deterministic (same words and size give the same picture), so it does not
-   jump around every time the page refreshes. */
-function learnCloudHtml(rows, minPx, maxPx, height) {
-  if (!rows || !rows.length) return '<div style="text-align:center;color:#8A968A;font-size:14px;padding:34px 18px;">No words yet. Add the first one.</div>';
-  var data = rows.slice(0, 40).map(function (r) { return { w: String(r.word), n: r.n }; });
-  return '<div class="learn-pack" style="height:' + (height || 280) + 'px;" data-min="' + minPx + '" data-max="' + maxPx + '" data-rows="' + encodeURIComponent(JSON.stringify(data)) + '"></div>';
-}
-
-var LEARN_MEASURE = null;
-function learnHash(str) { var h = 0; for (var i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) | 0; return Math.abs(h); }
-/* Single quotes on purpose: this string is written inside a style="..." attribute. */
-function learnFontFamily(serif) { return serif ? "'Playfair Display', Georgia, serif" : "'DM Sans', system-ui, sans-serif"; }
-function learnMeasure(text, px, serif) {
-  if (!LEARN_MEASURE) LEARN_MEASURE = document.createElement('canvas').getContext('2d');
-  LEARN_MEASURE.font = (serif ? '500 ' : '600 ') + px + 'px ' + learnFontFamily(serif);
-  return LEARN_MEASURE.measureText(text).width;
-}
-
-function learnPackLayout(words, W, H, minPx, maxPx) {
-  var max = words[0].n;
-  function rel(r) { return max === 1 ? 0.6 : (r.n - 1) / (max - 1); }
-  function base(r) { return minPx + (maxPx - minPx) * rel(r); }
-  var stretch = Math.max(1, Math.min(2.4, W / H));
-
-  function attempt(k) {
-    var placed = [];
-    for (var i = 0; i < words.length; i++) {
-      var r = words[i];
-      var px = base(r) * k;
-      var serif = rel(r) >= 0.45;
-      var tw = learnMeasure(r.w, px, serif) + 8;
-      var th = px * 1.1;
-      var rot = words.length >= 3 && i > 0 && learnHash(r.w) % 4 === 0;
-      var bw = rot ? th : tw, bh = rot ? tw : th;
-      if (bw > W - 16 || bh > H - 16) return null;
-      var spot = null, theta = (learnHash(r.w) % 628) / 100;
-      for (var step = 0; step < 6000 && !spot; step++) {
-        var rad = 1.9 * theta;
-        var x = W / 2 + rad * Math.cos(theta) * stretch - bw / 2;
-        var y = H / 2 + rad * Math.sin(theta) - bh / 2;
-        theta += 9 / Math.max(rad, 14);
-        if (x < 8 || y < 8 || x + bw > W - 8 || y + bh > H - 8) continue;
-        var hit = false;
-        for (var j = 0; j < placed.length; j++) {
-          var o = placed[j];
-          if (x < o.x + o.bw + 5 && x + bw + 5 > o.x && y < o.y + o.bh + 5 && y + bh + 5 > o.y) { hit = true; break; }
-        }
-        if (!hit) spot = { x: x, y: y };
-      }
-      if (!spot) return null;
-      placed.push({ w: r.w, n: r.n, px: px, serif: serif, rot: rot, x: spot.x, y: spot.y, bw: bw, bh: bh });
-    }
-    // Centre the finished cluster in the box. Everything already sits inside the
-    // margins, so shifting the group's bounding box to the middle keeps it inside.
-    var x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
-    placed.forEach(function (o) { x0 = Math.min(x0, o.x); x1 = Math.max(x1, o.x + o.bw); y0 = Math.min(y0, o.y); y1 = Math.max(y1, o.y + o.bh); });
-    var dx = W / 2 - (x0 + x1) / 2, dy = H / 2 - (y0 + y1) / 2;
-    placed.forEach(function (o) { o.x += dx; o.y += dy; });
-    return placed;
-  }
-
-  // Largest scale that fits: the biggest word never takes more than ~32% of the height.
-  var hi = (H * 0.32) / base(words[0]);
-  var lo = 0.2;
-  var best = attempt(hi);
-  if (best) return best;
-  var fallback = attempt(lo);
-  for (var it = 0; it < 10; it++) {
-    var mid = (lo + hi) / 2;
-    var res = attempt(mid);
-    if (res) { lo = mid; fallback = res; } else { hi = mid; }
-  }
-  return fallback;
-}
-
-var LEARN_RO = null, LEARN_RO_TIMER = null;
-function learnPackClouds(root) {
-  var boxes = (root || document).querySelectorAll('.learn-pack');
-  for (var b = 0; b < boxes.length; b++) {
-    var el = boxes[b];
-    if (window.ResizeObserver && !el.__ro) {
-      if (!LEARN_RO) LEARN_RO = new ResizeObserver(function () {
-        clearTimeout(LEARN_RO_TIMER);
-        LEARN_RO_TIMER = setTimeout(function () { learnPackClouds(document); }, 120);
-      });
-      LEARN_RO.observe(el); el.__ro = true;
-    }
-    var W = el.clientWidth, H = el.clientHeight;
-    if (!W || !H) continue;
-    var raw = el.getAttribute('data-rows') || '';
-    var sig = raw + '|' + W + 'x' + H;
-    if (el.getAttribute('data-sig') === sig) continue;
-    var words;
-    try { words = JSON.parse(decodeURIComponent(raw)); } catch (e) { continue; }
-    if (!words.length) continue;
-    words.sort(function (x, y) { return y.n - x.n || (x.w < y.w ? -1 : 1); });
-    var placed = learnPackLayout(words, W, H, Number(el.getAttribute('data-min')) || 15, Number(el.getAttribute('data-max')) || 44);
-    if (!placed) continue;
-    el.innerHTML = placed.map(function (r) {
-      var color = LEARN_PALETTE[(r.w.length + r.n) % LEARN_PALETTE.length];
-      return '<span title="' + r.n + (r.n === 1 ? ' person' : ' people') + '" style="left:' + Math.round(r.x) + 'px;top:' + Math.round(r.y) + 'px;width:' + Math.ceil(r.bw) + 'px;height:' + Math.ceil(r.bh) +
-        'px;font-size:' + r.px.toFixed(1) + 'px;color:' + color + ';font-family:' + learnFontFamily(r.serif) + ';font-weight:' + (r.serif ? 500 : 600) + ';' +
-        (r.rot ? 'writing-mode:vertical-rl;transform:rotate(180deg);' : '') + '">' + ufaEsc(r.w) + '</span>';
-    }).join('');
-    el.setAttribute('data-sig', sig);
-  }
-}
-
-var learnPackResizeTimer = null;
-window.addEventListener('resize', function () {
-  clearTimeout(learnPackResizeTimer);
-  learnPackResizeTimer = setTimeout(function () { learnPackClouds(document); }, 150);
-});
 
 /* ═════════════════════════ MEMBER TAB ═════════════════════════ */
 
@@ -21852,12 +21966,6 @@ async function loadLearnTab() {
         '<div class="fx-feed-head"><h4 class="fx-h3">This week\'s questions</h4><span class="fx-sub" style="margin:0;">Most upvoted first</span></div>' +
         '<div id="learn-q-list"></div>' +
       '</section>' +
-      '<aside id="learn-wc-card" class="fx-side" style="display:none;"><div class="fx-cloudcard">' +
-        '<h3 class="fx-h2">Word cloud</h3>' +
-        '<p class="fx-sub">Add words you want explained. The biggest ones get covered live.</p>' +
-        '<div id="learn-wc-form"></div>' +
-        '<div id="learn-wc-cloud" class="fx-cloudbox"></div>' +
-      '</div></aside>' +
     '</div>' +
     '<section id="learn-guide" class="fx-sec">' + learnGuideShell() + '</section>';
 
@@ -21866,9 +21974,8 @@ async function loadLearnTab() {
     document.getElementById('learn-q-count').textContent = ta.value.length + ' / 300';
   });
 
-  learnWcSig = '';
   learnGuideDraw();
-  await Promise.all([learnRefreshQuestions(), learnRefreshCloud()]);
+  await learnRefreshQuestions();
   learnStartPolling();
 }
 
@@ -21879,7 +21986,6 @@ function learnStartPolling() {
     var pane = document.getElementById('ptab-content-learn');
     if (!pane || pane.style.display === 'none' || !document.getElementById('learn-q-list')) { learnStopPolling(); return; }
     learnRefreshQuestions();
-    learnRefreshCloud();
   }, LEARN_POLL_MS);
 }
 function learnStopPolling() {
@@ -21935,66 +22041,6 @@ async function learnVote(id) {
   learnRefreshQuestions();
 }
 
-/* One column when there is no word cloud to show beside the questions. */
-function learnSyncGrid() {
-  var g = document.getElementById('learn-grid'), c = document.getElementById('learn-wc-card');
-  if (g && c) g.classList.toggle('solo', c.style.display === 'none');
-}
-
-/* Word cloud: the form only re-renders when the round changes, so typing is never interrupted. */
-async function learnRefreshCloud() {
-  var form = document.getElementById('learn-wc-form');
-  var cloud = document.getElementById('learn-wc-cloud');
-  if (!form || !cloud) return;
-  var card = document.getElementById('learn-wc-card');
-  var rr = await sb.rpc('wc_current');
-  if (card) card.style.display = '';
-  learnSyncGrid();
-  if (rr.error) { form.innerHTML = '<div class="fx-msg err" style="margin-top:14px;">' + ufaEsc(learnErr(rr.error)) + '</div>'; cloud.innerHTML = ''; return; }
-  var round = (rr.data && rr.data[0]) || null;
-  if (!round) {
-    // Nothing running: hide the whole card, so a one-off cloud leaves no empty box behind
-    learnWcSig = 'none';
-    form.innerHTML = '';
-    cloud.innerHTML = '';
-    if (card) card.style.display = 'none';
-    learnSyncGrid();
-    return;
-  }
-  var mine = round.my_words || [];
-  var sig = round.id + '|' + round.is_open + '|' + mine.join('~');
-  if (sig !== learnWcSig) {
-    learnWcSig = sig;
-    var left = Math.max(0, 3 - mine.length);
-    form.innerHTML =
-      '<div class="fx-wc-prompt">' + ufaEsc(round.prompt) + '</div>' +
-      (round.is_open && left > 0
-        ? '<div class="fx-wc-row">' +
-            '<input id="learn-wc-input" class="fx-input" maxlength="40" placeholder="e.g. dot plot" aria-label="A word or term" onkeydown="if(event.key===\'Enter\')learnSubmitWord(\'' + round.id + '\',' + left + ')">' +
-            '<button class="fx-btn" onclick="learnSubmitWord(\'' + round.id + '\',' + left + ')">Add</button></div>' +
-          '<p class="fx-wc-hint">You can add ' + left + ' more word' + (left === 1 ? '' : 's') + '. Separate several with commas.</p>'
-        : '<p class="fx-wc-hint">' + (round.is_open ? 'You have added all 3 of your words.' : 'This round is closed.') + '</p>') +
-      (mine.length ? '<div class="fx-wc-mine">' + mine.map(function (w) { return fxPill('info', ufaEsc(w)); }).join('') + '</div>' : '') +
-      '<div id="learn-wc-msg" class="fx-msg" style="display:none;margin:12px 0 0;"></div>';
-  }
-  var cr = await sb.rpc('wc_counts', { p_round: round.id });
-  var cloudHtml = cr.error ? '' : learnCloudHtml(cr.data || [], 15, 44, 300);
-  if (cloud.__html !== cloudHtml) { cloud.__html = cloudHtml; cloud.innerHTML = cloudHtml; }
-  learnPackClouds(cloud);
-}
-
-async function learnSubmitWord(roundId, left) {
-  var inp = document.getElementById('learn-wc-input');
-  if (!inp) return;
-  var words = inp.value.split(',').map(function (w) { return w.trim(); }).filter(Boolean);
-  if (!words.length) return learnMsg('learn-wc-msg', 'err', 'Type a word or term first.');
-  if (words.length > left) words = words.slice(0, left);
-  var r = await sb.rpc('wc_submit', { p_round: roundId, p_words: words });
-  if (r.error) return learnMsg('learn-wc-msg', 'err', learnErr(r.error));
-  learnWcSig = '';
-  learnRefreshCloud();
-}
-
 /* ═════════════════════════ BOARD: ADMIN TAB ═════════════════════════ */
 
 async function loadLearnAdmin() {
@@ -22005,36 +22051,17 @@ async function loadLearnAdmin() {
     var res = await Promise.all([
       sb.from('qa_questions').select('*').order('created_at', { ascending: false }).limit(300),
       sb.from('qa_question_authors').select('*'),
-      sb.from('members').select('email, name'),
-      sb.from('wc_rounds').select('*').order('created_at', { ascending: false }).limit(20)
+      sb.from('members').select('email, name')
     ]);
     for (var i = 0; i < res.length; i++) if (res[i].error) throw res[i].error;
     var allQs = res[0].data || [], authors = res[1].data || [], members = res[2].data || [];
     var qs = allQs.filter(function (q) { return !q.archived_at; });
     var archivedQs = allQs.filter(function (q) { return q.archived_at; });
-    var rounds = res[3].data || [];
 
     var nameBy = {};
     members.forEach(function (m) { nameBy[String(m.email).toLowerCase()] = m.name || m.email; });
     var authorBy = {};
     authors.forEach(function (a) { authorBy[a.question_id] = nameBy[String(a.email).toLowerCase()] || a.email; });
-
-    var round = rounds[0] || null;
-    var subs = [];
-    if (round) {
-      var sr = await sb.from('wc_submissions').select('word, display, email').eq('round_id', round.id);
-      if (sr.error) throw sr.error;
-      subs = sr.data || [];
-    }
-    var byWord = {};
-    subs.forEach(function (s) {
-      var o = byWord[s.word] = byWord[s.word] || { word: s.word, display: s.display, n: 0 };
-      o.n++;
-    });
-    var wordRows = Object.keys(byWord).map(function (k) { return byWord[k]; })
-      .sort(function (a, b) { return b.n - a.n || (a.word < b.word ? -1 : 1); });
-    var people = {};
-    subs.forEach(function (s) { people[s.email] = 1; });
 
     qs.sort(function (a, b) {
       return (a.hidden - b.hidden) || (a.answered - b.answered) || (b.votes - a.votes) || (new Date(b.created_at) - new Date(a.created_at));
@@ -22064,29 +22091,12 @@ async function loadLearnAdmin() {
             '<div class="a"><button class="fx-icon-btn danger" title="Delete" aria-label="Delete question" data-id="' + q.id + '" data-a="delete" onclick="learnAdminQ(this.dataset.id,this.dataset.a)">' + fxIcon('trash', 17) + '</button></div></div>';
         }).join('') + '</div></details>' : '';
 
-    var wcHtml = round
-      ? '<div style="padding:20px 22px;">' +
-          '<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px;">' +
-            '<div><h4 class="fx-h3">' + ufaEsc(round.prompt) + '</h4>' +
-              '<div class="fx-sub" style="margin-top:6px;display:flex;gap:8px;align-items:center;">' + fxPill(round.is_open ? 'ok' : 'mute', round.is_open ? 'Open' : 'Closed') +
-              '<span>' + Object.keys(people).length + ' member' + (Object.keys(people).length === 1 ? '' : 's') + ' submitted</span></div></div>' +
-            '<div style="display:flex;gap:8px;"><button class="fx-btn sm ghost" data-id="' + round.id + '" data-open="' + (!round.is_open) + '" onclick="learnRoundToggle(this.dataset.id,this.dataset.open===\'true\')">' + (round.is_open ? 'Close round' : 'Reopen') + '</button>' +
-            '<button class="fx-btn sm danger" data-id="' + round.id + '" onclick="learnRoundDelete(this.dataset.id)">Delete round</button></div>' +
-          '</div>' +
-          (wordRows.length ? '<div style="display:flex;flex-wrap:wrap;gap:8px;">' + wordRows.map(function (w) {
-            return '<span class="fx-who" style="padding-left:12px;">' + ufaEsc(w.display) + ' <b style="color:var(--fx-pine);">' + w.n + '</b>' +
-              '<button class="x" title="Remove this word" aria-label="Remove ' + ufaEsc(w.display) + '" data-id="' + round.id + '" data-word="' + ufaEsc(w.word) + '" onclick="learnWordDelete(this.dataset.id,this.dataset.word)">&times;</button></span>';
-          }).join('') + '</div>' : '<div class="fx-sub">No words yet.</div>') +
-        '</div>'
-      : '<div class="fx-empty" style="border:0;">' + fxIcon('sparkle', 26) + 'No word round yet. Start one below.</div>';
-
     host.innerHTML =
       '<div id="learn-visibility" style="margin-bottom:20px;"></div>' +
       '<div id="learn-alert" class="ufa-alert" style="display:none;margin-bottom:16px;"></div>' +
       '<div id="learn-admin-msg" class="fx-msg" style="display:none;"></div>' +
       '<div class="fx-stats">' +
         '<div class="fx-stat"><b>' + openQs + '</b><span>Open questions this week</span></div>' +
-        '<div class="fx-stat"><b>' + wordRows.length + '</b><span>Different words in the cloud</span></div>' +
       '</div>' +
       '<div style="display:flex;gap:10px;flex-wrap:wrap;margin:-6px 0 34px;">' +
         '<button class="fx-btn lg" onclick="learnOpenProjector()">' + fxIcon('screen', 18) + ' Open projector view</button>' +
@@ -22094,14 +22104,7 @@ async function loadLearnAdmin() {
 
       '<section class="fx-sec"><div class="fx-sec-head"><div><h3 class="fx-h2">Questions this week</h3><p class="fx-sub">You can see who asked. Members cannot.</p></div>' +
         '<button class="fx-btn sm ghost" onclick="learnArchiveWeek()">' + fxIcon('refresh', 15) + ' Start a new week</button></div>' +
-        '<div ' + panel + '>' + qHtml + '</div>' + archivedHtml + '</section>' +
-
-      '<section class="fx-sec"><div class="fx-sec-head"><div><h3 class="fx-h2">Word cloud</h3><p class="fx-sub">Each member can add up to 3 words per round.</p></div></div>' +
-        '<div ' + panel + '>' + wcHtml + '</div>' +
-        '<div class="fx-form-card" style="margin-top:12px;"><div style="display:flex;gap:8px;flex-wrap:wrap;">' +
-          '<input id="learn-new-prompt" class="fx-input" style="flex:1;min-width:220px;" value="Words you want explained" maxlength="120" aria-label="Round prompt">' +
-          '<button class="fx-btn" onclick="learnRoundCreate()">Start a new round</button></div>' +
-          '<p class="fx-sub" style="margin-top:10px;">Starting a new round closes the old one.</p></div></section>';
+        '<div ' + panel + '>' + qHtml + '</div>' + archivedHtml + '</section>';
 
     await renderVisibilityToggle('learn', 'visibility_learn');
   } catch (e) {
@@ -22137,36 +22140,6 @@ async function learnArchiveWeek() {
   learnMsg('learn-admin-msg', 'ok', 'New week started. ' + (r.data || []).length + ' question' + ((r.data || []).length === 1 ? '' : 's') + ' archived, and members now see a clean list.');
 }
 
-async function learnRoundCreate() {
-  if (!ufaIsBoard()) return;
-  var prompt = (document.getElementById('learn-new-prompt').value || '').trim();
-  if (!prompt) return learnMsg('learn-admin-msg', 'err', 'Give the round a prompt.');
-  await sb.from('wc_rounds').update({ is_open: false }).eq('is_open', true);
-  var r = await sb.from('wc_rounds').insert({ prompt: prompt, is_open: true }).select();
-  if (r.error) return learnMsg('learn-admin-msg', 'err', 'Could not start the round: ' + learnErr(r.error));
-  loadLearnAdmin();
-}
-async function learnRoundToggle(id, open) {
-  if (!ufaIsBoard()) return;
-  if (open) await sb.from('wc_rounds').update({ is_open: false }).eq('is_open', true);
-  var r = await sb.from('wc_rounds').update({ is_open: open }).eq('id', id).select();
-  if (r.error || !r.data || !r.data.length) return learnMsg('learn-admin-msg', 'err', 'Could not change the round.');
-  loadLearnAdmin();
-}
-async function learnRoundDelete(id) {
-  if (!ufaIsBoard()) return;
-  if (!confirm('Delete this round and every word in it?')) return;
-  var r = await sb.from('wc_rounds').delete().eq('id', id).select();
-  if (r.error || !r.data || !r.data.length) return learnMsg('learn-admin-msg', 'err', 'Could not delete the round.');
-  loadLearnAdmin();
-}
-async function learnWordDelete(roundId, word) {
-  if (!ufaIsBoard()) return;
-  var r = await sb.from('wc_submissions').delete().eq('round_id', roundId).eq('word', word).select();
-  if (r.error) return learnMsg('learn-admin-msg', 'err', 'Could not remove the word: ' + learnErr(r.error));
-  if (learnProjectorOpen()) learnProjRefresh();
-  if (learnAdminVisible()) loadLearnAdmin();
-}
 
 
 /* ═════════════════════════ PROJECTOR VIEW (board only) ═════════════════════════ */
@@ -22189,7 +22162,6 @@ async function learnOpenProjector() {
       '</div>' +
       '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:56px;align-items:start;">' +
         '<div><div class="lp-h">Top questions</div><div id="lp-questions"></div></div>' +
-        '<div><div class="lp-h" id="lp-wc-title">Words you want explained</div><div id="lp-cloud" style="background:#F7F4EE;border-radius:22px;"></div></div>' +
       '</div>' +
     '</div>';
   document.body.appendChild(el);
@@ -22208,11 +22180,9 @@ function learnCloseProjector() {
 async function learnProjRefresh() {
   if (!learnProjectorOpen()) return;
   var res = await Promise.all([
-    sb.from('qa_questions').select('*').eq('hidden', false).is('archived_at', null).order('answered', { ascending: true }).order('votes', { ascending: false }).order('created_at', { ascending: false }).limit(8),
-    sb.from('wc_rounds').select('*').order('created_at', { ascending: false }).limit(1)
+    sb.from('qa_questions').select('*').eq('hidden', false).is('archived_at', null).order('answered', { ascending: true }).order('votes', { ascending: false }).order('created_at', { ascending: false }).limit(8)
   ]);
   var qs = res[0].data || [];
-  var round = (res[1].data || [])[0];
 
   var qBox = document.getElementById('lp-questions');
   if (qBox) qBox.innerHTML = qs.length ? qs.map(function (q) {
@@ -22224,20 +22194,6 @@ async function learnProjRefresh() {
       '</div>';
   }).join('') : '<div style="padding:18px 0;font-size:clamp(18px,1.8vw,26px);color:#8FA08F;">Questions will show up here as people post them.</div>';
 
-  var cloudBox = document.getElementById('lp-cloud');
-  var title = document.getElementById('lp-wc-title');
-  if (cloudBox) {
-    if (round) {
-      if (title) title.textContent = round.prompt;
-      var cr = await sb.rpc('wc_counts', { p_round: round.id });
-      var pHtml = learnCloudHtml(cr.error ? [] : (cr.data || []), 24, 86, Math.max(440, Math.round(window.innerHeight * 0.58)));
-      if (cloudBox.__html !== pHtml) { cloudBox.__html = pHtml; cloudBox.innerHTML = pHtml; }
-      learnPackClouds(cloudBox);
-    } else {
-      cloudBox.__html = null;
-      cloudBox.innerHTML = '<div style="padding:40px;text-align:center;color:#6B7D6B;font-size:20px;">No word round yet.</div>';
-    }
-  }
 }
 
 document.addEventListener('keydown', function (e) {
@@ -22407,6 +22363,97 @@ document.addEventListener('keydown', function (e) {
 #fam-admin-body .fx-famcard .chips { margin-bottom: 14px; }
 #fam-admin-body .fx-rev { margin-bottom: 14px; }
 #fam-admin-body .fx-rec { padding: 12px 16px; gap: 12px; }
+
+/* ── Collapsible sidebar ── */
+.us-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 2px 16px 10px; margin-bottom: 4px; border-bottom: 1px solid rgba(46,74,46,0.09); }
+.us-head .us-me { padding: 0; margin: 0; border: 0; min-width: 0; }
+.us-toggle { flex: none; width: 32px; height: 32px; padding: 0; border-radius: 9px; border: 1px solid rgba(46,74,46,0.14); background: #fff; color: #556655; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.us-toggle:hover { background: #F4F2EB; color: #1C2B1C; }
+.us-toggle svg { transition: transform .2s; }
+@media (min-width: 901px) {
+  #ufa-side { transition: flex-basis .18s ease, width .18s ease; }
+  #ufa-portal-wrap.ufa-side-collapsed { --ufa-side-w: 78px; }
+  #ufa-portal-wrap.ufa-side-collapsed #ufa-side { padding: 18px 10px 14px; }
+  .ufa-side-collapsed .us-head { flex-direction: column; align-items: center; gap: 12px; padding: 0 0 14px; }
+  .ufa-side-collapsed .us-who { display: none; }
+  .ufa-side-collapsed .us-toggle svg { transform: rotate(180deg); }
+  .ufa-side-collapsed .us-item { justify-content: center; padding: 11px 0; }
+  .ufa-side-collapsed .us-item span { display: none; }
+  .ufa-side-collapsed .us-item.is-active::before { left: -10px; }
+  .ufa-side-collapsed .us-gh { font-size: 0; height: 1px; padding: 0; margin: 12px 14px; background: rgba(46,74,46,.12); }
+  .ufa-side-collapsed .us-out { justify-content: center; padding: 10px 0; }
+  .ufa-side-collapsed .us-out span { display: none; }
+}
+@media (max-width: 900px) { .us-toggle { display: none; } }
+
+/* Leaderboard: Family Cup */
+.lbf { background: #fff; border: 1px solid rgba(46,74,46,.12); border-radius: 14px; overflow: hidden; }
+.lbf-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; padding: 18px 20px; }
+.lbf-title { font: 500 21px 'Playfair Display', Georgia, serif; color: #1C2B1C; margin: 0; }
+.lbf-sub { font-size: 13px; color: #6B7D6B; margin-top: 3px; }
+.lbf-lead { display: inline-flex; align-items: center; gap: 8px; background: #FBF0DC; border: 1px solid #EBD6A6; color: #7A5410; border-radius: 999px; padding: 8px 15px; font-size: 13px; font-weight: 600; }
+.lbf-lead.lbf-quiet { background: #F4F2EB; border-color: rgba(46,74,46,.12); color: #6B7D6B; font-weight: 500; }
+.lbf-row { display: grid; grid-template-columns: 36px minmax(0, 1.1fr) minmax(0, 1.5fr) auto; align-items: center; gap: 14px; padding: 12px 20px; border-top: 1px solid rgba(46,74,46,.07); }
+.lbf-row.me { background: #EEF5EE; }
+.lbf-rank { text-align: center; font-size: 18px; }
+.lbf-n { font-size: 13px; font-weight: 600; color: #6B7D6B; }
+.lbf-name { font: 600 14px 'DM Sans', sans-serif; color: #1C2B1C; }
+.lbf-you { margin-left: 6px; font-size: 11px; font-weight: 600; color: #2E6B2E; background: #DCEBDC; border-radius: 999px; padding: 2px 8px; }
+.lbf-meta { font-size: 12px; color: #6B7D6B; margin-top: 2px; }
+.lbf-bar { height: 8px; border-radius: 4px; background: #EEF5EE; overflow: hidden; }
+.lbf-bar i { display: block; height: 100%; background: #3D6B3D; border-radius: 4px; }
+.lbf-pts { min-width: 70px; text-align: right; font: 600 15px 'DM Sans', sans-serif; color: #2E6B2E; }
+.lbf-more { display: block; width: 100%; padding: 12px; border: 0; border-top: 1px solid rgba(46,74,46,.08); background: none; color: #3D6B3D; font: 500 13px 'DM Sans', sans-serif; cursor: pointer; }
+@media (max-width: 640px) { .lbf-row { grid-template-columns: 30px minmax(0, 1fr) auto; } .lbf-bar { display: none; } }
+
+.ufa-selectall { display: inline-block; margin-top: 10px; padding: 4px 0; border: 0; background: none; color: #3D6B3D; font: 500 13px 'DM Sans', sans-serif; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+
+/* Recruiting → Resources */
+.res-wsj { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; background: linear-gradient(135deg, #1C2B1C, #2E4A2E); color: #fff; border-radius: 16px; padding: 20px 22px; margin-bottom: 22px; }
+.res-wsj-main { display: flex; align-items: center; gap: 14px; flex: 1 1 280px; min-width: 0; }
+.res-wsj-ico { flex: none; width: 46px; height: 46px; border-radius: 12px; background: rgba(255,255,255,.12); display: flex; align-items: center; justify-content: center; font: 700 15px 'Playfair Display', Georgia, serif; letter-spacing: .02em; }
+.res-wsj-t { font: 600 16px 'DM Sans', sans-serif; }
+.res-wsj-s { font-size: 13px; color: #B7C9B7; margin-top: 2px; }
+.res-wsj-creds { display: flex; gap: 12px; flex-wrap: wrap; }
+.res-cred { display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14); border-radius: 12px; padding: 9px 12px; }
+.res-cred small { display: block; font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: #A8BCA8; margin-bottom: 2px; }
+.res-cred code { display: block; font: 500 13.5px ui-monospace, Menlo, monospace; color: #fff; }
+.res-copy { background: rgba(255,255,255,.14); border: 0; color: #fff; font: 500 12px 'DM Sans', sans-serif; border-radius: 8px; padding: 6px 10px; cursor: pointer; }
+.res-copy:hover { background: rgba(255,255,255,.26); }
+.res-copy, .res-copy:hover { transform: none !important; box-shadow: none !important; filter: none !important; }
+.res-wsj-btn { background: #fff; color: #1C2B1C; font: 600 13px 'DM Sans', sans-serif; padding: 10px 16px; border-radius: 10px; text-decoration: none; white-space: nowrap; }
+.res-toolbar { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin: 0 0 14px; }
+.res-search { position: relative; flex: 1 1 260px; max-width: 440px; }
+.res-search svg { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: #8A9A8A; pointer-events: none; }
+.res-search input { width: 100%; box-sizing: border-box; padding: 11px 14px 11px 40px; border: 1px solid rgba(46,74,46,.18); border-radius: 12px; background: #fff; font: 400 14px 'DM Sans', sans-serif; color: #1C2B1C; }
+.res-count { font-size: 13px; color: #6B7D6B; }
+.res-n { margin-left: 5px; font-size: 11px; opacity: .7; }
+#resources-grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 310px), 1fr)) !important; gap: 14px !important; margin-top: 16px; }
+.res-card { display: flex; gap: 14px; min-height: 124px; padding: 16px 18px; background: #fff; border: 1px solid rgba(46,74,46,.12); border-radius: 14px; cursor: pointer; transition: border-color .15s, box-shadow .15s; }
+.res-card:hover { border-color: rgba(46,74,46,.3); box-shadow: 0 8px 20px -12px rgba(28,43,28,.4); }
+.res-card:focus-visible { outline: 2px solid #3D6B3D; outline-offset: 2px; }
+.res-ico { flex: none; width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+.res-body { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.res-title { font: 600 15px/1.3 'DM Sans', sans-serif; color: #1C2B1C; }
+.res-desc { margin-top: 4px; font-size: 13px; line-height: 1.45; color: #6B7D6B; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.res-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: auto; padding-top: 10px; }
+.res-tag { font-size: 11px; font-weight: 600; border-radius: 999px; padding: 3px 10px; white-space: nowrap; }
+.res-act { font-size: 12.5px; font-weight: 600; color: #3D6B3D; white-space: nowrap; }
+.res-empty { grid-column: 1 / -1; text-align: center; padding: 44px 16px; color: #6B7D6B; font-size: 14px; background: #fff; border: 1px dashed rgba(46,74,46,.2); border-radius: 14px; }
+@media (max-width: 640px) { .res-wsj-creds { width: 100%; } .res-cred { flex: 1 1 100%; justify-content: space-between; } }
+
+/* Engagement: who is practicing */
+.eng-phead { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 12px; }
+.eng-pctl { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.eng-q { padding: 8px 12px; min-width: 190px; border: 1px solid rgba(46,74,46,.18); border-radius: 10px; font: 400 13px 'DM Sans', sans-serif; }
+.eng-idle { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: #556655; cursor: pointer; }
+.eng-tablewrap { overflow-x: auto; }
+.eng-table { width: 100%; border-collapse: collapse; font-size: 13px; color: #1C2B1C; }
+.eng-table th { text-align: left; padding: 10px 12px; font: 600 11px 'DM Sans', sans-serif; letter-spacing: .06em; text-transform: uppercase; color: #6B7D6B; border-bottom: 1px solid rgba(46,74,46,.14); cursor: pointer; white-space: nowrap; user-select: none; }
+.eng-table th.on { color: #1C2B1C; }
+.eng-table td { padding: 10px 12px; border-bottom: 1px solid rgba(46,74,46,.07); }
+.eng-table .r { text-align: right; }
+.eng-table tbody tr:hover { background: #F7FAF7; }
 </style>
 
 <script>
@@ -22428,7 +22475,8 @@ document.addEventListener('keydown', function (e) {
     learn:       '<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/>',
     admin:       '<path d="M12 3l8 3v6c0 4.5-3.2 8-8 9-4.8-1-8-4.5-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/>',
     more:        '<circle cx="5" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="19" cy="12" r="1.5" fill="currentColor"/>',
-    out:         '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>'
+    out:         '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>',
+    chevL:       '<path d="M15 18l-6-6 6-6"/>'
   };
   var LABEL = { overview: 'Overview', leaderboard: 'Leaderboard', events: 'Events', profile: 'Profile', recruiting: 'Recruiting',
                 mock: 'Mock Interview', board: 'Board Hours', learn: 'Ask & Learn', admin: 'Admin' };
@@ -22459,10 +22507,25 @@ document.addEventListener('keydown', function (e) {
   side.id = 'ufa-side';
   side.setAttribute('aria-label', 'Portal navigation');
   side.innerHTML =
-    '<div class="us-me"><div class="us-av" id="us-av">M</div><div class="us-who"><div class="us-name" id="us-name">Member</div><div class="us-sub" id="us-sub"></div></div></div>' +
+    '<div class="us-head"><div class="us-me"><div class="us-av" id="us-av">M</div><div class="us-who"><div class="us-name" id="us-name">Member</div><div class="us-sub" id="us-sub"></div></div></div>' +
+      '<button type="button" class="us-toggle" data-act="collapse" aria-expanded="true" aria-label="Collapse sidebar" title="Collapse sidebar">' + icon('chevL', 18) + '</button></div>' +
     '<div class="us-nav" id="us-nav" role="navigation" aria-label="Portal sections"></div>' +
-    '<button type="button" class="us-out" data-act="signout">' + icon('out', 18) + 'Sign out</button>';
+    '<button type="button" class="us-out" data-act="signout" title="Sign out">' + icon('out', 18) + '<span>Sign out</span></button>';
   wrap.insertBefore(side, dash);
+
+  // Collapsed state is remembered between visits.
+  var collapsed = false;
+  try { collapsed = localStorage.getItem('ufa_side_collapsed') === '1'; } catch (_) {}
+  function applyCollapsed() {
+    wrap.classList.toggle('ufa-side-collapsed', collapsed);
+    var t = side.querySelector('.us-toggle');
+    if (t) {
+      t.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+      t.setAttribute('aria-label', collapsed ? 'Expand sidebar' : 'Collapse sidebar');
+      t.title = collapsed ? 'Expand sidebar' : 'Collapse sidebar';
+    }
+  }
+  applyCollapsed();
 
   var bar = document.createElement('div');
   bar.id = 'ufa-tabbar';
@@ -22492,7 +22555,7 @@ document.addEventListener('keydown', function (e) {
       if (!tabs.length) return;
       html += '<div class="us-gh">' + g.label + '</div>';
       tabs.forEach(function (t) {
-        html += '<button type="button" class="us-item' + (t === cur ? ' is-active' : '') + '" data-tab="' + t + '"' + (t === cur ? ' aria-current="page"' : '') + '>' + icon(t) + '<span>' + esc(LABEL[t]) + '</span></button>';
+        html += '<button type="button" class="us-item' + (t === cur ? ' is-active' : '') + '" data-tab="' + t + '"' + (t === cur ? ' aria-current="page"' : '') + (collapsed ? ' title="' + esc(LABEL[t]) + '"' : '') + '>' + icon(t) + '<span>' + esc(LABEL[t]) + '</span></button>';
       });
     });
     nav.innerHTML = html;
@@ -22532,6 +22595,12 @@ document.addEventListener('keydown', function (e) {
     var el = e.target.closest('[data-tab],[data-act]');
     if (!el) return;
     if (el.dataset.tab) { go(el.dataset.tab); return; }
+    if (el.dataset.act === 'collapse') {
+      collapsed = !collapsed;
+      try { localStorage.setItem('ufa_side_collapsed', collapsed ? '1' : '0'); } catch (_) {}
+      applyCollapsed(); render();
+      return;
+    }
     if (el.dataset.act === 'more') { openMore(); return; }
     if (el.dataset.act === 'signout') { closeMore(); if (typeof portalLogout === 'function') portalLogout(); }
   }
