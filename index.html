@@ -22319,6 +22319,290 @@ document.addEventListener('keydown', function (e) {
 });
 
 </script>
+<style id="ufa-shell-v4">
+/* ═══════════════════════════════════════════════════════════════════
+   PORTAL SHELL — sidebar on desktop, bottom tab bar on phones/tablets.
+   The original #portal-tab-nav buttons stay in the page as the source of
+   truth (switchPortalTab, show/hide for board-only tabs, active state);
+   this layer only presents them differently.
+   ═══════════════════════════════════════════════════════════════════ */
+:root { --ufa-nav-h: 80px; --ufa-side-w: 264px; --ufa-maxw: 1380px; }
+@media (max-width: 768px) { :root { --ufa-nav-h: 68px; } }
+@media (min-width: 1700px) { :root { --ufa-side-w: 288px; } }
+@media (min-width: 2200px) { :root { --ufa-maxw: 1600px; } }
+
+#ufa-side, #ufa-tabbar, #ufa-more { display: none; }
+#ufa-portal-wrap.ufa-shell-on #portal-tab-nav { display: none !important; }
+
+/* Never let the site-wide button hover lift move navigation around. */
+#ufa-side button, #ufa-side button:hover, #ufa-tabbar button, #ufa-tabbar button:hover, #ufa-more button, #ufa-more button:hover {
+  transform: none !important; filter: none !important; box-shadow: none !important;
+}
+
+/* ── Desktop: left sidebar ───────────────────────────────────────── */
+@media (min-width: 901px) {
+  #ufa-portal-wrap.ufa-shell-on { flex-direction: row !important; justify-content: flex-start !important; align-items: stretch; }
+  #ufa-portal-wrap.ufa-shell-on #portal-dashboard { flex: 1 1 0 !important; min-width: 0; }
+  #ufa-portal-wrap.ufa-shell-on #ufa-side {
+    display: flex; flex-direction: column; box-sizing: border-box;
+    flex: 0 0 var(--ufa-side-w); width: var(--ufa-side-w);
+    position: sticky; top: var(--ufa-nav-h); align-self: flex-start;
+    height: calc(100vh - var(--ufa-nav-h));
+    padding: 22px 14px 16px; overflow-y: auto; z-index: 5;
+    background: #fff; border-right: 1px solid rgba(46,74,46,0.10);
+  }
+  /* The sidebar has its own sign out, so the header band does not need one. */
+  #ufa-portal-wrap.ufa-shell-on #portal-dashboard > div:nth-child(2) > div:first-child > button { display: none !important; }
+}
+
+.us-me { display: flex; align-items: center; gap: 12px; padding: 4px 10px 18px; margin-bottom: 4px; border-bottom: 1px solid rgba(46,74,46,0.09); }
+.us-av { flex: none; width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #2E4A2E, #4F8A4F); color: #fff; font: 600 15px 'DM Sans', sans-serif; letter-spacing: .02em; }
+.us-who { min-width: 0; }
+.us-name { font: 600 14px/1.25 'DM Sans', sans-serif; color: #1C2B1C; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.us-sub  { font: 400 12px/1.3 'DM Sans', sans-serif; color: #6B7D6B; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 2px; }
+.us-nav { flex: 1 1 auto; display: flex; flex-direction: column; gap: 2px; }
+.us-gh { font: 600 10.5px 'DM Sans', sans-serif; letter-spacing: .14em; text-transform: uppercase; color: #8A9A8A; padding: 18px 12px 6px; }
+.us-item { position: relative; display: flex; align-items: center; gap: 12px; width: 100%; box-sizing: border-box; padding: 10px 12px; border: 0; border-radius: 10px;
+  background: transparent; color: #3A4A3A; font: 500 14px/1.2 'DM Sans', sans-serif; text-align: left; cursor: pointer; transition: background .15s, color .15s; }
+.us-item svg { flex: none; opacity: .8; }
+.us-item:hover { background: #F4F2EB; color: #1C2B1C; }
+.us-item.is-active { background: #EEF5EE; color: #1C2B1C; font-weight: 600; }
+.us-item.is-active svg { opacity: 1; color: #2E6B2E; }
+.us-item.is-active::before { content: ''; position: absolute; left: -14px; top: 9px; bottom: 9px; width: 4px; border-radius: 0 4px 4px 0; background: #3D6B3D; }
+.us-item:focus-visible, .ut-item:focus-visible, .um-item:focus-visible, .us-out:focus-visible { outline: 2px solid #3D6B3D; outline-offset: 2px; }
+.us-out { display: flex; align-items: center; gap: 12px; width: 100%; box-sizing: border-box; margin-top: 14px; padding: 10px 12px; border: 1px solid rgba(46,74,46,0.14); border-radius: 10px;
+  background: #fff; color: #3A4A3A; font: 500 13px 'DM Sans', sans-serif; cursor: pointer; }
+.us-out:hover { background: #F4F2EB; }
+
+/* ── Header band + content, now that navigation lives elsewhere ──── */
+#ufa-portal-wrap.ufa-shell-on #portal-dashboard > div:nth-child(2) { padding: 28px 44px 26px !important; }
+#ufa-portal-wrap.ufa-shell-on #portal-dashboard > div:nth-child(2) > div:first-child { margin-bottom: 0 !important; }
+#ufa-portal-wrap.ufa-shell-on #portal-welcome-name { font-size: 30px !important; }
+#ufa-portal-wrap.ufa-shell-on #announcement-banner { padding-left: 44px !important; padding-right: 44px !important; }
+#ufa-portal-wrap.ufa-shell-on #portal-dashboard > div:nth-child(3) {
+  padding: 32px 44px 72px !important; max-width: var(--ufa-maxw); margin: 0 auto; width: 100%; box-sizing: border-box;
+}
+/* Keep the header band's text lined up with the centred content column. */
+@media (min-width: 901px) {
+  #ufa-portal-wrap.ufa-shell-on #portal-dashboard > div:nth-child(2),
+  #ufa-portal-wrap.ufa-shell-on #announcement-banner {
+    padding-left: max(44px, calc((100% - var(--ufa-maxw)) / 2 + 44px)) !important;
+    padding-right: max(44px, calc((100% - var(--ufa-maxw)) / 2 + 44px)) !important;
+  }
+}
+
+/* ── Phones and tablets: bottom tab bar ──────────────────────────── */
+@media (max-width: 900px) {
+  #ufa-portal-wrap.ufa-shell-on #ufa-tabbar {
+    display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 950;
+    padding: 6px 6px calc(6px + env(safe-area-inset-bottom, 0px));
+    background: rgba(255,255,255,0.97); -webkit-backdrop-filter: saturate(1.4) blur(10px); backdrop-filter: saturate(1.4) blur(10px);
+    border-top: 1px solid rgba(46,74,46,0.12); box-shadow: 0 -10px 30px -18px rgba(28,43,28,0.4) !important;
+  }
+  #ufa-portal-wrap.ufa-shell-on #ufa-tabbar.is-single { display: none; }
+  .ut-item { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 5px 2px 3px; border: 0; background: none;
+    color: #6B7D6B; font: 500 10.5px/1.1 'DM Sans', sans-serif; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .ut-item span.ut-t { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ut-ic { width: 46px; height: 28px; border-radius: 14px; display: flex; align-items: center; justify-content: center; transition: background .18s; }
+  .ut-item.is-active { color: #1C2B1C; font-weight: 700; }
+  .ut-item.is-active .ut-ic { background: #D6E8D6; color: #1C2B1C; }
+
+  #ufa-portal-wrap.ufa-shell-on #portal-dashboard { padding-bottom: calc(86px + env(safe-area-inset-bottom, 0px)) !important; }
+  #ufa-portal-wrap.ufa-shell-on #portal-dashboard > div:nth-child(2) { padding: 20px 18px 20px !important; }
+  #ufa-portal-wrap.ufa-shell-on #portal-welcome-name { font-size: 24px !important; }
+  #ufa-portal-wrap.ufa-shell-on #portal-dashboard > div:nth-child(3) { padding: 20px 16px 24px !important; max-width: none; }
+  #ufa-portal-wrap.ufa-shell-on #announcement-banner { padding-left: 18px !important; padding-right: 18px !important; }
+
+  #ufa-more.is-open { display: flex; }
+}
+@media (min-width: 901px) { #ufa-more { display: none !important; } }
+
+#ufa-more { position: fixed; inset: 0; z-index: 960; background: rgba(20,30,20,0.5); align-items: flex-end; }
+.um-sheet { width: 100%; box-sizing: border-box; background: #fff; border-radius: 22px 22px 0 0; max-height: 82vh; overflow-y: auto;
+  padding: 10px 14px calc(18px + env(safe-area-inset-bottom, 0px)); animation: umUp .22s ease; }
+@keyframes umUp { from { transform: translateY(26px); opacity: .5; } to { transform: none; opacity: 1; } }
+.um-grab { width: 40px; height: 4px; border-radius: 2px; background: #D5DBD3; margin: 4px auto 12px; }
+.um-item { display: flex; align-items: center; gap: 14px; width: 100%; box-sizing: border-box; padding: 14px 12px; border: 0; border-radius: 12px; background: none;
+  color: #1C2B1C; font: 500 16px 'DM Sans', sans-serif; text-align: left; cursor: pointer; }
+.um-item svg { color: #3D6B3D; flex: none; }
+.um-item.is-active { background: #EEF5EE; font-weight: 600; }
+.um-sep { height: 1px; background: rgba(46,74,46,0.10); margin: 8px 6px; }
+@media (prefers-reduced-motion: reduce) { .um-sheet { animation: none; } }
+
+/* ── Polish: content spacing, stat cards, admin sub-tabs, touch sizing ── */
+#ufa-portal-wrap.ufa-shell-on .admin-tab { padding-left: 14px !important; padding-right: 14px !important; }
+
+@media (max-width: 900px) {
+  /* Overview stat cards: a tidy 2x2 instead of a ragged 2/1/1. */
+  #ptab-content-overview > div:first-child { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 12px !important; }
+  #ptab-content-overview > div:first-child > div { padding: 18px 16px 16px !important; min-width: 0; }
+  #ptab-content-overview > div:first-child > div > div:last-child { font-size: 30px !important; }
+  #ptab-content-overview > div:first-child > div:nth-child(3) { grid-column: auto !important; }
+
+  /* Two-up check-in and history stack cleanly. */
+  #checkin-history-grid { grid-template-columns: 1fr !important; }
+
+  /* Comfortable touch targets, and inputs big enough that iOS does not zoom. */
+  #portal-dashboard input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+  #portal-dashboard select, #portal-dashboard textarea { font-size: 16px !important; min-height: 44px; }
+  #portal-dashboard button { min-height: 40px; }
+
+  /* Wide tables scroll inside themselves instead of pushing the page sideways. */
+  #portal-dashboard table { display: block; max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  #portal-dashboard img, #portal-dashboard video { max-width: 100%; height: auto; }
+}
+@media (max-width: 480px) {
+  #ufa-portal-wrap.ufa-shell-on #portal-dashboard > div:nth-child(3) { padding-left: 14px !important; padding-right: 14px !important; }
+}
+</style>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════════
+   PORTAL SHELL — builds the sidebar (desktop) and bottom tab bar +
+   "More" sheet (phones/tablets) from the existing #portal-tab-nav
+   buttons, and keeps them in step with it. Nothing here changes what
+   a tab does; every item just calls switchPortalTab(tab).
+   ═══════════════════════════════════════════════════════════════════ */
+(function () {
+  var ICONS = {
+    overview:    '<path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v10h13V10"/><path d="M10 20v-5h4v5"/>',
+    leaderboard: '<path d="M8 4h8v5a4 4 0 0 1-8 0V4z"/><path d="M8 6H4v1a4 4 0 0 0 4 4M16 6h4v1a4 4 0 0 1-4 4M12 13v4M8 21h8M10 17h4"/>',
+    events:      '<rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
+    profile:     '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/>',
+    recruiting:  '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/>',
+    mock:        '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',
+    board:       '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+    learn:       '<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/>',
+    admin:       '<path d="M12 3l8 3v6c0 4.5-3.2 8-8 9-4.8-1-8-4.5-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/>',
+    more:        '<circle cx="5" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="19" cy="12" r="1.5" fill="currentColor"/>',
+    out:         '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>'
+  };
+  var LABEL = { overview: 'Overview', leaderboard: 'Leaderboard', events: 'Events', profile: 'Profile', recruiting: 'Recruiting',
+                mock: 'Mock Interview', board: 'Board Hours', learn: 'Ask & Learn', admin: 'Admin' };
+  var SHORT = { mock: 'Mock', board: 'Board Hours' };
+  var GROUPS = [
+    { label: 'Home',    tabs: ['overview', 'leaderboard', 'events'] },
+    { label: 'Grow',    tabs: ['mock', 'board', 'recruiting', 'learn'] },
+    { label: 'Account', tabs: ['profile'] },
+    { label: 'Board',   tabs: ['admin'] }
+  ];
+  var BAR = ['overview', 'events', 'mock', 'board'];
+  var ALL = ['overview', 'leaderboard', 'events', 'profile', 'recruiting', 'mock', 'board', 'learn', 'admin'];
+
+  var wrap = document.getElementById('portal-dashboard') && document.getElementById('portal-dashboard').parentNode;
+  var dash = document.getElementById('portal-dashboard');
+  var oldNav = document.getElementById('portal-tab-nav');
+  if (!wrap || !dash || !oldNav) return;
+  wrap.id = 'ufa-portal-wrap';
+
+  function icon(name, size) {
+    return '<svg viewBox="0 0 24 24" width="' + (size || 20) + '" height="' + (size || 20) + '" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + ICONS[name] + '</svg>';
+  }
+  function esc(t) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+  function visible(tab) { var b = document.getElementById('ptab-' + tab); return !!b && b.style.display !== 'none'; }
+  function active() { for (var i = 0; i < ALL.length; i++) { var b = document.getElementById('ptab-' + ALL[i]); if (b && b.classList.contains('active')) return ALL[i]; } return 'overview'; }
+
+  var side = document.createElement('aside');
+  side.id = 'ufa-side';
+  side.setAttribute('aria-label', 'Portal navigation');
+  side.innerHTML =
+    '<div class="us-me"><div class="us-av" id="us-av">M</div><div class="us-who"><div class="us-name" id="us-name">Member</div><div class="us-sub" id="us-sub"></div></div></div>' +
+    '<div class="us-nav" id="us-nav" role="navigation" aria-label="Portal sections"></div>' +
+    '<button type="button" class="us-out" data-act="signout">' + icon('out', 18) + 'Sign out</button>';
+  wrap.insertBefore(side, dash);
+
+  var bar = document.createElement('div');
+  bar.id = 'ufa-tabbar';
+  bar.setAttribute('role', 'navigation');
+  bar.setAttribute('aria-label', 'Portal navigation');
+  wrap.appendChild(bar);
+
+  var more = document.createElement('div');
+  more.id = 'ufa-more';
+  more.innerHTML = '<div class="um-sheet" role="dialog" aria-label="More"><div class="um-grab"></div><div id="um-list"></div></div>';
+  wrap.appendChild(more);
+
+  function go(tab) {
+    closeMore();
+    if (typeof switchPortalTab === 'function') switchPortalTab(tab);
+    if (window.scrollY > 0) window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  function openMore() { more.classList.add('is-open'); }
+  function closeMore() { more.classList.remove('is-open'); }
+
+  function render() {
+    var cur = active();
+    var nav = document.getElementById('us-nav');
+    var html = '';
+    GROUPS.forEach(function (g) {
+      var tabs = g.tabs.filter(visible);
+      if (!tabs.length) return;
+      html += '<div class="us-gh">' + g.label + '</div>';
+      tabs.forEach(function (t) {
+        html += '<button type="button" class="us-item' + (t === cur ? ' is-active' : '') + '" data-tab="' + t + '"' + (t === cur ? ' aria-current="page"' : '') + '>' + icon(t) + '<span>' + esc(LABEL[t]) + '</span></button>';
+      });
+    });
+    nav.innerHTML = html;
+
+    var prim = BAR.filter(visible);
+    var rest = ALL.filter(function (t) { return visible(t) && BAR.indexOf(t) === -1; });
+    var b = '';
+    prim.forEach(function (t) {
+      b += '<button type="button" class="ut-item' + (t === cur ? ' is-active' : '') + '" data-tab="' + t + '"' + (t === cur ? ' aria-current="page"' : '') + '><span class="ut-ic">' + icon(t, 22) + '</span><span class="ut-t">' + esc(SHORT[t] || LABEL[t]) + '</span></button>';
+    });
+    if (rest.length) {
+      var inMore = rest.indexOf(cur) !== -1;
+      b += '<button type="button" class="ut-item' + (inMore ? ' is-active' : '') + '" data-act="more"><span class="ut-ic">' + icon('more', 22) + '</span><span class="ut-t">More</span></button>';
+    }
+    bar.innerHTML = b;
+    bar.classList.toggle('is-single', prim.length + (rest.length ? 1 : 0) <= 1);
+
+    var l = '';
+    rest.forEach(function (t) {
+      l += '<button type="button" class="um-item' + (t === cur ? ' is-active' : '') + '" data-tab="' + t + '">' + icon(t, 22) + '<span>' + esc(LABEL[t]) + '</span></button>';
+    });
+    l += '<div class="um-sep"></div><button type="button" class="um-item" data-act="signout">' + icon('out', 22) + '<span>Sign out</span></button>';
+    document.getElementById('um-list').innerHTML = l;
+  }
+
+  function who() {
+    var n = (document.getElementById('portal-welcome-name') || {}).textContent || 'Member';
+    var t = (document.getElementById('portal-welcome-team') || {}).textContent || '';
+    var parts = n.trim().split(/\s+/);
+    var ini = ((parts[0] || 'M').charAt(0) + (parts.length > 1 ? parts[parts.length - 1].charAt(0) : '')).toUpperCase();
+    document.getElementById('us-av').textContent = ini;
+    document.getElementById('us-name').textContent = n;
+    document.getElementById('us-sub').textContent = t;
+  }
+
+  function onClick(e) {
+    var el = e.target.closest('[data-tab],[data-act]');
+    if (!el) return;
+    if (el.dataset.tab) { go(el.dataset.tab); return; }
+    if (el.dataset.act === 'more') { openMore(); return; }
+    if (el.dataset.act === 'signout') { closeMore(); if (typeof portalLogout === 'function') portalLogout(); }
+  }
+  side.addEventListener('click', onClick);
+  bar.addEventListener('click', onClick);
+  more.addEventListener('click', function (e) { if (e.target === more) closeMore(); else onClick(e); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeMore(); });
+
+  var raf = null;
+  function schedule() { if (raf) return; raf = requestAnimationFrame(function () { raf = null; render(); }); }
+  new MutationObserver(schedule).observe(oldNav, { subtree: true, childList: true, attributes: true, attributeFilter: ['class', 'style'] });
+
+  function syncShell() { wrap.classList.toggle('ufa-shell-on', dash.style.display !== 'none'); closeMore(); }
+  new MutationObserver(syncShell).observe(dash, { attributes: true, attributeFilter: ['style'] });
+  ['portal-welcome-name', 'portal-welcome-team'].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) new MutationObserver(who).observe(el, { childList: true, characterData: true, subtree: true });
+  });
+
+  render(); who(); syncShell();
+})();
+</script>
+
 </body>
 </html>
 <!-- PORTAL_SCRIPT_MARKER -->
