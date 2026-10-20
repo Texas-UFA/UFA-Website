@@ -1473,6 +1473,9 @@ align-items: flex-end;
   .faq-list { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
   .faq-item { border-bottom: 1px solid var(--border); background: var(--white); }
   .faq-item:last-child { border-bottom: none; }
+  /* Two-column FAQ: a vertical divider between the columns, with equal breathing room either side. */
+  #faq-grid .faq-col:first-child { padding-right: 32px; }
+  #faq-grid .faq-col:last-child { padding-left: 32px; border-left: 1px solid var(--border); }
   .faq-q { width: 100%; background: none; border: none; cursor: pointer; text-align: left; cursor: pointer; padding: 24px 28px; display: flex; justify-content: space-between; align-items: center; gap: 16px; font-family: var(--font-body); font-size: 15px; font-weight: 500; color: var(--text-dark); border-radius: 6px; transition: background 0.2s ease, color 0.2s ease; }
   /* A faint green tint rather than var(--cream) — cream is the page
      background, so on a white section it read as a hole, not a highlight. */
@@ -1998,6 +2001,18 @@ align-items: flex-end;
   /* Membership grid (2-col -> 1-col) */
   #faq-grid {
     grid-template-columns: 1fr !important;
+  }
+  /* Stacked FAQ: drop the vertical divider and the side padding, and keep a
+     horizontal rule between the end of column one and the start of column two
+     (the last item in each column has no bottom border of its own). */
+  #faq-grid .faq-col:first-child,
+  #faq-grid .faq-col:last-child {
+    padding-left: 0;
+    padding-right: 0;
+    border-left: none;
+  }
+  #faq-grid .faq-col:first-child .faq-item:last-child {
+    border-bottom: 1px solid var(--border);
   }
   .membership-grid {
     grid-template-columns: 1fr !important;
@@ -4329,8 +4344,8 @@ button[onclick="pubFlipbookNext()"]:hover {
   <div style="width:100%;">
     <div class="section-tag">Everything you need to know</div>
     <h2 class="section-title" style="margin-bottom:40px;">Frequently asked questions</h2>
-    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 0 32px; max-width:100%;" id="faq-grid">
-      <div>
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 0; max-width:100%;" id="faq-grid">
+      <div class="faq-col">
         <div class="faq-item reveal">
           <button class="faq-q" onclick="toggleFaq(this)">
             What is the difference between analysts and associates?
@@ -4362,7 +4377,7 @@ button[onclick="pubFlipbookNext()"]:hover {
           <div class="faq-a"><div class="faq-a-inner">Show up to info sessions, meet the team, and be genuine in your application. We look for drive and curiosity, not a perfect GPA or prior finance experience.</div></div>
         </div>
       </div>
-      <div>
+      <div class="faq-col">
         
         <div class="faq-item reveal">
           <button class="faq-q" onclick="toggleFaq(this)">
@@ -5172,7 +5187,7 @@ button[onclick="pubFlipbookNext()"]:hover {
             </div>
             <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:32px;display:flex;flex-direction:column;">
               <div style="font-family:'Playfair Display',Georgia,serif;font-size:20px;font-weight:500;color:#1C2B1C;margin-bottom:20px;">Your Event History</div>
-              <div id="attendance-list" style="flex:1;display:flex;flex-direction:column;border:1px solid rgba(46,74,46,0.1);border-radius:6px;overflow:hidden;max-height:320px;overflow-y:auto;">
+              <div id="attendance-list" style="flex:1;display:flex;flex-direction:column;border:1px solid rgba(46,74,46,0.1);border-radius:6px;overflow:hidden;">
                 <div style="padding:20px;background:#EEF5EE;font-size:13px;color:#6B7D6B;text-align:center;">No events checked in yet.</div>
               </div>
             </div>
@@ -8394,7 +8409,7 @@ async function checkIn() {
 
   err.style.display='none';
   var pts = session.points||1;
-  document.getElementById('checkin-detail').textContent = session.meeting_date+' - '+session.meeting_name+' (+'+pts+' pt'+(pts!==1?'s':'')+')';
+  document.getElementById('checkin-detail').textContent = ufaPrettyDate(session.meeting_date)+' - '+session.meeting_name+' (+'+pts+' pt'+(pts!==1?'s':'')+')';
   succ.style.display='block';
   document.getElementById('checkin-form').style.display='none';
 
@@ -8741,7 +8756,7 @@ function renderHistory(records) {
   list.innerHTML = sorted.map(function(r) {
     var type=r.event_type||'Meeting', pts=r.points||1;
     var clr=TYPE_COLORS[type]||TYPE_COLORS['Meeting'];
-    return '<div style="padding:14px 16px;border-bottom:1px solid rgba(46,74,46,0.08);display:flex;justify-content:space-between;align-items:center;gap:8px;">'
+    return '<div style="padding:14px 16px;border-bottom:1px solid rgba(46,74,46,0.08);display:flex;justify-content:space-between;align-items:center;gap:8px;flex-shrink:0;">'
       +'<div>'
         +'<div style="font-size:13px;font-weight:500;color:#1C2B1C;">'+r.meeting_name+'</div>'
         +'<div style="display:flex;align-items:center;gap:6px;margin-top:3px;">'
@@ -9247,7 +9262,7 @@ async function loadAdminAttendance() {
   var sessSelect = document.getElementById('manual-att-session');
   if (sessSelect) {
     sessSelect.innerHTML = '<option value="">— Custom (fill in below) —</option>'
-      + sessions.map(function(s){ return '<option value="'+ufaEsc(s.code)+'">'+ufaEsc(s.meeting_date||'')+' — '+ufaEsc(s.meeting_name||s.code)+'</option>'; }).join('');
+      + sessions.map(function(s){ return '<option value="'+ufaEsc(s.code)+'">'+ufaEsc(ufaPrettyDate(s.meeting_date||''))+' — '+ufaEsc(s.meeting_name||s.code)+'</option>'; }).join('');
   }
   var filterSelect = document.getElementById('attendance-session-filter');
   if (filterSelect) {
@@ -9397,7 +9412,7 @@ function renderAdminAttendanceTable(records) {
         +'<td style="padding:10px 12px;font-weight:500;color:#1C2B1C;white-space:nowrap;">'+(ufaEsc(r.memberName)||'--')+'</td>'
         +'<td style="padding:10px 12px;color:#6B7D6B;font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+ufaEsc(r.email)+'</td>'
         +'<td style="padding:10px 12px;color:#1C2B1C;white-space:nowrap;">'+ufaEsc(r.meeting_name)+'</td>'
-        +'<td style="padding:10px 12px;color:#6B7D6B;white-space:nowrap;">'+ufaEsc(r.meeting_date)+'</td>'
+        +'<td style="padding:10px 12px;color:#6B7D6B;white-space:nowrap;">'+ufaEsc(ufaPrettyDate(r.meeting_date))+'</td>'
         +'<td style="padding:10px 12px;color:#6B7D6B;white-space:nowrap;">'+ufaEsc(r.event_type||'Meeting')+'</td>'
         +'<td style="padding:10px 12px;font-weight:600;color:#3D6B3D;">'+(r.points||1)+'</td>'
         +'<td style="padding:10px 12px;white-space:nowrap;">'
@@ -18049,7 +18064,6 @@ async function toggleVisibility(uiKey, settingKey, turnOn) {
       <div class="footer-col-title">Apply</div>
       <ul class="footer-links">
         <li><a href="https://utexas.campuslabs.com/engage/organization/texasufa" target="_blank" rel="noopener noreferrer">General Membership</a></li>
-        <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSeGEtzK6gp8CCAIRzTwnvoZlNKANFII7CRJRO_sy9XNEUFbMQ/viewform" target="_blank" rel="noopener noreferrer">Interest Form</a></li>
       </ul>
     </div>
   </div>
@@ -21529,7 +21543,7 @@ function fxLightbox(url) {
    meaning] or [term, meaning, true] when it is an advanced concept.
    ════════════════════════════════════════════════════════════════ */
 var GUIDE = [
-  { id: 'macro', title: 'Macro slide', sub: 'The Fed, data, rates and world news', heading: 'Macro Environment',
+  { id: 'macro', title: 'Macro Slide', sub: 'The Fed, data, rates and world news', heading: 'Macro Environment',
     layout: ['fed', 'econ', 'ahead', 'rates', 'world', 'ahead'], boxes: [
     { key: 'fed', n: 1, title: 'The Fed', blurb: 'What the central bank did and might do next', terms: [
       ['The Fed and the FOMC', 'The Federal Reserve is the US central bank. The FOMC is the committee that votes on interest rates, about eight times a year.'],
@@ -21544,7 +21558,7 @@ var GUIDE = [
       ['Odds of a hike, and "priced in"', 'Traders bet on what the Fed will do, and those bets imply a probability, like "20% chance of a hike." If something is "priced in," the market already expects it, so the announcement barely moves prices. Surprises are what move markets.', true],
       ['Other central banks', 'The Bank of England (UK) and the European Central Bank set their own rates. When they move differently from the Fed, currencies like the pound and euro can swing against the dollar.', true]
     ] },
-    { key: 'econ', n: 2, title: 'Economic reports', blurb: 'Data on how the economy is doing', terms: [
+    { key: 'econ', n: 2, title: 'Economic Reports', blurb: 'Data on how the economy is doing', terms: [
       ['Jobs report (nonfarm payrolls)', 'A monthly report on how many jobs the economy added, not counting farm work. "Added 29k jobs vs. 90k expected" means hiring was far weaker than forecast.'],
       ['Unemployment rate', 'The share of people who want a job but do not have one.'],
       ['Consensus / "vs. expected"', 'The average forecast from economists. Markets react to the surprise versus the forecast, not just to the number.'],
@@ -21558,7 +21572,7 @@ var GUIDE = [
       ['PMI / ISM index (the 50 line)', 'Surveys of purchasing managers turned into a score. Above 50 means that part of the economy is expanding. Below 50 means it is shrinking.', true],
       ['Real vs. nominal', 'Nominal is the raw number. Real is adjusted for inflation. "Real median income" tells you what people can actually buy.', true]
     ] },
-    { key: 'rates', n: 3, title: 'Rates & inflation', blurb: 'How fast prices rise, and what borrowing costs', terms: [
+    { key: 'rates', n: 3, title: 'Rates & Inflation', blurb: 'How fast prices rise, and what borrowing costs', terms: [
       ['Inflation', 'The rate at which prices rise over time. A dollar buys less when inflation is high.'],
       ['CPI', 'The Consumer Price Index tracks the average change in prices households pay. It is the most-watched inflation number.'],
       ['Core CPI', 'CPI without food and energy, which swing a lot. It shows the underlying trend.'],
@@ -21570,7 +21584,7 @@ var GUIDE = [
       ['Sticky inflation', 'Inflation that stays high even after the Fed has raised rates.', true],
       ['Treasuries vs. dividends', 'When safe Treasuries pay 5%, dividend-paying stocks like utilities look less attractive by comparison, so investors sell them. That is what "Treasuries compete with dividends" means.', true]
     ] },
-    { key: 'world', n: 4, title: 'World news', blurb: 'Events overseas that move markets', terms: [
+    { key: 'world', n: 4, title: 'World News', blurb: 'Events overseas that move markets', terms: [
       ['Brent and WTI', 'Two benchmark oil prices, quoted per barrel (bbl). WTI is the US benchmark and Brent is the global one.'],
       ['Strait of Hormuz', 'A narrow waterway near Iran that roughly a fifth of the world\u2019s oil ships through. Attacks or threats there can push oil prices up fast.'],
       ['Strategic reserves', 'Emergency oil stockpiles that governments can release to bring prices down.'],
@@ -21581,7 +21595,7 @@ var GUIDE = [
       ['Sovereign debt', 'Debt issued by a government. "France\u2019s debt concerns" means investors worry about its finances, which can hit its bonds, stocks and currency.', true],
       ['Geopolitical risk', 'Conflict and politics that can disrupt trade or energy supply and make markets nervous.', true]
     ] },
-    { key: 'ahead', n: 5, title: 'The week ahead', blurb: 'Earnings and events on the calendar', terms: [
+    { key: 'ahead', n: 5, title: 'The Week Ahead', blurb: 'Earnings and events on the calendar', terms: [
       ['Earnings report', 'A public company\u2019s results for the last three months, released every quarter.'],
       ['Earnings season', 'The few weeks after each quarter ends when most companies report. The big banks, like JPMorgan, usually go first.'],
       ['EPS, beat and miss', 'EPS is earnings per share. A "beat" means results came in above what analysts expected. A "miss" means below.'],
@@ -21593,16 +21607,16 @@ var GUIDE = [
     ] }
   ] },
 
-  { id: 'equities', title: 'Equities slide', sub: 'Indexes, sectors, movers and news', heading: 'Equities Market',
+  { id: 'equities', title: 'Equities Slide', sub: 'Indexes, sectors, movers and news', heading: 'Equities Market',
     layout: ['chart', 'chart', 'chart', 'chart', 'idx', 'idx', 'movers', 'movers', 'ind', 'ind', 'news', 'news'], cols: 6, boxes: [
-    { key: 'chart', n: 1, title: 'S&P performance this week', blurb: 'How the whole market moved', terms: [
+    { key: 'chart', n: 1, title: 'S&P Performance This Week', blurb: 'How the whole market moved', terms: [
       ['S&P 500', 'An index of 500 of the largest US public companies. It is the most common stand-in for "the stock market."'],
       ['Index', 'A basket of stocks tracked as a single number. "The S&P is down 0.75%" means the basket as a whole fell 0.75%.'],
       ['Percent change, not points', 'Slides show the percent change since the start of the week, which compares fairly across indexes. Raw point moves do not.'],
       ['YTD', 'Year to date: the change since January 1.'],
       ['Correction and bear market', 'A correction is a drop of 10% or more from a recent high. A bear market is 20% or more. A bull market is a long stretch of rising prices.', true]
     ] },
-    { key: 'idx', n: 2, title: 'Equity markets', blurb: 'The major indexes side by side', terms: [
+    { key: 'idx', n: 2, title: 'Equity Markets', blurb: 'The major indexes side by side', terms: [
       ['Dow Jones (DJIA)', 'An index of 30 large, well-known US companies. It is older and narrower than the S&P 500.'],
       ['Nasdaq', 'An index heavy on technology and growth companies, so tech\u2019s good or bad week shows up here first.'],
       ['Russell 2000', 'An index of about 2,000 smaller US companies ("small caps"). They tend to be more sensitive to borrowing costs and the economy.'],
@@ -21610,14 +21624,14 @@ var GUIDE = [
       ['Market cap', 'A company\u2019s total stock-market value: share price times number of shares. Large caps are the biggest companies.'],
       ['Price-weighted vs. cap-weighted', 'The Dow adds up share prices, so high-priced stocks count for more. The S&P 500 and Nasdaq weight companies by total value, so giants like Nvidia matter most. That is one reason the Dow can rise while the Nasdaq falls.', true]
     ] },
-    { key: 'movers', n: 3, title: 'Notable equity movers', blurb: 'The week\u2019s biggest winners and losers', terms: [
+    { key: 'movers', n: 3, title: 'Notable Equity Movers', blurb: 'The week\u2019s biggest winners and losers', terms: [
       ['Ticker', 'A short code for a stock, like AAPL for Apple or CRWD for CrowdStrike. Movers are listed by ticker.'],
       ['Gainers and decliners', 'The stocks that rose or fell the most over the week, shown as percent change.'],
       ['Catalyst', 'A specific event that triggers a big move: an earnings report, a product launch, a deal, an analyst downgrade.', true],
       ['Consumption-based pricing', 'Customers pay for what they use (like Snowflake\u2019s credits) instead of a flat subscription, so revenue rises as customers use the product more.', true],
       ['SQL', 'The language used to ask databases questions. It normally takes an engineer, which is why tools that let non-technical people query data in plain English are a selling point.', true]
     ] },
-    { key: 'ind', n: 4, title: 'Industry performance', blurb: 'Which sectors led and lagged', terms: [
+    { key: 'ind', n: 4, title: 'Industry Performance', blurb: 'Which sectors led and lagged', terms: [
       ['Sector', 'A group of companies in the same kind of business. The market has 11 sectors, including Technology, Health Care, Financials, Energy, Utilities, Real Estate and Consumer Staples.'],
       ['Dividend', 'A cash payment a company makes to its shareholders out of profits.'],
       ['Energy stocks and oil', 'Energy companies tend to rise when oil prices rise, since they earn more per barrel. Airlines and consumers are hurt by the same increase.'],
@@ -21628,7 +21642,7 @@ var GUIDE = [
       ['CapEx and free cash flow (FCF)', 'CapEx is money spent on long-term assets like data centers and equipment. FCF is the cash left after operating costs and CapEx. "Lower CapEx means better future FCF" means spending less leaves more cash for shareholders.', true],
       ['AI spending', 'Big tech companies are spending heavily on chips and data centers for AI. That lifts chipmakers\u2019 sales, while investors question whether the spending will pay off.', true]
     ] },
-    { key: 'news', n: 5, title: 'Finance news', blurb: 'Deals, leadership changes, headlines', terms: [
+    { key: 'news', n: 5, title: 'Finance News', blurb: 'Deals, leadership changes, headlines', terms: [
       ['M&A', 'Mergers and acquisitions: companies combining, or one company buying another. Investment banks earn fees advising on these deals.'],
       ['Acquire', 'To buy another company. The buyer is the acquirer and the company being bought is the target.'],
       ['Chairman vs. CEO', 'The chairman leads the board of directors. The CEO runs the company day to day. "Chairman emeritus" is an honorary title for a retired leader.'],
@@ -21636,9 +21650,9 @@ var GUIDE = [
     ] }
   ] },
 
-  { id: 'sentiment', title: 'Sentiment slide', sub: 'Heatmap, commodities and mood', heading: 'Indices, Rates & Sentiment',
+  { id: 'sentiment', title: 'Sentiment Slide', sub: 'Heatmap, commodities and mood', heading: 'Indices, Rates & Sentiment',
     layout: ['heat', 'comm', 'mkts', 'heat', 'fear', 'stock'], boxes: [
-    { key: 'heat', n: 1, title: 'Stock heatmap', blurb: 'A picture of the whole market', terms: [
+    { key: 'heat', n: 1, title: 'Stock Heatmap', blurb: 'A picture of the whole market', terms: [
       ['Heatmap', 'A color-coded map of the market: green tiles rose, red tiles fell, and bigger tiles are bigger companies. It shows at a glance which stocks and sectors moved.'],
       ['Breadth', 'Whether most stocks moved together or only a few did. A market led by a handful of giants can look healthy while most stocks fall.', true]
     ] },
@@ -21648,7 +21662,7 @@ var GUIDE = [
       ['Safe haven', 'An asset people move into when they are worried, because it tends to hold its value.'],
       ['Opportunity cost', 'What you give up by choosing one thing over another. Gold pays nothing, so when Treasuries pay 5%, holding gold costs you that income.', true]
     ] },
-    { key: 'mkts', n: 3, title: 'Equity & debt markets', blurb: 'VIX, dollar, Bitcoin and yields', terms: [
+    { key: 'mkts', n: 3, title: 'Equity & Debt Markets', blurb: 'VIX, dollar, Bitcoin and yields', terms: [
       ['Equity vs. debt markets', 'Equity markets are stocks. Debt markets are bonds and loans.'],
       ['VIX', 'Often called the "fear gauge." It estimates how much the S&P 500 is expected to swing over the next 30 days. A rising VIX means more nervousness. As a rule of thumb, the teens are calm and 30+ means stress.'],
       ['DXY (dollar index)', 'The dollar measured against a basket of six major currencies, including the euro and yen. Up means a stronger dollar.'],
@@ -21660,14 +21674,14 @@ var GUIDE = [
       ['Sentiment', 'The overall mood of investors, which can push prices beyond what the news alone would justify.'],
       ['Contrarian investing', 'Doing the opposite of the crowd: buying when fear is extreme and getting cautious when greed is extreme.', true]
     ] },
-    { key: 'stock', n: 5, title: 'Stock of the week', blurb: 'One company in focus', terms: [
+    { key: 'stock', n: 5, title: 'Stock of the Week', blurb: 'One company in focus', terms: [
       ['YTD', 'Year to date: the change since January 1. "Up 43% YTD" means the stock has risen 43% so far this year.'],
       ['Q1\u2013Q4 (fiscal quarters)', 'Companies split the year into four quarters. Q3 is the third, usually July through September for companies whose year matches the calendar.'],
       ['Valuation after a big run', 'A stock that is up a lot may already reflect the good news, so the question becomes whether it can keep delivering.', true]
     ] }
   ] },
 
-  { id: 'short', title: 'Shorthand', sub: 'Abbreviations you will see everywhere', heading: 'Cheat sheet', type: 'list', boxes: [
+  { id: 'short', title: 'Shorthand', sub: 'Abbreviations you will see everywhere', heading: 'Cheat Sheet', type: 'list', boxes: [
     { key: 'abbr', n: 0, title: 'Abbreviations', blurb: 'Quick decoder', terms: [
       ['YoY, MoM, QoQ', 'Year over year, month over month, quarter over quarter. The period a change is measured against.'],
       ['YTD', 'Year to date, meaning since January 1.'],
