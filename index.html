@@ -8712,51 +8712,99 @@ function ufaPrettyDate(d) {
   return mon.charAt(0).toUpperCase() + mon.slice(1) + ' ' + parseInt(m[2], 10);
 }
 
-var UFA_HIST = { records: [], open: false, limit: 4 };
+/* ── Sorting by the real date ──────────────────────────────────────────────
+   meeting_date is free text ("september 9th", "Sep 13", "Oct 6"), and the database
+   sorts text alphabetically ("Sep 9" lands after "Sep 30"). So every list that needs
+   dates in order sorts here instead. A date it can't read (e.g. "Tuesday") sinks to the
+   bottom rather than guessing. Ties fall back to the row id, which only goes up. */
+var UFA_MONTHS = { jan:0, feb:1, mar:2, apr:3, may:4, jun:5, jul:6, aug:7, sep:8, oct:9, nov:10, dec:11 };
+function ufaDateKey(d) {
+  var m = /^\s*([A-Za-z]{3,9})\.?\s+(\d{1,2})/.exec(String(d || ''));
+  if (!m) return null;
+  var mon = UFA_MONTHS[m[1].slice(0, 3).toLowerCase()];
+  if (mon === undefined) return null;
+  var now = new Date();
+  var t = new Date(now.getFullYear(), mon, parseInt(m[2], 10));
+  if ((t - now) / 86400000 > 60) t.setFullYear(now.getFullYear() - 1);  // same rule as ufaParseSessionDate
+  return t.getTime();
+}
+function ufaNewestFirst(a, b) {
+  var ka = ufaDateKey(a.meeting_date), kb = ufaDateKey(b.meeting_date);
+  if (ka !== kb) {
+    if (ka === null) return 1;
+    if (kb === null) return -1;
+    return kb - ka;
+  }
+  return (Number(b.id) || 0) - (Number(a.id) || 0);
+}
+
+var UFA_HIST = { records: [], limit: 4 };
 
 function renderHistory(records) {
   var list = document.getElementById('attendance-list');
   if (!records.length) { list.innerHTML='<div style="padding:20px;background:#EEF5EE;font-size:13px;color:#6B7D6B;text-align:center;">No events checked in yet.<br>Use the session code to get started.</div>'; return; }
-  // Newest first. meeting_date is hand-typed text ("september 9th", "Sep 13", "Tuesday"),
-  // so it can't be sorted reliably. created_at is used when the table has it; otherwise
-  // the row id, which only ever goes up as members check in.
-  UFA_HIST.records = records.slice().sort(function(a,b){
-    if (a.created_at && b.created_at) return new Date(b.created_at) - new Date(a.created_at);
-    return (Number(b.id) || 0) - (Number(a.id) || 0);
-  });
-  UFA_HIST.open = false;
+  UFA_HIST.records = records.slice().sort(ufaNewestFirst);
   ufaDrawHistory();
 }
 
-function ufaHistoryToggle() {
-  UFA_HIST.open = !UFA_HIST.open;
-  ufaDrawHistory();
+function ufaHistRow(r) {
+  var type=r.event_type||'Meeting', pts=r.points||1;
+  var clr=TYPE_COLORS[type]||TYPE_COLORS['Meeting'];
+  return '<div style="padding:14px 16px;border-bottom:1px solid rgba(46,74,46,0.08);display:flex;justify-content:space-between;align-items:center;gap:8px;flex-shrink:0;">'
+    +'<div>'
+      +'<div style="font-size:13px;font-weight:500;color:#1C2B1C;">'+r.meeting_name+'</div>'
+      +'<div style="display:flex;align-items:center;gap:6px;margin-top:3px;">'
+        +'<span style="font-size:10px;color:#6B7D6B;">'+ufaPrettyDate(r.meeting_date)+'</span>'
+        +'<span style="font-size:10px;font-weight:500;background:'+clr.bg+';color:'+clr.color+';padding:2px 7px;border-radius:3px;">'+type+'</span>'
+      +'</div>'
+    +'</div>'
+    +'<span style="font-size:12px;font-weight:600;color:#2e6b2e;background:#e6f4e6;padding:4px 10px;border-radius:3px;white-space:nowrap;">+'+pts+' pt'+(pts!==1?'s':'')+'</span>'
+  +'</div>';
 }
 
+/* The card always shows the 4 most recent. "View all" opens a popup, so the card never grows. */
 function ufaDrawHistory() {
   var list = document.getElementById('attendance-list');
   var all = UFA_HIST.records;
-  var shown = UFA_HIST.open ? all : all.slice(0, UFA_HIST.limit);
-  var html = shown.map(function(r) {
-    var type=r.event_type||'Meeting', pts=r.points||1;
-    var clr=TYPE_COLORS[type]||TYPE_COLORS['Meeting'];
-    return '<div style="padding:14px 16px;border-bottom:1px solid rgba(46,74,46,0.08);display:flex;justify-content:space-between;align-items:center;gap:8px;flex-shrink:0;">'
-      +'<div>'
-        +'<div style="font-size:13px;font-weight:500;color:#1C2B1C;">'+r.meeting_name+'</div>'
-        +'<div style="display:flex;align-items:center;gap:6px;margin-top:3px;">'
-          +'<span style="font-size:10px;color:#6B7D6B;">'+ufaPrettyDate(r.meeting_date)+'</span>'
-          +'<span style="font-size:10px;font-weight:500;background:'+clr.bg+';color:'+clr.color+';padding:2px 7px;border-radius:3px;">'+type+'</span>'
-        +'</div>'
-      +'</div>'
-      +'<span style="font-size:12px;font-weight:600;color:#2e6b2e;background:#e6f4e6;padding:4px 10px;border-radius:3px;white-space:nowrap;">+'+pts+' pt'+(pts!==1?'s':'')+'</span>'
-    +'</div>';
-  }).join('');
+  var html = all.slice(0, UFA_HIST.limit).map(ufaHistRow).join('');
   if (all.length > UFA_HIST.limit) {
-    html += '<button type="button" onclick="ufaHistoryToggle()" aria-expanded="'+UFA_HIST.open+'" style="flex-shrink:0;width:100%;padding:13px 16px;border:none;background:#EEF5EE;color:#3D6B3D;font-family:\'DM Sans\',sans-serif;font-size:13px;font-weight:500;cursor:pointer;text-align:center;">'
-      + (UFA_HIST.open ? 'Show fewer' : 'View all '+all.length+' events')
-      + '</button>';
+    html += '<button type="button" onclick="ufaOpenHistoryModal()" aria-haspopup="dialog" style="flex-shrink:0;width:100%;padding:13px 16px;border:none;background:#EEF5EE;color:#3D6B3D;font-family:\'DM Sans\',sans-serif;font-size:13px;font-weight:500;cursor:pointer;text-align:center;">View all '+all.length+' events</button>';
   }
   list.innerHTML = html;
+}
+
+function ufaOpenHistoryModal() {
+  if (document.getElementById('ufa-hist-modal')) return;
+  var all = UFA_HIST.records;
+  var ov = document.createElement('div');
+  ov.id = 'ufa-hist-modal';
+  ov.setAttribute('role', 'dialog');
+  ov.setAttribute('aria-modal', 'true');
+  ov.setAttribute('aria-label', 'All events');
+  ov.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(20,36,20,0.55);display:flex;align-items:center;justify-content:center;padding:24px;';
+  ov.innerHTML =
+    '<div style="background:#fff;border-radius:14px;width:100%;max-width:560px;max-height:min(80vh,720px);display:flex;flex-direction:column;box-shadow:0 24px 60px -20px rgba(0,0,0,0.45);overflow:hidden;">'
+      +'<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:20px 24px;border-bottom:1px solid rgba(46,74,46,0.1);flex-shrink:0;">'
+        +'<div>'
+          +'<div style="font-family:\'Playfair Display\',Georgia,serif;font-size:20px;font-weight:500;color:#1C2B1C;">Your Event History</div>'
+          +'<div style="font-size:12px;color:#6B7D6B;margin-top:2px;">'+all.length+' events, most recent first</div>'
+        +'</div>'
+        +'<button type="button" id="ufa-hist-close" aria-label="Close" style="border:none;background:#EEF5EE;color:#3D6B3D;width:34px;height:34px;border-radius:50%;font-size:20px;line-height:1;cursor:pointer;flex-shrink:0;">&times;</button>'
+      +'</div>'
+      +'<div style="overflow-y:auto;flex:1;">'+all.map(ufaHistRow).join('')+'</div>'
+    +'</div>';
+  document.body.appendChild(ov);
+  document.body.style.overflow = 'hidden';
+  function close() {
+    document.removeEventListener('keydown', onKey);
+    ov.remove();
+    document.body.style.overflow = '';
+  }
+  function onKey(e) { if (e.key === 'Escape') close(); }
+  document.addEventListener('keydown', onKey);
+  ov.addEventListener('click', function(e) { if (e.target === ov) close(); });
+  document.getElementById('ufa-hist-close').addEventListener('click', close);
+  document.getElementById('ufa-hist-close').focus();
 }
 
 // ── Profile ──
@@ -8915,8 +8963,8 @@ async function clearAnnouncement() {
 // ── Admin: Sessions ──
 async function loadAdminSessions() {
   var el = document.getElementById('sessions-list');
-  var res = await sb.from('sessions').select('*').order('meeting_date',{ascending:false});
-  var sessions = res.data || [];
+  var res = await sb.from('sessions').select('*');
+  var sessions = (res.data || []).slice().sort(ufaNewestFirst);
   if (!sessions.length) { el.innerHTML='<div style="padding:20px;font-size:13px;color:#6B7D6B;text-align:center;">No sessions yet.</div>'; return; }
 
   var isMobile = window.innerWidth <= 768;
@@ -9232,9 +9280,9 @@ async function loadAdminAttendance() {
   var r1 = await sb.from('attendance').select('*').order('meeting_date', { ascending: false });
   var r2 = await sb.from('members').select('email,name').order('name', { ascending: true });
   var r3 = await sb.from('sessions').select('*').order('meeting_date', { ascending: false });
-  var att     = r1.data || [];
+  var att     = (r1.data || []).slice().sort(ufaNewestFirst);
   var members = r2.data || [];
-  var sessions = r3.data || [];
+  var sessions = (r3.data || []).slice().sort(ufaNewestFirst);
 
   attendanceMemberMap = {};
   members.forEach(function(m){ if (m.email) attendanceMemberMap[m.email.toLowerCase()] = m; });
