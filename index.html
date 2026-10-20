@@ -20803,12 +20803,9 @@ async function ufaFinishMockSession(secs, answered) {
 /* ════════════════════════════════════════════════════════════════
    ENGAGEMENT (admin tab): how much Mock Interview and Board Hours are
    being used. Mock data comes from `mock_sessions`; board data from
-   `bookings`. Question-level data is anonymous. Names appear only in the
-   nudge list. Needs mock-engagement.sql so the board can read sessions.
+   `bookings`. Question-level data is anonymous. Needs mock-engagement.sql so the board can read sessions.
    ════════════════════════════════════════════════════════════════ */
 var ENG = { range: 30 };
-var ENG_NUDGE_DAYS = 21;
-var ENG_NUDGE_EMAILS = [];
 
 function engEnsureCss() {
   if (document.getElementById('eng-css')) return;
@@ -20823,7 +20820,7 @@ function engEnsureCss() {
     '.eng-tile b{display:block;font:500 30px/1.1 "Playfair Display",Georgia,serif;color:#1C2B1C;}' +
     '.eng-tile span{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#6B7D6B;margin-top:6px;}' +
     '.eng-tile i{display:block;font-style:normal;font-size:12px;color:#6B7D6B;margin-top:3px;}' +
-    '.eng-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;align-items:start;}' +
+    '.eng-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}' +
     '@media(max-width:860px){.eng-grid{grid-template-columns:1fr;}}' +
     '.eng-card{background:#fff;border:1px solid rgba(46,74,46,.12);border-radius:8px;padding:20px 22px;}' +
     '.eng-card h4{font:500 17px "Playfair Display",Georgia,serif;color:#1C2B1C;margin:0 0 4px;}' +
@@ -20865,6 +20862,17 @@ function engBars(items, scaleMax) {
       '<div class="eng-bar"><div style="width:' + pct.toFixed(1) + '%;"></div></div>' +
       '<div class="eng-v">' + ufaEsc(x.text != null ? x.text : String(x.value)) + '</div></div>';
   }).join('');
+}
+
+/* Vertical columns: reads as a trend over time, and stays compact when every week is zero. */
+function engColumns(items) {
+  var max = Math.max.apply(null, items.map(function (x) { return x.value; })) || 1;
+  return '<div class="eng-cols">' + items.map(function (x) {
+    var h = x.value ? Math.max(4, Math.round(x.value / max * 100)) : 2;
+    return '<div class="eng-col' + (x.value ? '' : ' is-zero') + '"><div class="eng-cv">' + (x.value || '') + '</div>' +
+      '<div class="eng-cwrap"><div class="eng-cb" style="height:' + h + '%;"></div></div>' +
+      '<div class="eng-cl">' + ufaEsc(x.label) + '</div></div>';
+  }).join('') + '</div>';
 }
 
 function engTile(label, value, sub) {
@@ -20921,8 +20929,8 @@ async function loadEngagement() {
 
   var byTrack = {};
   sess.forEach(function (x) { byTrack[x.industry] = (byTrack[x.industry] || 0) + 1; });
-  var trackItems = MOCK_TRACKS.map(function (t) { return { label: t.label, value: byTrack[t.id] || 0, text: (byTrack[t.id] || 0) + ' sessions' }; })
-    .filter(function (x) { return x.value; }).sort(function (a, b) { return b.value - a.value; });
+  var trackItems = MOCK_TRACKS.map(function (t) { return { label: t.label, value: byTrack[t.id] || 0, text: (byTrack[t.id] === 1 ? '1 session' : (byTrack[t.id] || 0) + ' sessions') }; })
+    .sort(function (a, b) { return b.value - a.value; });
 
   var introPeople = {};
   sess.forEach(function (x) { if ((x.levels || []).indexOf('intro') !== -1) introPeople[String(x.email).toLowerCase()] = true; });
@@ -20943,7 +20951,7 @@ async function loadEngagement() {
   for (var w = 7; w >= 0; w--) {
     var hi = Date.now() - w * 7 * 86400000, lo = hi - 7 * 86400000;
     var cnt = sessAll.filter(function (x) { var t = new Date(x.started_at).getTime(); return t >= lo && t < hi; }).length;
-    weeks.push({ label: w === 0 ? 'This week' : w + 'w ago', value: cnt, text: String(cnt) });
+    weeks.push({ label: w === 0 ? 'Now' : w + 'w', value: cnt, text: String(cnt) });
   }
 
   // ---- Board hours numbers ----
@@ -20978,28 +20986,12 @@ async function loadEngagement() {
   var cBoard = distinct(function (r) { return r.event_type === 'Board Hours'; });
   var N = members.length || 1;
 
-  // ---- Nudge list ----
-  var last = {};
-  function touch(email, t) {
-    var k = String(email).toLowerCase(), ts = new Date(t).getTime();
-    if (!last[k] || ts > last[k]) last[k] = ts;
-  }
-  sessAll.forEach(function (x) { touch(x.email, x.started_at); });
-  bkAll.filter(function (b) { return b.status === 'booked'; }).forEach(function (b) { touch(b.member_email, b.start_ts); });
-  var cutoff = Date.now() - ENG_NUDGE_DAYS * 86400000;
-  var nudge = members.filter(function (m) { return UFA_BOARD_ROLES.indexOf(m.role) === -1; })
-    .filter(function (m) { var t = last[String(m.email).toLowerCase()]; return !t || t < cutoff; })
-    .sort(function (a, b) {
-      var ta = last[String(a.email).toLowerCase()] || 0, tb = last[String(b.email).toLowerCase()] || 0;
-      return ta - tb;
-    });
-  ENG_NUDGE_EMAILS = nudge.map(function (m) { return m.email; });
   var earliest = sessAll.length ? new Date(sessAll[sessAll.length - 1].started_at) : null;
 
   // ---- Render ----
   var html = '';
   html += '<div class="ufa-label">Engagement</div>' +
-    '<div class="ufa-pane-sub" style="margin-bottom:14px;">How much Mock Interview and Board Hours are being used. Question-level data is anonymous; names appear only in the nudge list.</div>';
+    '<div class="ufa-pane-sub" style="margin-bottom:14px;">How much Mock Interview and Board Hours are being used. Question-level data is anonymous.</div>';
   html += '<div class="eng-chips">' + [[7, 'This week'], [30, '30 days'], [0, 'All time']].map(function (o) {
     return '<button type="button" class="eng-chip' + (ENG.range === o[0] ? ' is-on' : '') + '" onclick="engSetRange(' + o[0] + ')">' + o[1] + '</button>';
   }).join('') + '</div>';
@@ -21019,7 +21011,7 @@ async function loadEngagement() {
   html += '<div class="eng-grid">' +
     '<div class="eng-card"><h4>Mock interview: tracks</h4><p class="eng-note">Sessions per track, ' + rangeLabel + '.</p>' + engBars(trackItems) +
       '<p class="eng-note" style="margin-top:10px;">' + Object.keys(introPeople).length + ' people used the No experience level.</p></div>' +
-    '<div class="eng-card"><h4>Mock sessions per week</h4><p class="eng-note">Last 8 weeks, all members.</p>' + engBars(weeks) + '</div>' +
+    '<div class="eng-card"><h4>Mock sessions per week</h4><p class="eng-note">Last 8 weeks, all members (w = weeks ago).</p>' + engColumns(weeks) + '</div>' +
   '</div>';
 
   html += '<div class="eng-card" style="margin-bottom:16px;"><h4>Hardest questions</h4>' +
@@ -21045,29 +21037,12 @@ async function loadEngagement() {
       { label: 'Board hours (+0.5)', value: cBoard, text: cBoard + ' of ' + members.length + ' \u00b7 ' + Math.round(cBoard / N * 100) + '%' }
     ], N) + '</div>';
 
-  html += '<div class="eng-card"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;">' +
-    '<div><h4>Nudge list</h4><p class="eng-note">Approved members with no mock session or board hours booking in ' + ENG_NUDGE_DAYS + '+ days (' + nudge.length + ').</p></div>' +
-    (nudge.length ? '<button type="button" class="eng-chip" onclick="engCopyNudge()">Copy emails</button>' : '') + '</div>' +
-    (nudge.length ? nudge.slice(0, 30).map(function (m) {
-      var t = last[String(m.email).toLowerCase()];
-      return '<div class="eng-row"><div class="eng-l" style="flex-basis:50%;">' + ufaEsc(m.name || m.email) + '</div>' +
-        '<div class="eng-v" style="margin-left:auto;">' + (t ? 'last activity ' + ufaDate(new Date(t).toISOString()) : 'no activity logged') + '</div></div>';
-    }).join('') + (nudge.length > 30 ? '<div class="eng-empty">Showing 30 of ' + nudge.length + '. Use Copy emails for everyone.</div>' : '')
-      : '<div class="eng-empty">Everyone has been active recently.</div>') + '</div>';
-
   html += '<p class="eng-note" style="margin-top:14px;">' +
-    (earliest ? 'Mock sessions are logged from ' + ufaDate(earliest.toISOString()) + '. Practice before that counts toward credits but has no dates, so it does not appear in the charts or the nudge list.' : 'No mock sessions logged yet.') + '</p>';
+    (earliest ? 'Mock sessions are logged from ' + ufaDate(earliest.toISOString()) + '. Practice before that counts toward credits but has no dates, so it does not appear in the charts.' : 'No mock sessions logged yet.') + '</p>';
 
   root.innerHTML = html;
 }
 
-function engCopyNudge() {
-  var text = ENG_NUDGE_EMAILS.join(', ');
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(text).then(function () { alert('Copied ' + ENG_NUDGE_EMAILS.length + ' emails.'); },
-      function () { prompt('Copy these emails:', text); });
-  } else { prompt('Copy these emails:', text); }
-}
 
 /* ════════════════════════════════════════════════════════════════
    MOCK INTERVIEW — "No experience" difficulty
@@ -21555,7 +21530,6 @@ function learnAskFromSearch() {
    ASK & LEARN
      • Anonymous Q&A with upvotes (the board can see who asked)
      • Word cloud: "words you want explained"
-     • Vocabulary word of the week
      • Market Watch follow-along guide (see learn_guide.js)
      • Projector view for the meeting room (board only)
 
@@ -21647,14 +21621,10 @@ var LEARN_PALETTE = ['#2E4A2E', '#9A6414', '#1E4A8A', '#8A2E55', '#1E6B7A', '#5A
 .fx-slide-top{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:0 4px 16px;flex-wrap:wrap;}
 .fx-slide-top span{font:500 20px var(--font-display,Georgia,serif);}
 .fx-slide-top em{font-style:normal;font-size:12.5px;color:#9FB59F;}
-.fx-slide-grid{display:grid;gap:10px;}
-.s-macro .fx-slide-grid{grid-template-columns:repeat(3,1fr);grid-template-areas:"fed econ ahead" "rates world ahead";}
-.s-macro .t-fed{grid-area:fed;}.s-macro .t-econ{grid-area:econ;}.s-macro .t-ahead{grid-area:ahead;}.s-macro .t-rates{grid-area:rates;}.s-macro .t-world{grid-area:world;}
-.s-equities .fx-slide-grid{grid-template-columns:repeat(6,1fr);}
-.s-equities .t-chart{grid-column:span 4;}.s-equities .t-idx{grid-column:span 2;}
-.s-equities .t-movers,.s-equities .t-ind,.s-equities .t-news{grid-column:span 2;}
-.s-sentiment .fx-slide-grid{grid-template-columns:repeat(3,1fr);grid-template-areas:"heat comm mkts" "heat fear stock";}
-.s-sentiment .t-heat{grid-area:heat;}.s-sentiment .t-comm{grid-area:comm;}.s-sentiment .t-mkts{grid-area:mkts;}.s-sentiment .t-fear{grid-area:fear;}.s-sentiment .t-stock{grid-area:stock;}
+.fx-slide-grid{display:grid;gap:10px;grid-template-columns:repeat(6,1fr);}
+.fx-slide-grid .fx-tile{grid-column:span 2;}
+.s-macro .fx-tile:nth-child(n+4),.s-sentiment .fx-tile:nth-child(n+4){grid-column:span 3;}
+.s-equities .fx-tile:nth-child(-n+2){grid-column:span 3;}
 .fx-tile{text-align:left;border-radius:14px;border:1.5px solid rgba(255,255,255,.14);background:rgba(255,255,255,.07);color:#fff;padding:13px 13px 15px;cursor:pointer;display:flex;flex-direction:column;align-items:flex-start;gap:8px;min-height:112px;font-family:inherit;transition:background .15s,border-color .15s,transform .05s;}
 .fx-tile:hover{background:rgba(255,255,255,.14);}
 .fx-tile.on{background:var(--fx-paper);color:var(--fx-ink);border-color:var(--fx-chalk);box-shadow:0 0 0 3px rgba(243,227,184,.4);}
@@ -21705,6 +21675,7 @@ var LEARN_PALETTE = ['#2E4A2E', '#9A6414', '#1E4A8A', '#8A2E55', '#1E6B7A', '#5A
 @media (max-width:640px){
   .fx-slide-grid{grid-template-columns:1fr 1fr !important;grid-template-areas:none !important;}
   .fx-slide-grid .fx-tile{grid-area:auto !important;grid-column:auto !important;min-height:96px;}
+  .fx-slide-grid .fx-tile:last-child{grid-column:1 / -1 !important;}
   .fx-seg{display:flex;} .fx-seg button{flex:1;padding:9px 8px;font-size:13px;}
   .fx-wc-row{flex-direction:column;}
 }`;
@@ -21867,7 +21838,6 @@ async function loadLearnTab() {
     }
   }
   host.innerHTML = banner +
-    '<div id="learn-vocab"></div>' +
     '<div class="fx-learn-grid solo" id="learn-grid">' +
       '<section id="learn-ask" class="fx-sec">' +
         '<div><h3 class="fx-h2">Ask a question</h3>' +
@@ -21898,7 +21868,7 @@ async function loadLearnTab() {
 
   learnWcSig = '';
   learnGuideDraw();
-  await Promise.all([learnRefreshVocab(), learnRefreshQuestions(), learnRefreshCloud()]);
+  await Promise.all([learnRefreshQuestions(), learnRefreshCloud()]);
   learnStartPolling();
 }
 
@@ -21916,28 +21886,6 @@ function learnStopPolling() {
   if (learnTimer) { clearInterval(learnTimer); learnTimer = null; }
 }
 
-async function learnRefreshVocab() {
-  var box = document.getElementById('learn-vocab');
-  if (!box) return;
-  var r = await sb.from('vocab_words').select('*').order('created_at', { ascending: false }).limit(40);
-  if (r.error) { box.innerHTML = ''; return; }
-  var rows = r.data || [];
-  var cur = rows.filter(function (w) { return w.is_current; })[0];
-  var older = rows.filter(function (w) { return !w.is_current; });
-  if (!cur && !older.length) { box.innerHTML = ''; return; }
-  box.innerHTML = '<section class="fx-wotw" data-initial="' + ufaEsc(cur ? cur.term.charAt(0).toUpperCase() : 'A') + '">' +
-    '<div class="fx-wotw-label"><i></i>Word of the week</div>' +
-    (cur
-      ? '<h3 class="fx-wotw-term">' + ufaEsc(cur.term) + '</h3>' +
-        '<p class="fx-wotw-def">' + ufaEsc(cur.definition) + '</p>' +
-        (cur.example ? '<blockquote class="fx-wotw-ex">&ldquo;' + ufaEsc(cur.example) + '&rdquo;</blockquote>' : '')
-      : '<h3 class="fx-wotw-term" style="font-size:30px;">No word this week yet</h3>') +
-    (older.length
-      ? '<details class="fx-wotw-past"><summary>' + fxIcon('book', 16) + ' Past words (' + older.length + ')</summary><dl>' +
-        older.map(function (w) { return '<div class="p"><dt>' + ufaEsc(w.term) + '</dt><dd>' + ufaEsc(w.definition) + '</dd></div>'; }).join('') + '</dl></details>'
-      : '') +
-    '</section>';
-}
 
 async function learnRefreshQuestions() {
   var box = document.getElementById('learn-q-list');
@@ -22058,14 +22006,13 @@ async function loadLearnAdmin() {
       sb.from('qa_questions').select('*').order('created_at', { ascending: false }).limit(300),
       sb.from('qa_question_authors').select('*'),
       sb.from('members').select('email, name'),
-      sb.from('wc_rounds').select('*').order('created_at', { ascending: false }).limit(20),
-      sb.from('vocab_words').select('*').order('created_at', { ascending: false }).limit(60)
+      sb.from('wc_rounds').select('*').order('created_at', { ascending: false }).limit(20)
     ]);
     for (var i = 0; i < res.length; i++) if (res[i].error) throw res[i].error;
     var allQs = res[0].data || [], authors = res[1].data || [], members = res[2].data || [];
     var qs = allQs.filter(function (q) { return !q.archived_at; });
     var archivedQs = allQs.filter(function (q) { return q.archived_at; });
-    var rounds = res[3].data || [], vocab = res[4].data || [];
+    var rounds = res[3].data || [];
 
     var nameBy = {};
     members.forEach(function (m) { nameBy[String(m.email).toLowerCase()] = m.name || m.email; });
@@ -22133,14 +22080,6 @@ async function loadLearnAdmin() {
         '</div>'
       : '<div class="fx-empty" style="border:0;">' + fxIcon('sparkle', 26) + 'No word round yet. Start one below.</div>';
 
-    var vHtml = vocab.length ? vocab.map(function (w) {
-      return '<div class="fx-qrow"><div class="t"><p style="font-weight:600;">' + ufaEsc(w.term) + (w.is_current ? ' ' + fxPill('ok', 'This week') : '') + '</p>' +
-        '<small style="display:block;font-size:13.5px;color:#3A4A3A;line-height:1.5;">' + ufaEsc(w.definition) + '</small>' +
-        (w.example ? '<small style="font-style:italic;">&ldquo;' + ufaEsc(w.example) + '&rdquo;</small>' : '') + '</div>' +
-        '<div class="a">' + (w.is_current ? '' : '<button class="fx-btn sm ghost" data-id="' + w.id + '" onclick="learnVocabCurrent(this.dataset.id)">Make this week\'s word</button>') +
-        '<button class="fx-icon-btn danger" title="Delete" aria-label="Delete word" data-id="' + w.id + '" onclick="learnVocabDelete(this.dataset.id)">' + fxIcon('trash', 17) + '</button></div></div>';
-    }).join('') : '<div class="fx-empty" style="border:0;">No words yet. Add the first one below.</div>';
-
     host.innerHTML =
       '<div id="learn-visibility" style="margin-bottom:20px;"></div>' +
       '<div id="learn-alert" class="ufa-alert" style="display:none;margin-bottom:16px;"></div>' +
@@ -22148,7 +22087,6 @@ async function loadLearnAdmin() {
       '<div class="fx-stats">' +
         '<div class="fx-stat"><b>' + openQs + '</b><span>Open questions this week</span></div>' +
         '<div class="fx-stat"><b>' + wordRows.length + '</b><span>Different words in the cloud</span></div>' +
-        '<div class="fx-stat"><b>' + vocab.length + '</b><span>Vocabulary words</span></div>' +
       '</div>' +
       '<div style="display:flex;gap:10px;flex-wrap:wrap;margin:-6px 0 34px;">' +
         '<button class="fx-btn lg" onclick="learnOpenProjector()">' + fxIcon('screen', 18) + ' Open projector view</button>' +
@@ -22163,15 +22101,7 @@ async function loadLearnAdmin() {
         '<div class="fx-form-card" style="margin-top:12px;"><div style="display:flex;gap:8px;flex-wrap:wrap;">' +
           '<input id="learn-new-prompt" class="fx-input" style="flex:1;min-width:220px;" value="Words you want explained" maxlength="120" aria-label="Round prompt">' +
           '<button class="fx-btn" onclick="learnRoundCreate()">Start a new round</button></div>' +
-          '<p class="fx-sub" style="margin-top:10px;">Starting a new round closes the old one.</p></div></section>' +
-
-      '<section class="fx-sec"><div class="fx-sec-head"><div><h3 class="fx-h2">Vocabulary word of the week</h3><p class="fx-sub">The current word is the big panel at the top of the member screen.</p></div></div>' +
-        '<div ' + panel + '>' + vHtml + '</div>' +
-        '<div class="fx-form-card" style="margin-top:12px;">' +
-          '<input id="learn-v-term" class="fx-input" maxlength="60" style="margin-bottom:10px;" placeholder="Term (for example, Yield curve)" aria-label="Term">' +
-          '<textarea id="learn-v-def" class="fx-textarea" rows="2" maxlength="400" style="margin-bottom:10px;" placeholder="Plain-English definition" aria-label="Definition"></textarea>' +
-          '<input id="learn-v-ex" class="fx-input" maxlength="200" style="margin-bottom:14px;" placeholder="Example sentence (optional)" aria-label="Example">' +
-          '<button class="fx-btn" onclick="learnVocabAdd()">Add and make this week\'s word</button></div></section>';
+          '<p class="fx-sub" style="margin-top:10px;">Starting a new round closes the old one.</p></div></section>';
 
     await renderVisibilityToggle('learn', 'visibility_learn');
   } catch (e) {
@@ -22238,31 +22168,6 @@ async function learnWordDelete(roundId, word) {
   if (learnAdminVisible()) loadLearnAdmin();
 }
 
-async function learnVocabAdd() {
-  if (!ufaIsBoard()) return;
-  var term = document.getElementById('learn-v-term').value.trim();
-  var def = document.getElementById('learn-v-def').value.trim();
-  var ex = document.getElementById('learn-v-ex').value.trim();
-  if (!term || !def) return learnMsg('learn-admin-msg', 'err', 'A word needs a term and a definition.');
-  await sb.from('vocab_words').update({ is_current: false }).eq('is_current', true);
-  var r = await sb.from('vocab_words').insert({ term: term, definition: def, example: ex || null, is_current: true }).select();
-  if (r.error) return learnMsg('learn-admin-msg', 'err', 'Could not add the word: ' + learnErr(r.error));
-  loadLearnAdmin();
-}
-async function learnVocabCurrent(id) {
-  if (!ufaIsBoard()) return;
-  await sb.from('vocab_words').update({ is_current: false }).eq('is_current', true);
-  var r = await sb.from('vocab_words').update({ is_current: true }).eq('id', id).select();
-  if (r.error || !r.data || !r.data.length) return learnMsg('learn-admin-msg', 'err', 'Could not change the word.');
-  loadLearnAdmin();
-}
-async function learnVocabDelete(id) {
-  if (!ufaIsBoard()) return;
-  if (!confirm('Delete this word?')) return;
-  var r = await sb.from('vocab_words').delete().eq('id', id).select();
-  if (r.error || !r.data || !r.data.length) return learnMsg('learn-admin-msg', 'err', 'Could not delete the word.');
-  loadLearnAdmin();
-}
 
 /* ═════════════════════════ PROJECTOR VIEW (board only) ═════════════════════════ */
 
@@ -22282,7 +22187,6 @@ async function learnOpenProjector() {
         '<div style="font-family:var(--font-display,Georgia,serif);font-size:clamp(22px,2.2vw,32px);">UFA <span style="color:#6E8A6E;">&middot;</span> Ask &amp; Learn</div>' +
         '<button onclick="learnCloseProjector()" style="background:transparent;border:1px solid rgba(255,255,255,.3);color:#F2F5F0;border-radius:10px;padding:9px 18px;font-size:14px;cursor:pointer;">Close (Esc)</button>' +
       '</div>' +
-      '<div id="lp-vocab" style="margin-bottom:38px;"></div>' +
       '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:56px;align-items:start;">' +
         '<div><div class="lp-h">Top questions</div><div id="lp-questions"></div></div>' +
         '<div><div class="lp-h" id="lp-wc-title">Words you want explained</div><div id="lp-cloud" style="background:#F7F4EE;border-radius:22px;"></div></div>' +
@@ -22305,12 +22209,10 @@ async function learnProjRefresh() {
   if (!learnProjectorOpen()) return;
   var res = await Promise.all([
     sb.from('qa_questions').select('*').eq('hidden', false).is('archived_at', null).order('answered', { ascending: true }).order('votes', { ascending: false }).order('created_at', { ascending: false }).limit(8),
-    sb.from('vocab_words').select('term, definition').eq('is_current', true).maybeSingle(),
     sb.from('wc_rounds').select('*').order('created_at', { ascending: false }).limit(1)
   ]);
   var qs = res[0].data || [];
-  var vocab = res[1].data;
-  var round = (res[2].data || [])[0];
+  var round = (res[1].data || [])[0];
 
   var qBox = document.getElementById('lp-questions');
   if (qBox) qBox.innerHTML = qs.length ? qs.map(function (q) {
@@ -22321,14 +22223,6 @@ async function learnProjRefresh() {
         'style="flex:none;background:' + (q.answered ? '#2E6B2E' : 'transparent') + ';border:1.5px solid rgba(255,255,255,.3);color:#F2F5F0;border-radius:12px;width:46px;height:46px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;">' + fxIcon('check', 22) + '</button>' +
       '</div>';
   }).join('') : '<div style="padding:18px 0;font-size:clamp(18px,1.8vw,26px);color:#8FA08F;">Questions will show up here as people post them.</div>';
-
-  var vBox = document.getElementById('lp-vocab');
-  if (vBox) vBox.innerHTML = vocab
-    ? '<div style="background:#0B150E;border:1px solid rgba(243,227,184,.25);border-radius:22px;padding:26px 34px;position:relative;overflow:hidden;">' +
-        '<div class="lp-h" style="color:var(--fx-chalk);display:flex;gap:9px;align-items:center;"><i style="width:9px;height:9px;border-radius:50%;background:var(--fx-brass);display:inline-block;"></i>Word of the week</div>' +
-        '<div style="font:500 clamp(34px,4.4vw,64px)/1.05 var(--font-display,Georgia,serif);letter-spacing:-.02em;">' + ufaEsc(vocab.term) + '</div>' +
-        '<div style="font-size:clamp(18px,1.9vw,28px);color:#D4E0D4;margin-top:10px;line-height:1.45;max-width:70ch;">' + ufaEsc(vocab.definition) + '</div></div>'
-    : '';
 
   var cloudBox = document.getElementById('lp-cloud');
   var title = document.getElementById('lp-wc-title');
@@ -22491,6 +22385,28 @@ document.addEventListener('keydown', function (e) {
 @media (max-width: 480px) {
   #ufa-portal-wrap.ufa-shell-on #portal-dashboard > div:nth-child(3) { padding-left: 14px !important; padding-right: 14px !important; }
 }
+
+/* Engagement: weekly columns */
+.eng-cols{display:flex;align-items:stretch;gap:8px;height:190px;padding-top:4px;}
+.eng-col{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;}
+.eng-col .eng-cv{height:16px;line-height:16px;margin-bottom:4px;font-size:12px;color:#6B7D6B;}
+.eng-col .eng-cwrap{flex:1;width:100%;display:flex;align-items:flex-end;justify-content:center;}
+.eng-col .eng-cb{width:100%;max-width:38px;min-height:2px;background:#3D6B3D;border-radius:6px 6px 2px 2px;}
+.eng-col.is-zero .eng-cb{background:#DCE6D9;}
+.eng-col .eng-cl{margin-top:7px;font-size:11.5px;color:#8A9A8A;white-space:nowrap;}
+
+/* Admin → Families: tighter, more even spacing */
+#fam-admin-body .fx-stats { margin-bottom: 24px; }
+#fam-admin-body .fx-sec { margin-bottom: 28px; }
+#fam-admin-body .fx-sec-head { margin-bottom: 12px; }
+#fam-admin-body .fx-empty { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 18px 20px; border-radius: 16px; }
+#fam-admin-body .fx-empty .fx-ico { display: inline-block; margin: 0; flex: none; }
+#fam-admin-body .fx-add-panel { margin-bottom: 14px; }
+#fam-admin-body .fx-famgrid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 14px; }
+#fam-admin-body .fx-famcard { padding: 18px 18px 16px; }
+#fam-admin-body .fx-famcard .chips { margin-bottom: 14px; }
+#fam-admin-body .fx-rev { margin-bottom: 14px; }
+#fam-admin-body .fx-rec { padding: 12px 16px; gap: 12px; }
 </style>
 
 <script>
