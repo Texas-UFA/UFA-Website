@@ -946,6 +946,18 @@ background-position: center 95%;
   .board-role { font-size: 12px; color: var(--text-muted); line-height: 1.45; }
   .board-name--static { cursor: default; }
   .board-name--static:hover { color: var(--text-dark); }
+  /* Executive board, wide screens: a 4-column grid. Every team of 2 takes half a row
+     (so each heading sits exactly over its own two cards) and Operations, the one team
+     of 3, takes three columns. Inner card gap == outer column gap, so all 15 photos are
+     the same size. Below 901px the existing wrapping layout above takes over. */
+  @media (min-width: 901px) {
+    .board-rows.board-rows--teams { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 44px 24px; max-width: 1300px; }
+    .board-rows--teams .board-cluster { display: flex; flex-direction: column; grid-column: span 2; }
+    .board-rows--teams .board-cluster--3 { grid-column: span 3; }
+    .board-rows--teams .board-cluster-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+    .board-rows--teams .board-cluster--3 .board-cluster-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .board-rows--teams .board-card { flex: none; }
+  }
   /* .board-cluster / .board-cluster-cards exist only so the 1500px-and-below
      layout (below) can treat "heading + its own cards" as one flowable unit.
      On the desktop grid, they must be invisible: display:contents removes a
@@ -3811,12 +3823,10 @@ button[onclick="pubFlipbookNext()"]:hover {
 <section class="section" style="background: var(--white);padding-top:48px;">
 <div class="section-tag">Our people</div>
     <h2 class="section-title">Executive Board</h2>
-    <div class="board-rows">
-
-      <div class="board-row">
+    <div class="board-rows board-rows--teams">
 
         <div class="board-cluster">
-        <h3 class="board-group board-group--a">Leadership</h3>
+        <h3 class="board-group">Leadership</h3>
         <div class="board-cluster-cards">
         <div class="board-card reveal">
           <div class="board-photo"><a href="https://www.linkedin.com/in/caden-warner/" target="_blank" rel="noopener noreferrer" class="board-photo-link" tabindex="-1" aria-hidden="true"><img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1759765238227%20(2).jpeg" alt="Caden Warner" onerror="this.style.display='none'"></a></div>
@@ -3832,7 +3842,7 @@ button[onclick="pubFlipbookNext()"]:hover {
         </div>
 
         <div class="board-cluster">
-        <h3 class="board-group board-group--b">Investment</h3>
+        <h3 class="board-group">Investment</h3>
         <div class="board-cluster-cards">
         <div class="board-card reveal">
           <div class="board-photo"><a href="https://www.linkedin.com/in/nathanyuxianli/" target="_blank" rel="noopener noreferrer" class="board-photo-link" tabindex="-1" aria-hidden="true"><img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/Headshot.jpg" alt="Nathan Li" onerror="this.style.display='none'"></a></div>
@@ -3848,7 +3858,7 @@ button[onclick="pubFlipbookNext()"]:hover {
         </div>
 
         <div class="board-cluster">
-        <h3 class="board-group board-group--c">Consulting</h3>
+        <h3 class="board-group">Consulting</h3>
         <div class="board-cluster-cards">
         <div class="board-card reveal">
           <div class="board-photo"><a href="https://www.linkedin.com/in/shreyas-sri/" target="_blank" rel="noopener noreferrer" class="board-photo-link" tabindex="-1" aria-hidden="true"><img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1726811705179.jpeg" alt="Shreyas Sripurushottam" onerror="this.style.display='none'"></a></div>
@@ -3862,12 +3872,9 @@ button[onclick="pubFlipbookNext()"]:hover {
         </div>
         </div>
         </div>
-      </div>
-
-      <div class="board-row board-row--last">
 
         <div class="board-cluster">
-        <h3 class="board-group board-group--a">Corporate Relations</h3>
+        <h3 class="board-group">Corporate Relations</h3>
         <div class="board-cluster-cards">
         <div class="board-card reveal">
           <div class="board-photo"><a href="https://www.linkedin.com/in/varsha-ravi108/" target="_blank" rel="noopener noreferrer" class="board-photo-link" tabindex="-1" aria-hidden="true"><img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1763951935507.jpeg" alt="Varsha Ravi" onerror="this.style.display='none'"></a></div>
@@ -3883,7 +3890,7 @@ button[onclick="pubFlipbookNext()"]:hover {
         </div>
 
         <div class="board-cluster">
-        <h3 class="board-group board-group--b">Marketing</h3>
+        <h3 class="board-group">Marketing</h3>
         <div class="board-cluster-cards">
         <div class="board-card reveal">
           <div class="board-photo"><a href="https://www.linkedin.com/in/laynenguyen/" target="_blank" rel="noopener noreferrer" class="board-photo-link" tabindex="-1" aria-hidden="true"><img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1770835392157.jpeg" alt="Layne Nguyen" onerror="this.style.display='none'"></a></div>
@@ -3899,7 +3906,23 @@ button[onclick="pubFlipbookNext()"]:hover {
         </div>
 
         <div class="board-cluster">
-        <h3 class="board-group board-group--c">Operations</h3>
+        <h3 class="board-group">Freshman Liaisons</h3>
+        <div class="board-cluster-cards">
+        <div class="board-card reveal">
+          <div class="board-photo"><a href="https://www.linkedin.com/in/william-wied-915249430" target="_blank" rel="noopener noreferrer" class="board-photo-link" tabindex="-1" aria-hidden="true"><img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/william-wied.jpg" alt="William Wied" onerror="this.style.display='none'"></a></div>
+          <a class="board-name" href="https://www.linkedin.com/in/william-wied-915249430" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg><span>William Wied</span></a>
+          <div class="board-role">Freshman Liaison</div>
+        </div>
+        <div class="board-card reveal">
+          <div class="board-photo"><a href="https://www.linkedin.com/in/cainan-dimson-bb22743a5" target="_blank" rel="noopener noreferrer" class="board-photo-link" tabindex="-1" aria-hidden="true"><img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/cainan-dimson.jpg" alt="Cainan Dimson" onerror="this.style.display='none'"></a></div>
+          <a class="board-name" href="https://www.linkedin.com/in/cainan-dimson-bb22743a5" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg><span>Cainan Dimson</span></a>
+          <div class="board-role">Freshman Liaison</div>
+        </div>
+        </div>
+        </div>
+
+        <div class="board-cluster board-cluster--3">
+        <h3 class="board-group">Operations</h3>
         <div class="board-cluster-cards">
         <div class="board-card reveal">
           <div class="board-photo"><a href="https://www.linkedin.com/in/nikhilparida/" target="_blank" rel="noopener noreferrer" class="board-photo-link" tabindex="-1" aria-hidden="true"><img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1759271799751.png" alt="Nikhil Parida" onerror="this.style.display='none'"></a></div>
@@ -3918,27 +3941,6 @@ button[onclick="pubFlipbookNext()"]:hover {
         </div>
         </div>
         </div>
-      </div>
-
-      <div class="board-row">
-
-        <div class="board-cluster">
-        <h3 class="board-group board-group--a">Freshman Liaisons</h3>
-        <div class="board-cluster-cards">
-        <div class="board-card reveal">
-          <div class="board-photo"><a href="https://www.linkedin.com/in/william-wied-915249430" target="_blank" rel="noopener noreferrer" class="board-photo-link" tabindex="-1" aria-hidden="true"><img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/william-wied.jpg" alt="William Wied" onerror="this.style.display='none'"></a></div>
-          <a class="board-name" href="https://www.linkedin.com/in/william-wied-915249430" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg><span>William Wied</span></a>
-          <div class="board-role">Freshman Liaison</div>
-        </div>
-        <div class="board-card reveal">
-          <div class="board-photo"><a href="https://www.linkedin.com/in/cainan-dimson-bb22743a5" target="_blank" rel="noopener noreferrer" class="board-photo-link" tabindex="-1" aria-hidden="true"><img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/cainan-dimson.jpg" alt="Cainan Dimson" onerror="this.style.display='none'"></a></div>
-          <a class="board-name" href="https://www.linkedin.com/in/cainan-dimson-bb22743a5" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg><span>Cainan Dimson</span></a>
-          <div class="board-role">Freshman Liaison</div>
-        </div>
-        </div>
-        </div>
-
-      </div>
 
     </div>
   </section>
