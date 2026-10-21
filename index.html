@@ -7672,7 +7672,6 @@ const RESOURCES = [
 
   // Hedge Funds
   { name: 'WSO HF Q&A', url: 'https://www.wallstreetoasis.com/resources/interviews/hedge-funds-interview-questions', category: 'hf', desc: '40 HF interview questions with answers', type: 'link' },
-  { name: 'Street of Walls HF Guide', url: 'https://www.streetofwalls.com/finance-training-courses/hedge-fund-training/', category: 'hf', desc: 'Free hedge fund interview prep, written by HF analysts', type: 'link' },
 
   // Resume (additional free guides)
   { name: 'CFI IB Resume Guide', url: 'https://corporatefinanceinstitute.com/resources/career/investment-banking-resume/', category: 'resume', desc: 'Free resume checklist and template', type: 'link' },
@@ -8422,35 +8421,33 @@ async function renderUpcoming() {
       // the first 3 letters so a full month name can't overflow this fixed
       // 40px box and run into the vertical divider next to it.
       var monthAbbr = (parts[0] || '').slice(0, 3);
-      dateBlockHtml = '<div style="width:40px;text-align:center;flex-shrink:0;">' +
+      dateBlockHtml = '<div class="ufa-ev-date" style="width:40px;text-align:center;flex-shrink:0;">' +
           '<div style="font-size:18px;font-weight:600;color:#1C2B1C;line-height:1;">' + ufaEsc(dayNum) + '</div>' +
           '<div style="font-size:10px;color:#6B7D6B;text-transform:uppercase;letter-spacing:0.06em;">' + ufaEsc(monthAbbr) + '</div>' +
         '</div>';
     } else if (weekdayAbbr) {
-      dateBlockHtml = '<div style="width:40px;text-align:center;flex-shrink:0;">' +
+      dateBlockHtml = '<div class="ufa-ev-date" style="width:40px;text-align:center;flex-shrink:0;">' +
           '<div style="font-size:18px;font-weight:600;color:#1C2B1C;line-height:1;">' + weekdayAbbr + '</div>' +
           '<div style="font-size:10px;color:#6B7D6B;text-transform:uppercase;letter-spacing:0.06em;">Weekly</div>' +
         '</div>';
     } else {
-      dateBlockHtml = '<div style="width:56px;text-align:center;flex-shrink:0;overflow:hidden;">' +
+      dateBlockHtml = '<div class="ufa-ev-date" style="width:56px;text-align:center;flex-shrink:0;overflow:hidden;">' +
           '<div style="font-size:11px;font-weight:600;color:#1C2B1C;line-height:1.3;word-break:break-word;">' + ufaEsc(dayNum) + '</div>' +
         '</div>';
     }
 
     return '<div class="ufa-event-row' + (canOpenMaterials ? ' is-clickable' : '') + '"' + onclick +
-      ' style="padding:16px 20px;border-bottom:1px solid rgba(46,74,46,0.08);display:flex;align-items:center;justify-content:space-between;gap:12px;' +
+      ' style="padding:16px 20px;border-bottom:1px solid rgba(46,74,46,0.08);display:flex;align-items:center;gap:14px;' +
       (done ? 'background:#f7fbf7;' : '') + '">'
-      + '<div style="display:flex;align-items:center;gap:14px;min-width:0;flex:1;">'
-        + dateBlockHtml
-        + '<div style="width:1px;align-self:stretch;background:rgba(46,74,46,0.12);flex-shrink:0;"></div>'
-        + '<div style="min-width:0;">'
+      + dateBlockHtml
+        + '<div class="ufa-ev-div" style="width:1px;align-self:stretch;background:rgba(46,74,46,0.12);flex-shrink:0;"></div>'
+        + '<div class="ufa-ev-text" style="min-width:0;flex:1;">'
           + '<div style="font-size:14px;font-weight:500;color:#1C2B1C;">' + nameEsc + '</div>'
           + '<div style="display:flex;align-items:center;gap:6px;margin-top:3px;">'
             + '<span style="font-size:11px;font-weight:500;background:' + clr.bg + ';color:' + clr.color + ';padding:2px 8px;border-radius:3px;">' + type + '</span>'
             + (active ? '<span style="font-size:11px;color:#2e6b2e;font-weight:500;">Live now</span>' : '')
           + '</div>'
         + '</div>'
-      + '</div>'
       + '<div class="ufa-ev-right" style="display:flex;align-items:center;gap:10px;flex-shrink:0;">'
         + '<span style="font-size:12px;font-weight:600;color:#3D6B3D;background:#EEF5EE;padding:4px 10px;border-radius:3px;">+' + pts + ' pt' + (pts !== 1 ? 's' : '') + '</span>'
         + (done ? '<span style="font-size:11px;color:#2e6b2e;font-weight:500;">Attended</span>' : '')
@@ -21742,6 +21739,14 @@ function fxTitleCase(str) {
   var first = true;
   return String(str).split(/(\s+)/).map(function (tok) {
     if (!tok.trim()) return tok;
+    if (/[A-Za-z]-[A-Za-z]/.test(tok)) {
+      first = false;
+      return tok.split('-').map(function (part) {
+        var pm = part.match(/^([^A-Za-z]*)([A-Za-z].*)$/);
+        if (!pm || /[A-Z]/.test(pm[2].slice(1)) || FX_KEEP[pm[2].toLowerCase()]) return part;
+        return pm[1] + pm[2].charAt(0).toUpperCase() + pm[2].slice(1);
+      }).join('-');
+    }
     var m = tok.match(/^([^A-Za-z]*)([A-Za-z][A-Za-z.'\u2019]*?)([^A-Za-z]*)$/);
     var isFirst = first; first = false;
     if (!m) return tok;
@@ -21773,7 +21778,7 @@ function learnGuideDraw() {
     body.innerHTML = '<div class="fx-terms fx-results">' +
       '<div class="fx-terms-head"><h4 class="fx-h3">' + hits.length + ' result' + (hits.length === 1 ? '' : 's') + ' for &ldquo;' + ufaEsc(learnGuide.q.trim()) + '&rdquo;</h4></div>' +
       (hits.length ? '<dl>' + hits.slice(0, 40).map(function (h) {
-        return '<div class="fx-term"><dt>' + ufaEsc(fxTitleCase(h.t[0])) + (h.t[2] ? ' <span class="fx-pill mute" style="margin-left:6px;">Going deeper</span>' : '') + '</dt><dd>' + ufaEsc(h.t[1]) + '</dd>' +
+        return '<div class="fx-term"><dt>' + ufaEsc(fxTitleCase(h.t[0])) + (h.t[2] ? ' <span class="fx-pill mute" style="margin-left:6px;">Going Deeper</span>' : '') + '</dt><dd>' + ufaEsc(h.t[1]) + '</dd>' +
           '<button class="fx-link" data-s="' + h.s.id + '" data-b="' + h.b.key + '" onclick="learnGuideSelect(this.dataset.s,this.dataset.b)">Show where it appears: ' + ufaEsc(h.s.title) + (h.b.n ? ', ' + ufaEsc(h.b.title) : '') + '</button></div>';
       }).join('') + '</dl>'
         : '<div class="fx-empty" style="border:0;">' + fxIcon('chat', 26) + 'Nothing matches yet.<br><button class="fx-btn sm" style="margin-top:12px;" onclick="learnAskFromSearch()">Ask it anonymously instead</button></div>') +
@@ -21793,16 +21798,16 @@ function learnGuideDraw() {
   var deeper = box.terms.filter(function (t) { return t[2]; });
   var termsPanel = '<div class="fx-terms" id="learn-terms">' +
     '<div class="fx-terms-head">' + (box.n ? '<span class="fx-badge">' + box.n + '</span>' : '') +
-      '<div><h4 class="fx-h3">' + ufaEsc(box.title) + '</h4><p class="fx-sub" style="margin:2px 0 0;">' + ufaEsc(box.blurb) + '</p></div></div>' +
+      '<div><h4 class="fx-h3">' + ufaEsc(fxTitleCase(box.title)) + '</h4><p class="fx-sub" style="margin:2px 0 0;">' + ufaEsc(box.blurb) + '</p></div></div>' +
     '<dl>' + basics.map(learnTermRow).join('') + '</dl>' +
-    (deeper.length ? '<div class="fx-deeper"><div class="fx-deeper-label">' + fxIcon('sparkle', 15) + ' Going deeper</div><dl>' + deeper.map(learnTermRow).join('') + '</dl></div>' : '') +
+    (deeper.length ? '<div class="fx-deeper"><div class="fx-deeper-label">' + fxIcon('sparkle', 15) + ' Going Deeper</div><dl>' + deeper.map(learnTermRow).join('') + '</dl></div>' : '') +
     '</div>';
 
   var phone = fxPhone();
   var tiles = slide.boxes.map(function (b) {
     var isOn = b.key === box.key && (!phone || learnGuide.open);
     return '<button class="fx-tile t-' + b.key + (isOn ? ' on' : '') + '" aria-pressed="' + isOn + '" aria-expanded="' + (phone ? isOn : 'false') + '" data-s="' + slide.id + '" data-b="' + b.key + '" onclick="learnGuideSelect(this.dataset.s,this.dataset.b)">' +
-      '<span class="fx-badge">' + b.n + '</span><span class="fx-tile-t">' + ufaEsc(b.title) + '</span><span class="fx-tile-d">' + ufaEsc(b.blurb) + '</span></button>' +
+      '<span class="fx-badge">' + b.n + '</span><span class="fx-tile-t">' + ufaEsc(fxTitleCase(b.title)) + '</span><span class="fx-tile-d">' + ufaEsc(b.blurb) + '</span></button>' +
       (phone && isOn ? termsPanel : '');
   }).join('');
 
@@ -22613,9 +22618,6 @@ document.addEventListener('keydown', function (e) {
 
 @media (max-width: 640px) {
   /* Events: points / attended / files drop under the title instead of squeezing it into two lines */
-  .ufa-event-row { flex-wrap: wrap; padding: 14px 16px !important; row-gap: 10px; }
-  .ufa-event-row .ufa-ev-right { flex: 1 1 100%; flex-wrap: wrap; justify-content: flex-start; padding-left: 69px; gap: 8px 12px !important; }
-  .ufa-event-row .ufa-ev-right > span { font-size: 13px !important; }
 }
 
 /* ── Round 3 ── */
@@ -22672,12 +22674,7 @@ document.addEventListener('keydown', function (e) {
 
 /* Events (phones): date block runs the full height of the row, centred on the left */
 @media (max-width: 640px) {
-  .ufa-event-row { display: grid !important; grid-template-columns: 52px 1px minmax(0, 1fr); column-gap: 14px; row-gap: 10px; align-items: start; padding: 14px 16px !important; }
-  .ufa-event-row > div:first-child { display: contents; }
-  .ufa-event-row > div:first-child > div:nth-child(1) { grid-column: 1; grid-row: 1 / span 2; align-self: center; width: auto !important; }
-  .ufa-event-row > div:first-child > div:nth-child(2) { grid-column: 2; grid-row: 1 / span 2; align-self: stretch; }
-  .ufa-event-row > div:first-child > div:nth-child(3) { grid-column: 3; grid-row: 1; }
-  .ufa-event-row .ufa-ev-right { grid-column: 3; grid-row: 2; flex: none; padding-left: 0 !important; justify-content: flex-start; flex-wrap: wrap; }
+}
 }
 
 /* Ask & Learn on phones: one tile per row, the opened section sits right under its tile */
@@ -22697,6 +22694,26 @@ document.addEventListener('keydown', function (e) {
 #rfilt-pe { --c: #3D5A8A; } #rfilt-hf { --c: #8A3D3D; }
 #rfilt-resume.active, #rfilt-recruiting.active, #rfilt-consulting.active, #rfilt-pe.active, #rfilt-hf.active { background: var(--c); border-color: var(--c); color: #fff; }
 #rfilt-resume:focus-visible, #rfilt-recruiting:focus-visible, #rfilt-consulting:focus-visible, #rfilt-pe:focus-visible, #rfilt-hf:focus-visible { outline-color: var(--c); }
+
+/* Events rows on phones: date block runs the full height on the left, text and points stack on the right */
+@media (max-width: 640px) {
+  .ufa-event-row { display: grid !important; grid-template-columns: minmax(44px, auto) 1px minmax(0, 1fr); grid-template-areas: "date div text" "date div right"; column-gap: 14px; row-gap: 10px; align-items: start; padding: 14px 16px !important; }
+  .ufa-event-row .ufa-ev-date { grid-area: date; align-self: center; width: auto !important; min-width: 44px; }
+  .ufa-event-row .ufa-ev-div { grid-area: div; align-self: stretch; }
+  .ufa-event-row .ufa-ev-text { grid-area: text; }
+  .ufa-event-row .ufa-ev-right { grid-area: right; flex-wrap: wrap; justify-content: flex-start; gap: 8px 12px !important; }
+  .ufa-event-row .ufa-ev-right > span { font-size: 13px !important; }
+}
+/* Board Hours cards on phones: round avatar (the old flex-basis stretched it into an oval), roomier spacing */
+@media (max-width: 768px) {
+  .ufa-board-grid .ufa-board-card { padding: 16px 14px 16px !important; }
+  .ufa-board-grid .ufa-board-card::before { height: 56px; }
+  .ufa-board-grid .ufa-board-avatar { width: 52px !important; height: 52px !important; min-height: 52px; flex: 0 0 52px !important; margin-top: 14px; margin-bottom: 10px; font-size: 17px; border-width: 3px; }
+  .ufa-board-grid .ufa-board-name { font-size: 15.5px; line-height: 1.25; }
+  .ufa-board-grid .ufa-board-role { font-size: 10.5px; letter-spacing: 0.05em; line-height: 1.3; padding: 4px 10px; margin-top: 6px; }
+  .ufa-board-grid .ufa-board-contact { font-size: 12px; margin-top: 10px; word-break: normal !important; overflow-wrap: anywhere; }
+  .ufa-board-grid .ufa-board-card .ufa-btn { min-height: 44px; font-size: 14px; }
+}
 </style>
 <script>
 document.addEventListener('click', function (e) {
