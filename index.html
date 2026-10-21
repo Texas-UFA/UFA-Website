@@ -8520,7 +8520,7 @@ async function renderUpcoming() {
           + '</div>'
         + '</div>'
       + '</div>'
-      + '<div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">'
+      + '<div class="ufa-ev-right" style="display:flex;align-items:center;gap:10px;flex-shrink:0;">'
         + '<span style="font-size:12px;font-weight:600;color:#3D6B3D;background:#EEF5EE;padding:4px 10px;border-radius:3px;">+' + pts + ' pt' + (pts !== 1 ? 's' : '') + '</span>'
         + (done ? '<span style="font-size:11px;color:#2e6b2e;font-weight:500;">Attended</span>' : '')
         + (canOpenMaterials ? '<span style="font-size:12px;color:#3D6B3D;font-weight:600;">' + (fc ? fc + ' file' + (fc !== 1 ? 's' : '') + ' →' : 'Add materials →') + '</span>' : '')
@@ -22577,6 +22577,38 @@ document.addEventListener('keydown', function (e) {
   #portal-dashboard .fx-slide-grid .fx-tile { min-height: 0; grid-column: auto !important; }
   #portal-dashboard .fx-slide-grid .fx-tile:last-child { grid-column: auto !important; }
   .fx-slide { padding: 16px 14px 18px; border-radius: 18px; }
+}
+
+/* ── Round 2: audit fixes ── */
+@media (max-width: 900px) {
+  /* iOS Safari zooms the page when a field under 16px is focused. Login and sign-up were 14px. */
+  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]):not([type="submit"]):not([type="button"]),
+  select, textarea { font-size: 16px !important; }
+
+  /* Small inline text inside the portal: lift the tiniest sizes to readable ones */
+  #portal-dashboard [style*="font-size:10px"], #portal-dashboard [style*="font-size:10.5px"],
+  #portal-dashboard [style*="font-size:11px"], #portal-dashboard [style*="font-size:11.5px"] { font-size: 12px !important; }
+  #portal-dashboard [style*="font-size:12px"], #portal-dashboard [style*="font-size:12.5px"] { font-size: 13px !important; }
+  .ufa-day-dow { font-size: 12px; }
+}
+@media (max-width: 768px) {
+  /* Board Hours week picker: a vertical list (day on the left, times as big tappable chips)
+     instead of a 620px grid you have to scroll sideways. */
+  .ufa-week-scroll { overflow-x: visible; }
+  .ufa-week-scroll > div { min-width: 0 !important; grid-template-columns: 1fr !important; gap: 0 !important; }
+  .ufa-day-col { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 12px 0; border-top: 1px solid rgba(46,74,46,0.10); }
+  .ufa-day-col:first-child { border-top: 0; }
+  .ufa-day-head { flex: 0 0 54px; border-bottom: 0 !important; margin: 0 !important; padding: 0 !important; }
+  .ufa-day-num { font-size: 20px; }
+  .ufa-slot { width: auto; flex: 0 0 auto; min-width: 88px; min-height: 44px; margin: 0; padding: 10px 14px; font-size: 14px; border-radius: 10px; }
+  .ufa-day-col > div:not(.ufa-day-head) { text-align: left !important; }
+}
+
+@media (max-width: 640px) {
+  /* Events: points / attended / files drop under the title instead of squeezing it into two lines */
+  .ufa-event-row { flex-wrap: wrap; padding: 14px 16px !important; row-gap: 10px; }
+  .ufa-event-row .ufa-ev-right { flex: 1 1 100%; flex-wrap: wrap; justify-content: flex-start; padding-left: 69px; gap: 8px 12px !important; }
+  .ufa-event-row .ufa-ev-right > span { font-size: 13px !important; }
 }
 </style>
 <script>
