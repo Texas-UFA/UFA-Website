@@ -20112,8 +20112,11 @@ async function loadFamiliesAdmin() {
       sb.from('members').select('email, name, role, status')
     ]);
     for (var i = 0; i < res.length; i++) if (res[i].error) throw res[i].error;
-    famAdminData = { families: res[0].data || [], fmembers: res[1].data || [], meetups: res[2].data || [], roster: res[3].data || [] };
+    famAdminData = { families: res[0].data || [], fmembers: res[1].data || [], meetups: res[2].data || [], roster: res[3].data || [], pending: [] };
+    famAdminData.pending = await famPendingLoad();
+    var autoLinked = await famLinkPending();
     await famRenderAdmin();
+    if (autoLinked) famAdminMsg('ok', 'Moved ' + autoLinked + ' ' + (autoLinked === 1 ? 'person' : 'people') + ' into their family now that they have signed up.');
     famLoadBadge();
   } catch (e) {
     console.error('loadFamiliesAdmin', e);
@@ -20161,6 +20164,17 @@ async function famAddMember(familyId) {
   var res = famResolvePerson(inp.value, lookup);
   if (res.error === 'empty') return famAdminMsg('err', 'Type a name and pick one from the suggestions.');
   if (res.error === 'ambiguous') return famAdminMsg('err', 'More than one member has that name. Pick the entry with their email from the suggestions.');
+  if (res.error === 'notfound' && inp.value.indexOf('@') === -1) {
+    var typed = inp.value.replace(/\s*\([^()]*\)\s*$/, '').replace(/\s+/g, ' ').trim();
+    if (!confirm('"' + typed + '" is not on the roster yet. Add them as pending? They join this family automatically once they sign up with this exact name.')) return;
+    var plist = (famAdminData.pending || []).slice();
+    if (plist.some(function (x) { return famNameKey(x.name) === famNameKey(typed); })) return famAdminMsg('err', typed + ' is already waiting to sign up.');
+    plist.push({ family_id: familyId, name: typed });
+    var perr2 = await famPendingSave(plist);
+    if (perr2) return famAdminMsg('err', 'Could not save: ' + perr2.message);
+    await loadFamiliesAdmin();
+    return famAdminMsg('ok', 'Added ' + typed + ' as pending.');
+  }
   if (res.error) return famAdminMsg('err', 'No roster member matches "' + inp.value.trim() + '".');
   var email = res.member.email; // exact string stored in `members`, so points line up on the leaderboard
   var existing = famAdminData.fmembers.filter(function (r) { return String(r.email).toLowerCase() === String(email).toLowerCase(); })[0];
@@ -20207,6 +20221,51 @@ async function famDelete(familyId) {
   else famAdminMsg('ok', 'Family deleted.' + (removed ? ' Took back ' + removed + ' point award' + (removed === 1 ? '' : 's') + ' from its members.' : ''));
 }
 
+/* ── People who are not on the roster yet ─────────────────────────────
+   Their names are kept in app_settings under 'family_pending' as JSON:
+   [{ family_id, name }]. Each time a board member opens the Families tab, anyone whose exact
+   name now matches a member is moved into their family automatically. */
+function famNameKey(n) { return String(n || '').toLowerCase().replace(/\s+/g, ' ').trim(); }
+async function famPendingLoad() {
+  var raw = await ufaGetSetting('family_pending');
+  if (!raw) return [];
+  try {
+    var v = (typeof raw === 'string') ? JSON.parse(raw) : raw;
+    return Array.isArray(v) ? v.filter(function (x) { return x && x.family_id && x.name; }) : [];
+  } catch (e) { return []; }
+}
+async function famPendingSave(list) {
+  var r = await ufaSetSetting('family_pending', JSON.stringify(list));
+  return (r && r.error) ? r.error : null;
+}
+async function famLinkPending() {
+  var d = famAdminData, list = d.pending || [];
+  if (!list.length) return 0;
+  var lookup = famRosterLookup(d.roster), taken = {}, keep = [], linked = 0;
+  d.fmembers.forEach(function (r) { taken[String(r.email).toLowerCase()] = true; });
+  for (var i = 0; i < list.length; i++) {
+    var p = list[i];
+    if (!d.families.some(function (f) { return String(f.id) === String(p.family_id); })) continue;   // family was deleted
+    var hits = lookup.byName[famNameKey(p.name)] || [];
+    if (hits.length !== 1) { keep.push(p); continue; }
+    var em = String(hits[0].email).toLowerCase();
+    if (taken[em]) continue;                                                                           // already placed another way
+    var ins = await sb.from('family_members').insert({ family_id: p.family_id, email: hits[0].email });
+    if (ins.error) { keep.push(p); continue; }
+    taken[em] = true; linked++;
+    d.fmembers.push({ family_id: p.family_id, email: hits[0].email });
+  }
+  if (linked || keep.length !== list.length) { d.pending = keep; await famPendingSave(keep); }
+  return linked;
+}
+async function famRemovePending(familyId, name) {
+  if (!ufaIsBoard()) return;
+  var list = (famAdminData.pending || []).filter(function (x) { return !(String(x.family_id) === String(familyId) && famNameKey(x.name) === famNameKey(name)); });
+  var err = await famPendingSave(list);
+  if (err) return famAdminMsg('err', 'Could not remove: ' + err.message);
+  await loadFamiliesAdmin();
+}
+
 async function famBulkImport() {
   if (!ufaIsBoard()) return;
   var raw = document.getElementById('fam-bulk').value;
@@ -20220,6 +20279,7 @@ async function famBulkImport() {
   famAdminData.families.forEach(function (f) { famByName[f.name.toLowerCase()] = f; });
 
   var report = [], added = 0, createdFams = 0;
+  var pendingList = (famAdminData.pending || []).slice(), pendingAdded = 0;
   for (var i = 0; i < lines.length; i++) {
     var idx = lines[i].indexOf(':');
     if (idx < 1) { report.push('Skipped (no "Family: names" format): ' + lines[i]); continue; }
@@ -20234,7 +20294,14 @@ async function famBulkImport() {
     }
     for (var j = 0; j < people.length; j++) {
       var res = famResolvePerson(people[j], lookup);
-      if (res.error === 'notfound')  { report.push('Not on roster: "' + people[j] + '" (' + famName + ')'); continue; }
+      if (res.error === 'notfound') {
+        if (people[j].indexOf('@') !== -1) { report.push('Not on roster: "' + people[j] + '" (' + famName + ')'); continue; }
+        var pname = people[j].replace(/\s*\([^()]*\)\s*$/, '').replace(/\s+/g, ' ').trim();
+        var already = pendingList.filter(function (x) { return famNameKey(x.name) === famNameKey(pname); })[0];
+        if (already) { report.push(pname + ' is already waiting to sign up — skipped (' + famName + ')'); continue; }
+        pendingList.push({ family_id: fam.id, name: pname }); pendingAdded++;
+        continue;
+      }
       if (res.error === 'ambiguous') { report.push('More than one match for "' + people[j] + '" — use their email (' + famName + ')'); continue; }
       if (res.error) continue;
       var em = String(res.member.email).toLowerCase();
@@ -20244,9 +20311,14 @@ async function famBulkImport() {
       taken[em] = true; added++;
     }
   }
+  if (pendingAdded) {
+    var perr = await famPendingSave(pendingList);
+    if (perr) report.push('Could not save the people who are not on the roster yet: ' + perr.message);
+  }
   await loadFamiliesAdmin();
   famAdminMsg(report.length ? 'info' : 'ok',
     'Created ' + createdFams + ' famil' + (createdFams === 1 ? 'y' : 'ies') + ', added ' + added + ' member' + (added === 1 ? '' : 's') + '.' +
+    (pendingAdded ? ' ' + pendingAdded + ' ' + (pendingAdded === 1 ? 'person is' : 'people are') + ' not on the roster yet. They are saved as pending and join their family automatically once they sign up with the same name.' : '') +
     (report.length ? '\n\nNeeds attention:\n' + report.join('\n') : ''));
 }
 
@@ -20636,12 +20708,18 @@ async function famRenderAdmin() {
   var totalPeople = d.fmembers.length;
   var famHtml = d.families.length ? '<div class="fx-famgrid">' + d.families.map(function (f) {
     var ms = membersOf(f.id);
-    var chips = ms.length ? ms.map(function (p) {
+    var pend = (d.pending || []).filter(function (x) { return String(x.family_id) === String(f.id); });
+    var pendChips = pend.map(function (x) {
+      return '<span class="fx-who" style="opacity:.85;" title="Not signed up yet. Joins automatically when they register with this name.">' + fxAvatar(x.name, 26) + ufaEsc(x.name) +
+        ' <em style="font-style:normal;font-size:11px;color:#8A5A3D;background:#F6EBDD;border-radius:999px;padding:1px 8px;">Pending</em>' +
+        '<button class="x" title="Remove" aria-label="Remove ' + ufaEsc(x.name) + '" data-fid="' + f.id + '" data-name="' + ufaEsc(x.name) + '" onclick="famRemovePending(this.dataset.fid,this.dataset.name)">&times;</button></span>';
+    }).join('');
+    var chips = (ms.length || pend.length) ? ms.map(function (p) {
       return '<span class="fx-who">' + fxAvatar(p.name, 26) + ufaEsc(p.name) +
         '<button class="x" title="Remove from family" aria-label="Remove ' + ufaEsc(p.name) + '" data-fid="' + f.id + '" data-email="' + ufaEsc(p.email) + '" onclick="famRemoveMember(this.dataset.fid,this.dataset.email)">&times;</button></span>';
-    }).join('') : '<span style="font-size:13px;color:#8A968A;">No members yet. Add the first one below.</span>';
+    }).join('') + pendChips : '<span style="font-size:13px;color:#8A968A;">No members yet. Add the first one below.</span>';
     return '<article class="fx-famcard">' +
-      '<div class="fx-famcard-head"><div><h4>' + ufaEsc(f.name) + '</h4><small>' + ms.length + ' member' + (ms.length === 1 ? '' : 's') + '</small></div>' +
+      '<div class="fx-famcard-head"><div><h4>' + ufaEsc(f.name) + '</h4><small>' + ms.length + ' member' + (ms.length === 1 ? '' : 's') + (pend.length ? ' &middot; ' + pend.length + ' pending' : '') + '</small></div>' +
         '<div style="display:flex;align-items:center;gap:6px;">' + (ms.length ? fxAvatarStack(ms.map(function (p) { return p.name; }), 4, 30) : '') +
           '<button class="fx-icon-btn" title="Rename" aria-label="Rename ' + ufaEsc(f.name) + '" data-id="' + f.id + '" onclick="famRename(this.dataset.id)">' + fxIcon('edit', 17) + '</button>' +
           '<button class="fx-icon-btn danger" title="Delete family" aria-label="Delete ' + ufaEsc(f.name) + '" data-id="' + f.id + '" onclick="famDelete(this.dataset.id)">' + fxIcon('trash', 17) + '</button></div></div>' +
@@ -20674,13 +20752,14 @@ async function famRenderAdmin() {
       '<div class="fx-stat' + (pending.length ? ' hot' : '') + '"><b>' + pending.length + '</b><span>Waiting for review</span></div>' +
       '<div class="fx-stat"><b>' + d.families.length + '</b><span>Families</span></div>' +
       '<div class="fx-stat"><b>' + totalPeople + '</b><span>People in a family</span></div>' +
+      ((d.pending || []).length ? '<div class="fx-stat"><b>' + d.pending.length + '</b><span>Waiting to sign up</span></div>' : '') +
     '</div>' +
     '<section class="fx-sec"><div class="fx-sec-head"><div><h3 class="fx-h2">Needs review</h3><p class="fx-sub">Compare the photo to the names, then award the points.</p></div></div>' + queueHtml + '</section>' +
     '<section class="fx-sec"><div class="fx-sec-head"><div><h3 class="fx-h2">Families</h3><p class="fx-sub">Rename, add or remove people any time.</p></div></div>' +
       '<details class="fx-add-panel"' + (d.families.length ? '' : ' open') + '><summary>' + fxIcon('plus', 18) + ' Add families</summary><div class="inner">' +
         '<div><h4 class="fx-h3" style="margin-bottom:6px;">One at a time</h4><p class="fx-sub" style="margin-bottom:12px;">Name it, then add people from the card that appears.</p>' +
           '<div style="display:flex;gap:8px;flex-wrap:wrap;"><input id="fam-new-name" class="fx-input" style="flex:1;min-width:180px;" placeholder="Family name (e.g. The Bulls)" onkeydown="if(event.key===\'Enter\')famCreate()"><button class="fx-btn" onclick="famCreate()">Create</button></div></div>' +
-        '<div><h4 class="fx-h3" style="margin-bottom:6px;">Paste a whole list</h4><p class="fx-sub" style="margin-bottom:12px;">One family per line: <code>Family name: Full Name, Full Name</code>. Names must match the roster (or use emails). Anything that doesn\'t match is reported back.</p>' +
+        '<div><h4 class="fx-h3" style="margin-bottom:6px;">Paste a whole list</h4><p class="fx-sub" style="margin-bottom:12px;">One family per line: <code>Family name: Full Name, Full Name</code>. People already on the roster are added right away. Anyone not on it yet is saved as pending and joins automatically once they sign up with the same name. Anything else is reported back.</p>' +
           '<textarea id="fam-bulk" class="fx-textarea" rows="5" placeholder="The Bulls: Aaron Jacob, Abigail Jacob, Adam Que" style="margin-bottom:10px;"></textarea><button class="fx-btn" onclick="famBulkImport()">Import families</button></div>' +
       '</div></details>' + famHtml + '</section>' +
     '<section class="fx-sec"><div class="fx-sec-head"><div><h3 class="fx-h2">Recently reviewed</h3></div></div><div class="fx-panel" style="overflow:hidden;">' + reviewedHtml + '</div></section>';
