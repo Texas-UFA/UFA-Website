@@ -16814,15 +16814,17 @@ var CASE_INTRO_SEEN_KEY = 'ufa_case_intro_seen';
 function startCaseRun() {
   if (localStorage.getItem(CASE_INTRO_SEEN_KEY)) { startCaseRunActual(); return; }
   ufaModal(
-    '<div class="ufa-label" style="margin-bottom:6px;">Before your first worked case</div>' +
-    '<div style="font-family:\'Playfair Display\',Georgia,serif;font-size:22px;color:#1C2B1C;margin-bottom:16px;">This is practice, not a tutorial</div>' +
+    '<div class="ufa-modal-body ufa-intro-body">' +
+    '<div class="ufa-label" style="margin-bottom:8px;">Before your first worked case</div>' +
+    '<div class="ufa-intro-title">This is practice, not a tutorial</div>' +
     '<p class="ufa-case-p" style="margin-bottom:14px;">' +
       'A worked case assumes you already know the basic shape of a case interview: building a structure specific to the business rather than a generic checklist, asking clarifying questions that actually change your approach, doing math out loud, and leading a recommendation with the answer before the reasons. If any of that is unfamiliar, that is a real gap worth closing first — start with the Consulting guides under Resources, not here.' +
     '</p>' +
-    '<p class="ufa-case-p" style="margin-bottom:20px;">' +
+    '<p class="ufa-case-p" style="margin-bottom:0;">' +
       'How to actually use this: read the prompt and talk through your answer out loud for the full time before revealing the interviewer\'s notes. Revealing early is the easiest way to fool yourself into thinking you are more prepared than you are &mdash; the clock and the reveal button are there to stop you from doing that.' +
     '</p>' +
-    '<button class="ufa-btn" onclick="localStorage.setItem(\'' + CASE_INTRO_SEEN_KEY + '\',\'1\');ufaCloseModal();startCaseRunActual();">Got it &mdash; start the case</button>'
+    '</div>' +
+    '<div class="ufa-modal-foot ufa-intro-foot"><button class="ufa-btn" onclick="localStorage.setItem(\'' + CASE_INTRO_SEEN_KEY + '\',\'1\');ufaCloseModal();startCaseRunActual();">Got it &mdash; start the case</button></div>'
   );
 }
 
@@ -22731,6 +22733,19 @@ document.addEventListener('keydown', function (e) {
 @media (max-width: 768px) {
   .ufa-board-grid .ufa-mail-ico { display: none; }
   .ufa-board-grid .ufa-board-contact { font-size: 11.5px; }
+}
+
+/* "This is practice, not a tutorial" popup: proper padding, readable measure */
+.ufa-intro-body { padding: 30px 32px 8px; }
+.ufa-intro-title { font-family: 'Playfair Display', Georgia, serif; font-size: 24px; line-height: 1.25; color: #1C2B1C; margin-bottom: 18px; }
+.ufa-intro-body .ufa-case-p { font-size: 15px; line-height: 1.65; color: #3A4A3A; }
+.ufa-intro-foot { padding: 22px 32px 28px; justify-content: flex-end; }
+@media (max-width: 640px) { .ufa-intro-body { padding: 24px 20px 4px; } .ufa-intro-title { font-size: 21px; } .ufa-intro-foot { padding: 18px 20px 22px; } .ufa-intro-foot .ufa-btn { width: 100%; min-height: 46px; } }
+
+@media (max-width: 640px) {
+  /* The short intro popup is a card on phones, not a full-screen sheet */
+  .ufa-modal-back:has(.ufa-intro-body) { padding: 16px; align-items: center; }
+  .ufa-modal:has(.ufa-intro-body) { min-height: 0; border-radius: 16px; }
 }
 </style>
 <script>
