@@ -20978,8 +20978,8 @@ function ufaRenderCreditsCard() {
     return Math.round(Math.min(1, Math.min(s.mockSec / (minGoal * 60), s.mockQs / qGoal)) * 100);
   }
   function prog(minGoal, qGoal) {
-    return '<div style="display:flex;align-items:center;gap:10px;margin-top:8px;">' +
-      '<div style="flex:1;max-width:260px;height:6px;background:#EEF5EE;border-radius:3px;overflow:hidden;"><div style="width:' + pct(minGoal, qGoal) + '%;height:100%;background:#3D6B3D;"></div></div>' +
+    return '<div class="ep-prog" style="display:flex;align-items:center;gap:10px;margin-top:8px;">' +
+      '<div class="ep-bar" style="flex:1;max-width:260px;height:6px;background:#EEF5EE;border-radius:3px;overflow:hidden;"><div style="width:' + pct(minGoal, qGoal) + '%;height:100%;background:#3D6B3D;"></div></div>' +
       '<span style="font-size:12px;color:#6B7D6B;">' + Math.min(minGoal, Math.floor(s.mockSec / 60)) + ' of ' + minGoal + ' min &middot; ' +
       Math.min(qGoal, s.mockQs) + ' of ' + qGoal + ' questions</span></div>';
   }
@@ -20987,11 +20987,13 @@ function ufaRenderCreditsCard() {
     return '<button type="button" onclick="switchPortalTab(\'' + tab + '\')" style="background:#1C2B1C;color:#fff;font:500 13px \'DM Sans\',sans-serif;padding:9px 16px;border:none;border-radius:4px;cursor:pointer;white-space:nowrap;">' + label + '</button>';
   }
   function done(pts) {
-    return '<span style="font-size:12px;font-weight:600;color:#2e6b2e;background:#e6f4e6;padding:4px 10px;border-radius:20px;">Earned +' + pts + '</span>';
+    return '<span style="font-size:12px;font-weight:600;color:#2e6b2e;background:#e6f4e6;padding:4px 10px;border-radius:20px;">Earned ' + ptsLabel(pts) + '</span>';
   }
-  function row(title, body, right) {
-    return '<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:14px 0;border-top:1px solid rgba(46,74,46,0.08);">' +
-      '<div style="flex:1;min-width:220px;"><div style="font-size:14px;font-weight:600;color:#1C2B1C;">' + title + '</div>' + body + '</div>' + right + '</div>';
+  function ptsLabel(n) { return '+' + n + (n === 1 ? ' pt' : ' pts'); }
+  function row(title, body, right, pts, earned) {
+    var pill = earned ? '' : ' <span class="ep-pts">' + ptsLabel(pts) + '</span>';
+    return '<div class="ep-row" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:14px 0;border-top:1px solid rgba(46,74,46,0.08);">' +
+      '<div class="ep-left" style="flex:1;min-width:220px;"><div class="ep-title" style="font-size:14px;font-weight:600;color:#1C2B1C;">' + title + pill + '</div>' + body + '</div>' + right + '</div>';
   }
   var thanks = '<div style="font-size:12px;color:#6B7D6B;margin-top:3px;">Nice work. This one is a one-time credit.</div>';
 
@@ -21001,13 +21003,13 @@ function ufaRenderCreditsCard() {
       '<div style="font-size:12px;color:#6B7D6B;">One-time credits</div></div>' +
     row('Practice ' + CREDIT_MOCK_MINUTES + ' minutes of mock interviews',
         s.hasMock ? thanks : prog(CREDIT_MOCK_MINUTES, CREDIT_MOCK_QUESTIONS),
-        s.hasMock ? done(CREDIT_POINTS) : btn('Start practicing', 'mock')) +
-    row('Reach 3 hours of mock interview practice',
+        s.hasMock ? done(CREDIT_POINTS) : btn('Start practicing', 'mock'), CREDIT_POINTS, s.hasMock) +
+    row('Reach ' + (CREDIT_MOCK3_MINUTES / 60) + ' hours of mock interview practice',
         s.hasMock3 ? thanks : prog(CREDIT_MOCK3_MINUTES, CREDIT_MOCK3_QUESTIONS),
-        s.hasMock3 ? done(CREDIT_MOCK3_POINTS) : btn('Keep practicing', 'mock')) +
+        s.hasMock3 ? done(CREDIT_MOCK3_POINTS) : btn('Keep practicing', 'mock'), CREDIT_MOCK3_POINTS, s.hasMock3) +
     row('Book a board hours slot',
         s.hasBoard ? thanks : '<div style="font-size:12px;color:#6B7D6B;margin-top:3px;">Book a 15 or 30 minute slot with a board member. Credit is given when you book. A no-show or cancellation takes it back.</div>',
-        s.hasBoard ? done(CREDIT_POINTS) : btn('Find a time', 'board'));
+        s.hasBoard ? done(CREDIT_POINTS) : btn('Find a time', 'board'), CREDIT_POINTS, s.hasBoard);
 }
 
 /* Logs one finished mock session (feeds credits and the Engagement tab),
@@ -22507,6 +22509,83 @@ document.addEventListener('keydown', function (e) {
 .eng-table .r { text-align: right; }
 .eng-table tbody tr:hover { background: #F7FAF7; }
 </style>
+
+<style id="ufa-mobile-polish">
+/* Easy points: the points chip next to each task */
+.ep-pts { display: inline-block; vertical-align: 1px; margin-left: 6px; font: 600 12px 'DM Sans', sans-serif; color: #7A5410; background: #FBF0DC; border: 1px solid #EBD6A6; padding: 2px 9px; border-radius: 999px; white-space: nowrap; }
+
+@media (max-width: 900px) {
+  /* Bottom tab bar: solid, so the footer never ghosts through it, and readable labels */
+  #ufa-portal-wrap.ufa-shell-on #ufa-tabbar { background: #fff; -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .ut-item { font-size: 11.5px; }
+  body:has(#ufa-portal-wrap.ufa-shell-on) footer { padding-bottom: calc(var(--ufa-nav-h) + 28px + env(safe-area-inset-bottom, 0px)) !important; }
+
+  /* Sub-tabs (Admin + Recruiting): one swipeable row instead of ragged wrapped pills */
+  .admin-tab-nav { display: flex !important; flex-wrap: nowrap !important; overflow-x: auto !important; -webkit-overflow-scrolling: touch; scroll-snap-type: x proximity; }
+  .admin-tab, #ufa-portal-wrap.ufa-shell-on .admin-tab { flex: 0 0 auto !important; scroll-snap-align: start; font-size: 14px !important; padding: 12px 16px !important; min-height: 44px; }
+
+  /* Resource filter chips: bigger text and touch targets */
+  .res-filter { font-size: 14px; padding: 10px 16px; min-height: 42px; }
+  .res-toolbar .res-count { font-size: 14px; }
+  .res-search input { font-size: 16px; }
+
+  /* Resource / guide cards */
+  #resources-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
+  .res-card { min-height: 0; padding: 16px; gap: 14px; align-items: flex-start; }
+  .res-ico { width: 42px; height: 42px; }
+  .res-title { font-size: 16px; line-height: 1.3; }
+  .res-desc { font-size: 14px; line-height: 1.45; -webkit-line-clamp: 3; margin-top: 4px; }
+  .res-foot { margin-top: 12px; padding-top: 0; }
+  .res-tag { font-size: 12px; padding: 4px 11px; }
+  .res-act { font-size: 13.5px; background: #EEF5EE; padding: 8px 14px; border-radius: 999px; }
+  .res-cred code { font-size: 15px; }
+  .res-cred small { font-size: 11.5px; }
+  .res-copy { font-size: 13px; padding: 8px 14px; min-height: 36px; }
+  .res-wsj-s { font-size: 14px; }
+
+  /* Mock interview setup */
+  .ufa-selectall { font-size: 15px; padding: 12px 0; min-height: 44px; }
+  .ufa-selectall:focus:not(:focus-visible) { outline: none; }
+  #mock-seconds { width: 100%; }
+  .ufa-level-sub { font-size: 13px; }
+
+  /* Market Watch */
+  #portal-dashboard .fx-seg { display: grid; grid-template-columns: 1fr 1fr; width: 100%; box-sizing: border-box; }
+  #portal-dashboard .fx-seg button { font-size: 14px; padding: 12px 8px; min-height: 44px; }
+  .fx-tile-t { font-size: 16px; }
+  .fx-tile-d { font-size: 14px; opacity: .8; }
+  .fx-badge { width: 28px; height: 28px; font-size: 13.5px; }
+  .fx-slide-top em { font-size: 14px; }
+  .fx-terms { padding: 20px 18px 22px; border-radius: 18px; }
+
+  /* Overview small text */
+  #credits-card [style*="font-size:12px"] { font-size: 13px !important; }
+}
+@media (max-width: 480px) {
+  /* Easy points: stack each row, full-width button */
+  #credits-card { padding: 18px 16px !important; }
+  #credits-card .ep-row { flex-direction: column; align-items: stretch !important; gap: 12px !important; }
+  #credits-card .ep-left { min-width: 0 !important; }
+  #credits-card .ep-title { font-size: 15px !important; line-height: 1.35; }
+  #credits-card .ep-prog { flex-direction: column; align-items: stretch !important; gap: 6px !important; }
+  #credits-card .ep-bar { max-width: none !important; width: 100%; }
+  #credits-card .ep-row > button { width: 100%; min-height: 46px; font-size: 15px !important; }
+  #credits-card .ep-row > span { align-self: flex-start; }
+
+  /* Market Watch tiles: one per row, easier to read and tap */
+  #portal-dashboard .fx-slide-grid { grid-template-columns: 1fr !important; }
+  #portal-dashboard .fx-slide-grid .fx-tile { min-height: 0; grid-column: auto !important; }
+  #portal-dashboard .fx-slide-grid .fx-tile:last-child { grid-column: auto !important; }
+  .fx-slide { padding: 16px 14px 18px; border-radius: 18px; }
+}
+</style>
+<script>
+document.addEventListener('click', function (e) {
+  var t = e.target.closest && e.target.closest('.admin-tab');
+  if (!t || !t.scrollIntoView) return;
+  setTimeout(function () { t.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' }); }, 30);
+});
+</script>
 
 <script>
 /* ═══════════════════════════════════════════════════════════════════
