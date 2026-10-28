@@ -23251,21 +23251,28 @@ document.addEventListener('click', function (e) {
 
 
 <style>
-.pv-card{background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:12px;padding:20px 22px;margin-bottom:16px;}
+.pv-card{background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:14px;padding:24px 26px;margin-bottom:18px;box-shadow:0 1px 2px rgba(28,43,28,.04);}
+#pitch-body,#pitch-admin-body{max-width:860px;}
 .pv-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;}
-.pv-tick{font-family:'Playfair Display',Georgia,serif;font-size:26px;color:#1C2B1C;line-height:1.1;}
+.pv-tick{font-family:'Playfair Display',Georgia,serif;font-size:34px;font-weight:500;color:#1C2B1C;line-height:1.05;letter-spacing:.01em;}
 .pv-co{font-size:14px;color:#3A4A3A;margin-top:2px;}
-.pv-meta{font-size:12px;color:#6B7D6B;margin-top:4px;}
-.pv-pill{font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:4px 10px;border-radius:999px;}
+.pv-meta{font-size:14px;color:#6B7D6B;margin-top:6px;}
+.pv-pill{font-size:13px;font-weight:600;padding:5px 12px;border-radius:999px;white-space:nowrap;}
 .pv-pill.open{background:#E3F0E3;color:#2E5A2E;} .pv-pill.closed{background:#EEEDEA;color:#6B7D6B;}
 .pv-sum{font-size:14px;color:#2A3A2A;line-height:1.55;margin:12px 0 0;white-space:pre-wrap;}
-.pv-body{display:flex;gap:28px;align-items:center;flex-wrap:wrap;margin-top:16px;}
-.pv-vote{flex:1 1 280px;min-width:0;}
-.pv-res{display:flex;align-items:center;gap:18px;flex:0 1 auto;}
-.pv-pie{width:130px;height:130px;flex:none;}
-.pv-leg{font-size:13px;color:#1C2B1C;line-height:1.7;}
-.pv-leg i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px;}
-.pv-leg small{color:#6B7D6B;display:block;font-size:12px;}
+.pv-body{display:flex;gap:20px;align-items:stretch;flex-wrap:wrap;margin-top:22px;padding-top:22px;border-top:1px solid rgba(46,74,46,0.1);}
+.pv-vote{flex:1 1 280px;min-width:0;display:flex;flex-direction:column;justify-content:center;}
+.pv-res{display:flex;align-items:center;gap:22px;flex:0 1 auto;background:#F7F4EE;border-radius:12px;padding:18px 24px;}
+.pv-pie{width:112px;height:112px;flex:none;}
+.pv-leg{font-size:14px;color:#1C2B1C;display:flex;flex-direction:column;gap:8px;}
+.pv-lrow{display:flex;align-items:baseline;gap:8px;}
+.pv-pct{font-family:'Playfair Display',Georgia,serif;font-size:26px;line-height:1;min-width:64px;}
+.pv-lab small{color:#6B7D6B;font-size:13px;}
+.pv-tot{font-size:13px;color:#6B7D6B;margin-top:2px;}
+.pv-voted{display:inline-flex;align-items:center;gap:8px;font-size:15px;font-weight:600;padding:8px 14px;border-radius:999px;}
+.pv-voted.yes{background:#E3F0E3;color:#2E5A2E;} .pv-voted.no{background:#F6E4E1;color:#8E3A31;}
+.pv-voted svg{width:16px;height:16px;}
+.pv-quote{margin-top:14px;padding-left:14px;border-left:3px solid rgba(46,74,46,0.2);font-size:14px;color:#3A4A3A;line-height:1.55;white-space:pre-wrap;}
 .pv-btns{display:flex;gap:10px;}
 .pv-btn{flex:1;padding:12px 0;border:1.5px solid rgba(46,74,46,0.25);border-radius:8px;background:#fff;font:600 15px 'DM Sans',sans-serif;color:#1C2B1C;cursor:pointer;}
 .pv-btn.yes.on{background:#3D6B3D;border-color:#3D6B3D;color:#fff;} .pv-btn.no.on{background:#A8453B;border-color:#A8453B;color:#fff;}
@@ -23278,11 +23285,25 @@ document.addEventListener('click', function (e) {
 .pv-err{font-size:13px;color:#8b2e2e;margin-top:8px;}
 .pv-in{width:100%;box-sizing:border-box;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font:14px 'DM Sans',sans-serif;background:#F7F4EE;}
 .pv-form{display:grid;grid-template-columns:1fr 1fr;gap:12px;} .pv-form label{font-size:12px;font-weight:600;color:#3A4A3A;display:block;margin-bottom:4px;}
+.pv-new{padding:26px 28px 28px;border-radius:14px;box-shadow:0 1px 2px rgba(28,43,28,.04),0 8px 24px -16px rgba(28,43,28,.25);}
+.pv-new-head{margin-bottom:20px;}
+.pv-new-title{font-family:'Playfair Display',Georgia,serif;font-size:24px;font-weight:500;color:#1C2B1C;line-height:1.2;}
+.pv-new-sub{font-size:14px;color:#6B7D6B;margin-top:4px;}
+.pv-new-row{display:flex;gap:16px;align-items:flex-end;}
+.pv-fld{flex:1 1 0;min-width:0;}
+.pv-fld-tick{flex:1.2 1 0;}
+.pv-fld label{display:block;font-size:13px;font-weight:600;color:#3A4A3A;margin-bottom:6px;}
+.pv-new .pv-in{height:50px;padding:0 14px;border-radius:10px;border:1.5px solid rgba(46,74,46,0.18);background:#fff;font-size:15px;transition:border-color .15s,box-shadow .15s;}
+.pv-new .pv-in:focus{outline:none;border-color:#3D6B3D;box-shadow:0 0 0 3px rgba(61,107,61,.15);}
+.pv-new .pv-tick-in{font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:600;letter-spacing:.04em;}
+.pv-new .pv-tick-in::placeholder{color:#B9C4B9;font-weight:500;}
+.pv-new-go{margin-top:0;height:50px;padding:0 24px;border-radius:10px;white-space:nowrap;flex:none;font-size:15px;}
+.pv-new-go:hover{background:#2E4A2E;}
 .pv-vl{border-top:1px solid rgba(46,74,46,0.08);padding:9px 0;font-size:13px;color:#1C2B1C;line-height:1.5;}
 .pv-vl b.y{color:#2E5A2E;} .pv-vl b.n{color:#A8453B;}
 .pv-act{display:flex;gap:8px;flex-wrap:wrap;}
 .pv-sm{padding:6px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;background:#fff;font:13px 'DM Sans',sans-serif;color:#3A4A3A;cursor:pointer;} .pv-sm.del{color:#A8453B;}
-@media (max-width:700px){ .pv-form{grid-template-columns:1fr;} .pv-card{padding:16px;} .pv-body{gap:18px;} }
+@media (max-width:700px){ .pv-form{grid-template-columns:1fr;} .pv-card{padding:16px;} .pv-new{padding:20px 18px 22px;} .pv-new-row{flex-direction:column;align-items:stretch;gap:14px;} .pv-new-go{width:100%;} .pv-body{gap:18px;} }
 </style>
 <script>
 /* ───────── GM Pitch Vote ─────────
@@ -23315,9 +23336,10 @@ function pitchResults(id) {
   var t = PITCH.tallies[id] || { yes: 0, no: 0 }, tot = t.yes + t.no;
   var py = tot ? Math.round(t.yes / tot * 100) : 0, pn = tot ? 100 - py : 0;
   return '<div class="pv-res">' + pitchPie(t.yes, t.no) +
-    '<div class="pv-leg"><div><i style="background:#3D6B3D"></i><b>Yes ' + py + '%</b> <span style="color:#6B7D6B">(' + t.yes + ')</span></div>' +
-    '<div><i style="background:#A8453B"></i><b>No ' + pn + '%</b> <span style="color:#6B7D6B">(' + t.no + ')</span></div>' +
-    '<small>' + tot + ' vote' + (tot === 1 ? '' : 's') + '</small></div></div>';
+    '<div class="pv-leg">' +
+    '<div class="pv-lrow"><span class="pv-pct" style="color:#3D6B3D">' + py + '%</span><span class="pv-lab">Yes <small>(' + t.yes + ')</small></span></div>' +
+    '<div class="pv-lrow"><span class="pv-pct" style="color:#A8453B">' + pn + '%</span><span class="pv-lab">No <small>(' + t.no + ')</small></span></div>' +
+    '<div class="pv-tot">' + tot + ' vote' + (tot === 1 ? '' : 's') + ' total</div></div></div>';
 }
 
 async function pitchFetchAll() {
@@ -23362,8 +23384,8 @@ function renderPitchTab() {
         '<div class="pv-err" id="pv-err-' + p.id + '" style="display:none;"></div></div>';
       res = '<div class="pv-note" style="flex:1 1 200px;">Results appear after you vote.</div>';
     } else if (mine) {
-      form = '<div class="pv-vote"><div class="pv-mine">You voted <b>' + (mine.vote === 'yes' ? 'Yes' : 'No') + '</b>.</div>' +
-        (mine.comment ? '<div class="pv-note" style="white-space:pre-wrap;">\u201c' + ufaEsc(mine.comment) + '\u201d</div>' : '') + '</div>';
+      form = '<div class="pv-vote"><div><span class="pv-voted ' + mine.vote + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>You voted ' + (mine.vote === 'yes' ? 'Yes' : 'No') + '</span></div>' +
+        (mine.comment ? '<div class="pv-quote">' + ufaEsc(mine.comment) + '</div>' : '') + '</div>';
       res = pitchResults(p.id);
     } else {
       form = '<div class="pv-vote pv-note">Voting closed. You didn\'t vote on this one.</div>';
@@ -23404,12 +23426,14 @@ async function loadPitchAdmin() {
   PITCH.tallies = {}; (r[3].data || []).forEach(function (t) { PITCH.tallies[t.pitch_id] = { yes: Number(t.yes_votes) || 0, no: Number(t.no_votes) || 0 }; });
   var today = new Date(), iso = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
 
-  var html = '<div class="pv-card"><div style="font-size:15px;font-weight:500;color:#1C2B1C;margin-bottom:14px;">New pitch</div>' +
-    '<div class="pv-form">' +
-      '<div><label>Ticker</label><input class="pv-in" id="np-ticker" placeholder="AAPL" maxlength="12"></div>' +
-      '<div><label>Pitch date</label><input class="pv-in" id="np-date" type="date" value="' + iso + '"></div>' +
-    '</div><div class="pv-err" id="np-err" style="display:none;"></div>' +
-    '<button type="button" class="pv-go" onclick="pitchCreate()">Create pitch &amp; open voting</button></div>';
+  var html = '<div class="pv-card pv-new">' +
+    '<div class="pv-new-head"><div class="pv-new-title">New pitch</div>' +
+    '<div class="pv-new-sub">Voting opens for all approved members as soon as you create it.</div></div>' +
+    '<div class="pv-new-row">' +
+      '<div class="pv-fld pv-fld-tick"><label for="np-ticker">Ticker</label><input class="pv-in pv-tick-in" id="np-ticker" placeholder="AAPL" maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false" oninput="this.value=this.value.toUpperCase()"></div>' +
+      '<div class="pv-fld"><label for="np-date">Pitch date</label><input class="pv-in" id="np-date" type="date" value="' + iso + '"></div>' +
+      '<button type="button" class="pv-go pv-new-go" onclick="pitchCreate()">Create and open voting</button>' +
+    '</div><div class="pv-err" id="np-err" style="display:none;"></div></div>';
 
   var list = r[0].data || [];
   html += list.length ? list.map(function (p) {
@@ -23427,7 +23451,7 @@ async function loadPitchAdmin() {
       '<div class="pv-body">' + pitchResults(p.id) + '<div class="pv-vote">' +
       (vs.length ? '<details><summary style="cursor:pointer;font-size:13px;color:#3D6B3D;font-weight:500;">Who voted (' + vs.length + ')' + (withComments ? ' · ' + withComments + ' comment' + (withComments === 1 ? '' : 's') : '') + '</summary><div style="margin-top:8px;">' + rows + '</div></details>' : '<div class="pv-note">No votes yet.</div>') +
       '</div></div></div>';
-  }).join('') : '<div class="pv-card pv-note">No pitches yet.</div>';
+  }).join('') : '<div class="pv-card pv-note" style="text-align:center;padding:28px;">No pitches yet. Create one above and it will show here with live results.</div>';
   box.innerHTML = html;
 }
 
