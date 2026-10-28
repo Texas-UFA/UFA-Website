@@ -23265,8 +23265,9 @@ document.addEventListener('click', function (e) {
 .pv-res{display:flex;align-items:center;gap:22px;flex:0 1 auto;background:#F7F4EE;border-radius:12px;padding:18px 24px;}
 .pv-pie{width:112px;height:112px;flex:none;}
 .pv-leg{font-size:14px;color:#1C2B1C;display:flex;flex-direction:column;gap:8px;}
-.pv-lrow{display:flex;align-items:baseline;gap:8px;}
-.pv-pct{font-family:'Playfair Display',Georgia,serif;font-size:26px;line-height:1;min-width:64px;}
+.pv-lrow{display:flex;align-items:center;gap:8px;}
+.pv-pct{font-family:'Playfair Display',Georgia,serif;font-variant-numeric:lining-nums;font-size:28px;line-height:1;min-width:84px;}
+.pv-who{flex:1 1 100%;justify-content:flex-start;}
 .pv-lab small{color:#6B7D6B;font-size:13px;}
 .pv-tot{font-size:13px;color:#6B7D6B;margin-top:2px;}
 .pv-voted{display:inline-flex;align-items:center;gap:8px;font-size:15px;font-weight:600;padding:8px 14px;border-radius:999px;}
@@ -23332,14 +23333,14 @@ function pitchPie(yes, no) {
   return svg + '</svg>';
 }
 
-function pitchResults(id) {
+function pitchResults(id, showCounts) {
   var t = PITCH.tallies[id] || { yes: 0, no: 0 }, tot = t.yes + t.no;
   var py = tot ? Math.round(t.yes / tot * 100) : 0, pn = tot ? 100 - py : 0;
   return '<div class="pv-res">' + pitchPie(t.yes, t.no) +
     '<div class="pv-leg">' +
-    '<div class="pv-lrow"><span class="pv-pct" style="color:#3D6B3D">' + py + '%</span><span class="pv-lab">Yes <small>(' + t.yes + ')</small></span></div>' +
-    '<div class="pv-lrow"><span class="pv-pct" style="color:#A8453B">' + pn + '%</span><span class="pv-lab">No <small>(' + t.no + ')</small></span></div>' +
-    '<div class="pv-tot">' + tot + ' vote' + (tot === 1 ? '' : 's') + ' total</div></div></div>';
+    '<div class="pv-lrow"><span class="pv-pct" style="color:#3D6B3D">' + py + '%</span><span class="pv-lab">Yes' + (showCounts ? ' <small>(' + t.yes + ')</small>' : '') + '</span></div>' +
+    '<div class="pv-lrow"><span class="pv-pct" style="color:#A8453B">' + pn + '%</span><span class="pv-lab">No' + (showCounts ? ' <small>(' + t.no + ')</small>' : '') + '</span></div>' +
+    (showCounts ? '<div class="pv-tot">' + tot + ' vote' + (tot === 1 ? '' : 's') + ' total</div>' : '') + '</div></div>';
 }
 
 async function pitchFetchAll() {
@@ -23448,7 +23449,7 @@ async function loadPitchAdmin() {
       '<div class="pv-act"><span class="pv-pill ' + (open ? 'open' : 'closed') + '" style="align-self:center;">' + (open ? 'Voting open' : 'Closed') + '</span>' +
         '<button type="button" class="pv-sm" onclick="pitchSetStatus(\'' + p.id + '\',\'' + (open ? 'closed' : 'open') + '\')">' + (open ? 'Close voting' : 'Reopen voting') + '</button>' +
         '<button type="button" class="pv-sm del" onclick="pitchDelete(\'' + p.id + '\')">Delete</button></div></div>' +
-      '<div class="pv-body">' + pitchResults(p.id) + '<div class="pv-vote">' +
+      '<div class="pv-body">' + pitchResults(p.id, true) + '<div class="pv-vote pv-who">' +
       (vs.length ? '<details><summary style="cursor:pointer;font-size:13px;color:#3D6B3D;font-weight:500;">Who voted (' + vs.length + ')' + (withComments ? ' · ' + withComments + ' comment' + (withComments === 1 ? '' : 's') : '') + '</summary><div style="margin-top:8px;">' + rows + '</div></details>' : '<div class="pv-note">No votes yet.</div>') +
       '</div></div></div>';
   }).join('') : '<div class="pv-card pv-note" style="text-align:center;padding:28px;">No pitches yet. Create one above and it will show here with live results.</div>';
