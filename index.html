@@ -5094,6 +5094,7 @@ button[onclick="pubFlipbookNext()"]:hover {
           <button onclick="switchPortalTab('overview')" class="portal-tab active" id="ptab-overview">Overview</button>
           <button onclick="switchPortalTab('leaderboard')" class="portal-tab" id="ptab-leaderboard">Leaderboard</button>
           <button onclick="switchPortalTab('events')" class="portal-tab" id="ptab-events">Events</button>
+          <button onclick="switchPortalTab('pitch')" class="portal-tab" id="ptab-pitch">Pitch Vote</button>
           <button onclick="switchPortalTab('profile')" class="portal-tab" id="ptab-profile">Profile</button>
           <button onclick="switchPortalTab('recruiting')" class="portal-tab" id="ptab-recruiting">Recruiting</button>
           <button onclick="switchPortalTab('mock')" class="portal-tab" id="ptab-mock">Mock Interview</button>
@@ -5725,6 +5726,15 @@ button[onclick="pubFlipbookNext()"]:hover {
           <div id="learn-body"></div>
         </div>
 
+        <!-- ── GM PITCH VOTE TAB ── -->
+        <div id="ptab-content-pitch" style="display:none;">
+          <div class="ufa-pane-head">
+            <div class="ufa-pane-title">Pitch Vote</div>
+            <div class="ufa-pane-sub">Vote yes or no on the stocks pitched at general meetings. Comments are optional.</div>
+          </div>
+          <div id="pitch-body"></div>
+        </div>
+
         <div id="ptab-content-admin" style="display:none;">
           <div style="margin-bottom:24px;">
             <div style="font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:500;color:#1C2B1C;margin-bottom:4px;">Admin Panel</div>
@@ -5742,6 +5752,7 @@ button[onclick="pubFlipbookNext()"]:hover {
             <button onclick="switchAdminTab('resumes')" class="admin-tab" id="atab-resumes">Resumes</button>
             <button onclick="switchAdminTab('boardhours')" class="admin-tab" id="atab-boardhours">Board Hours</button>
             <button onclick="switchAdminTab('engagement')" class="admin-tab" id="atab-engagement">Engagement</button>
+            <button onclick="switchAdminTab('pitches')" class="admin-tab" id="atab-pitches">GM Pitches</button>
             <button onclick="switchAdminTab('learn')" class="admin-tab" id="atab-learn">Ask &amp; Learn</button>
             <button onclick="switchAdminTab('families')" class="admin-tab" id="atab-families">Families <span id="fam-badge" style="display:none;background:#c0392b;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;margin-left:4px;">0</span></button>
           </div>
@@ -6100,6 +6111,8 @@ button[onclick="pubFlipbookNext()"]:hover {
           <!-- ── ADMIN: ASK & LEARN ──
                Moderate questions, open the projector view,
                and publish the feature to members. -->
+          <div id="atab-content-pitches" style="display:none;"><div id="pitch-admin-body"></div></div>
+
           <div id="atab-content-learn" style="display:none;">
             <div class="ufa-pane-sub" style="margin-bottom:18px;">Anonymous Q&amp;A and the Market Watch guide. Board only until you publish it.</div>
             <div id="learn-admin-body"><div class="ufa-pane-sub">Loading…</div></div>
@@ -7609,7 +7622,7 @@ async function switchPortalTab(tab) {
   // showDashboard(). Guard here too in case something else calls this
   // directly.
   if (currentMember && currentMember.status === 'pending') tab = 'overview';
-  ['overview','leaderboard','events','profile','recruiting','mock','board','learn','admin'].forEach(t => {
+  ['overview','leaderboard','events','pitch','profile','recruiting','mock','board','learn','admin'].forEach(t => {
     const btn = document.getElementById('ptab-' + t);
     const content = document.getElementById('ptab-content-' + t);
     if (btn) btn.classList.toggle('active', t === tab);
@@ -7619,6 +7632,7 @@ async function switchPortalTab(tab) {
   if (tab === 'events') { renderUpcoming(); loadMyFamily(); }
   if (tab !== 'learn') learnStopPolling();
   if (tab === 'learn') loadLearnTab();
+  if (tab === 'pitch') loadPitchTab();
   if (tab === 'mock') loadMockTab();
   if (tab === 'profile') {
     if (currentUser && !currentMember) {
@@ -7868,7 +7882,7 @@ async function downloadResource(filename, type) {
 }
 
 function switchAdminTab(tab) {
-  ['sessions','roster','attendance','analytics','announce','approvals','resumes','boardhours','engagement','families','learn'].forEach(t => {
+  ['sessions','roster','attendance','analytics','announce','approvals','resumes','boardhours','engagement','families','pitches','learn'].forEach(t => {
     const btn = document.getElementById('atab-' + t);
     const content = document.getElementById('atab-content-' + t);
     if (btn) btn.classList.toggle('active', t === tab);
@@ -7883,6 +7897,7 @@ function switchAdminTab(tab) {
   if (tab === 'boardhours') loadBoardHoursAdmin();
   if (tab === 'engagement') loadEngagement();
   if (tab === 'families') loadFamiliesAdmin();
+  if (tab === 'pitches') loadPitchAdmin();
   if (tab === 'learn') loadLearnAdmin();
 }
 
@@ -7969,7 +7984,7 @@ async function showDashboard() {
   // roster info, recruiting resources, etc. until a board member approves
   // them. This overrides whatever applyFeatureVisibility() and the isBoard
   // check above just set.
-  ['leaderboard','events','profile','recruiting'].forEach(function(t) {
+  ['leaderboard','events','pitch','profile','recruiting'].forEach(function(t) {
     var btn = document.getElementById('ptab-' + t);
     if (btn) btn.style.display = isPending ? 'none' : '';
   });
@@ -23075,22 +23090,23 @@ document.addEventListener('click', function (e) {
     mock:        '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',
     board:       '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
     learn:       '<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/>',
+    pitch:       '<path d="M21 12A9 9 0 1 1 12 3v9z"/><path d="M16 3.6A9 9 0 0 1 20.4 8H16z"/>',
     admin:       '<path d="M12 3l8 3v6c0 4.5-3.2 8-8 9-4.8-1-8-4.5-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/>',
     more:        '<circle cx="5" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="19" cy="12" r="1.5" fill="currentColor"/>',
     out:         '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>',
     chevL:       '<path d="M15 18l-6-6 6-6"/>'
   };
   var LABEL = { overview: 'Overview', leaderboard: 'Leaderboard', events: 'Events', profile: 'Profile', recruiting: 'Recruiting',
-                mock: 'Mock Interview', board: 'Board Hours', learn: 'Ask & Learn', admin: 'Admin' };
+                mock: 'Mock Interview', board: 'Board Hours', learn: 'Ask & Learn', pitch: 'Pitch Vote', admin: 'Admin' };
   var SHORT = { mock: 'Mock', board: 'Board Hours', leaderboard: 'Leaderboard' };
   var GROUPS = [
-    { label: 'Home',    tabs: ['overview', 'leaderboard', 'events'] },
+    { label: 'Home',    tabs: ['overview', 'leaderboard', 'events', 'pitch'] },
     { label: 'Grow',    tabs: ['mock', 'board', 'recruiting', 'learn'] },
     { label: 'Account', tabs: ['profile'] },
     { label: 'Board',   tabs: ['admin'] }
   ];
   var BAR = ['overview', 'leaderboard', 'events', 'mock'];
-  var ALL = ['overview', 'leaderboard', 'events', 'mock', 'board', 'recruiting', 'learn', 'profile', 'admin'];
+  var ALL = ['overview', 'leaderboard', 'events', 'pitch', 'mock', 'board', 'recruiting', 'learn', 'profile', 'admin'];
 
   var wrap = document.getElementById('portal-dashboard') && document.getElementById('portal-dashboard').parentNode;
   var dash = document.getElementById('portal-dashboard');
@@ -23227,6 +23243,217 @@ document.addEventListener('click', function (e) {
 })();
 </script>
 
+
+<style>
+.pv-card{background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:12px;padding:20px 22px;margin-bottom:16px;}
+.pv-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;}
+.pv-tick{font-family:'Playfair Display',Georgia,serif;font-size:26px;color:#1C2B1C;line-height:1.1;}
+.pv-co{font-size:14px;color:#3A4A3A;margin-top:2px;}
+.pv-meta{font-size:12px;color:#6B7D6B;margin-top:4px;}
+.pv-pill{font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:4px 10px;border-radius:999px;}
+.pv-pill.open{background:#E3F0E3;color:#2E5A2E;} .pv-pill.closed{background:#EEEDEA;color:#6B7D6B;}
+.pv-sum{font-size:14px;color:#2A3A2A;line-height:1.55;margin:12px 0 0;white-space:pre-wrap;}
+.pv-body{display:flex;gap:28px;align-items:center;flex-wrap:wrap;margin-top:16px;}
+.pv-vote{flex:1 1 280px;min-width:0;}
+.pv-res{display:flex;align-items:center;gap:18px;flex:0 1 auto;}
+.pv-pie{width:130px;height:130px;flex:none;}
+.pv-leg{font-size:13px;color:#1C2B1C;line-height:1.7;}
+.pv-leg i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px;}
+.pv-leg small{color:#6B7D6B;display:block;font-size:12px;}
+.pv-btns{display:flex;gap:10px;}
+.pv-btn{flex:1;padding:12px 0;border:1.5px solid rgba(46,74,46,0.25);border-radius:8px;background:#fff;font:600 15px 'DM Sans',sans-serif;color:#1C2B1C;cursor:pointer;}
+.pv-btn.yes.on{background:#3D6B3D;border-color:#3D6B3D;color:#fff;} .pv-btn.no.on{background:#A8453B;border-color:#A8453B;color:#fff;}
+.pv-ta{width:100%;box-sizing:border-box;margin-top:10px;padding:10px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:8px;font:14px 'DM Sans',sans-serif;background:#F7F4EE;resize:vertical;min-height:70px;}
+.pv-go{margin-top:10px;padding:10px 18px;border:none;border-radius:8px;background:#1C2B1C;color:#fff;font:500 14px 'DM Sans',sans-serif;cursor:pointer;}
+.pv-go:disabled{opacity:.5;cursor:default;}
+.pv-link{background:none;border:none;color:#3D6B3D;font:500 13px 'DM Sans',sans-serif;cursor:pointer;padding:0;text-decoration:underline;}
+.pv-mine{font-size:14px;color:#1C2B1C;margin-bottom:6px;}
+.pv-note{font-size:13px;color:#6B7D6B;}
+.pv-err{font-size:13px;color:#8b2e2e;margin-top:8px;}
+.pv-in{width:100%;box-sizing:border-box;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font:14px 'DM Sans',sans-serif;background:#F7F4EE;}
+.pv-form{display:grid;grid-template-columns:1fr 1fr;gap:12px;} .pv-form label{font-size:12px;font-weight:600;color:#3A4A3A;display:block;margin-bottom:4px;}
+.pv-vl{border-top:1px solid rgba(46,74,46,0.08);padding:9px 0;font-size:13px;color:#1C2B1C;line-height:1.5;}
+.pv-vl b.y{color:#2E5A2E;} .pv-vl b.n{color:#A8453B;}
+.pv-act{display:flex;gap:8px;flex-wrap:wrap;}
+.pv-sm{padding:6px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;background:#fff;font:13px 'DM Sans',sans-serif;color:#3A4A3A;cursor:pointer;} .pv-sm.del{color:#A8453B;}
+@media (max-width:700px){ .pv-form{grid-template-columns:1fr;} .pv-card{padding:16px;} .pv-body{gap:18px;} }
+</style>
+<script>
+/* ───────── GM Pitch Vote ─────────
+   Members vote yes/no on stocks pitched at general meetings (optional comment).
+   Board creates pitches, opens/closes voting, and sees who said what.
+   Tables + policies: pitch-vote-setup.sql */
+var PITCH = { choice: {}, editing: {}, pitches: [], mine: {}, tallies: {} };
+var PITCH_SETUP_MSG = 'Pitch voting is not set up in the database yet. Run pitch-vote-setup.sql in Supabase first.';
+
+function pitchFmtDate(d) {
+  if (!d) return '';
+  var p = String(d).split('-'); if (p.length < 3) return String(d);
+  return new Date(+p[0], +p[1] - 1, +p[2]).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function pitchPie(yes, no) {
+  var tot = yes + no, C = 2 * Math.PI * 25;
+  var svg = '<svg class="pv-pie" viewBox="0 0 100 100" role="img" aria-label="Vote results">';
+  if (!tot) {
+    svg += '<circle cx="50" cy="50" r="48" fill="#EEEDEA"/><text x="50" y="54" text-anchor="middle" font-size="11" fill="#6B7D6B" font-family="DM Sans,sans-serif">No votes</text>';
+  } else {
+    var y = yes / tot;
+    svg += '<g transform="rotate(-90 50 50)"><circle cx="50" cy="50" r="25" fill="none" stroke="#A8453B" stroke-width="50"/>' +
+      (y > 0 ? '<circle cx="50" cy="50" r="25" fill="none" stroke="#3D6B3D" stroke-width="50" stroke-dasharray="' + (y * C).toFixed(2) + ' ' + C.toFixed(2) + '"/>' : '') + '</g>';
+  }
+  return svg + '</svg>';
+}
+
+function pitchResults(id) {
+  var t = PITCH.tallies[id] || { yes: 0, no: 0 }, tot = t.yes + t.no;
+  var py = tot ? Math.round(t.yes / tot * 100) : 0, pn = tot ? 100 - py : 0;
+  return '<div class="pv-res">' + pitchPie(t.yes, t.no) +
+    '<div class="pv-leg"><div><i style="background:#3D6B3D"></i><b>Yes ' + py + '%</b> <span style="color:#6B7D6B">(' + t.yes + ')</span></div>' +
+    '<div><i style="background:#A8453B"></i><b>No ' + pn + '%</b> <span style="color:#6B7D6B">(' + t.no + ')</span></div>' +
+    '<small>' + tot + ' vote' + (tot === 1 ? '' : 's') + '</small></div></div>';
+}
+
+async function pitchFetchAll() {
+  var email = ufaEmail();
+  var r = await Promise.all([
+    sb.from('pitches').select('*').order('created_at', { ascending: false }),
+    sb.from('pitch_votes').select('*').eq('email', email),
+    sb.rpc('pitch_tallies')
+  ]);
+  if (r[0].error) { console.error(r[0].error); return false; }
+  PITCH.pitches = (r[0].data || []).slice().sort(function (a, b) { return (a.status === 'open' ? 0 : 1) - (b.status === 'open' ? 0 : 1); });
+  PITCH.mine = {}; (r[1].data || []).forEach(function (v) { PITCH.mine[v.pitch_id] = v; });
+  PITCH.tallies = {}; (r[2].data || []).forEach(function (t) { PITCH.tallies[t.pitch_id] = { yes: Number(t.yes_votes) || 0, no: Number(t.no_votes) || 0 }; });
+  return true;
+}
+
+async function loadPitchTab() {
+  var box = document.getElementById('pitch-body'); if (!box) return;
+  box.innerHTML = '<div class="pv-note">Loading…</div>';
+  if (!(await pitchFetchAll())) { box.innerHTML = '<div class="pv-card pv-note">' + PITCH_SETUP_MSG + '</div>'; return; }
+  renderPitchTab();
+}
+
+function renderPitchTab() {
+  var box = document.getElementById('pitch-body'); if (!box) return;
+  if (!PITCH.pitches.length) { box.innerHTML = '<div class="pv-card pv-note">No pitches yet. When the investment team pitches at a general meeting, the vote will show up here.</div>'; return; }
+  box.innerHTML = PITCH.pitches.map(function (p) {
+    var mine = PITCH.mine[p.id], open = p.status === 'open', editing = !!PITCH.editing[p.id];
+    var head = '<div class="pv-top"><div><div class="pv-tick">' + ufaEsc(p.ticker) + '</div>' +
+      (p.company ? '<div class="pv-co">' + ufaEsc(p.company) + '</div>' : '') +
+      '<div class="pv-meta">' + [p.pitched_by ? 'Pitched by ' + ufaEsc(p.pitched_by) : '', pitchFmtDate(p.pitch_date)].filter(Boolean).join(' · ') + '</div></div>' +
+      '<span class="pv-pill ' + (open ? 'open' : 'closed') + '">' + (open ? 'Voting open' : 'Closed') + '</span></div>' +
+      (p.summary ? '<p class="pv-sum">' + ufaEsc(p.summary) + '</p>' : '');
+    var form = '', res = '';
+    if (open && (!mine || editing)) {
+      var c = PITCH.choice[p.id] || (mine ? mine.vote : '');
+      form = '<div class="pv-vote"><div class="pv-btns">' +
+        '<button type="button" class="pv-btn yes' + (c === 'yes' ? ' on' : '') + '" onclick="pitchChoose(\'' + p.id + '\',\'yes\')">Yes</button>' +
+        '<button type="button" class="pv-btn no' + (c === 'no' ? ' on' : '') + '" onclick="pitchChoose(\'' + p.id + '\',\'no\')">No</button></div>' +
+        '<textarea class="pv-ta" id="pv-c-' + p.id + '" placeholder="Add a comment (optional)">' + ufaEsc(mine && mine.comment || '') + '</textarea>' +
+        '<button type="button" class="pv-go" id="pv-go-' + p.id + '" onclick="pitchSubmit(\'' + p.id + '\')">' + (mine ? 'Update vote' : 'Submit vote') + '</button>' +
+        (editing ? ' <button type="button" class="pv-link" onclick="pitchEdit(\'' + p.id + '\',false)">Cancel</button>' : '') +
+        '<div class="pv-err" id="pv-err-' + p.id + '" style="display:none;"></div></div>';
+      if (mine) res = pitchResults(p.id);
+      else res = '<div class="pv-note" style="flex:1 1 200px;">Results appear after you vote.</div>';
+    } else if (mine) {
+      form = '<div class="pv-vote"><div class="pv-mine">You voted <b>' + (mine.vote === 'yes' ? 'Yes' : 'No') + '</b>.</div>' +
+        (mine.comment ? '<div class="pv-note" style="white-space:pre-wrap;">“' + ufaEsc(mine.comment) + '”</div>' : '') +
+        (open ? '<div style="margin-top:8px;"><button type="button" class="pv-link" onclick="pitchEdit(\'' + p.id + '\',true)">Change my vote</button></div>' : '') + '</div>';
+      res = pitchResults(p.id);
+    } else {
+      form = '<div class="pv-vote pv-note">Voting closed. You didn\'t vote on this one.</div>';
+      res = pitchResults(p.id);
+    }
+    return '<div class="pv-card">' + head + '<div class="pv-body">' + form + res + '</div></div>';
+  }).join('');
+}
+
+function pitchChoose(id, v) { PITCH.choice[id] = v; var c = document.getElementById('pv-c-' + id); var keep = c ? c.value : ''; if (c) PITCH.keepComment = { id: id, v: keep }; renderPitchTab(); var c2 = document.getElementById('pv-c-' + id); if (c2 && PITCH.keepComment && PITCH.keepComment.id === id) c2.value = PITCH.keepComment.v; }
+function pitchEdit(id, on) { PITCH.editing[id] = on; if (!on) delete PITCH.choice[id]; renderPitchTab(); }
+
+async function pitchSubmit(id) {
+  var err = document.getElementById('pv-err-' + id), btn = document.getElementById('pv-go-' + id);
+  var mine = PITCH.mine[id], v = PITCH.choice[id] || (mine ? mine.vote : '');
+  if (!v) { err.style.display = 'block'; err.textContent = 'Pick Yes or No first.'; return; }
+  var comment = (document.getElementById('pv-c-' + id).value || '').trim();
+  btn.disabled = true; btn.textContent = 'Saving…';
+  var res = await sb.from('pitch_votes').upsert({ pitch_id: id, email: ufaEmail(), vote: v, comment: comment || null, updated_at: new Date().toISOString() }, { onConflict: 'pitch_id,email' });
+  if (res.error) { err.style.display = 'block'; err.textContent = 'Could not save your vote: ' + res.error.message; btn.disabled = false; btn.textContent = mine ? 'Update vote' : 'Submit vote'; return; }
+  delete PITCH.choice[id]; delete PITCH.editing[id];
+  await pitchFetchAll(); renderPitchTab();
+}
+
+/* ── Admin ── */
+async function loadPitchAdmin() {
+  var box = document.getElementById('pitch-admin-body'); if (!box) return;
+  box.innerHTML = '<div class="pv-note">Loading…</div>';
+  var r = await Promise.all([
+    sb.from('pitches').select('*').order('created_at', { ascending: false }),
+    sb.from('pitch_votes').select('*').order('created_at', { ascending: true }),
+    sb.from('members').select('email,name'),
+    sb.rpc('pitch_tallies')
+  ]);
+  if (r[0].error) { box.innerHTML = '<div class="pv-card pv-note">' + PITCH_SETUP_MSG + '</div>'; return; }
+  var names = {}; (r[2].data || []).forEach(function (m) { names[String(m.email).toLowerCase()] = m.name; });
+  var votesBy = {}; (r[1].data || []).forEach(function (v) { (votesBy[v.pitch_id] = votesBy[v.pitch_id] || []).push(v); });
+  PITCH.tallies = {}; (r[3].data || []).forEach(function (t) { PITCH.tallies[t.pitch_id] = { yes: Number(t.yes_votes) || 0, no: Number(t.no_votes) || 0 }; });
+  var today = new Date(), iso = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+
+  var html = '<div class="pv-card"><div style="font-size:15px;font-weight:500;color:#1C2B1C;margin-bottom:14px;">New pitch</div>' +
+    '<div class="pv-form">' +
+      '<div><label>Ticker</label><input class="pv-in" id="np-ticker" placeholder="AAPL" maxlength="12"></div>' +
+      '<div><label>Company (optional)</label><input class="pv-in" id="np-company" placeholder="Apple Inc."></div>' +
+      '<div><label>Pitched by (optional)</label><input class="pv-in" id="np-by" placeholder="Technology team"></div>' +
+      '<div><label>Pitch date</label><input class="pv-in" id="np-date" type="date" value="' + iso + '"></div>' +
+      '<div style="grid-column:1/-1;"><label>Short summary (optional)</label><textarea class="pv-in" id="np-sum" rows="3" placeholder="One-line thesis, price target, etc."></textarea></div>' +
+    '</div><div class="pv-err" id="np-err" style="display:none;"></div>' +
+    '<button type="button" class="pv-go" onclick="pitchCreate()">Create pitch &amp; open voting</button></div>';
+
+  var list = r[0].data || [];
+  html += list.length ? list.map(function (p) {
+    var vs = votesBy[p.id] || [], open = p.status === 'open';
+    var rows = vs.map(function (v) {
+      var nm = names[String(v.email).toLowerCase()] || v.email;
+      return '<div class="pv-vl"><b class="' + (v.vote === 'yes' ? 'y' : 'n') + '">' + (v.vote === 'yes' ? 'Yes' : 'No') + '</b> · ' + ufaEsc(nm) + (v.comment ? '<div class="pv-note" style="white-space:pre-wrap;margin-top:2px;">' + ufaEsc(v.comment) + '</div>' : '') + '</div>';
+    }).join('');
+    var withComments = vs.filter(function (v) { return v.comment; }).length;
+    return '<div class="pv-card"><div class="pv-top"><div><div class="pv-tick">' + ufaEsc(p.ticker) + '</div>' +
+      (p.company ? '<div class="pv-co">' + ufaEsc(p.company) + '</div>' : '') +
+      '<div class="pv-meta">' + [p.pitched_by ? 'Pitched by ' + ufaEsc(p.pitched_by) : '', pitchFmtDate(p.pitch_date)].filter(Boolean).join(' · ') + '</div></div>' +
+      '<div class="pv-act"><span class="pv-pill ' + (open ? 'open' : 'closed') + '" style="align-self:center;">' + (open ? 'Voting open' : 'Closed') + '</span>' +
+        '<button type="button" class="pv-sm" onclick="pitchSetStatus(\'' + p.id + '\',\'' + (open ? 'closed' : 'open') + '\')">' + (open ? 'Close voting' : 'Reopen voting') + '</button>' +
+        '<button type="button" class="pv-sm del" onclick="pitchDelete(\'' + p.id + '\')">Delete</button></div></div>' +
+      (p.summary ? '<p class="pv-sum">' + ufaEsc(p.summary) + '</p>' : '') +
+      '<div class="pv-body">' + pitchResults(p.id) + '<div class="pv-vote">' +
+      (vs.length ? '<details><summary style="cursor:pointer;font-size:13px;color:#3D6B3D;font-weight:500;">Who voted (' + vs.length + ')' + (withComments ? ' · ' + withComments + ' comment' + (withComments === 1 ? '' : 's') : '') + '</summary><div style="margin-top:8px;">' + rows + '</div></details>' : '<div class="pv-note">No votes yet.</div>') +
+      '</div></div></div>';
+  }).join('') : '<div class="pv-card pv-note">No pitches yet.</div>';
+  box.innerHTML = html;
+}
+
+async function pitchCreate() {
+  var err = document.getElementById('np-err');
+  function v(id) { return document.getElementById(id).value.trim(); }
+  var ticker = v('np-ticker').toUpperCase();
+  if (!ticker) { err.style.display = 'block'; err.textContent = 'Enter a ticker.'; return; }
+  var res = await sb.from('pitches').insert({ ticker: ticker, company: v('np-company') || null, pitched_by: v('np-by') || null, pitch_date: v('np-date') || null, summary: v('np-sum') || null, status: 'open', created_by: ufaEmail() });
+  if (res.error) { err.style.display = 'block'; err.textContent = 'Could not create pitch: ' + res.error.message; return; }
+  loadPitchAdmin();
+}
+async function pitchSetStatus(id, status) {
+  var res = await sb.from('pitches').update({ status: status }).eq('id', id);
+  if (res.error) { alert('Error: ' + res.error.message); return; }
+  loadPitchAdmin();
+}
+async function pitchDelete(id) {
+  if (!confirm('Delete this pitch and all of its votes? This can\'t be undone.')) return;
+  var res = await sb.from('pitches').delete().eq('id', id);
+  if (res.error) { alert('Error: ' + res.error.message); return; }
+  loadPitchAdmin();
+}
+</script>
 </body>
 </html>
 <!-- PORTAL_SCRIPT_MARKER -->
