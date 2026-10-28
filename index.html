@@ -5772,7 +5772,7 @@ button[onclick="pubFlipbookNext()"]:hover {
                 </div>
                 <div>
                   <label style="font-size:12px;font-weight:500;color:#3A4A3A;display:block;margin-bottom:4px;">Date</label>
-                  <input id="new-date" type="text" placeholder="Sep 10" style="width:100%;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;background:#F7F4EE;box-sizing:border-box;">
+                  <input id="new-date" type="date" style="width:100%;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;background:#F7F4EE;box-sizing:border-box;">
                 </div>
                 <div>
                   <label style="font-size:12px;font-weight:500;color:#3A4A3A;display:block;margin-bottom:4px;">Event Type</label>
@@ -5870,7 +5870,7 @@ button[onclick="pubFlipbookNext()"]:hover {
                   </div>
                   <div>
                     <label style="font-size:12px;font-weight:500;color:#3A4A3A;display:block;margin-bottom:4px;">Date</label>
-                    <input id="manual-att-date" type="text" placeholder="Sep 24th" style="width:100%;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;background:#F7F4EE;box-sizing:border-box;">
+                    <input id="manual-att-date" type="date" style="width:100%;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;background:#F7F4EE;box-sizing:border-box;">
                   </div>
                   <div>
                     <label style="font-size:12px;font-weight:500;color:#3A4A3A;display:block;margin-bottom:4px;">Event type</label>
@@ -9008,7 +9008,7 @@ async function loadAdminSessions() {
 async function createSession() {
   var code   = document.getElementById('new-code').value.trim().toUpperCase();
   var name   = document.getElementById('new-name').value.trim();
-  var date   = document.getElementById('new-date').value.trim();
+  var date   = ufaInputToDate(document.getElementById('new-date').value);
   var type   = document.getElementById('new-type').value;
   var points = parseFloat(document.getElementById('new-points').value) || 1;
   var active = document.getElementById('new-active').value;
@@ -9045,6 +9045,12 @@ async function editPoints(code, currentPoints) {
    this session's attendance rows (matched by code, plus older rows with no code). */
 var UFA_EDIT_TYPES = ['Analyst Meeting', 'General Meeting', 'Social', 'Speaker', 'Workshop', 'Community Service'];
 var UFA_MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+function ufaInputToDate(v) {
+  var pr = String(v || '').split('-');
+  if (pr.length < 3) return '';
+  return UFA_MON[parseInt(pr[1], 10) - 1] + ' ' + parseInt(pr[2], 10);
+}
 
 function ufaDateToInput(d) {
   var k = ufaDateKey(d);
@@ -9398,7 +9404,7 @@ function onManualAttSessionChange() {
   var s = attendanceSessionMap[code];
   if (!s) return; // "Custom" selected — leave fields as typed
   document.getElementById('manual-att-name').value = s.meeting_name || '';
-  document.getElementById('manual-att-date').value = s.meeting_date || '';
+  document.getElementById('manual-att-date').value = ufaDateToInput(s.meeting_date);
   document.getElementById('manual-att-type').value = s.event_type || 'Meeting';
   document.getElementById('manual-att-points').value = s.points || 1;
 }
@@ -9463,7 +9469,7 @@ async function addManualAttendance() {
   var email  = document.getElementById('manual-att-email').value.trim().toLowerCase();
   var code   = document.getElementById('manual-att-session').value;
   var name   = document.getElementById('manual-att-name').value.trim();
-  var date   = document.getElementById('manual-att-date').value.trim();
+  var date   = ufaInputToDate(document.getElementById('manual-att-date').value);
   var type   = document.getElementById('manual-att-type').value;
   var points = parseFloat(document.getElementById('manual-att-points').value) || 1;
   var msg    = document.getElementById('manual-att-msg');
@@ -22701,7 +22707,7 @@ document.addEventListener('keydown', function (e) {
 @media (prefers-reduced-motion: reduce) { .um-sheet { animation: none; } }
 
 /* Date inputs: iOS gives them their own width and centred text, which pushed the box past the card edge */
-input[type="date"].fx-input, .fx-field input[type="date"] {
+input[type="date"].fx-input, .fx-field input[type="date"], input[type="date"].pv-in, #new-date, #manual-att-date {
   display: block; width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box;
   -webkit-appearance: none; appearance: none; text-align: left; min-height: 48px; margin: 0;
 }
@@ -23283,7 +23289,7 @@ document.addEventListener('click', function (e) {
    Members vote yes/no on stocks pitched at general meetings (optional comment).
    Board creates pitches, opens/closes voting, and sees who said what.
    Tables + policies: pitch-vote-setup.sql */
-var PITCH = { choice: {}, editing: {}, pitches: [], mine: {}, tallies: {} };
+var PITCH = { choice: {}, pitches: [], mine: {}, tallies: {} };
 var PITCH_SETUP_MSG = 'Pitch voting is not set up in the database yet. Run pitch-vote-setup.sql in Supabase first.';
 
 function pitchFmtDate(d) {
@@ -23339,28 +23345,25 @@ function renderPitchTab() {
   var box = document.getElementById('pitch-body'); if (!box) return;
   if (!PITCH.pitches.length) { box.innerHTML = '<div class="pv-card pv-note">No pitches yet. When the investment team pitches at a general meeting, the vote will show up here.</div>'; return; }
   box.innerHTML = PITCH.pitches.map(function (p) {
-    var mine = PITCH.mine[p.id], open = p.status === 'open', editing = !!PITCH.editing[p.id];
+    var mine = PITCH.mine[p.id], open = p.status === 'open';
     var head = '<div class="pv-top"><div><div class="pv-tick">' + ufaEsc(p.ticker) + '</div>' +
-      (p.company ? '<div class="pv-co">' + ufaEsc(p.company) + '</div>' : '') +
-      '<div class="pv-meta">' + [p.pitched_by ? 'Pitched by ' + ufaEsc(p.pitched_by) : '', pitchFmtDate(p.pitch_date)].filter(Boolean).join(' · ') + '</div></div>' +
+      '<div class="pv-meta">' + pitchFmtDate(p.pitch_date) + '</div></div>' +
       '<span class="pv-pill ' + (open ? 'open' : 'closed') + '">' + (open ? 'Voting open' : 'Closed') + '</span></div>' +
-      (p.summary ? '<p class="pv-sum">' + ufaEsc(p.summary) + '</p>' : '');
+      '';
     var form = '', res = '';
-    if (open && (!mine || editing)) {
-      var c = PITCH.choice[p.id] || (mine ? mine.vote : '');
+    if (open && !mine) {
+      var c = PITCH.choice[p.id] || '';
       form = '<div class="pv-vote"><div class="pv-btns">' +
         '<button type="button" class="pv-btn yes' + (c === 'yes' ? ' on' : '') + '" onclick="pitchChoose(\'' + p.id + '\',\'yes\')">Yes</button>' +
         '<button type="button" class="pv-btn no' + (c === 'no' ? ' on' : '') + '" onclick="pitchChoose(\'' + p.id + '\',\'no\')">No</button></div>' +
-        '<textarea class="pv-ta" id="pv-c-' + p.id + '" placeholder="Add a comment (optional)">' + ufaEsc(mine && mine.comment || '') + '</textarea>' +
-        '<button type="button" class="pv-go" id="pv-go-' + p.id + '" onclick="pitchSubmit(\'' + p.id + '\')">' + (mine ? 'Update vote' : 'Submit vote') + '</button>' +
-        (editing ? ' <button type="button" class="pv-link" onclick="pitchEdit(\'' + p.id + '\',false)">Cancel</button>' : '') +
+        '<textarea class="pv-ta" id="pv-c-' + p.id + '" placeholder="Add a comment (optional)"></textarea>' +
+        '<button type="button" class="pv-go" id="pv-go-' + p.id + '" onclick="pitchSubmit(\'' + p.id + '\')">Submit vote</button>' +
+        '<div class="pv-note" style="margin-top:8px;">Votes are final and can\'t be changed.</div>' +
         '<div class="pv-err" id="pv-err-' + p.id + '" style="display:none;"></div></div>';
-      if (mine) res = pitchResults(p.id);
-      else res = '<div class="pv-note" style="flex:1 1 200px;">Results appear after you vote.</div>';
+      res = '<div class="pv-note" style="flex:1 1 200px;">Results appear after you vote.</div>';
     } else if (mine) {
       form = '<div class="pv-vote"><div class="pv-mine">You voted <b>' + (mine.vote === 'yes' ? 'Yes' : 'No') + '</b>.</div>' +
-        (mine.comment ? '<div class="pv-note" style="white-space:pre-wrap;">“' + ufaEsc(mine.comment) + '”</div>' : '') +
-        (open ? '<div style="margin-top:8px;"><button type="button" class="pv-link" onclick="pitchEdit(\'' + p.id + '\',true)">Change my vote</button></div>' : '') + '</div>';
+        (mine.comment ? '<div class="pv-note" style="white-space:pre-wrap;">\u201c' + ufaEsc(mine.comment) + '\u201d</div>' : '') + '</div>';
       res = pitchResults(p.id);
     } else {
       form = '<div class="pv-vote pv-note">Voting closed. You didn\'t vote on this one.</div>';
@@ -23371,17 +23374,17 @@ function renderPitchTab() {
 }
 
 function pitchChoose(id, v) { PITCH.choice[id] = v; var c = document.getElementById('pv-c-' + id); var keep = c ? c.value : ''; if (c) PITCH.keepComment = { id: id, v: keep }; renderPitchTab(); var c2 = document.getElementById('pv-c-' + id); if (c2 && PITCH.keepComment && PITCH.keepComment.id === id) c2.value = PITCH.keepComment.v; }
-function pitchEdit(id, on) { PITCH.editing[id] = on; if (!on) delete PITCH.choice[id]; renderPitchTab(); }
 
 async function pitchSubmit(id) {
   var err = document.getElementById('pv-err-' + id), btn = document.getElementById('pv-go-' + id);
-  var mine = PITCH.mine[id], v = PITCH.choice[id] || (mine ? mine.vote : '');
+  var mine = PITCH.mine[id], v = PITCH.choice[id] || '';
+  if (mine) { err.style.display = 'block'; err.textContent = 'You already voted on this pitch.'; return; }
   if (!v) { err.style.display = 'block'; err.textContent = 'Pick Yes or No first.'; return; }
   var comment = (document.getElementById('pv-c-' + id).value || '').trim();
   btn.disabled = true; btn.textContent = 'Saving…';
-  var res = await sb.from('pitch_votes').upsert({ pitch_id: id, email: ufaEmail(), vote: v, comment: comment || null, updated_at: new Date().toISOString() }, { onConflict: 'pitch_id,email' });
-  if (res.error) { err.style.display = 'block'; err.textContent = 'Could not save your vote: ' + res.error.message; btn.disabled = false; btn.textContent = mine ? 'Update vote' : 'Submit vote'; return; }
-  delete PITCH.choice[id]; delete PITCH.editing[id];
+  var res = await sb.from('pitch_votes').insert({ pitch_id: id, email: ufaEmail(), vote: v, comment: comment || null });
+  if (res.error) { err.style.display = 'block'; err.textContent = 'Could not save your vote: ' + res.error.message; btn.disabled = false; btn.textContent = 'Submit vote'; return; }
+  delete PITCH.choice[id];
   await pitchFetchAll(); renderPitchTab();
 }
 
@@ -23404,10 +23407,7 @@ async function loadPitchAdmin() {
   var html = '<div class="pv-card"><div style="font-size:15px;font-weight:500;color:#1C2B1C;margin-bottom:14px;">New pitch</div>' +
     '<div class="pv-form">' +
       '<div><label>Ticker</label><input class="pv-in" id="np-ticker" placeholder="AAPL" maxlength="12"></div>' +
-      '<div><label>Company (optional)</label><input class="pv-in" id="np-company" placeholder="Apple Inc."></div>' +
-      '<div><label>Pitched by (optional)</label><input class="pv-in" id="np-by" placeholder="Technology team"></div>' +
       '<div><label>Pitch date</label><input class="pv-in" id="np-date" type="date" value="' + iso + '"></div>' +
-      '<div style="grid-column:1/-1;"><label>Short summary (optional)</label><textarea class="pv-in" id="np-sum" rows="3" placeholder="One-line thesis, price target, etc."></textarea></div>' +
     '</div><div class="pv-err" id="np-err" style="display:none;"></div>' +
     '<button type="button" class="pv-go" onclick="pitchCreate()">Create pitch &amp; open voting</button></div>';
 
@@ -23420,12 +23420,10 @@ async function loadPitchAdmin() {
     }).join('');
     var withComments = vs.filter(function (v) { return v.comment; }).length;
     return '<div class="pv-card"><div class="pv-top"><div><div class="pv-tick">' + ufaEsc(p.ticker) + '</div>' +
-      (p.company ? '<div class="pv-co">' + ufaEsc(p.company) + '</div>' : '') +
-      '<div class="pv-meta">' + [p.pitched_by ? 'Pitched by ' + ufaEsc(p.pitched_by) : '', pitchFmtDate(p.pitch_date)].filter(Boolean).join(' · ') + '</div></div>' +
+      '<div class="pv-meta">' + pitchFmtDate(p.pitch_date) + '</div></div>' +
       '<div class="pv-act"><span class="pv-pill ' + (open ? 'open' : 'closed') + '" style="align-self:center;">' + (open ? 'Voting open' : 'Closed') + '</span>' +
         '<button type="button" class="pv-sm" onclick="pitchSetStatus(\'' + p.id + '\',\'' + (open ? 'closed' : 'open') + '\')">' + (open ? 'Close voting' : 'Reopen voting') + '</button>' +
         '<button type="button" class="pv-sm del" onclick="pitchDelete(\'' + p.id + '\')">Delete</button></div></div>' +
-      (p.summary ? '<p class="pv-sum">' + ufaEsc(p.summary) + '</p>' : '') +
       '<div class="pv-body">' + pitchResults(p.id) + '<div class="pv-vote">' +
       (vs.length ? '<details><summary style="cursor:pointer;font-size:13px;color:#3D6B3D;font-weight:500;">Who voted (' + vs.length + ')' + (withComments ? ' · ' + withComments + ' comment' + (withComments === 1 ? '' : 's') : '') + '</summary><div style="margin-top:8px;">' + rows + '</div></details>' : '<div class="pv-note">No votes yet.</div>') +
       '</div></div></div>';
@@ -23438,7 +23436,7 @@ async function pitchCreate() {
   function v(id) { return document.getElementById(id).value.trim(); }
   var ticker = v('np-ticker').toUpperCase();
   if (!ticker) { err.style.display = 'block'; err.textContent = 'Enter a ticker.'; return; }
-  var res = await sb.from('pitches').insert({ ticker: ticker, company: v('np-company') || null, pitched_by: v('np-by') || null, pitch_date: v('np-date') || null, summary: v('np-sum') || null, status: 'open', created_by: ufaEmail() });
+  var res = await sb.from('pitches').insert({ ticker: ticker, pitch_date: v('np-date') || null, status: 'open', created_by: ufaEmail() });
   if (res.error) { err.style.display = 'block'; err.textContent = 'Could not create pitch: ' + res.error.message; return; }
   loadPitchAdmin();
 }
