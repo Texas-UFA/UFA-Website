@@ -5882,28 +5882,23 @@ button[onclick="pubFlipbookNext()"]:hover {
               </div>
             </div>
 
-            <div id="att-filter-bar" style="display:flex;align-items:flex-end;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
-              <input id="attendance-search" type="text" placeholder="Search by name or email…" oninput="filterAdminAttendance()" style="padding:9px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:13px;background:#fff;width:240px;">
-              <select id="attendance-session-filter" onchange="filterAdminAttendance()" style="padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:13px;background:#fff;">
-                <option value="">All events</option>
-              </select>
-              <select id="attendance-type-filter" onchange="filterAdminAttendance()" style="padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:13px;background:#fff;">
-                <option value="">All types</option>
-              </select>
-              <select id="attendance-role-filter" onchange="filterAdminAttendance()" style="padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:13px;background:#fff;">
-                <option value="">All roles</option>
-              </select>
-              <select id="attendance-family-filter" onchange="filterAdminAttendance()" style="padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:13px;background:#fff;">
-                <option value="">All families</option>
-              </select>
-              <label style="font-size:11px;color:#6B7D6B;display:flex;flex-direction:column;gap:2px;">From
-                <input id="attendance-from" type="date" onchange="filterAdminAttendance()" style="padding:7px 10px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:13px;background:#fff;">
-              </label>
-              <label style="font-size:11px;color:#6B7D6B;display:flex;flex-direction:column;gap:2px;">To
-                <input id="attendance-to" type="date" onchange="filterAdminAttendance()" style="padding:7px 10px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:13px;background:#fff;">
-              </label>
-              <button type="button" onclick="clearAttendanceFilters()" style="padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;background:#fff;font-family:'DM Sans',sans-serif;font-size:13px;color:#3A4A3A;cursor:pointer;">Clear</button>
-              <span style="font-size:12px;color:#6B7D6B;margin-left:auto;" id="attendance-count-label"></span>
+            <style>
+              #att-filter-bar { display:flex; align-items:center; gap:10px; margin-bottom:16px; flex-wrap:nowrap; }
+              #att-filter-bar input[type=text], #att-filter-bar select { min-width:0; padding:9px 12px; border:1px solid rgba(46,74,46,0.2); border-radius:4px; font-family:'DM Sans',sans-serif; font-size:13px; background-color:#fff; box-sizing:border-box; height:38px; }
+              #att-filter-bar input[type=text] { flex:1.4 1 0; }
+              #att-filter-bar select { flex:1 1 0; -webkit-appearance:none; appearance:none; padding-right:34px; text-overflow:ellipsis; background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' fill='none' stroke='%236B7D6B' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/></svg>"); background-repeat:no-repeat; background-position:right 14px center; }
+              #att-filter-bar .att-clear { flex:none; height:38px; padding:0 14px; border:1px solid rgba(46,74,46,0.2); border-radius:4px; background:#fff; font-family:'DM Sans',sans-serif; font-size:13px; color:#3A4A3A; cursor:pointer; }
+              #att-filter-bar #attendance-count-label { flex:none; white-space:nowrap; margin-left:6px; }
+              @media (max-width: 900px) { #att-filter-bar { flex-wrap:wrap; } #att-filter-bar input[type=text] { flex:1 1 100%; } #att-filter-bar select { flex:1 1 140px; } }
+            </style>
+            <div id="att-filter-bar">
+              <input id="attendance-search" type="text" placeholder="Search by name or email…" oninput="filterAdminAttendance()">
+              <select id="attendance-session-filter" onchange="filterAdminAttendance()"><option value="">All events</option></select>
+              <select id="attendance-type-filter" onchange="filterAdminAttendance()"><option value="">All types</option></select>
+              <select id="attendance-role-filter" onchange="filterAdminAttendance()"><option value="">All roles</option></select>
+              <select id="attendance-family-filter" onchange="filterAdminAttendance()"><option value="">All families</option></select>
+              <button type="button" class="att-clear" onclick="clearAttendanceFilters()">Clear</button>
+              <span style="font-size:12px;color:#6B7D6B;" id="attendance-count-label"></span>
             </div>
             <div id="attendance-table" style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;overflow:hidden;overflow-x:auto;">
               <div style="padding:20px;font-size:13px;color:#6B7D6B;text-align:center;">Loading…</div>
@@ -8207,8 +8202,8 @@ function lbFmtPts(n) { return String(Math.round(Number(n) * 100) / 100); }
 async function renderFamilyCup(allAttendance) {
   var box = document.getElementById('lb-family-cup');
   if (!box) return;
-  // Family Cup is board-only: regular members never see the card.
-  if (!ufaIsBoard()) { box.style.display = 'none'; box.innerHTML = ''; return; }
+  // Family Cup card is removed from the Leaderboard for everyone (kept in code so it can be re-enabled).
+  if (true) { box.style.display = 'none'; box.innerHTML = ''; return; }
   try {
     var res = await Promise.all([
       sb.from('family_members').select('family_id, email'),
@@ -9030,33 +9025,74 @@ async function editPoints(code, currentPoints) {
   if (currentUser) { const { data: records } = await sb.from('attendance').select('*').eq('email', currentUser.email); updateStats(records||[]); renderBreakdown(records||[]); }
 }
 
-/* Edit a session's name and date after the fact. Check-ins copy the name and date at the
-   moment someone checks in, so the same change is pushed to this session's attendance rows. */
+/* Edit a session after the fact: name, date, type and points in one form.
+   Check-ins copy these values when someone checks in, so the same change is pushed to
+   this session's attendance rows (matched by code, plus older rows with no code). */
+var UFA_EDIT_TYPES = ['Analyst Meeting', 'General Meeting', 'Social', 'Speaker', 'Workshop', 'Community Service'];
+var UFA_MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+function ufaDateToInput(d) {
+  var k = ufaDateKey(d);
+  if (k === null) return '';
+  var t = new Date(k);
+  return t.getFullYear() + '-' + String(t.getMonth() + 1).padStart(2, '0') + '-' + String(t.getDate()).padStart(2, '0');
+}
+
 async function editSession(code) {
   var res = await sb.from('sessions').select('*').eq('code', code).maybeSingle();
   if (res.error || !res.data) { alert('Could not load that session.'); return; }
   var s = res.data;
-  var newName = prompt('Session name for ' + code + ':', s.meeting_name || '');
-  if (newName === null) return;
-  newName = ufaMeetingName(newName.trim(), s.event_type);
-  if (!newName) { alert('Name can\'t be empty.'); return; }
-  var newDate = prompt('Date for ' + code + ' (e.g. Oct 21):', s.meeting_date || '');
-  if (newDate === null) return;
-  newDate = newDate.trim();
-
-  var up = await sb.from('sessions').update({ meeting_name: newName, meeting_date: newDate }).eq('code', code);
-  if (up.error) { alert('Error updating session: ' + up.error.message); return; }
-
-  // Keep attendance in step: rows tied to this code, plus older rows with no code that used the old name.
-  var a1 = await sb.from('attendance').update({ meeting_name: newName, meeting_date: newDate }).eq('code_used', code);
-  var warn = a1.error ? a1.error.message : '';
-  if (s.meeting_name) {
-    var a2 = await sb.from('attendance').update({ meeting_name: newName, meeting_date: newDate })
-      .is('code_used', null).eq('meeting_name', s.meeting_name);
-    if (a2.error && !warn) warn = a2.error.message;
-  }
-  if (warn) alert('Session updated, but some attendance rows could not be updated: ' + warn);
-  loadAdminSessions();
+  var old = document.getElementById('sess-edit-modal'); if (old) old.remove();
+  var types = UFA_EDIT_TYPES.slice();
+  if (s.event_type && types.indexOf(s.event_type) === -1) types.push(s.event_type);
+  var inp = 'width:100%;padding:10px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:\'DM Sans\',sans-serif;font-size:14px;background:#F7F4EE;box-sizing:border-box;';
+  var lab = 'font-size:12px;font-weight:600;color:#3A4A3A;display:block;margin:12px 0 4px;';
+  var m = document.createElement('div');
+  m.id = 'sess-edit-modal';
+  m.style.cssText = 'position:fixed;inset:0;z-index:2000;background:rgba(20,30,20,0.5);display:flex;align-items:center;justify-content:center;padding:16px;';
+  m.innerHTML = '<div style="background:#fff;border-radius:12px;width:100%;max-width:440px;max-height:92vh;overflow-y:auto;padding:22px 22px 18px;box-shadow:0 20px 50px rgba(0,0,0,0.3);">'
+    + '<div style="font-family:\'Playfair Display\',Georgia,serif;font-size:20px;color:#1C2B1C;">Edit session</div>'
+    + '<div style="font-size:12px;color:#6B7D6B;margin-top:2px;font-family:monospace;">' + ufaEsc(code) + '</div>'
+    + '<label style="' + lab + '">Name</label><input id="se-name" type="text" value="' + ufaEsc(s.meeting_name || '') + '" style="' + inp + '">'
+    + '<label style="' + lab + '">Date</label><input id="se-date" type="date" value="' + ufaDateToInput(s.meeting_date) + '" style="' + inp + '">'
+    + '<div id="se-date-note" style="font-size:11px;color:#6B7D6B;margin-top:4px;">' + (ufaDateToInput(s.meeting_date) ? '' : 'Current date "' + ufaEsc(s.meeting_date || '') + '" can\'t be read as a date. Pick one, or leave it to keep it as is.') + '</div>'
+    + '<label style="' + lab + '">Type</label><select id="se-type" style="' + inp + '">'
+      + types.map(function (t) { return '<option value="' + ufaEsc(t) + '"' + (t === (s.event_type || '') ? ' selected' : '') + '>' + ufaEsc(t) + '</option>'; }).join('') + '</select>'
+    + '<label style="' + lab + '">Points</label><input id="se-points" type="number" min="0.5" step="0.5" value="' + (s.points || 1) + '" style="' + inp + '">'
+    + '<div id="se-msg" style="display:none;margin-top:12px;font-size:13px;color:#8b2e2e;"></div>'
+    + '<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px;">'
+      + '<button type="button" id="se-cancel" style="padding:9px 16px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;background:#fff;cursor:pointer;font-family:\'DM Sans\',sans-serif;font-size:14px;color:#3A4A3A;">Cancel</button>'
+      + '<button type="button" id="se-save" style="padding:9px 18px;border:none;border-radius:6px;background:#1C2B1C;color:#fff;cursor:pointer;font-family:\'DM Sans\',sans-serif;font-size:14px;font-weight:500;">Save changes</button>'
+    + '</div></div>';
+  document.body.appendChild(m);
+  function close() { m.remove(); }
+  m.addEventListener('click', function (e) { if (e.target === m) close(); });
+  document.getElementById('se-cancel').onclick = close;
+  document.getElementById('se-save').onclick = async function () {
+    var msg = document.getElementById('se-msg');
+    var name = ufaMeetingName(document.getElementById('se-name').value.trim(), document.getElementById('se-type').value);
+    var type = document.getElementById('se-type').value;
+    var pts = parseFloat(document.getElementById('se-points').value);
+    var dv = document.getElementById('se-date').value;
+    if (!name) { msg.style.display = 'block'; msg.textContent = 'Name can\'t be empty.'; return; }
+    if (isNaN(pts) || pts <= 0) { msg.style.display = 'block'; msg.textContent = 'Points must be greater than 0.'; return; }
+    var date = s.meeting_date || '';
+    if (dv) { var pr = dv.split('-'); date = UFA_MON[parseInt(pr[1], 10) - 1] + ' ' + parseInt(pr[2], 10); }
+    this.disabled = true; this.textContent = 'Saving…';
+    var up = await sb.from('sessions').update({ meeting_name: name, meeting_date: date, event_type: type, points: pts }).eq('code', code);
+    if (up.error) { msg.style.display = 'block'; msg.textContent = 'Error: ' + up.error.message; this.disabled = false; this.textContent = 'Save changes'; return; }
+    var patch = { meeting_name: name, meeting_date: date, event_type: type, points: pts };
+    var a1 = await sb.from('attendance').update(patch).eq('code_used', code);
+    var warn = a1.error ? a1.error.message : '';
+    if (s.meeting_name) {
+      var a2 = await sb.from('attendance').update(patch).is('code_used', null).eq('meeting_name', s.meeting_name);
+      if (a2.error && !warn) warn = a2.error.message;
+    }
+    close();
+    if (warn) alert('Session updated, but some attendance rows could not be updated: ' + warn);
+    loadAdminSessions();
+    if (currentUser) { var r = await sb.from('attendance').select('*').eq('email', currentUser.email); updateStats(r.data || []); renderBreakdown(r.data || []); }
+  };
 }
 
 async function deleteSession(code) {
@@ -9448,27 +9484,19 @@ function filterAdminAttendance() {
   var search = val('attendance-search').toLowerCase();
   var evt = val('attendance-session-filter'), type = val('attendance-type-filter'),
       role = val('attendance-role-filter'), fam = val('attendance-family-filter');
-  var from = val('attendance-from') ? new Date(val('attendance-from') + 'T00:00:00').getTime() : null;
-  var to   = val('attendance-to')   ? new Date(val('attendance-to')   + 'T23:59:59').getTime() : null;
   var filtered = allAttendanceData.filter(function(r){
     if (search && !((r.memberName||'').toLowerCase().includes(search) || (r.email||'').toLowerCase().includes(search))) return false;
     if (evt && (r.code_used || r.meeting_name) !== evt) return false;
     if (type && (r.event_type || 'Meeting') !== type) return false;
     if (role && r.memberRole !== role) return false;
     if (fam && r.memberFamily !== fam) return false;
-    if (from !== null || to !== null) {
-      var k = ufaDateKey(r.meeting_date);
-      if (k === null) return false;   // can't place it in time, so a date filter leaves it out
-      if (from !== null && k < from) return false;
-      if (to !== null && k > to) return false;
-    }
     return true;
   });
   renderAdminAttendanceTable(filtered);
 }
 
 function clearAttendanceFilters() {
-  ['attendance-search','attendance-session-filter','attendance-type-filter','attendance-role-filter','attendance-family-filter','attendance-from','attendance-to']
+  ['attendance-search','attendance-session-filter','attendance-type-filter','attendance-role-filter','attendance-family-filter']
     .forEach(function(id){ var el = document.getElementById(id); if (el) el.value = ''; });
   filterAdminAttendance();
 }
