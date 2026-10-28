@@ -4926,8 +4926,8 @@ button[onclick="pubFlipbookNext()"]:hover {
             <p style="font-size:13px;color:#6B7D6B;">Enter your details to create your member account.</p>
           </div>
           <div style="margin-bottom:12px;">
-            <label style="display:block;font-size:12px;font-weight:600;color:#3A4A3A;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.06em;">Full Name</label>
-            <input id="signup-name" type="text" placeholder="Jordan Smith" aria-label="Full name" autocomplete="name" style="width:100%;padding:10px 13px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;">
+            <label style="display:block;font-size:12px;font-weight:600;color:#3A4A3A;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.06em;">Full Name <span style="text-transform:none;letter-spacing:0;font-weight:400;color:#6B7D6B;">(first and last)</span></label>
+            <input id="signup-name" type="text" placeholder="First and last name, e.g. Jordan Smith" aria-label="Full name (first and last)" autocomplete="name" style="width:100%;padding:10px 13px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;">
           </div>
           <div style="margin-bottom:12px;">
             <label style="display:block;font-size:12px;font-weight:600;color:#3A4A3A;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.06em;">UT Email</label>
@@ -5882,11 +5882,27 @@ button[onclick="pubFlipbookNext()"]:hover {
               </div>
             </div>
 
-            <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
-              <input id="attendance-search" type="text" placeholder="Search by name or email…" oninput="filterAdminAttendance()" style="padding:9px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:13px;background:#fff;width:260px;">
+            <div id="att-filter-bar" style="display:flex;align-items:flex-end;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+              <input id="attendance-search" type="text" placeholder="Search by name or email…" oninput="filterAdminAttendance()" style="padding:9px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:13px;background:#fff;width:240px;">
               <select id="attendance-session-filter" onchange="filterAdminAttendance()" style="padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:13px;background:#fff;">
                 <option value="">All events</option>
               </select>
+              <select id="attendance-type-filter" onchange="filterAdminAttendance()" style="padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:13px;background:#fff;">
+                <option value="">All types</option>
+              </select>
+              <select id="attendance-role-filter" onchange="filterAdminAttendance()" style="padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:13px;background:#fff;">
+                <option value="">All roles</option>
+              </select>
+              <select id="attendance-family-filter" onchange="filterAdminAttendance()" style="padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:13px;background:#fff;">
+                <option value="">All families</option>
+              </select>
+              <label style="font-size:11px;color:#6B7D6B;display:flex;flex-direction:column;gap:2px;">From
+                <input id="attendance-from" type="date" onchange="filterAdminAttendance()" style="padding:7px 10px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:13px;background:#fff;">
+              </label>
+              <label style="font-size:11px;color:#6B7D6B;display:flex;flex-direction:column;gap:2px;">To
+                <input id="attendance-to" type="date" onchange="filterAdminAttendance()" style="padding:7px 10px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:13px;background:#fff;">
+              </label>
+              <button type="button" onclick="clearAttendanceFilters()" style="padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;background:#fff;font-family:'DM Sans',sans-serif;font-size:13px;color:#3A4A3A;cursor:pointer;">Clear</button>
               <span style="font-size:12px;color:#6B7D6B;margin-left:auto;" id="attendance-count-label"></span>
             </div>
             <div id="attendance-table" style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;overflow:hidden;overflow-x:auto;">
@@ -5912,7 +5928,7 @@ button[onclick="pubFlipbookNext()"]:hover {
             </div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
               <div>
-                <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:10px;">Attendance by Event</div>
+                <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:10px;">Attendance by Event <span id="analytics-event-count" style="text-transform:none;letter-spacing:0;margin-left:6px;"></span></div>
                 <div id="analytics-by-event" style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;overflow:hidden;"></div>
               </div>
               <div>
@@ -8191,6 +8207,8 @@ function lbFmtPts(n) { return String(Math.round(Number(n) * 100) / 100); }
 async function renderFamilyCup(allAttendance) {
   var box = document.getElementById('lb-family-cup');
   if (!box) return;
+  // Family Cup is board-only: regular members never see the card.
+  if (!ufaIsBoard()) { box.style.display = 'none'; box.innerHTML = ''; return; }
   try {
     var res = await Promise.all([
       sb.from('family_members').select('family_id, email'),
@@ -8944,6 +8962,7 @@ async function loadAdminSessions() {
           +'<span style="font-size:11px;font-weight:600;color:#3D6B3D;background:#EEF5EE;padding:2px 8px;border-radius:3px;">+'+(s.points||1)+' pt</span>'
         +'</div>'
         +'<div class="ufa-sess-actions">'
+          +'<button onclick="editSession(\''+s.code+'\')" style="font-size:13px;padding:8px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;background:#fff;cursor:pointer;color:#3A4A3A;">Edit Name/Date</button>'
           +'<button onclick="editPoints(\''+s.code+'\','+(s.points||1)+')" style="font-size:13px;padding:8px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;background:#fff;cursor:pointer;color:#3A4A3A;">Edit Pts</button>'
           +'<button onclick="toggleSession(\''+s.code+'\','+active+')" style="font-size:13px;padding:8px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;background:#fff;cursor:pointer;color:#3A4A3A;">'+(active?'Deactivate':'Activate')+'</button>'
           +'<button onclick="deleteSession(\''+s.code+'\')" style="font-size:13px;padding:8px 14px;border:1px solid rgba(200,50,50,0.3);border-radius:4px;background:#fff;cursor:pointer;color:#c0392b;">Delete</button>'
@@ -8952,13 +8971,13 @@ async function loadAdminSessions() {
     }).join('');
   } else {
     // Full table on desktop
-    el.innerHTML = '<div style="min-width:690px;">'
-      + '<div style="display:grid;grid-template-columns:104px minmax(140px,1fr) 66px 118px 40px 62px 142px;padding:10px 16px;background:#f7f7f7;border-bottom:1px solid rgba(46,74,46,0.1);">'
+    el.innerHTML = '<div style="min-width:736px;">'
+      + '<div style="display:grid;grid-template-columns:104px minmax(140px,1fr) 66px 118px 40px 62px 188px;padding:10px 16px;background:#f7f7f7;border-bottom:1px solid rgba(46,74,46,0.1);">'
       + ['Code','Name','Date','Type','Pts','Status',''].map(function(h){ return '<div style="font-size:11px;font-weight:600;color:#6B7D6B;text-transform:uppercase;letter-spacing:0.06em;">'+h+'</div>'; }).join('')
       + '</div>'
       + sessions.map(function(s) {
         var active = s.active==='true'||s.active===true;
-        return '<div style="display:grid;grid-template-columns:104px minmax(140px,1fr) 66px 118px 40px 62px 142px;padding:12px 16px;border-bottom:1px solid rgba(46,74,46,0.06);align-items:center;">'
+        return '<div style="display:grid;grid-template-columns:104px minmax(140px,1fr) 66px 118px 40px 62px 188px;padding:12px 16px;border-bottom:1px solid rgba(46,74,46,0.06);align-items:center;">'
           +'<div style="font-size:12px;font-weight:600;color:#1C2B1C;font-family:monospace;">'+s.code+'</div>'
           +'<div style="font-size:13px;color:#3A4A3A;padding-right:14px;line-height:1.35;">'+ufaMeetingName(s.meeting_name||'', s.event_type)+'</div>'
           +'<div style="font-size:12px;color:#6B7D6B;white-space:nowrap;">'+ufaPrettyDate(s.meeting_date)+'</div>'
@@ -8966,6 +8985,7 @@ async function loadAdminSessions() {
           +'<div style="font-size:13px;color:#3D6B3D;font-weight:600;">'+(s.points||1)+'</div>'
           +'<div><span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:3px;background:'+(active?'#e6f4e6':'#f5f5f5')+';color:'+(active?'#2e6b2e':'#888')+'">'+(active?'Live':'Off')+'</span></div>'
           +'<div style="display:flex;gap:4px;">'
+          +'<button onclick="editSession(\''+s.code+'\')" style="font-size:11px;padding:4px 10px;border:1px solid rgba(46,74,46,0.2);border-radius:3px;background:#fff;cursor:pointer;">Edit</button>'
           +'<button onclick="editPoints(\''+s.code+'\','+(s.points||1)+')" style="font-size:11px;padding:4px 10px;border:1px solid rgba(46,74,46,0.2);border-radius:3px;background:#fff;cursor:pointer;">Pts</button>'
           +'<button onclick="toggleSession(\''+s.code+'\','+active+')" style="font-size:11px;padding:4px 10px;border:1px solid rgba(46,74,46,0.2);border-radius:3px;background:#fff;cursor:pointer;">'+(active?'Off':'Live')+'</button>'
           +'<button onclick="deleteSession(\''+s.code+'\')" style="font-size:11px;padding:4px 10px;border:1px solid rgba(200,50,50,0.3);border-radius:3px;background:#fff;cursor:pointer;color:#c0392b;">Del</button>'
@@ -9008,6 +9028,35 @@ async function editPoints(code, currentPoints) {
   loadAdminSessions();
   // Refresh stats if dashboard visible
   if (currentUser) { const { data: records } = await sb.from('attendance').select('*').eq('email', currentUser.email); updateStats(records||[]); renderBreakdown(records||[]); }
+}
+
+/* Edit a session's name and date after the fact. Check-ins copy the name and date at the
+   moment someone checks in, so the same change is pushed to this session's attendance rows. */
+async function editSession(code) {
+  var res = await sb.from('sessions').select('*').eq('code', code).maybeSingle();
+  if (res.error || !res.data) { alert('Could not load that session.'); return; }
+  var s = res.data;
+  var newName = prompt('Session name for ' + code + ':', s.meeting_name || '');
+  if (newName === null) return;
+  newName = ufaMeetingName(newName.trim(), s.event_type);
+  if (!newName) { alert('Name can\'t be empty.'); return; }
+  var newDate = prompt('Date for ' + code + ' (e.g. Oct 21):', s.meeting_date || '');
+  if (newDate === null) return;
+  newDate = newDate.trim();
+
+  var up = await sb.from('sessions').update({ meeting_name: newName, meeting_date: newDate }).eq('code', code);
+  if (up.error) { alert('Error updating session: ' + up.error.message); return; }
+
+  // Keep attendance in step: rows tied to this code, plus older rows with no code that used the old name.
+  var a1 = await sb.from('attendance').update({ meeting_name: newName, meeting_date: newDate }).eq('code_used', code);
+  var warn = a1.error ? a1.error.message : '';
+  if (s.meeting_name) {
+    var a2 = await sb.from('attendance').update({ meeting_name: newName, meeting_date: newDate })
+      .is('code_used', null).eq('meeting_name', s.meeting_name);
+    if (a2.error && !warn) warn = a2.error.message;
+  }
+  if (warn) alert('Session updated, but some attendance rows could not be updated: ' + warn);
+  loadAdminSessions();
 }
 
 async function deleteSession(code) {
@@ -9235,8 +9284,12 @@ var attendanceSessionMap = {}; // code -> session row, for the manual-checkin dr
 
 async function loadAdminAttendance() {
   var r1 = await sb.from('attendance').select('*').order('meeting_date', { ascending: false });
-  var r2 = await sb.from('members').select('email,name').order('name', { ascending: true });
+  var r2 = await sb.from('members').select('email,name,role').order('name', { ascending: true });
   var r3 = await sb.from('sessions').select('*').order('meeting_date', { ascending: false });
+  var r4 = await sb.from('family_members').select('family_id,email');
+  var r5 = await sb.from('families').select('id,name');
+  var famName = {}; (r5.data || []).forEach(function(f){ famName[f.id] = f.name; });
+  var famByEmail = {}; (r4.data || []).forEach(function(x){ famByEmail[String(x.email||'').toLowerCase()] = famName[x.family_id] || 'Family'; });
   var att     = (r1.data || []).slice().sort(ufaNewestFirst);
   var members = r2.data || [];
   var sessions = (r3.data || []).slice().sort(ufaNewestFirst);
@@ -9250,8 +9303,20 @@ async function loadAdminAttendance() {
 
   allAttendanceData = att.map(function(r) {
     var m = attendanceMemberMap[(r.email||'').toLowerCase()];
-    return Object.assign({}, r, { memberName: m ? m.name : null });
+    return Object.assign({}, r, { memberName: m ? m.name : null, memberRole: m ? m.role : null, memberFamily: famByEmail[(r.email||'').toLowerCase()] || null });
   });
+
+  // Fill the type / role / family filters from what actually exists
+  function fillFilter(id, label, values) {
+    var el = document.getElementById(id); if (!el) return;
+    var prev = el.value;
+    var uniq = Array.from(new Set(values.filter(Boolean))).sort(function(a,b){ return String(a).localeCompare(String(b), undefined, {numeric:true}); });
+    el.innerHTML = '<option value="">' + label + '</option>' + uniq.map(function(v){ return '<option value="'+ufaEsc(v)+'">'+ufaEsc(v)+'</option>'; }).join('');
+    el.value = prev && uniq.indexOf(prev) !== -1 ? prev : '';
+  }
+  fillFilter('attendance-type-filter', 'All types', allAttendanceData.map(function(r){ return r.event_type || 'Meeting'; }));
+  fillFilter('attendance-role-filter', 'All roles', members.map(function(m){ return m.role; }));
+  fillFilter('attendance-family-filter', 'All families', Object.keys(famByEmail).map(function(k){ return famByEmail[k]; }));
 
   // Populate session dropdowns (manual check-in form + filter)
   var sessSelect = document.getElementById('manual-att-session');
@@ -9379,15 +9444,33 @@ async function addManualAttendance() {
 }
 
 function filterAdminAttendance() {
-  var search = document.getElementById('attendance-search').value.toLowerCase();
-  var evt    = document.getElementById('attendance-session-filter').value;
+  function val(id){ var el = document.getElementById(id); return el ? el.value : ''; }
+  var search = val('attendance-search').toLowerCase();
+  var evt = val('attendance-session-filter'), type = val('attendance-type-filter'),
+      role = val('attendance-role-filter'), fam = val('attendance-family-filter');
+  var from = val('attendance-from') ? new Date(val('attendance-from') + 'T00:00:00').getTime() : null;
+  var to   = val('attendance-to')   ? new Date(val('attendance-to')   + 'T23:59:59').getTime() : null;
   var filtered = allAttendanceData.filter(function(r){
-    var matchSearch = !search || (r.memberName||'').toLowerCase().includes(search) || (r.email||'').toLowerCase().includes(search);
-    var key = r.code_used || r.meeting_name;
-    var matchEvt = !evt || key === evt;
-    return matchSearch && matchEvt;
+    if (search && !((r.memberName||'').toLowerCase().includes(search) || (r.email||'').toLowerCase().includes(search))) return false;
+    if (evt && (r.code_used || r.meeting_name) !== evt) return false;
+    if (type && (r.event_type || 'Meeting') !== type) return false;
+    if (role && r.memberRole !== role) return false;
+    if (fam && r.memberFamily !== fam) return false;
+    if (from !== null || to !== null) {
+      var k = ufaDateKey(r.meeting_date);
+      if (k === null) return false;   // can't place it in time, so a date filter leaves it out
+      if (from !== null && k < from) return false;
+      if (to !== null && k > to) return false;
+    }
+    return true;
   });
   renderAdminAttendanceTable(filtered);
+}
+
+function clearAttendanceFilters() {
+  ['attendance-search','attendance-session-filter','attendance-type-filter','attendance-role-filter','attendance-family-filter','attendance-from','attendance-to']
+    .forEach(function(id){ var el = document.getElementById(id); if (el) el.value = ''; });
+  filterAdminAttendance();
 }
 
 function renderAdminAttendanceTable(records) {
@@ -9454,8 +9537,10 @@ async function deleteAttendanceRecord(id) {
 async function loadAnalytics() {
   var r1 = await sb.from('members').select('email,role');
   var r2 = await sb.from('attendance').select('*');
+  var r3 = await sb.from('sessions').select('*');
   var members     = r1.data || [];
   var allAtt      = r2.data || [];
+  var allSessions = (r3.data || []).slice().sort(ufaNewestFirst);
 
   var totalMembers  = members.length;
   var totalCheckins = allAtt.length;
@@ -9468,18 +9553,36 @@ async function loadAnalytics() {
   document.getElementById('analytics-total-checkins').textContent = totalCheckins;
   document.getElementById('analytics-avg-points').textContent     = avgPoints;
 
-  var eventCount = {};
-  allAtt.forEach(function(r){ eventCount[r.meeting_name]=(eventCount[r.meeting_name]||0)+1; });
-  var topEvents = Object.entries(eventCount).sort(function(a,b){ return b[1]-a[1]; }).slice(0,8);
-  var maxEC = (topEvents[0] && topEvents[0][1]) ? topEvents[0][1] : 1;
-  document.getElementById('analytics-by-event').innerHTML = topEvents.length ? topEvents.map(function(e){
+  // Every event, including ones nobody has checked in to yet. Sessions come first (matched by code),
+  // then any one-off check-ins (manual / custom) that don't belong to a session.
+  var evRows = [], evByCode = {}, evByName = {};
+  allSessions.forEach(function(se){
+    var row = { name: ufaMeetingName(se.meeting_name || se.code, se.event_type), date: se.meeting_date, count: 0, order: evRows.length };
+    evRows.push(row); evByCode[se.code] = row;
+    if (se.meeting_name && !evByName[se.meeting_name]) evByName[se.meeting_name] = row;
+  });
+  allAtt.forEach(function(r){
+    var row = (r.code_used && evByCode[r.code_used]) || evByName[r.meeting_name];
+    if (!row) {
+      row = { name: ufaMeetingName(r.meeting_name || 'Unnamed event', r.event_type), date: r.meeting_date, count: 0, order: evRows.length };
+      evRows.push(row); evByName[r.meeting_name] = row;
+    }
+    row.count++;
+  });
+  evRows.sort(function(a,b){ return b.count - a.count || a.order - b.order; });
+  var maxEC = evRows.length && evRows[0].count ? evRows[0].count : 1;
+  var evHead = document.getElementById('analytics-event-count');
+  if (evHead) evHead.textContent = evRows.length + ' event' + (evRows.length!==1?'s':'');
+  var evBox = document.getElementById('analytics-by-event');
+  evBox.style.maxHeight = '460px'; evBox.style.overflowY = 'auto';
+  evBox.innerHTML = evRows.length ? evRows.map(function(e){
     return '<div style="padding:10px 16px;border-bottom:1px solid rgba(46,74,46,0.06);">'
-      +'<div style="display:flex;justify-content:space-between;margin-bottom:4px;">'
-        +'<span style="font-size:12px;color:#1C2B1C;font-weight:500;">'+e[0]+'</span>'
-        +'<span style="font-size:12px;color:#3D6B3D;font-weight:600;">'+e[1]+'</span>'
+      +'<div style="display:flex;justify-content:space-between;gap:10px;margin-bottom:4px;">'
+        +'<span style="font-size:12px;color:#1C2B1C;font-weight:500;">'+ufaEsc(e.name)+(e.date?' <span style="color:#6B7D6B;font-weight:400;">· '+ufaEsc(ufaPrettyDate(e.date))+'</span>':'')+'</span>'
+        +'<span style="font-size:12px;color:'+(e.count?'#3D6B3D':'#9aa59a')+';font-weight:600;">'+e.count+'</span>'
       +'</div>'
       +'<div style="height:4px;background:#EEF5EE;border-radius:2px;overflow:hidden;">'
-        +'<div style="height:100%;background:#3D6B3D;border-radius:2px;width:'+Math.round(e[1]/maxEC*100)+'%;"></div>'
+        +'<div style="height:100%;background:#3D6B3D;border-radius:2px;width:'+Math.round(e.count/maxEC*100)+'%;"></div>'
       +'</div>'
     +'</div>';
   }).join('') : '<div style="padding:20px;font-size:13px;color:#6B7D6B;text-align:center;">No data yet.</div>';
@@ -18837,6 +18940,8 @@ async function portalSignup() {
   const err   = document.getElementById('signup-error');
 
   if (!name || !email || !pw || !pw2 || !selectedRole || !major || !gradYear) { err.style.display="block"; err.textContent="Please fill in all fields."; return; }
+  // Last name is required for new signups (existing one-name members are not affected).
+  if (name.split(/\s+/).filter(function(w){ return /[A-Za-z]/.test(w); }).length < 2) { err.style.display="block"; err.textContent="Please enter your first and last name."; return; }
   if (!duesChecked) { err.style.display="block"; err.textContent="Please confirm you have paid your UFA dues before creating an account."; return; }
   if (!/^\d{4}$/.test(gradYear)) { err.style.display='block'; err.textContent='Graduation year must be exactly 4 digits.'; return; }
   if (pw.length < 6) { err.style.display="block"; err.textContent="Password must be at least 6 characters."; return; }
@@ -21132,7 +21237,7 @@ async function ufaFinishMockSession(secs, answered) {
    being used. Mock data comes from `mock_sessions`; board data from
    `bookings`. Question-level data is anonymous. Needs mock-engagement.sql so the board can read sessions.
    ════════════════════════════════════════════════════════════════ */
-var ENG = { range: 30, q: '', sort: 'sec', dir: -1, idle: false };
+var ENG = { range: 30, q: '', sort: 'sec', dir: -1, idle: false, open: {} };
 var ENG_ROWS = [], ENG_IDLE = [];
 
 function engEnsureCss() {
@@ -21161,6 +21266,13 @@ function engEnsureCss() {
     '.eng-q{padding:9px 0;border-top:1px solid rgba(46,74,46,.08);font-size:13px;color:#1C2B1C;line-height:1.45;}' +
     '.eng-q small{display:block;color:#6B7D6B;font-size:12px;margin-top:3px;}' +
     '.eng-empty{font-size:13px;color:#6B7D6B;padding:8px 0;}' +
+    '.eng-who{display:block;color:#8b2e2e;font-size:12px;margin-top:4px;line-height:1.5;}' +
+    '.eng-detail td{background:#F7FAF7;padding:14px 16px 16px !important;}' +
+    '.eng-dgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;}' +
+    '.eng-dgrid h5{margin:0 0 6px;font:600 11px "DM Sans",sans-serif;letter-spacing:.07em;text-transform:uppercase;color:#6B7D6B;}' +
+    '.eng-dgrid div div{font-size:13px;color:#1C2B1C;line-height:1.55;}' +
+    '.eng-dgrid small{color:#6B7D6B;}' +
+    '.eng-mrow{cursor:pointer;}' +
     '.eng-warn{background:#fffbe6;border:1px solid #f0d060;border-radius:6px;padding:12px 16px;font-size:13px;color:#78450a;line-height:1.55;margin-bottom:16px;}';
   document.head.appendChild(st);
 }
@@ -21197,8 +21309,8 @@ function engColumns(items) {
   var max = Math.max.apply(null, items.map(function (x) { return x.value; })) || 1;
   return '<div class="eng-cols">' + items.map(function (x) {
     var h = x.value ? Math.max(4, Math.round(x.value / max * 100)) : 2;
-    return '<div class="eng-col' + (x.value ? '' : ' is-zero') + '"><div class="eng-cv">' + (x.value || '') + '</div>' +
-      '<div class="eng-cwrap"><div class="eng-cb" style="height:' + h + '%;"></div></div>' +
+    return '<div class="eng-col' + (x.value ? '' : ' is-zero') + '">' +
+      '<div class="eng-cwrap"><div class="eng-cb" style="height:' + h + '%;">' + (x.value ? '<span class="eng-cv">' + x.value + '</span>' : '') + '</div></div>' +
       '<div class="eng-cl">' + ufaEsc(x.label) + '</div></div>';
   }).join('') + '</div>';
 }
@@ -21238,10 +21350,38 @@ function engRenderPeople() {
   host.innerHTML = '<div class="eng-tablewrap"><table class="eng-table"><thead><tr>' +
     th('Member', 'name') + th('Sessions', 'sessions', 1) + th('Practice time', 'sec', 1) + th('Questions', 'worked', 1) + th('Last practiced', 'last', 1) + th('Board hours', 'hours', 1) +
     '</tr></thead><tbody>' + rows.slice(0, 200).map(function (r) {
-      return '<tr><td><b>' + ufaEsc(r.name) + '</b></td><td class="r">' + (r.sessions || '—') + '</td><td class="r">' + engFmtDur(r.sec) + '</td>' +
-        '<td class="r">' + (r.worked || '—') + '</td><td class="r">' + (r.last ? ufaDate(new Date(r.last).toISOString()) : '—') + '</td><td class="r">' + (r.hours || '—') + '</td></tr>';
+      var open = !!ENG.open[r.email];
+      return '<tr class="eng-mrow" data-e="' + ufaEsc(r.email) + '" onclick="engToggleRow(this.getAttribute(\'data-e\'))"><td><b>' + (open ? '\u25be ' : '\u25b8 ') + ufaEsc(r.name) + '</b></td><td class="r">' + (r.sessions || '—') + '</td><td class="r">' + engFmtDur(r.sec) + '</td>' +
+        '<td class="r">' + (r.worked || '—') + '</td><td class="r">' + (r.last ? ufaDate(new Date(r.last).toISOString()) : '—') + '</td><td class="r">' + (r.hours || '—') + '</td></tr>' + (open ? engDetailRow(r) : '');
     }).join('') + '</tbody></table></div>' +
-    '<div class="eng-note" style="margin:10px 0 0;">Showing ' + Math.min(rows.length, 200) + ' of ' + rows.length + '. Click a column heading to sort.</div>';
+    '<div class="eng-note" style="margin:10px 0 0;">Showing ' + Math.min(rows.length, 200) + ' of ' + rows.length + '. Click a column heading to sort, or a member to see what they are working on.</div>';
+}
+
+function engToggleRow(email) { ENG.open[email] = !ENG.open[email]; engRenderPeople(); }
+
+function engTopList(map, n) {
+  var ks = Object.keys(map || {}).sort(function (a, b) { return map[b] - map[a]; }).slice(0, n || 5);
+  return ks.length ? ks.map(function (k) { return ufaEsc(k) + ' <small>\u00d7' + map[k] + '</small>'; }).join('<br>') : '<small>None yet</small>';
+}
+function engDetailRow(r) {
+  var trackMap = {};
+  Object.keys(r.tracks || {}).forEach(function (id) {
+    var t = (MOCK_TRACKS.filter(function (x) { return x.id === id; })[0] || {}).label || id;
+    trackMap[t] = r.tracks[id];
+  });
+  var tr = Object.keys(r.trouble || {}).map(function (id) { var z = r.trouble[id]; return { id: id, m: z.m, s: z.s, c: z.m * 2 + z.s }; })
+    .sort(function (a, b) { return b.c - a.c; }).slice(0, 5);
+  var trHtml = tr.length ? tr.map(function (z) {
+    var info = engQuestionText(z.id), t = info ? info.text : z.id;
+    if (t.length > 110) t = t.slice(0, 107) + '\u2026';
+    return ufaEsc(t) + ' <small>(' + (z.m ? z.m + ' missed' : '') + (z.m && z.s ? ', ' : '') + (z.s ? z.s + ' shaky' : '') + ')</small>';
+  }).join('<br>') : '<small>Nothing flagged yet</small>';
+  if (!r.sessions) return '<tr class="eng-detail"><td colspan="6"><small>No mock interview sessions in this period.</small></td></tr>';
+  return '<tr class="eng-detail"><td colspan="6"><div class="eng-dgrid">' +
+    '<div><h5>Tracks practiced</h5><div>' + engTopList(trackMap, 6) + '</div></div>' +
+    '<div><h5>Topics worked on</h5><div>' + engTopList(r.topics, 6) + '</div></div>' +
+    '<div><h5>Struggling with</h5><div>' + trHtml + '</div></div>' +
+  '</div></td></tr>';
 }
 
 function engTile(label, value, sub) {
@@ -21253,7 +21393,7 @@ function engQuestionText(id) {
   var keys = Object.keys(MOCK_BANK);
   for (var i = 0; i < keys.length; i++) {
     var q = MOCK_BANK[keys[i]].filter(function (x) { return x.id === id; })[0];
-    if (q) return { text: String(q.q || '').replace(/\{[A-Za-z0-9_]+\}/g, '\u2026'), track: keys[i] };
+    if (q) return { text: String(q.q || '').replace(/\{[A-Za-z0-9_]+\}/g, '\u2026'), track: keys[i], topic: q.t || '', level: q.d || '' };
   }
   return null;
 }
@@ -21363,22 +21503,57 @@ async function loadEngagement() {
   var who = {};
   function whoRow(email) {
     var k = String(email).toLowerCase();
-    return who[k] = who[k] || { email: k, name: nameByEmail[k] || email, sessions: 0, sec: 0, worked: 0, last: 0, hours: 0 };
+    return who[k] = who[k] || { email: k, name: nameByEmail[k] || email, sessions: 0, sec: 0, worked: 0, last: 0, hours: 0, tracks: {}, topics: {}, trouble: {}, days: {} };
   }
+  // Question-level results per member (board only): tracks, topics, and the questions they miss or find shaky.
+  var qWho = {};   // question id -> { email: { m: missed, s: shaky } }
+  var topicStat = {};
+  var dayCount = [0, 0, 0, 0, 0, 0, 0], levelCount = {};
   sess.forEach(function (x) {
-    var r = whoRow(x.email), t = new Date(x.started_at).getTime();
+    var r = whoRow(x.email), t = new Date(x.started_at).getTime(), ek = String(x.email).toLowerCase();
     r.sessions++; r.sec += x.duration_sec || 0; r.worked += x.worked || 0;
     if (t > r.last) r.last = t;
+    r.tracks[x.industry] = (r.tracks[x.industry] || 0) + 1;
+    r.days[new Date(t).toDateString()] = true;
+    dayCount[new Date(t).getDay()]++;
+    (x.levels || []).forEach(function (lv) { levelCount[lv] = (levelCount[lv] || 0) + 1; });
+    function seen(ids, kind) {
+      (ids || []).forEach(function (id) {
+        var info = engQuestionText(id), topic = info && info.topic ? info.topic : 'other';
+        r.topics[topic] = (r.topics[topic] || 0) + 1;
+        var ts = topicStat[topic] = topicStat[topic] || { n: 0, bad: 0 };
+        ts.n++;
+        if (kind !== 'n') {
+          ts.bad++;
+          var tr = r.trouble[id] = r.trouble[id] || { m: 0, s: 0 };
+          tr[kind]++;
+          var qw = qWho[id] = qWho[id] || {};
+          (qw[ek] = qw[ek] || { m: 0, s: 0 })[kind]++;
+        }
+      });
+    }
+    seen(x.nailed_ids, 'n'); seen(x.shaky_ids, 's'); seen(x.missed_ids, 'm');
   });
   live.forEach(function (b) { whoRow(b.member_email).hours++; });
   ENG_ROWS = Object.keys(who).map(function (k) { return who[k]; });
   ENG_IDLE = members.filter(function (m) { return !who[String(m.email).toLowerCase()]; })
     .map(function (m) { return { email: String(m.email).toLowerCase(), name: m.name || m.email, sessions: 0, sec: 0, worked: 0, last: 0, hours: 0 }; });
 
+  var repeatN = ENG_ROWS.filter(function (r) { return Object.keys(r.days).length >= 2; }).length;
+  var everMock = {}; sessAll.forEach(function (x) { everMock[String(x.email).toLowerCase()] = true; });
+  var neverN = members.filter(function (m) { return !everMock[String(m.email).toLowerCase()]; }).length;
+  var lvItems = MOCK_LEVEL_ORDER.map(function (lv) { return { label: mockLevelLabel(lv), value: levelCount[lv] || 0, text: String(levelCount[lv] || 0) }; });
+  var dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  var dayItems = dayCount.map(function (c, i) { return { label: dayNames[i], value: c, text: String(c) }; });
+  var topicItems = Object.keys(topicStat).filter(function (k) { return topicStat[k].n >= 5; }).map(function (k) {
+    var ts = topicStat[k], rate = ts.bad / ts.n;
+    return { label: k, value: rate, text: Math.round(rate * 100) + '% struggled \u00b7 ' + ts.n + ' ratings' };
+  }).sort(function (a, b) { return b.value - a.value; }).slice(0, 10);
+
   // ---- Render ----
   var html = '';
   html += '<div class="ufa-label">Engagement</div>' +
-    '<div class="ufa-pane-sub" style="margin-bottom:14px;">How much Mock Interview and Board Hours are being used. Question-level data is anonymous.</div>';
+    '<div class="ufa-pane-sub" style="margin-bottom:14px;">How much Mock Interview and Board Hours are being used. Board only: question results are tied to member names so you can coach, so please keep them within the board.</div>';
   html += '<div class="eng-chips">' + [[7, 'This week'], [30, '30 days'], [0, 'All time']].map(function (o) {
     return '<button type="button" class="eng-chip' + (ENG.range === o[0] ? ' is-on' : '') + '" onclick="engSetRange(' + o[0] + ')">' + o[1] + '</button>';
   }).join('') + '</div>';
@@ -21393,6 +21568,8 @@ async function loadEngagement() {
     engTile('Practice hours', (totalSec / 3600).toFixed(1), avgMin ? 'avg ' + avgMin + ' min per session' : '') +
     engTile('Board hours booked', live.length, completed + ' completed \u00b7 ' + noShows + ' no-show' + (noShows === 1 ? '' : 's')) +
     engTile('Cancellations', cancelled, rangeLabel) +
+    engTile('Repeat practitioners', repeatN, peopleN ? Math.round(repeatN / peopleN * 100) + '% of people practicing' : 'practiced on 2+ days') +
+    engTile('Never practiced', neverN, 'approved members, all time') +
   '</div>';
 
   html += '<div class="eng-grid">' +
@@ -21407,9 +21584,19 @@ async function loadEngagement() {
       var info = engQuestionText(x.id);
       var t = info ? info.text : x.id;
       if (t.length > 170) t = t.slice(0, 167) + '\u2026';
-      return '<div class="eng-q">' + (i + 1) + '. ' + ufaEsc(t) + '<small>' + Math.round(x.rate * 100) + '% struggled &middot; ' +
-        x.tot + ' ratings (' + x.q.m + ' missed, ' + x.q.s + ' shaky, ' + x.q.n + ' nailed)</small></div>';
+      var ppl = Object.keys(qWho[x.id] || {}).map(function (k) { return { n: nameByEmail[k] || k, c: qWho[x.id][k].m + qWho[x.id][k].s }; })
+        .sort(function (a, b) { return b.c - a.c || String(a.n).localeCompare(String(b.n)); });
+      var pplTxt = ppl.slice(0, 8).map(function (z) { return ufaEsc(z.n) + (z.c > 1 ? ' (\u00d7' + z.c + ')' : ''); }).join(', ') + (ppl.length > 8 ? ' +' + (ppl.length - 8) + ' more' : '');
+      return '<div class="eng-q">' + (i + 1) + '. ' + ufaEsc(t) + '<small>' + (info && info.topic ? ufaEsc(info.topic) + ' &middot; ' : '') + Math.round(x.rate * 100) + '% struggled &middot; ' +
+        x.tot + ' ratings (' + x.q.m + ' missed, ' + x.q.s + ' shaky, ' + x.q.n + ' nailed)</small>' +
+        (ppl.length ? '<span class="eng-who">Struggling: ' + pplTxt + '</span>' : '') + '</div>';
     }).join('') : '<div class="eng-empty">Not enough ratings yet.</div>') + '</div>';
+
+  html += '<div class="eng-grid">' +
+    '<div class="eng-card"><h4>Struggle rate by topic</h4><p class="eng-note">Share of ratings that were shaky or missed, for topics with at least 5 ratings. Good for picking workshop topics.</p>' + engBars(topicItems, 1) + '</div>' +
+    '<div class="eng-card"><h4>Difficulty levels used</h4><p class="eng-note">Sessions that included each level, ' + rangeLabel + '.</p>' + engBars(lvItems) +
+      '<h4 style="margin-top:18px;">Busiest days</h4><p class="eng-note">Mock sessions by day of the week.</p>' + engBars(dayItems) + '</div>' +
+  '</div>';
 
   html += '<div class="eng-grid">' +
     '<div class="eng-card"><h4>Board hours: by board member</h4><p class="eng-note">Who is busy and who has open time, ' + rangeLabel + '.</p>' + engBars(hostItems) +
@@ -22459,8 +22646,8 @@ document.addEventListener('keydown', function (e) {
 @media (min-width: 901px) { #ufa-more { display: none !important; } }
 
 #ufa-more { position: fixed; inset: 0; z-index: 940; background: rgba(20,30,20,0.5); align-items: flex-end; }
-.um-sheet { width: 100%; box-sizing: border-box; background: #fff; border-radius: 22px 22px 0 0; max-height: calc(86vh - 86px); overflow-y: auto; margin-bottom: calc(76px + env(safe-area-inset-bottom, 0px));
-  padding: 10px 14px 14px; animation: umUp .22s ease; }
+.um-sheet { width: 100%; box-sizing: border-box; background: #fff; border-radius: 22px 22px 0 0; max-height: 86vh; overflow-y: auto; margin-bottom: 0;
+  padding: 10px 14px calc(88px + env(safe-area-inset-bottom, 0px)); animation: umUp .22s ease; }
 @keyframes umUp { from { transform: translateY(26px); opacity: .5; } to { transform: none; opacity: 1; } }
 .um-grab { width: 40px; height: 4px; border-radius: 2px; background: #D5DBD3; margin: 4px auto 12px; }
 .um-item { display: flex; align-items: center; gap: 14px; width: 100%; box-sizing: border-box; padding: 14px 12px; border: 0; border-radius: 12px; background: none;
@@ -22469,6 +22656,14 @@ document.addEventListener('keydown', function (e) {
 .um-item.is-active { background: #EEF5EE; font-weight: 600; }
 .um-sep { height: 1px; background: rgba(46,74,46,0.10); margin: 8px 6px; }
 @media (prefers-reduced-motion: reduce) { .um-sheet { animation: none; } }
+
+/* Date inputs: iOS gives them their own width and centred text, which pushed the box past the card edge */
+input[type="date"].fx-input, .fx-field input[type="date"] {
+  display: block; width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box;
+  -webkit-appearance: none; appearance: none; text-align: left; min-height: 48px; margin: 0;
+}
+input[type="date"].fx-input::-webkit-date-and-time-value { text-align: left; }
+.fx-field { min-width: 0; }
 
 /* Segmented tabs and filter chips stay put on hover (the site-wide button lift made the selected one float). */
 .fx-seg button:hover, .eng-chip:hover { transform: none !important; filter: none !important; box-shadow: none !important; }
@@ -22503,9 +22698,9 @@ document.addEventListener('keydown', function (e) {
 /* Engagement: weekly columns */
 .eng-cols{display:flex;align-items:stretch;gap:8px;height:190px;padding-top:4px;}
 .eng-col{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;}
-.eng-col .eng-cv{height:16px;line-height:16px;margin-bottom:4px;font-size:12px;color:#6B7D6B;}
-.eng-col .eng-cwrap{flex:1;width:100%;display:flex;align-items:flex-end;justify-content:center;}
-.eng-col .eng-cb{width:100%;max-width:38px;min-height:2px;background:#3D6B3D;border-radius:6px 6px 2px 2px;}
+.eng-col .eng-cwrap{flex:1;width:100%;display:flex;align-items:flex-end;justify-content:center;padding-top:20px;box-sizing:border-box;}
+.eng-col .eng-cb{position:relative;width:100%;max-width:38px;min-height:2px;background:#3D6B3D;border-radius:6px 6px 2px 2px;}
+.eng-col .eng-cv{position:absolute;left:50%;bottom:100%;transform:translateX(-50%);margin-bottom:3px;line-height:16px;font-size:12px;color:#6B7D6B;white-space:nowrap;}
 .eng-col.is-zero .eng-cb{background:#DCE6D9;}
 .eng-col .eng-cl{margin-top:7px;font-size:11.5px;color:#8A9A8A;white-space:nowrap;}
 
@@ -22723,7 +22918,7 @@ document.addEventListener('keydown', function (e) {
 .ufa-level.is-on:hover { transform: none !important; filter: none !important; box-shadow: 0 0 0 3px rgba(61,107,61,0.14) !important; }
 .ufa-subfilter:focus:not(:focus-visible), .ufa-level:focus:not(:focus-visible), .ufa-track:focus:not(:focus-visible) { outline: none; }
 /* Focus topics: words and counts centred */
-.ufa-topic { text-align: center; align-items: center; }
+.ufa-topic { text-align: center; align-items: center; justify-content: center; }
 .ufa-topic .ufa-topic-top { flex-direction: column; align-items: center; justify-content: center; gap: 3px; width: 100%; }
 .ufa-topic .ufa-subfilter-name { text-align: center; }
 .ufa-topic .ufa-topic-tag { align-self: center; }
@@ -22789,12 +22984,12 @@ document.addEventListener('keydown', function (e) {
 
 /* Events rows on phones: date block runs the full height on the left, text and points stack on the right */
 @media (max-width: 640px) {
-  .ufa-event-row { display: grid !important; grid-template-columns: minmax(44px, auto) 1px minmax(0, 1fr); grid-template-areas: "date div text" "date div right"; column-gap: 14px; row-gap: 10px; align-items: start; padding: 14px 16px !important; }
-  .ufa-event-row .ufa-ev-date { grid-area: date; align-self: center; width: auto !important; min-width: 44px; }
+  .ufa-event-row { display: grid !important; grid-template-columns: minmax(40px, auto) 1px minmax(0, 1fr) auto; grid-template-areas: "date div text right"; column-gap: 12px; align-items: center; padding: 12px 14px !important; }
+  .ufa-event-row .ufa-ev-date { grid-area: date; align-self: center; width: auto !important; min-width: 40px; }
   .ufa-event-row .ufa-ev-div { grid-area: div; align-self: stretch; }
-  .ufa-event-row .ufa-ev-text { grid-area: text; }
-  .ufa-event-row .ufa-ev-right { grid-area: right; flex-wrap: wrap; justify-content: flex-start; gap: 8px 12px !important; }
-  .ufa-event-row .ufa-ev-right > span { font-size: 13px !important; }
+  .ufa-event-row .ufa-ev-text { grid-area: text; align-self: center; }
+  .ufa-event-row .ufa-ev-right { grid-area: right; flex-direction: column; align-items: flex-end !important; justify-content: center; flex-wrap: nowrap; gap: 5px !important; text-align: right; }
+  .ufa-event-row .ufa-ev-right > span { font-size: 12px !important; white-space: nowrap; }
 }
 /* Board Hours cards on phones: round avatar (the old flex-basis stretched it into an oval), roomier spacing */
 @media (max-width: 768px) {
