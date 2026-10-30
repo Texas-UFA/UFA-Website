@@ -5625,6 +5625,11 @@ button[onclick="pubFlipbookNext()"]:hover {
             <div class="ufa-reveal-row">
               <button class="ufa-btn-ghost" onclick="toggleMockHint()" id="mock-hint-btn" aria-expanded="false" aria-controls="mock-hint" style="display:none;">Show a hint</button>
               <button class="ufa-btn" onclick="toggleMockFramework()" id="mock-reveal-btn" aria-expanded="false" aria-controls="mock-framework">Reveal the answer</button>
+              <div class="ufa-q-nav">
+                <button type="button" class="ufa-btn-ghost" onclick="mockPrevQuestion()" id="mock-prev-btn" aria-label="Previous question">&larr; Back</button>
+                <button type="button" class="ufa-btn-ghost" onclick="answerMockQuestion('next')" id="mock-next-btn">Next question &rarr;</button>
+                <button type="button" class="ufa-btn-ghost" onclick="openMockBrowser()" id="mock-browse-btn">All questions</button>
+              </div>
             </div>
             <div class="ufa-note" style="margin-bottom:18px;" id="mock-reveal-hint">Revealing the answer stops the clock.</div>
 
@@ -5653,8 +5658,7 @@ button[onclick="pubFlipbookNext()"]:hover {
                 <button type="button" class="ufa-rate-btn" data-rate="missed" onclick="answerMockQuestion('missed')" id="mock-review-btn"><span class="ufa-rate-name">Missed it</span><span class="ufa-rate-sub">Bring it back next session</span><kbd class="ufa-kbd" aria-hidden="true">3</kbd></button>
               </div>
               <div class="ufa-rate-foot">
-                <button type="button" class="ufa-btn-ghost ufa-btn-sm" onclick="answerMockQuestion('next')" id="mock-next-btn">Skip</button>
-                <span class="ufa-keys-note" id="mock-keys-note">Keyboard: Space reveals the answer, H shows the hint, 1 to 3 rates it, N skips.</span>
+                <span class="ufa-keys-note" id="mock-keys-note">Keyboard: Space reveals the answer, H shows the hint, 1 to 3 rates it, N next question, P back, B all questions.</span>
               </div>
             </div>
           </div>
@@ -7227,6 +7231,35 @@ button[onclick="pubFlipbookNext()"]:hover {
   border-radius: 999px; padding: 2px 9px;
 }
 .ufa-reveal-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 8px; }
+.ufa-q-nav { display: flex; gap: 8px; flex-wrap: wrap; margin-left: auto; }
+.ufa-q-nav .ufa-btn-ghost:disabled { opacity: .4; cursor: default; }
+@media (max-width: 700px) { .ufa-q-nav { margin-left: 0; width: 100%; } .ufa-q-nav .ufa-btn-ghost { flex: 1 1 0; padding-left: 8px; padding-right: 8px; } }
+.mqb-overlay { position: fixed; inset: 0; z-index: 2100; background: rgba(20,30,20,.45); display: flex; justify-content: flex-end; animation: mqbFade .15s ease; }
+.mqb-panel { background: #fff; width: min(480px, 100%); height: 100%; display: flex; flex-direction: column; box-shadow: -20px 0 50px rgba(0,0,0,.2); animation: mqbIn .2s ease; }
+@keyframes mqbIn { from { transform: translateX(24px); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes mqbFade { from { opacity: 0; } to { opacity: 1; } }
+.mqb-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 22px 22px 8px; }
+.mqb-title { font-family: 'Playfair Display', Georgia, serif; font-size: 24px; color: #1C2B1C; }
+.mqb-sub { font-size: 13px; color: #6B7D6B; margin-top: 2px; }
+.mqb-x { border: none; background: #F2F1EC; width: 34px; height: 34px; border-radius: 50%; font-size: 22px; line-height: 1; cursor: pointer; color: #3A4A3A; }
+.mqb-search { margin: 8px 22px 0; padding: 11px 14px; border: 1.5px solid rgba(46,74,46,.18); border-radius: 10px; font: 14px 'DM Sans', sans-serif; background: #F7F4EE; }
+.mqb-search:focus { outline: none; border-color: #3D6B3D; box-shadow: 0 0 0 3px rgba(61,107,61,.15); background: #fff; }
+.mqb-chips { display: flex; gap: 6px; flex-wrap: wrap; padding: 12px 22px 10px; }
+.mqb-chip { border: 1px solid rgba(46,74,46,.2); background: #fff; border-radius: 999px; padding: 5px 11px; font: 500 13px 'DM Sans', sans-serif; color: #3A4A3A; cursor: pointer; }
+.mqb-chip span { color: #6B7D6B; margin-left: 2px; }
+.mqb-chip.is-on { background: #1C2B1C; border-color: #1C2B1C; color: #fff; } .mqb-chip.is-on span { color: #cfe0cf; }
+.mqb-list { flex: 1; overflow-y: auto; padding: 4px 12px 24px; }
+.mqb-item { display: flex; gap: 12px; align-items: flex-start; width: 100%; text-align: left; border: none; background: transparent; padding: 12px 10px; border-radius: 10px; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+.mqb-item:hover { background: #F2F6F2; }
+.mqb-item.is-current { background: #E8F1E8; box-shadow: inset 3px 0 0 #3D6B3D; }
+.mqb-n { flex: none; width: 28px; font-size: 13px; color: #6B7D6B; padding-top: 2px; font-variant-numeric: tabular-nums; }
+.mqb-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.mqb-q { font-size: 14px; color: #1C2B1C; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.mqb-meta { display: flex; gap: 8px; align-items: center; font-size: 12px; color: #6B7D6B; flex-wrap: wrap; }
+.mqb-st { flex: none; display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: #6B7D6B; padding-top: 2px; }
+.mqb-st i { width: 9px; height: 9px; border-radius: 50%; background: #B9C4B9; display: inline-block; }
+.st-nailed .mqb-st i { background: #3D6B3D; } .st-shaky .mqb-st i { background: #C69A3D; } .st-missed .mqb-st i { background: #A8453B; } .st-current .mqb-st i { background: #3D6B3D; box-shadow: 0 0 0 3px rgba(61,107,61,.25); }
+.mqb-empty { padding: 30px; text-align: center; font-size: 14px; color: #6B7D6B; }
 .ufa-hint-box {
   margin: 0 0 18px;
   padding: 14px 18px;
@@ -17616,6 +17649,7 @@ function startMock() {
   }
   MOCK.queue = queue.map(mockMaterialize);
   MOCK.idx = 0;
+  MOCK.jumped = false;
   MOCK.sessionSeen = [];
   MOCK.sessionMastered = [];
   MOCK.sessionReview = [];
@@ -17636,7 +17670,7 @@ function startMock() {
 function showMockQuestion() {
   var q = MOCK.queue[MOCK.idx];
   if (!q) { endMock(false); return; }
-  MOCK.sessionSeen.push(q.id);
+  if (MOCK.sessionSeen.indexOf(q.id) === -1) MOCK.sessionSeen.push(q.id);
 
   /* Reading the answer can leave the page scrolled well down the card;
      a fresh question should always open back at the top, not wherever
@@ -17685,7 +17719,9 @@ function showMockQuestion() {
     ? 'The hint keeps the clock running. Revealing the answer stops it.'
     : 'Revealing the answer stops the clock.';
   var isLast = MOCK.idx >= MOCK.queue.length - 1;
-  document.getElementById('mock-next-btn').textContent = isLast ? 'Skip and finish' : 'Skip';
+  document.getElementById('mock-next-btn').innerHTML = isLast ? 'Finish session' : 'Next question &rarr;';
+  var prevBtn = document.getElementById('mock-prev-btn');
+  if (prevBtn) prevBtn.disabled = MOCK.idx <= 0;
 
   if (MOCK.handle) clearInterval(MOCK.handle);
   var timerEl = document.getElementById('mock-timer');
@@ -17710,6 +17746,91 @@ function showMockQuestion() {
       bar.className = state.trim();
     }
   }, 1000);
+}
+
+function mockPrevQuestion() {
+  if (MOCK.idx <= 0 || MOCK.track === 'cases') return;
+  if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+  MOCK.idx--;
+  MOCK.jumped = true;
+  showMockQuestion();
+}
+
+function jumpMockQuestion(i) {
+  if (i < 0 || i >= MOCK.queue.length) return;
+  closeMockBrowser();
+  MOCK.idx = i;
+  MOCK.jumped = true;
+  showMockQuestion();
+}
+
+/* "All questions": every question in this session's pool, searchable, with
+   a status dot so members can see what they have already rated. */
+var MOCK_BROWSER = { filter: 'all', text: '' };
+
+function mockQStatus(q, i) {
+  if (i === MOCK.idx) return 'current';
+  if (MOCK.ratings[q.id]) return MOCK.ratings[q.id];          // nailed | shaky | missed
+  if (MOCK.sessionSeen.indexOf(q.id) !== -1) return 'skipped';
+  return 'new';
+}
+
+function openMockBrowser() {
+  if (document.getElementById('mock-browser') || !MOCK.queue.length || MOCK.track === 'cases') return;
+  MOCK_BROWSER.filter = 'all'; MOCK_BROWSER.text = '';
+  var o = document.createElement('div');
+  o.id = 'mock-browser';
+  o.className = 'mqb-overlay';
+  o.innerHTML =
+    '<aside class="mqb-panel" role="dialog" aria-modal="true" aria-label="All questions">' +
+      '<div class="mqb-head"><div><div class="mqb-title">All questions</div>' +
+      '<div class="mqb-sub">' + MOCK.queue.length + ' in this session. Tap one to jump to it.</div></div>' +
+      '<button type="button" class="mqb-x" onclick="closeMockBrowser()" aria-label="Close">&times;</button></div>' +
+      '<input type="search" id="mqb-search" class="mqb-search" placeholder="Search questions or topics" autocomplete="off" oninput="MOCK_BROWSER.text=this.value;renderMockBrowser()">' +
+      '<div class="mqb-chips" id="mqb-chips"></div>' +
+      '<div class="mqb-list" id="mqb-list"></div>' +
+    '</aside>';
+  o.addEventListener('click', function (e) { if (e.target === o) closeMockBrowser(); });
+  document.body.appendChild(o);
+  document.addEventListener('keydown', mockBrowserKey);
+  renderMockBrowser();
+  var cur = document.querySelector('#mqb-list .is-current');
+  if (cur && cur.scrollIntoView) cur.scrollIntoView({ block: 'center' });
+  if (window.matchMedia && window.matchMedia('(hover: hover)').matches) document.getElementById('mqb-search').focus();
+}
+
+function closeMockBrowser() {
+  var o = document.getElementById('mock-browser');
+  if (o) o.remove();
+  document.removeEventListener('keydown', mockBrowserKey);
+}
+function mockBrowserKey(e) { if (e.key === 'Escape') closeMockBrowser(); }
+
+function mockBrowserFilter(f) { MOCK_BROWSER.filter = f; renderMockBrowser(); }
+
+function renderMockBrowser() {
+  var list = document.getElementById('mqb-list'), chipBox = document.getElementById('mqb-chips');
+  if (!list) return;
+  var counts = { all: MOCK.queue.length, new: 0, nailed: 0, shaky: 0, missed: 0, skipped: 0 };
+  MOCK.queue.forEach(function (q, i) { var st = mockQStatus(q, i); if (counts[st] !== undefined) counts[st]++; });
+  var chips = [['all', 'All'], ['new', 'Not asked yet'], ['nailed', 'Nailed'], ['shaky', 'Shaky'], ['missed', 'Missed'], ['skipped', 'Skipped']];
+  chipBox.innerHTML = chips.map(function (c) {
+    return '<button type="button" class="mqb-chip' + (MOCK_BROWSER.filter === c[0] ? ' is-on' : '') + '" onclick="mockBrowserFilter(\'' + c[0] + '\')">' + c[1] + ' <span>' + counts[c[0]] + '</span></button>';
+  }).join('');
+  var needle = MOCK_BROWSER.text.trim().toLowerCase();
+  var labels = { current: 'Now', nailed: 'Nailed', shaky: 'Shaky', missed: 'Missed', skipped: 'Skipped', new: '' };
+  var html = MOCK.queue.map(function (q, i) {
+    var st = mockQStatus(q, i);
+    if (MOCK_BROWSER.filter !== 'all' && st !== MOCK_BROWSER.filter) return '';
+    var topic = mockTopicLabel(MOCK.track, q.t) || '';
+    if (needle && (q.q + ' ' + topic).toLowerCase().indexOf(needle) === -1) return '';
+    return '<button type="button" class="mqb-item st-' + st + (st === 'current' ? ' is-current' : '') + '" onclick="jumpMockQuestion(' + i + ')">' +
+      '<span class="mqb-n">' + (i + 1) + '</span>' +
+      '<span class="mqb-main"><span class="mqb-q">' + ufaEsc(q.q) + '</span>' +
+      '<span class="mqb-meta"><span class="ufa-pill ufa-diff-' + q.d + '">' + mockLevelPill(q.d) + '</span>' + (topic ? '<span>' + ufaEsc(topic) + '</span>' : '') + '</span></span>' +
+      '<span class="mqb-st">' + (st !== 'new' ? '<i></i>' + labels[st] : '') + '</span></button>';
+  }).join('');
+  list.innerHTML = html || '<div class="mqb-empty">No questions match.</div>';
 }
 
 function nextMockQuestion() {
@@ -17787,6 +17908,18 @@ async function endMock(early) {
   MOCK.handle = null;
   caseTimerStop(false);
   var secs = Math.round((Date.now() - MOCK.startedAt) / 1000);
+  if (MOCK.jumped && MOCK.track !== 'cases') {
+    // After jumping around, "the first N questions in the queue" no longer means
+    // "the ones asked", so rebuild the order from what was actually seen.
+    var curQ = MOCK.queue[MOCK.idx];
+    var seenSet = {}; MOCK.sessionSeen.forEach(function (id) { seenSet[id] = true; });
+    if (early && curQ && !MOCK.ratings[curQ.id]) delete seenSet[curQ.id];
+    var seenQs = MOCK.queue.filter(function (q) { return seenSet[q.id]; });
+    var restQs = MOCK.queue.filter(function (q) { return !seenSet[q.id]; });
+    MOCK.queue = seenQs.concat(restQs);
+    MOCK.sessionSeen = seenQs.map(function (q) { return q.id; });
+    early = false;
+  }
   var answered = early ? MOCK.idx : MOCK.sessionSeen.length;
 
   document.getElementById('mock-running').style.display = 'none';
@@ -17986,9 +18119,12 @@ document.addEventListener('keydown', function (e) {
   var run = document.getElementById('mock-running');
   if (!run || run.style.display === 'none' || run.offsetParent === null) return;
   if (e.metaKey || e.ctrlKey || e.altKey || e.repeat) return;
+  if (document.getElementById('mock-browser')) return;   // question list is open
   var el = e.target;
   if (el && (/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName) || el.isContentEditable)) return;
   var k = e.key;
+  if (k === 'b' || k === 'B') { e.preventDefault(); openMockBrowser(); return; }
+  if (k === 'p' || k === 'P') { e.preventDefault(); mockPrevQuestion(); return; }
   if (k === ' ' || k === 'Spacebar') { e.preventDefault(); toggleMockFramework(); }
   else if (k === 'h' || k === 'H') { e.preventDefault(); toggleMockHint(); }
   else if (k === '1') { e.preventDefault(); answerMockQuestion('mastered'); }
