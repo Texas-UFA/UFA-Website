@@ -2689,11 +2689,11 @@ footer { padding-bottom: 32px; }
   }
 
   /* Stat cards: 2-col, 3rd card spans full width */
-  #ptab-content-overview > div:first-child {
+  #ptab-content-overview > div[data-ov="stats"] {
     grid-template-columns: 1fr 1fr !important;
     gap: 10px !important;
   }
-  #ptab-content-overview > div:first-child > div:nth-child(3) {
+  #ptab-content-overview > div[data-ov="stats"] > div:nth-child(3) {
     grid-column: 1 / -1 !important;
   }
 
@@ -5112,8 +5112,8 @@ button[onclick="pubFlipbookNext()"]:hover {
           <div id="ov-live"></div>
           <div id="ov-announcements"></div>
 
-          <!-- Stat cards -->
-          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;">
+          <!-- Stat cards (the CSS finds this grid by data-ov="stats", so blocks can sit above it safely) -->
+          <div data-ov="stats" style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;">
             <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:24px;">
               <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:10px;">Total Points</div>
               <div style="font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:500;color:#3D6B3D;line-height:1;" id="stat-total-points">0</div>
@@ -5212,11 +5212,14 @@ button[onclick="pubFlipbookNext()"]:hover {
               <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:32px;">
                 <div class="pf-photo">
                   <div class="pf-av" id="pf-av">M</div>
-                  <div class="pf-photo-actions">
-                    <button type="button" class="pf-btn" onclick="document.getElementById('pf-file').click()">Upload photo</button>
-                    <button type="button" class="pf-btn link" id="pf-remove" onclick="profilePhotoRemove()" style="display:none;">Remove photo</button>
+                  <div class="pf-photo-main">
+                    <div class="pf-who" id="pf-who">Your profile</div>
+                    <div class="pf-sub" id="pf-sub"></div>
+                    <div class="pf-actions">
+                      <button type="button" class="pf-btn" onclick="document.getElementById('pf-file').click()">Upload photo</button>
+                      <button type="button" class="pf-btn link" id="pf-remove" onclick="profilePhotoRemove()" style="display:none;">Remove</button>
+                    </div>
                     <input type="file" id="pf-file" accept="image/*" style="display:none;" onchange="profilePhotoPicked(this)">
-                    <div class="pf-note">Square photos work best.</div>
                     <div class="pf-note" id="pf-photo-msg" style="display:none;"></div>
                   </div>
                 </div>
@@ -5235,20 +5238,6 @@ button[onclick="pubFlipbookNext()"]:hover {
                     <div class="portal-field-note" style="font-size:11px;color:#6B7D6B;margin-top:4px;">Changing your email will require you to sign in again.</div>
                   </div>
                   <div>
-                    <div class="portal-field-label" style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:4px;">Major</div>
-                    <input id="profile-major" type="text" maxlength="80" placeholder="e.g. Finance" style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;">
-                  </div>
-                  <div>
-                    <div class="portal-field-label" style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:4px;">Graduation year</div>
-                    <select id="profile-gradyear" style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;"><option value="">Select</option>
-                      <option>2026</option><option>2027</option><option>2028</option><option>2029</option><option>2030</option><option>2031</option>
-                    </select>
-                  </div>
-                  <div>
-                    <div class="portal-field-label" style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:4px;">LinkedIn</div>
-                    <input id="profile-linkedin" type="text" maxlength="200" placeholder="linkedin.com/in/your-name" style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;">
-                  </div>
-                  <div>
                     <div class="portal-field-label" style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:4px;">Role</div>
                     <select id="profile-role" style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;appearance:none;-webkit-appearance:none;background-image:url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2712%27 height=%278%27 viewBox=%270 0 12 8%27%3E%3Cpath d=%27M1 1l5 5 5-5%27 stroke=%27%236B7D6B%27 stroke-width=%271.5%27 fill=%27none%27 stroke-linecap=%27round%27/%3E%3C/svg%3E');background-repeat:no-repeat;background-position:right 14px center;">
                       <option value="General Member">General Member</option>
@@ -5258,6 +5247,23 @@ button[onclick="pubFlipbookNext()"]:hover {
                       <option value="Board">Board</option>
                       <option value="President">President</option>
                     </select>
+                  </div>
+                  <div class="pf-section">About you</div>
+                  <div class="pf-two">
+                    <div>
+                      <div class="portal-field-label" style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:4px;">Major</div>
+                      <input id="profile-major" type="text" maxlength="80" placeholder="e.g. Finance" style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;">
+                    </div>
+                    <div>
+                      <div class="portal-field-label" style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:4px;">Graduation year</div>
+                      <select id="profile-gradyear" style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;"><option value="">Choose year</option>
+                        <option value="2026">2026</option><option value="2027">2027</option><option value="2028">2028</option><option value="2029">2029</option><option value="2030">2030</option><option value="2031">2031</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="portal-field-label" style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:4px;">LinkedIn</div>
+                    <input id="profile-linkedin" type="text" maxlength="200" placeholder="linkedin.com/in/your-name" style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;">
                   </div>
                   <button onclick="saveProfile()" style="background:#3D6B3D;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:12px;border-radius:4px;border:none;cursor:pointer;">Save changes</button>
                   <div id="profile-msg" style="display:none;font-size:13px;color:#2e6b2e;text-align:center;"></div>
@@ -7000,26 +7006,26 @@ button[onclick="pubFlipbookNext()"]:hover {
 #ptab-content-profile input[readonly] { background: #F1F1EE !important; }
 
 /* ── Overview: stat cards ───────────────────────────────────────── */
-#ptab-content-overview > div:first-child { gap: 18px !important; }
-#ptab-content-overview > div:first-child > div {
+#ptab-content-overview > div[data-ov="stats"] { gap: 18px !important; }
+#ptab-content-overview > div[data-ov="stats"] > div {
   position: relative;
   overflow: hidden;
   padding: 26px 26px 24px !important;
 }
-#ptab-content-overview > div:first-child > div::after {
+#ptab-content-overview > div[data-ov="stats"] > div::after {
   content: '';
   position: absolute; right: -34px; top: -34px;
   width: 130px; height: 130px; border-radius: 50%;
   background: radial-gradient(circle, rgba(61,107,61,0.05), transparent 70%);
 }
-#ptab-content-overview > div:first-child > div:nth-child(1) {
+#ptab-content-overview > div[data-ov="stats"] > div:nth-child(1) {
   background: linear-gradient(135deg, #1C2B1C 0%, #2E4A2E 100%) !important;
   border-color: transparent !important;
 }
-#ptab-content-overview > div:first-child > div:nth-child(1)::after {
+#ptab-content-overview > div[data-ov="stats"] > div:nth-child(1)::after {
   background: radial-gradient(circle, rgba(168,216,168,0.38), transparent 70%);
 }
-#ptab-content-overview > div:first-child > div:nth-child(1) > div:first-child { color: #A8D8A8 !important; }
+#ptab-content-overview > div[data-ov="stats"] > div:nth-child(1) > div:first-child { color: #A8D8A8 !important; }
 #stat-total-points { color: #fff !important; }
 #stat-total-points, #stat-general-meetings, #stat-analyst-meetings, #stat-socials { font-size: 44px !important; }
 
@@ -7578,8 +7584,8 @@ button[onclick="pubFlipbookNext()"]:hover {
 @media (max-width: 768px) {
   #portal-welcome-name { font-size: 26px !important; }
   #portal-tab-nav { background: rgba(255,255,255,0.08) !important; }
-  #ptab-content-overview > div:first-child > div { padding: 18px !important; }
-  #ptab-content-overview > div:first-child { grid-template-columns: repeat(2,1fr) !important; }
+  #ptab-content-overview > div[data-ov="stats"] > div { padding: 18px !important; }
+  #ptab-content-overview > div[data-ov="stats"] { grid-template-columns: repeat(2,1fr) !important; }
   #stat-total-points, #stat-general-meetings, #stat-analyst-meetings, #stat-socials { font-size: 34px !important; }
   .ufa-run-head { padding: 20px 18px 26px; }
   .ufa-run-head .ufa-timer { font-size: 42px; }
@@ -8083,7 +8089,7 @@ async function showDashboard() {
 /** Shows/hides the "you're pending approval, but can still check in" banner
  *  above the Overview tab. Only touches the DOM at all for pending accounts
  *  — approved members' overview layout is never modified, so any CSS that
- *  keys off "#ptab-content-overview > div:first-child" (styling the stats
+ *  keys off "#ptab-content-overview > div[data-ov="stats"]" (styling the stats
  *  cards) keeps matching the stats grid exactly as before. */
 function showPendingBanner(show) {
   var el = document.getElementById('pending-approval-banner');
@@ -22926,10 +22932,10 @@ input[type="date"].fx-input::-webkit-date-and-time-value { text-align: left; }
 
 @media (max-width: 900px) {
   /* Overview stat cards: a tidy 2x2 instead of a ragged 2/1/1. */
-  #ptab-content-overview > div:first-child { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 12px !important; }
-  #ptab-content-overview > div:first-child > div { padding: 18px 16px 16px !important; min-width: 0; }
-  #ptab-content-overview > div:first-child > div > div:last-child { font-size: 30px !important; }
-  #ptab-content-overview > div:first-child > div:nth-child(3) { grid-column: auto !important; }
+  #ptab-content-overview > div[data-ov="stats"] { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 12px !important; }
+  #ptab-content-overview > div[data-ov="stats"] > div { padding: 18px 16px 16px !important; min-width: 0; }
+  #ptab-content-overview > div[data-ov="stats"] > div > div:last-child { font-size: 30px !important; }
+  #ptab-content-overview > div[data-ov="stats"] > div:nth-child(3) { grid-column: auto !important; }
 
   /* Two-up check-in and history stack cleanly. */
   #checkin-history-grid { grid-template-columns: 1fr !important; }
@@ -23722,12 +23728,19 @@ async function pitchDelete(id) {
 .ut-ic{position:relative;} .ut-item .us-badge{position:absolute;top:-5px;right:-11px;}
 .um-item .us-badge{margin-left:auto;}
 /* ── Profile photo + fields ── */
-.pf-photo{display:flex;align-items:center;gap:18px;margin-bottom:20px;}
-.pf-av{width:92px;height:92px;border-radius:50%;background:#2E4A2E center/cover no-repeat;color:#fff;display:flex;align-items:center;justify-content:center;font:600 30px 'DM Sans',sans-serif;flex:none;}
-.pf-photo-actions{display:flex;flex-direction:column;gap:8px;align-items:flex-start;}
-.pf-btn{padding:8px 14px;border:1px solid rgba(46,74,46,0.25);border-radius:8px;background:#fff;font:500 13px 'DM Sans',sans-serif;color:#1C2B1C;cursor:pointer;}
-.pf-btn.link{border:none;background:none;color:#8b2e2e;padding:0;text-decoration:underline;}
-.pf-note{font-size:12px;color:#6B7D6B;}
+.pf-photo{display:flex;align-items:center;gap:22px;padding-bottom:24px;margin-bottom:24px;border-bottom:1px solid rgba(46,74,46,0.1);}
+.pf-av{width:88px;height:88px;border-radius:50%;background:#2E4A2E center/cover no-repeat;color:#fff;display:flex;align-items:center;justify-content:center;font:600 30px 'DM Sans',sans-serif;flex:none;}
+.pf-photo-main{min-width:0;}
+.pf-who{font-family:'Playfair Display',Georgia,serif;font-size:22px;color:#1C2B1C;line-height:1.2;}
+.pf-sub{font-size:13px;color:#6B7D6B;margin:2px 0 12px;}
+.pf-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+#ptab-content-profile .pf-btn{background:#fff !important;color:#1C2B1C !important;border:1px solid rgba(46,74,46,0.28) !important;box-shadow:none !important;transform:none !important;padding:8px 16px;border-radius:8px !important;font:500 13px 'DM Sans',sans-serif;cursor:pointer;}
+#ptab-content-profile .pf-btn:hover{background:#F2F6F2 !important;transform:none !important;box-shadow:none !important;}
+#ptab-content-profile .pf-btn.link{background:none !important;border:none !important;color:#8b2e2e !important;padding:8px 2px;text-decoration:underline;}
+.pf-note{font-size:12px;color:#6B7D6B;margin-top:8px;}
+.pf-section{font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;padding-top:20px;margin-top:6px;border-top:1px solid rgba(46,74,46,0.1);}
+.pf-two{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media (max-width:600px){.pf-two{grid-template-columns:1fr;}.pf-photo{gap:16px;}.pf-av{width:72px;height:72px;font-size:24px;}}
 /* ── Activity + trends ── */
 .act-row{display:grid;grid-template-columns:150px 150px 1fr;gap:14px;padding:12px 18px;border-top:1px solid rgba(46,74,46,0.08);font-size:13px;color:#1C2B1C;align-items:start;}
 .act-row:first-child{border-top:none;}
@@ -23817,21 +23830,18 @@ function annUnread() { return ANN.rows.filter(function (a) { return new Date(a.c
 function renderAnnouncementFeed() {
   var box = document.getElementById('ov-announcements');
   if (!box) return;
-  var rows = ANN.rows.filter(function (a) { return a.message; });
   var unreadIds = {}; annUnread().forEach(function (a) { unreadIds[a.id] = true; });
-  var n = Object.keys(unreadIds).length;
-  if (typeof ufaSetBadge === 'function') ufaSetBadge('overview', n);
-  if (!rows.length) { box.innerHTML = ''; return; }
-  var shown = ANN.showAll ? rows : rows.slice(0, 3);
-  box.innerHTML = '<div class="ann-card"><div class="ann-head"><div class="ann-title">Announcements</div>' +
-    (n ? '<span class="ann-pill">' + n + ' new</span>' : '') +
-    (n ? '<button type="button" class="ann-link" onclick="annMarkRead(true)">Mark all as read</button>' : '') + '</div>' +
-    shown.map(function (a) {
+  var fresh = ANN.rows.filter(function (a) { return a.message && unreadIds[a.id]; });
+  if (typeof ufaSetBadge === 'function') ufaSetBadge('overview', fresh.length);
+  // Nothing new: no card at all. It only appears when there is something to read.
+  if (!fresh.length) { box.innerHTML = ''; return; }
+  box.innerHTML = '<div class="ann-card"><div class="ann-head"><div class="ann-title">New announcement' + (fresh.length > 1 ? 's' : '') + '</div>' +
+    '<button type="button" class="ann-link" onclick="annMarkRead(true)">Got it</button></div>' +
+    fresh.slice(0, 4).map(function (a) {
       var d = new Date(a.created_at);
-      return '<div class="ann-item' + (unreadIds[a.id] ? ' is-new' : '') + '"><span class="ann-dot"></span><div><div class="ann-msg">' + ufaEsc(a.message) + '</div>' +
+      return '<div class="ann-item"><div><div class="ann-msg">' + ufaEsc(a.message) + '</div>' +
         '<div class="ann-when">' + d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) + '</div></div></div>';
-    }).join('') +
-    (rows.length > 3 ? '<button type="button" class="ann-link ann-more" onclick="ANN.showAll=!ANN.showAll;renderAnnouncementFeed()">' + (ANN.showAll ? 'Show fewer' : 'Show ' + (rows.length - 3) + ' earlier') + '</button>' : '') + '</div>';
+    }).join('') + '</div>';
 }
 
 async function annMarkRead(rerender) {
@@ -23865,6 +23875,9 @@ function profileFillExtras() {
     else { av.style.backgroundImage = ''; av.textContent = ufaInitials(currentMember.name); }
   }
   var rm = document.getElementById('pf-remove'); if (rm) rm.style.display = currentMember.avatar_url ? '' : 'none';
+  var wn = document.getElementById('pf-who'); if (wn) wn.textContent = currentMember.name || 'Your profile';
+  var ws = document.getElementById('pf-sub'); if (ws) ws.textContent = (currentMember.role || '').replace('-Pending', '');
+  var gsel = document.getElementById('profile-gradyear'); if (gsel && gsel.selectedIndex < 0) gsel.selectedIndex = 0;
 }
 
 function ufaResizeImage(file, size) {
