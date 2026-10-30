@@ -7231,6 +7231,8 @@ button[onclick="pubFlipbookNext()"]:hover {
   border-radius: 999px; padding: 2px 9px;
 }
 .ufa-reveal-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 8px; }
+#ptab-content-mock.is-session > .ufa-pane-head,
+#ptab-content-mock.is-session > #mock-visibility { display: none; }
 .ufa-q-card.is-swap { animation: mqSwap .22s ease; }
 @keyframes mqSwap { from { opacity: .35; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .ufa-q-card.is-swap { animation: none; } }
@@ -17663,6 +17665,7 @@ function startMock() {
   document.getElementById('mock-setup').style.display = 'none';
   document.getElementById('mock-done').style.display = 'none';
   document.getElementById('mock-stats-card').style.display = 'none';
+  mockSetFocusMode(true);
 
   if (MOCK.track === 'cases') { startCaseRun(); return; }
 
@@ -17937,6 +17940,7 @@ async function endMock(early) {
   }
   var answered = early ? MOCK.idx : MOCK.sessionSeen.length;
 
+  mockSetFocusMode(false);
   document.getElementById('mock-running').style.display = 'none';
   document.getElementById('mock-case').style.display = 'none';
   document.getElementById('mock-done').style.display = '';
@@ -17981,7 +17985,15 @@ async function endMock(early) {
   ufaFinishMockSession(secs, answered);
 }
 
+/* While a session is running, hide the page title and the visibility notice so
+   the timer and question sit at the top and nobody has to scroll to reach them. */
+function mockSetFocusMode(on) {
+  var pane = document.getElementById('ptab-content-mock');
+  if (pane) pane.classList.toggle('is-session', !!on);
+}
+
 function resetMock() {
+  mockSetFocusMode(false);
   document.getElementById('mock-done').style.display = 'none';
   document.getElementById('mock-setup').style.display = '';
   document.getElementById('mock-stats-card').style.display = '';
