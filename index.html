@@ -7231,6 +7231,9 @@ button[onclick="pubFlipbookNext()"]:hover {
   border-radius: 999px; padding: 2px 9px;
 }
 .ufa-reveal-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 8px; }
+.ufa-q-card.is-swap { animation: mqSwap .22s ease; }
+@keyframes mqSwap { from { opacity: .35; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .ufa-q-card.is-swap { animation: none; } }
 .ufa-q-nav { display: flex; gap: 8px; flex-wrap: wrap; margin-left: auto; }
 .ufa-q-nav .ufa-btn-ghost:disabled { opacity: .4; cursor: default; }
 @media (max-width: 700px) { .ufa-q-nav { margin-left: 0; width: 100%; } .ufa-q-nav .ufa-btn-ghost { flex: 1 1 0; padding-left: 8px; padding-right: 8px; } }
@@ -17672,11 +17675,11 @@ function showMockQuestion() {
   if (!q) { endMock(false); return; }
   if (MOCK.sessionSeen.indexOf(q.id) === -1) MOCK.sessionSeen.push(q.id);
 
-  /* Reading the answer can leave the page scrolled well down the card;
-     a fresh question should always open back at the top, not wherever
-     the last one left off. */
-  var runEl = document.getElementById('mock-running');
-  if (runEl) runEl.scrollIntoView({ behavior: 'auto', block: 'start' });
+  /* Keep the page steady between questions. Instead of snapping the page to
+     the top of the card, remember where the question card sits on screen now,
+     and put it back there once the new question has been drawn. */
+  var cardEl = document.querySelector('#mock-running .ufa-q-card');
+  var topBefore = (cardEl && cardEl.offsetParent !== null) ? cardEl.getBoundingClientRect().top : null;
 
   document.getElementById('mock-q-text').textContent = q.q;
   var trackLabel = (MOCK_TRACKS.filter(function (t) { return t.id === MOCK.track; })[0] || {}).label || '';
@@ -17722,6 +17725,18 @@ function showMockQuestion() {
   document.getElementById('mock-next-btn').innerHTML = isLast ? 'Finish session' : 'Next question &rarr;';
   var prevBtn = document.getElementById('mock-prev-btn');
   if (prevBtn) prevBtn.disabled = MOCK.idx <= 0;
+
+  if (cardEl) {
+    if (topBefore !== null) {
+      var shift = cardEl.getBoundingClientRect().top - topBefore;
+      if (Math.abs(shift) > 1) window.scrollBy(0, shift);   // hold the card still
+    }
+    var rr = cardEl.getBoundingClientRect();
+    if (rr.top < 140 || rr.bottom > window.innerHeight) {   // only move if it is off screen
+      window.scrollTo({ top: window.scrollY + rr.top - 160, behavior: 'smooth' });
+    }
+    cardEl.classList.remove('is-swap'); void cardEl.offsetWidth; cardEl.classList.add('is-swap');
+  }
 
   if (MOCK.handle) clearInterval(MOCK.handle);
   var timerEl = document.getElementById('mock-timer');
