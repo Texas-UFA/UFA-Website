@@ -658,6 +658,31 @@
 
 
   /* ============================================================
+     SPONSOR BAND  (home page only)
+     Sits between the Teams preview and the photo strip. Built to scale:
+     one logo centers cleanly, more logos wrap into a row. To add a
+     sponsor, copy one <a class="sponsor-logo-link"> in the home page
+     markup (search "SPONSORS"). --sponsor-logo-h sets logo height.
+     ============================================================ */
+  .sponsor-band {
+    --sponsor-logo-h: 112px;
+    background: var(--white);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 36px 72px;
+    display: flex; flex-direction: column; align-items: center; gap: 14px;
+    text-align: center;
+  }
+  .sponsor-band-label { font-size: 13px; color: var(--text-muted); letter-spacing: 0.02em; margin: 0; }
+  .sponsor-logos { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 20px 56px; }
+  .sponsor-logo-link { display: inline-flex; border-radius: 6px; }
+  .sponsor-logo-link img { height: var(--sponsor-logo-h); width: auto; max-width: 100%; display: block; object-fit: contain; }
+  .sponsor-logo-link:focus-visible { outline: 2px solid var(--green-accent); outline-offset: 6px; }
+  @media (max-width: 768px) {
+    .sponsor-band { padding: 28px 24px; --sponsor-logo-h: 88px; }
+  }
+
+  /* ============================================================
      CTA BAND
      The dark green call-to-action strip used at the bottom of pages.
      Contains a title, subtitle, and action buttons.
@@ -3731,6 +3756,16 @@ button[onclick="pubFlipbookNext()"]:hover {
     </div>
   </section>
 
+  <!-- SPONSORS -->
+  <section class="sponsor-band" aria-label="Sponsors">
+    <p class="sponsor-band-label">Proudly supported by</p>
+    <div class="sponsor-logos">
+      <a class="sponsor-logo-link" href="https://equitable.com" target="_blank" rel="noopener noreferrer">
+        <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/Equitable-logo-1400x1400-20230310-p5s7lsmj0n.png" alt="Equitable Advisors">
+      </a>
+    </div>
+  </section>
+
   <!-- Photo strip -->
     <div class="photo-strip" style="height:300px;grid-template-columns:repeat(3,1fr);">
     <div class="photo-strip-img" style="overflow:hidden;"><img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/IMG_2906.jpeg" alt="UFA board dinner" style="width:100%;height:100%;object-fit:cover;object-position:center 65%;transition:transform 0.4s;"></div>
@@ -5500,16 +5535,23 @@ button[onclick="pubFlipbookNext()"]:hover {
         <div id="ptab-content-board" style="display:none;">
           <div class="ufa-pane-head">
             <div class="ufa-pane-title">Board Hours</div>
-            <div class="ufa-pane-sub">Email any board member directly, or book a 15 or 30 minute slot with them. <strong>Your first booking earns +0.5 pts</strong> as a one-time credit. A no-show or canceling takes it back.</div>
+            <div class="ufa-pane-sub">Reach out to any board member directly. Tap <strong>Email</strong> for a message that is already filled in with your name, topic, and times, or call or text if they have shared a number. Board schedules change week to week, so check the availability note on each card. <strong>After you meet, tap Log meeting on their card.</strong> Once they confirm it happened, you earn a one-time +0.5 pts.</div>
           </div>
 
           <div id="board-visibility"></div>
           <div id="board-alert" style="display:none;"></div>
 
           <!-- Member's own upcoming meetings -->
-          <div class="ufa-card" id="my-bookings-card" style="display:none;">
+          <!-- CALENDAR HIDDEN (not deleted): see BOARD_CALENDAR_ENABLED in the script. -->
+          <div class="ufa-card ufa-cal-only" id="my-bookings-card" style="display:none;">
             <div class="ufa-label">Your upcoming meetings</div>
             <div id="my-bookings-list"></div>
+          </div>
+
+          <!-- Meetings the member has logged, and whether the board member confirmed them -->
+          <div class="ufa-card" id="bh-log-card" style="display:none;">
+            <div class="ufa-label">Your logged meetings</div>
+            <div id="bh-log-list"></div>
           </div>
 
           <div class="ufa-label">The board</div>
@@ -5518,7 +5560,7 @@ button[onclick="pubFlipbookNext()"]:hover {
           </div>
 
           <!-- Booking calendar, revealed when a board member is picked -->
-          <div class="ufa-card" id="booking-panel" style="display:none;margin-top:24px;">
+          <div class="ufa-card ufa-cal-only" id="booking-panel" style="display:none;margin-top:24px;">
             <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px;">
               <div>
                 <div class="ufa-pane-title" style="font-size:19px;" id="booking-with">Book time</div>
@@ -5787,7 +5829,7 @@ button[onclick="pubFlipbookNext()"]:hover {
             <button onclick="switchAdminTab('announce')" class="admin-tab" id="atab-announce">Announcements</button>
             <button onclick="switchAdminTab('approvals')" class="admin-tab" id="atab-approvals">Approvals <span id="approvals-badge" style="display:none;background:#c0392b;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;margin-left:4px;"></span></button>
             <button onclick="switchAdminTab('resumes')" class="admin-tab" id="atab-resumes">Resumes</button>
-            <button onclick="switchAdminTab('boardhours')" class="admin-tab" id="atab-boardhours">Board Hours</button>
+            <button onclick="switchAdminTab('boardhours')" class="admin-tab" id="atab-boardhours">Board Contact <span id="bh-badge" style="display:none;background:#c0392b;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;margin-left:4px;"></span></button>
             <button onclick="switchAdminTab('engagement')" class="admin-tab" id="atab-engagement">Engagement</button>
             <button onclick="switchAdminTab('pitches')" class="admin-tab" id="atab-pitches">GM Pitches</button>
             <button onclick="switchAdminTab('activity')" class="admin-tab" id="atab-activity">Activity</button>
@@ -6165,9 +6207,19 @@ button[onclick="pubFlipbookNext()"]:hover {
                availability, and any one-off blackout dates. Nobody can
                edit anyone else's — that's enforced by RLS, not just here. -->
           <div id="atab-content-boardhours" style="display:none;">
+            <div class="ufa-card" id="bh-confirm-card">
+              <div class="ufa-label">Meetings to confirm</div>
+              <div class="ufa-pane-sub" style="margin-bottom:12px;">
+                Members log a meeting after they meet with you. Confirm only the ones that really happened.
+                A confirmed meeting gives that member a one-time +0.5 pts credit. Only you can confirm meetings logged with you.
+              </div>
+              <div id="bh-confirm-alert" style="display:none;"></div>
+              <div id="bh-confirm-list"><div class="ufa-empty" style="padding:16px;">Loading…</div></div>
+            </div>
+
             <div class="ufa-label">Your board card</div>
             <div class="ufa-pane-sub" style="margin-bottom:16px;">
-              This is what members see in the Board Hours tab. You can only edit your own.
+              This is what members see in the Board Hours tab. You can only edit your own. Add a phone number only if you are comfortable with approved members seeing it.
             </div>
 
             <div id="boardhours-alert" style="display:none;"></div>
@@ -6189,14 +6241,33 @@ button[onclick="pubFlipbookNext()"]:hover {
                 <textarea id="bp-bio" class="ufa-textarea" placeholder="Resume reviews, IB recruiting timelines, anything about the investment team."></textarea>
               </div>
 
-              <div style="margin-top:16px;display:flex;gap:22px;flex-wrap:wrap;">
+              <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:16px;" id="bp-grid-contact">
+                <div>
+                  <div class="ufa-label">Phone <span style="text-transform:none;letter-spacing:0;font-weight:400;color:#9AA69A;">&mdash; optional</span></div>
+                  <input type="tel" id="bp-phone" class="ufa-input" placeholder="(512) 555-0134" autocomplete="tel">
+                </div>
+                <div>
+                  <div class="ufa-label">Typical availability</div>
+                  <input type="text" id="bp-avail-note" class="ufa-input" maxlength="90" placeholder="Tue and Thu afternoons">
+                </div>
+              </div>
+              <div style="margin-top:12px;">
+                <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:#3A4A3A;cursor:pointer;">
+                  <input type="checkbox" id="bp-show-phone" style="width:15px;height:15px;cursor:pointer;">
+                  Show my phone number to approved members (call and text buttons)
+                </label>
+              </div>
+
+              <!-- CALENDAR HIDDEN (not deleted): booking toggle, slot lengths, and buffer.
+                   Kept in the DOM so saveBoardProfile() keeps preserving their values. -->
+              <div class="ufa-cal-only" style="margin-top:16px;display:flex;gap:22px;flex-wrap:wrap;">
                 <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:#3A4A3A;cursor:pointer;">
                   <input type="checkbox" id="bp-booking" checked style="width:15px;height:15px;cursor:pointer;">
                   Let members book time with me
                 </label>
               </div>
 
-              <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:16px;" id="bp-grid2">
+              <div class="ufa-cal-only" style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:16px;" id="bp-grid2">
                 <div>
                   <div class="ufa-label">Slot lengths offered</div>
                   <select id="bp-slots" class="ufa-select">
@@ -6221,7 +6292,7 @@ button[onclick="pubFlipbookNext()"]:hover {
               </div>
             </div>
 
-            <div class="ufa-card">
+            <div class="ufa-card ufa-cal-only">
               <div class="ufa-label">Weekly availability</div>
               <div class="ufa-pane-sub" style="margin-bottom:14px;">
                 Recurring windows that repeat every week. Members can book any open slot inside these,
@@ -6254,7 +6325,7 @@ button[onclick="pubFlipbookNext()"]:hover {
               </div>
             </div>
 
-            <div class="ufa-card">
+            <div class="ufa-card ufa-cal-only">
               <div class="ufa-label">Blackout dates <span style="text-transform:none;letter-spacing:0;font-weight:400;color:#9AA69A;">— optional</span></div>
               <div class="ufa-pane-sub" style="margin-bottom:14px;">
                 Your weekly windows above repeat forever. A blackout cancels them for one specific stretch
@@ -6279,7 +6350,7 @@ button[onclick="pubFlipbookNext()"]:hover {
               </div>
             </div>
 
-            <div class="ufa-card">
+            <div class="ufa-card ufa-cal-only">
               <div class="ufa-label">Meetings booked with you</div>
               <div id="bp-bookings"></div>
             </div>
@@ -6297,7 +6368,7 @@ button[onclick="pubFlipbookNext()"]:hover {
      PORTAL v2 STYLES
      Shared styling for the four features added in the v2 build:
        · Resume Book        (member upload + board export)
-       · Board Hours        (directory + 15/30-min booking)
+       · Board Hours        (directory + direct email, call, or text; calendar hidden, see BOARD_CALENDAR_ENABLED)
        · Mock Interview     (member practice tool)
 
      Everything is namespaced `ufa-` so it cannot collide with the
@@ -6573,6 +6644,16 @@ button[onclick="pubFlipbookNext()"]:hover {
 }
 .ufa-board-contact a { color: #3D6B3D; text-decoration: none; }
 .ufa-board-contact a:hover { text-decoration: underline; }
+
+/* Board calendar is switched off but kept in the file. To bring it back:
+   delete this rule and set BOARD_CALENDAR_ENABLED = true in the script. */
+.ufa-cal-only { display: none !important; }
+
+/* Board Hours: contact actions on each card */
+.ufa-board-avail { font-size: 12.5px; color: #3D6B3D; font-weight: 500; margin-top: 10px; }
+.ufa-contact-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; padding-top: 16px; }
+.ufa-contact-actions .ufa-btn { flex: 1 1 100%; text-align: center; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
+.ufa-contact-actions .ufa-btn-ghost { flex: 1 1 0; min-width: 0; text-align: center; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
 
 .ufa-day-col { min-width: 0; }
 .ufa-day-head {
@@ -15841,6 +15922,11 @@ var BK = {
   pending: null     // slot awaiting confirmation
 };
 
+/* The in-portal booking calendar is switched off in favor of direct email, call,
+   or text. All of the calendar code below is intact. To restore it, set this to
+   true and delete the ".ufa-cal-only { display: none !important; }" CSS rule. */
+const BOARD_CALENDAR_ENABLED = false;
+
 const BOOKING_HORIZON_DAYS = 21;   // how far ahead members can book
 const CANCEL_LEAD_HOURS = 2;       // minimum notice to cancel
 
@@ -15890,9 +15976,12 @@ async function loadBoardTab() {
   if (dir) dir.innerHTML = '<div class="ufa-empty">Loading the board…</div>';
 
   var r1 = await sb.from('board_profiles').select('*').eq('active', true).order('sort_order', { ascending: true });
-  var r2 = await sb.from('board_availability').select('*');
-  var r3 = await sb.from('board_blackouts').select('*');
-  var r4 = await sb.from('bookings').select('*').eq('status', 'booked');
+  var r2 = { data: [] }, r3 = { data: [] }, r4 = { data: [] };
+  if (BOARD_CALENDAR_ENABLED) {
+    r2 = await sb.from('board_availability').select('*');
+    r3 = await sb.from('board_blackouts').select('*');
+    r4 = await sb.from('bookings').select('*').eq('status', 'booked');
+  }
 
   boardProfiles = sortToBoardPageOrder(r1.data || []);
   boardAvail = r2.data || [];
@@ -15902,8 +15991,11 @@ async function loadBoardTab() {
     return String(b.member_email).toLowerCase() === ufaEmail();
   });
 
+  await bhLoadMemberLogs();
   renderMyBookings();
   renderBoardDirectory();
+  bhRenderLogCard();
+  if (ufaIsBoard()) bhNoticeForBoard();
 }
 
 function renderMyBookings() {
@@ -15941,6 +16033,294 @@ function renderMyBookings() {
   }).join('');
 }
 
+/* ── Board Hours: direct contact helpers ──────────────────────────
+   Replace the booking calendar. Each card gets a prefilled email
+   (default mail app and Gmail), a copy-email button, and call or text
+   links when the board member has chosen to share a number. */
+function ufaTelHref(v) {
+  var d = String(v || '').replace(/\D/g, '');
+  if (d.length === 11 && d.charAt(0) === '1') d = d.slice(1);
+  return d.length === 10 ? '+1' + d : String(v || '').replace(/[^\d+]/g, '');
+}
+
+function ufaBoardEmailTemplate(p) {
+  var me = (currentMember && currentMember.name) ? String(currentMember.name).trim() : '';
+  var first = String(p.name || '').trim().split(/\s+/)[0] || 'there';
+  var subject = 'UFA Board Hours: ' + (me || 'Member');
+  var body =
+    'Hi ' + first + ',\r\n\r\n' +
+    'My name is ' + (me || '[your name]') + ' and I am a UFA member. I would love to set up a short meeting with you.\r\n\r\n' +
+    'What I would like to talk about: \r\n' +
+    'Length (15 or 30 min): \r\n' +
+    'Times that work for me (2 or 3):\r\n' +
+    '1. \r\n2. \r\n3. \r\n\r\n' +
+    'Thank you,\r\n' + (me || '[your name]');
+  return { subject: subject, body: body };
+}
+
+function ufaContactActions(p) {
+  var t = ufaBoardEmailTemplate(p);
+  var q = 'subject=' + encodeURIComponent(t.subject) + '&body=' + encodeURIComponent(t.body);
+  var mailto = 'mailto:' + encodeURIComponent(p.email).replace(/%40/g, '@') + '?' + q;
+  var gmail = 'https://mail.google.com/mail/?view=cm&fs=1&to=' + encodeURIComponent(p.email) +
+    '&su=' + encodeURIComponent(t.subject) + '&body=' + encodeURIComponent(t.body);
+  var first = String(p.name || '').trim().split(/\s+/)[0] || 'board member';
+  var phone = (p.show_phone && p.phone) ? ufaTelHref(p.phone) : '';
+
+  return '<div class="ufa-contact-actions">' +
+    '<a class="ufa-btn" href="' + ufaEsc(mailto) + '">Email ' + ufaEsc(first) + '</a>' +
+    '<a class="ufa-btn-ghost ufa-btn-sm" href="' + ufaEsc(gmail) + '" target="_blank" rel="noopener noreferrer">Open in Gmail</a>' +
+    '<button type="button" class="ufa-btn-ghost ufa-btn-sm" data-copy-email="' + ufaEsc(p.email) + '" onclick="ufaCopyEmail(this)">Copy email</button>' +
+    (phone
+      ? '<a class="ufa-btn-ghost ufa-btn-sm" href="tel:' + ufaEsc(phone) + '">Call</a>' +
+        '<a class="ufa-btn-ghost ufa-btn-sm" href="sms:' + ufaEsc(phone) + '">Text</a>'
+      : '') +
+    ((bhLogsReady && !bhEarned && String(p.email).toLowerCase() !== ufaEmail())
+      ? '<button type="button" class="ufa-btn-ghost ufa-btn-sm" style="flex:1 1 100%;" data-bh-email="' + ufaEsc(p.email) + '" onclick="bhOpenLog(this.dataset.bhEmail)">Log meeting for credit</button>'
+      : '') +
+  '</div>';
+}
+
+function ufaCopyEmail(btn) {
+  var email = btn.getAttribute('data-copy-email') || '';
+  var done = function () {
+    var old = btn.textContent;
+    btn.textContent = 'Copied';
+    setTimeout(function () { btn.textContent = old; }, 1600);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(email).then(done, function () { window.prompt('Copy this email:', email); });
+  } else {
+    window.prompt('Copy this email:', email);
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════
+   BOARD HOURS CREDIT (replaces booking-based credit)
+   1. A member meets a board member (email, call, or text), then taps
+      "Log meeting for credit" on that board member's card.
+   2. The log is saved to `board_meeting_logs` as 'pending'.
+   3. Only the named board member can confirm it. Confirming writes the
+      member's one-time +0.5 'Board Hours' row to `attendance`
+      (code_used 'BH-LOG-<log id>'), so totals and the leaderboard need
+      no other changes. Declined or canceled logs never earn anything.
+   The table is created by board-meeting-logs SQL (see build notes).
+   ════════════════════════════════════════════════════════════════ */
+var bhLogsReady = false;   // false until the board_meeting_logs table answers
+var bhEarned = false;      // member already holds their one-time Board Hours credit
+var bhMyLogs = [];
+
+function bhPts() { return (typeof BH_POINTS !== 'undefined') ? BH_POINTS : 0.5; }
+function bhFirst(name) { return String(name || '').trim().split(/\s+/)[0] || 'them'; }
+function bhFmtDay(iso) {
+  var p = String(iso || '').split('-');
+  if (p.length !== 3) return String(iso || '');
+  return new Date(+p[0], +p[1] - 1, +p[2]).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+}
+function bhTodayIso() {
+  var d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+function bhDaysAgoIso(n) {
+  var d = new Date(Date.now() - n * 86400000);
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+
+async function bhLoadMemberLogs() {
+  var r = await sb.from('board_meeting_logs').select('*').eq('member_email', ufaEmail())
+    .order('created_at', { ascending: false }).limit(30);
+  bhLogsReady = !r.error;
+  bhMyLogs = r.error ? [] : (r.data || []);
+  var a = await sb.from('attendance').select('code_used').eq('email', ufaEmail()).eq('event_type', 'Board Hours').limit(1);
+  bhEarned = !a.error && !!(a.data && a.data.length);
+}
+
+function bhRenderLogCard() {
+  var card = document.getElementById('bh-log-card'), list = document.getElementById('bh-log-list');
+  if (!card || !list) return;
+  var rows = bhMyLogs.filter(function (l) { return l.status !== 'cancelled'; });
+  if (!bhLogsReady || !rows.length) { card.style.display = 'none'; return; }
+  card.style.display = '';
+  list.innerHTML = rows.map(function (l) {
+    var pill = l.status === 'confirmed'
+      ? '<span class="ufa-pill ufa-pill-green">Confirmed</span>'
+      : (l.status === 'declined'
+          ? '<span class="ufa-pill ufa-pill-grey">Not confirmed</span>'
+          : '<span class="ufa-pill ufa-pill-grey">Waiting on ' + ufaEsc(bhFirst(l.board_name)) + '</span>');
+    var cancel = l.status === 'pending'
+      ? '<button class="ufa-btn-ghost ufa-btn-sm ufa-btn-danger" data-id="' + l.id + '" onclick="bhCancelLog(this.dataset.id)">Cancel</button>' : '';
+    return '<div class="ufa-booking-row">' +
+      '<div class="ufa-booking-when">' + ufaEsc(bhFmtDay(l.met_on)) + '</div>' +
+      '<div style="flex:1;min-width:160px;">' +
+        '<div style="font-size:13px;font-weight:600;color:#1C2B1C;">' + ufaEsc(l.board_name || l.board_email) +
+          ' <span style="font-weight:400;color:#6B7D6B;">&middot; ' + l.duration_min + ' min</span></div>' +
+        (l.topic ? '<div style="font-size:12px;color:#6B7D6B;margin-top:3px;">' + ufaEsc(l.topic) + '</div>' : '') +
+      '</div>' + pill + cancel + '</div>';
+  }).join('');
+}
+
+function bhOpenLog(boardEmail) {
+  var p = boardProfiles.filter(function (x) { return x.email === boardEmail; })[0];
+  if (!p) return;
+  ufaModal(
+    '<div class="ufa-modal-head">' +
+      '<div><div class="ufa-modal-title">Log a meeting</div>' +
+      '<div class="ufa-pane-sub" style="margin-top:4px;">with ' + ufaEsc(p.name) + '</div></div>' +
+      '<button class="ufa-modal-x" onclick="ufaCloseModal()">&times;</button>' +
+    '</div>' +
+    '<div class="ufa-modal-body">' +
+      '<div class="ufa-pane-sub" style="margin-bottom:16px;">Only log a meeting that already happened. ' + ufaEsc(bhFirst(p.name)) +
+        ' has to confirm it before you earn your one-time +' + bhPts() + ' pts.</div>' +
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">' +
+        '<div><div class="ufa-label">Date you met</div>' +
+          '<input type="date" id="bh-log-date" class="ufa-input" value="' + bhTodayIso() + '" min="' + bhDaysAgoIso(30) + '" max="' + bhTodayIso() + '"></div>' +
+        '<div><div class="ufa-label">Length</div>' +
+          '<select id="bh-log-len" class="ufa-select"><option value="15">15 min</option><option value="30" selected>30 min</option><option value="45">45 min or more</option></select></div>' +
+      '</div>' +
+      '<div class="ufa-label" style="margin-top:14px;">What you talked about</div>' +
+      '<textarea id="bh-log-topic" class="ufa-textarea" placeholder="Resume review, IB recruiting timelines, anything else…"></textarea>' +
+      '<div id="bh-log-modal-alert" style="margin-top:14px;"></div>' +
+    '</div>' +
+    '<div class="ufa-modal-foot">' +
+      '<button class="ufa-btn-ghost" onclick="ufaCloseModal()">Never mind</button>' +
+      '<button class="ufa-btn" id="bh-log-send" data-email="' + ufaEsc(boardEmail) + '" onclick="bhSubmitLog(this.dataset.email)">Send for confirmation</button>' +
+    '</div>'
+  );
+}
+
+async function bhSubmitLog(boardEmail) {
+  var p = boardProfiles.filter(function (x) { return x.email === boardEmail; })[0];
+  var btn = document.getElementById('bh-log-send');
+  var date = (document.getElementById('bh-log-date') || {}).value;
+  var len = Number((document.getElementById('bh-log-len') || {}).value) || 30;
+  var topic = ((document.getElementById('bh-log-topic') || {}).value || '').trim();
+  if (!p) return;
+  if (!date || date > bhTodayIso() || date < bhDaysAgoIso(30)) {
+    return ufaAlert('bh-log-modal-alert', 'err', 'Pick the day you met, within the last 30 days.');
+  }
+  var dupe = bhMyLogs.filter(function (l) {
+    return l.board_email === boardEmail && l.met_on === date && (l.status === 'pending' || l.status === 'confirmed');
+  })[0];
+  if (dupe) return ufaAlert('bh-log-modal-alert', 'err', 'You already logged a meeting with ' + bhFirst(p.name) + ' on that day.');
+
+  if (btn) btn.disabled = true;
+  var me = (currentMember && currentMember.name) ? String(currentMember.name).trim() : ufaEmail();
+  var res = await sb.from('board_meeting_logs').insert({
+    board_email: boardEmail, board_name: p.name,
+    member_email: ufaEmail(), member_name: me,
+    met_on: date, duration_min: len, topic: topic || null, status: 'pending'
+  });
+  if (res.error) {
+    if (btn) btn.disabled = false;
+    return ufaAlert('bh-log-modal-alert', 'err', 'Could not save: ' + res.error.message);
+  }
+  ufaCloseModal();
+  ufaSendEmail(boardEmail, 'Please confirm: ' + me + ' logged a meeting with you',
+    me + ' says you met on ' + bhFmtDay(date) + ' (' + len + ' min).\n' +
+    (topic ? 'Topic: ' + topic + '\n' : '') +
+    '\nIf it happened, confirm it so they earn their one-time credit. Open the member portal, go to Admin, then Board Contact.\n' +
+    'If it did not happen, choose Did not happen.\n\ntexasufa.org/portal');
+  await bhLoadMemberLogs();
+  bhRenderLogCard();
+  renderBoardDirectory();
+  ufaAlert('board-alert', 'ok', 'Sent. ' + bhFirst(p.name) + ' will confirm it, and your credit is added once they do.');
+}
+
+async function bhCancelLog(id) {
+  var r = await sb.from('board_meeting_logs').update({ status: 'cancelled', resolved_at: new Date().toISOString(), resolved_by: ufaEmail() })
+    .eq('id', id).eq('member_email', ufaEmail()).eq('status', 'pending').select();
+  if (r.error) return ufaAlert('board-alert', 'err', 'Could not cancel: ' + r.error.message);
+  await bhLoadMemberLogs();
+  bhRenderLogCard();
+}
+
+/* Board side */
+async function bhNoticeForBoard() {
+  var r = await sb.from('board_meeting_logs').select('id').eq('board_email', ufaEmail()).eq('status', 'pending');
+  if (r.error || !r.data || !r.data.length) return;
+  ufaAlert('board-alert', 'info', r.data.length + ' member' + (r.data.length === 1 ? '' : 's') +
+    ' logged a meeting with you. Confirm ' + (r.data.length === 1 ? 'it' : 'them') + ' in Admin, then Board Contact.');
+}
+
+async function bhLoadConfirmCard() {
+  var list = document.getElementById('bh-confirm-list');
+  var badge = document.getElementById('bh-badge');
+  if (!list) return;
+  var r = await sb.from('board_meeting_logs').select('*').eq('board_email', ufaEmail())
+    .order('created_at', { ascending: false }).limit(40);
+  if (r.error) {
+    list.innerHTML = '<div class="ufa-empty" style="padding:16px;">Meeting logs are not set up in the database yet. Run the board-meeting-logs SQL in Supabase.</div>';
+    if (badge) badge.style.display = 'none';
+    return;
+  }
+  var rows = r.data || [];
+  var pending = rows.filter(function (l) { return l.status === 'pending'; });
+  var done = rows.filter(function (l) { return l.status === 'confirmed' || l.status === 'declined'; }).slice(0, 8);
+  if (badge) { badge.textContent = pending.length; badge.style.display = pending.length ? '' : 'none'; }
+
+  function row(l) {
+    var right = l.status === 'pending'
+      ? '<button class="ufa-btn ufa-btn-sm" data-id="' + l.id + '" onclick="bhResolveLog(this.dataset.id,true)">Happened</button>' +
+        '<button class="ufa-btn-ghost ufa-btn-sm" data-id="' + l.id + '" onclick="bhResolveLog(this.dataset.id,false)">Did not happen</button>'
+      : (l.status === 'confirmed' ? '<span class="ufa-pill ufa-pill-green">Confirmed</span>' : '<span class="ufa-pill ufa-pill-grey">Not confirmed</span>');
+    return '<div class="ufa-booking-row">' +
+      '<div class="ufa-booking-when">' + ufaEsc(bhFmtDay(l.met_on)) + '</div>' +
+      '<div style="flex:1;min-width:170px;">' +
+        '<div style="font-size:13px;font-weight:600;color:#1C2B1C;">' + ufaEsc(l.member_name || l.member_email) +
+          ' <span style="font-weight:400;color:#6B7D6B;">&middot; ' + l.duration_min + ' min</span></div>' +
+        (l.topic ? '<div style="font-size:12px;color:#6B7D6B;margin-top:3px;">' + ufaEsc(l.topic) + '</div>' : '') +
+      '</div>' + right + '</div>';
+  }
+  list.innerHTML =
+    (pending.length ? pending.map(row).join('') : '<div class="ufa-empty" style="padding:14px;">Nothing waiting on you.</div>') +
+    (done.length ? '<div class="ufa-label" style="margin:16px 0 6px;">Recently recorded</div>' + done.map(row).join('') : '');
+}
+
+async function bhResolveLog(id, happened) {
+  var alertId = 'bh-confirm-alert';
+  try {
+    var r = await sb.from('board_meeting_logs').select('*').eq('id', id).maybeSingle();
+    var l = r.data;
+    if (!l) return ufaAlert(alertId, 'err', 'Could not find that meeting.');
+    if (String(l.board_email).toLowerCase() !== ufaEmail()) return ufaAlert(alertId, 'err', 'Only the board member named on the log can confirm it.');
+    if (l.status !== 'pending') return ufaAlert(alertId, 'err', 'That meeting was already recorded.');
+
+    // Claim first. ".eq('status','pending')" means a double click can only win once,
+    // so the credit below can only be written once.
+    var claim = await sb.from('board_meeting_logs').update({
+      status: happened ? 'confirmed' : 'declined', resolved_at: new Date().toISOString(), resolved_by: ufaEmail()
+    }).eq('id', id).eq('status', 'pending').select();
+    if (claim.error) return ufaAlert(alertId, 'err', 'Could not save: ' + claim.error.message);
+    if (!claim.data || !claim.data.length) return ufaAlert(alertId, 'err', 'That meeting was already recorded.');
+
+    if (!happened) {
+      ufaAlert(alertId, 'ok', 'Marked as not happened. No credit was given.');
+    } else {
+      var ex = await sb.from('attendance').select('code_used').eq('email', l.member_email).eq('event_type', 'Board Hours').limit(1);
+      if (ex.data && ex.data.length) {
+        ufaAlert(alertId, 'ok', 'Confirmed. ' + (l.member_name || 'They') + ' had already earned their one-time credit.');
+      } else {
+        var ins = await sb.from('attendance').insert({
+          email: l.member_email,
+          meeting_name: 'Board Hours \u2014 meeting with ' + (l.board_name || 'a board member'),
+          meeting_date: new Date(l.met_on + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+          event_type: 'Board Hours', points: bhPts(), code_used: 'BH-LOG-' + l.id
+        });
+        if (ins.error) {
+          // Put the log back so it can be confirmed again instead of losing the credit.
+          await sb.from('board_meeting_logs').update({ status: 'pending', resolved_at: null, resolved_by: null }).eq('id', id);
+          return ufaAlert(alertId, 'err', 'Could not add the points, so the meeting was left pending: ' + ins.error.message);
+        }
+        ufaAlert(alertId, 'ok', 'Confirmed. ' + (l.member_name || 'They') + ' earned +' + bhPts() + ' pts.');
+      }
+    }
+    await bhLoadConfirmCard();
+  } catch (e) {
+    console.error('bhResolveLog', e);
+    ufaAlert(alertId, 'err', 'Something went wrong: ' + (e && e.message ? e.message : e));
+  }
+}
+
 function renderBoardDirectory() {
   var dir = document.getElementById('board-directory');
   if (!dir) return;
@@ -15959,20 +16339,30 @@ function renderBoardDirectory() {
       : '<div class="ufa-board-avatar">' + ufaEsc(initials) + '</div>';
     var hasHours = boardAvail.some(function (a) { return a.board_email === p.email; });
 
+    /* Bottom of the card: direct contact (default) or the legacy booking button. */
+    var action;
+    if (BOARD_CALENDAR_ENABLED) {
+      action = '<div style="margin-top:auto;padding-top:16px;">' +
+        (p.booking_enabled && hasHours
+          ? '<button class="ufa-btn ufa-book-btn" data-bk-email="' + ufaEsc(p.email) + '" style="width:100%;" onclick="openBookingPanel(\'' + ufaEsc(p.email) + '\')">Book time</button>'
+          : '<div style="font-size:12px;color:#6B7D6B;text-align:center;padding:8px;">' +
+            (p.booking_enabled ? 'No hours posted yet' : 'Not taking meetings right now') + '</div>') +
+      '</div>';
+    } else {
+      action = ufaContactActions(p);
+    }
+
     return '<div class="ufa-board-card" data-bk-card="' + ufaEsc(p.email) + '">' +
       avatar +
       '<div class="ufa-board-name">' + ufaEsc(p.name) + '</div>' +
       (p.position ? '<div class="ufa-board-role">' + ufaEsc(p.position) + '</div>' : '') +
       (p.bio ? '<div style="font-size:13px;color:#4A5A4A;line-height:1.6;margin-top:12px;">' + ufaEsc(p.bio) + '</div>' : '') +
+      (!BOARD_CALENDAR_ENABLED && p.availability_note ? '<div class="ufa-board-avail">Usually free: ' + ufaEsc(p.availability_note) + '</div>' : '') +
       '<div class="ufa-board-contact">' +
         '<div><span class="ufa-mail-ico">✉ </span><a href="mailto:' + ufaEsc(p.email) + '">' + ufaEsc(p.email) + '</a></div>' +
+        (p.show_phone && p.phone ? '<div><span class="ufa-mail-ico">☎ </span><a href="tel:' + ufaEsc(ufaTelHref(p.phone)) + '">' + ufaEsc(ufaFormatPhone(p.phone)) + '</a></div>' : '') +
       '</div>' +
-      '<div style="margin-top:auto;padding-top:16px;">' +
-        (p.booking_enabled && hasHours
-          ? '<button class="ufa-btn ufa-book-btn" data-bk-email="' + ufaEsc(p.email) + '" style="width:100%;" onclick="openBookingPanel(\'' + ufaEsc(p.email) + '\')">Book time</button>'
-          : '<div style="font-size:12px;color:#6B7D6B;text-align:center;padding:8px;">' +
-            (p.booking_enabled ? 'No hours posted yet' : 'Not taking meetings right now') + '</div>') +
-      '</div>' +
+      action +
     '</div>';
   }).join('');
   bkPlacePanel();
@@ -16389,12 +16779,18 @@ async function loadBoardHoursAdmin() {
 
   document.getElementById('bp-bio').value = myBoardProfile ? (myBoardProfile.bio || '') : '';
   document.getElementById('bp-booking').checked = myBoardProfile ? !!myBoardProfile.booking_enabled : true;
+  document.getElementById('bp-phone').value = myBoardProfile && myBoardProfile.phone ? ufaFormatPhone(myBoardProfile.phone) : '';
+  document.getElementById('bp-show-phone').checked = !!(myBoardProfile && myBoardProfile.show_phone);
+  document.getElementById('bp-avail-note').value = myBoardProfile ? (myBoardProfile.availability_note || '') : '';
   document.getElementById('bp-slots').value = myBoardProfile && myBoardProfile.slot_lengths
     ? myBoardProfile.slot_lengths.join(',') : '15,30';
   document.getElementById('bp-buffer').value = myBoardProfile ? String(myBoardProfile.buffer_min) : '15';
 
-  await refreshMyAvailability();
-  await refreshMyBoardBookings();
+  if (BOARD_CALENDAR_ENABLED) {
+    await refreshMyAvailability();
+    await refreshMyBoardBookings();
+  }
+  await bhLoadConfirmCard();
 }
 
 async function saveBoardProfile() {
@@ -16407,16 +16803,32 @@ async function saveBoardProfile() {
     name: name,
     position: document.getElementById('bp-position').value.trim(),
     bio: document.getElementById('bp-bio').value.trim(),
-    show_phone: false,
+    show_phone: document.getElementById('bp-show-phone').checked,
     booking_enabled: document.getElementById('bp-booking').checked,
     slot_lengths: slots,
     buffer_min: Number(document.getElementById('bp-buffer').value),
     active: true,
     updated_at: new Date().toISOString()
   };
+  var phoneVal = document.getElementById('bp-phone').value.trim();
+  var newCols = {
+    phone: phoneVal ? ufaFormatPhone(phoneVal) : null,
+    availability_note: document.getElementById('bp-avail-note').value.trim() || null
+  };
 
-  var res = await sb.from('board_profiles').upsert(row, { onConflict: 'email' });
+  /* phone and availability_note are new columns. If they have not been added in
+     Supabase yet, fall back to saving everything else so the card still saves. */
+  var res = await sb.from('board_profiles').upsert(Object.assign({}, row, newCols), { onConflict: 'email' });
+  if (res.error && /phone|availability_note|schema cache/i.test(res.error.message || '')) {
+    res = await sb.from('board_profiles').upsert(row, { onConflict: 'email' });
+    if (!res.error) {
+      myBoardProfile = row;
+      ufaAlert('boardhours-alert', 'err', 'Saved your card, but phone and availability were not stored: the board_profiles table is missing those two columns. Run the SQL snippet from the build notes in Supabase, then save again.');
+      return;
+    }
+  }
   if (res.error) { ufaAlert('boardhours-alert', 'err', 'Could not save: ' + res.error.message); return; }
+  row = Object.assign(row, newCols);
   myBoardProfile = row;
   ufaAlert('boardhours-alert', 'ok', 'Saved. Members can see this in Board Hours now.');
 }
@@ -16731,7 +17143,7 @@ function ufaApprovalEmail(name) {
       'What is in there:\n' +
       '  - Check in at meetings and track your points\n' +
       '  - Recruiting guides, the resume book, and mock interviews\n' +
-      '  - Book time with any board member\n\n' +
+      '  - Reach out to any board member\n\n' +
       'texasufa.org/portal\n\n' +
       'Welcome to UFA.'
   };
@@ -21374,7 +21786,7 @@ async function ufaSyncCredits() {
     }
 
     // 3. Board hours: any booking that is still on, or happened (not canceled, not a no-show).
-    if (!out.hasBoard) {
+    if (!out.hasBoard && BOARD_CALENDAR_ENABLED) {
       var ok = bks.filter(function (x) { return x.status === 'booked' && x.outcome !== 'no_show'; })
         .sort(function (x, y) { return new Date(y.start_ts) - new Date(x.start_ts); })[0];
       if (ok && await award('BH-SIGNUP-' + ok.id, 'Board Hours \u2014 sign-up credit', 'Board Hours', CREDIT_POINTS)) {
@@ -21447,9 +21859,9 @@ function ufaRenderCreditsCard() {
     row('Reach ' + (CREDIT_MOCK3_MINUTES / 60) + ' hours of mock interview practice',
         s.hasMock3 ? thanks : prog(CREDIT_MOCK3_MINUTES, CREDIT_MOCK3_QUESTIONS),
         s.hasMock3 ? done(CREDIT_MOCK3_POINTS) : btn('Keep practicing', 'mock'), CREDIT_MOCK3_POINTS, s.hasMock3) +
-    row('Book a board hours slot',
-        s.hasBoard ? thanks : '<div style="font-size:12px;color:#6B7D6B;margin-top:3px;">Book a 15 or 30 minute slot with a board member. Credit is given when you book. A no-show or cancellation takes it back.</div>',
-        s.hasBoard ? done(CREDIT_POINTS) : btn('Find a time', 'board'), CREDIT_POINTS, s.hasBoard);
+    row('Meet with a board member',
+        s.hasBoard ? thanks : '<div style="font-size:12px;color:#6B7D6B;margin-top:3px;">Reach out to a board member, then log the meeting on their card. Credit is added once they confirm it happened.</div>',
+        s.hasBoard ? done(CREDIT_POINTS) : btn('Reach out', 'board'), CREDIT_POINTS, s.hasBoard);
 }
 
 /* Logs one finished mock session (feeds credits and the Engagement tab),
