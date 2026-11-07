@@ -23342,6 +23342,11 @@ document.addEventListener('keydown', function (e) {
 .um-item svg { color: #3D6B3D; flex: none; }
 .um-item.is-active { background: #EEF5EE; font-weight: 600; }
 .um-sep { height: 1px; background: rgba(46,74,46,0.10); margin: 8px 6px; }
+.um-me > span { display: flex; flex-direction: column; line-height: 1.25; }
+.um-me small { font-size: 12px; font-weight: 400; color: #6B7D6B; margin-top: 2px; }
+#ufa-side .us-head .us-me { cursor: pointer; border-radius: 12px; padding: 6px 8px; margin: -6px 0 -6px -8px; }
+#ufa-side .us-head .us-me:hover, #ufa-side .us-head .us-me.is-active { background: #EEF5EE; }
+#ufa-side .us-head .us-me:focus-visible { outline: 2px solid #3D6B3D; outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) { .um-sheet { animation: none; } }
 
 /* Date inputs: iOS gives them their own width and centred text, which pushed the box past the card edge */
@@ -23746,7 +23751,6 @@ document.addEventListener('click', function (e) {
   var GROUPS = [
     { label: 'Home',    tabs: ['overview', 'leaderboard', 'events', 'pitch'] },
     { label: 'Grow',    tabs: ['mock', 'board', 'recruiting', 'learn'] },
-    { label: 'Account', tabs: ['profile'] },
     { label: 'Board',   tabs: ['admin'] }
   ];
   var BAR = ['overview', 'leaderboard', 'events', 'mock'];
@@ -23769,7 +23773,7 @@ document.addEventListener('click', function (e) {
   side.id = 'ufa-side';
   side.setAttribute('aria-label', 'Portal navigation');
   side.innerHTML =
-    '<div class="us-head"><div class="us-me"><div class="us-av" id="us-av">M</div><div class="us-who"><div class="us-name" id="us-name">Member</div><div class="us-sub" id="us-sub"></div></div></div>' +
+    '<div class="us-head"><div class="us-me" data-tab="profile" role="button" tabindex="0" title="Your profile" aria-label="Open your profile"><div class="us-av" id="us-av">M</div><div class="us-who"><div class="us-name" id="us-name">Member</div><div class="us-sub" id="us-sub"></div></div></div>' +
       '<button type="button" class="us-toggle" data-act="collapse" aria-expanded="true" aria-label="Collapse sidebar" title="Collapse sidebar">' + icon('chevL', 18) + '</button></div>' +
     '<div class="us-nav" id="us-nav" role="navigation" aria-label="Portal sections"></div>' +
     '<button type="button" class="us-out" data-act="signout" title="Sign out">' + icon('out', 18) + '<span>Sign out</span></button>';
@@ -23825,19 +23829,25 @@ document.addEventListener('click', function (e) {
     nav.innerHTML = html;
 
     var prim = BAR.filter(visible);
-    var rest = ALL.filter(visible);
+    /* The More sheet only lists what the bottom bar does not already show.
+       Profile opens from the name and avatar instead of from a menu row. */
+    var rest = ALL.filter(function (t) { return visible(t) && BAR.indexOf(t) === -1 && t !== 'profile'; });
+    var me = side.querySelector('.us-me');
+    if (me) me.classList.toggle('is-active', cur === 'profile');
     var b = '';
     prim.forEach(function (t) {
       b += '<button type="button" class="ut-item' + (t === cur ? ' is-active' : '') + '" data-tab="' + t + '"' + (t === cur ? ' aria-current="page"' : '') + '><span class="ut-ic">' + icon(t, 22) + badge(t) + '</span><span class="ut-t">' + esc(SHORT[t] || LABEL[t]) + '</span></button>';
     });
     if (rest.length) {
-      var inMore = moreOpen;
+      var inMore = moreOpen || rest.indexOf(cur) !== -1 || cur === 'profile';
       b += '<button type="button" class="ut-item' + (inMore ? ' is-active' : '') + '" data-act="more"><span class="ut-ic">' + icon('more', 22) + '</span><span class="ut-t">More</span></button>';
     }
     bar.innerHTML = b;
     bar.classList.toggle('is-single', prim.length + (rest.length ? 1 : 0) <= 1);
 
-    var l = '';
+    var nm = (document.getElementById('us-name') || {}).textContent || 'Your profile';
+    var l = '<button type="button" class="um-item um-me' + (cur === 'profile' ? ' is-active' : '') + '" data-tab="profile">' + icon('profile', 22) +
+      '<span>' + esc(nm) + '<small>View your profile</small></span></button><div class="um-sep"></div>';
     rest.forEach(function (t) {
       l += '<button type="button" class="um-item' + (t === cur ? ' is-active' : '') + '" data-tab="' + t + '">' + icon(t, 22) + '<span>' + esc(LABEL[t]) + '</span>' + badge(t) + '</button>';
     });
@@ -23871,6 +23881,10 @@ document.addEventListener('click', function (e) {
     if (el.dataset.act === 'signout') { closeMore(); if (typeof portalLogout === 'function') portalLogout(); }
   }
   side.addEventListener('click', onClick);
+  side.addEventListener('keydown', function (e) {
+    var me = e.target.closest && e.target.closest('.us-me');
+    if (me && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); go('profile'); }
+  });
   bar.addEventListener('click', onClick);
   more.addEventListener('click', function (e) { if (e.target === more) closeMore(); else onClick(e); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeMore(); });
