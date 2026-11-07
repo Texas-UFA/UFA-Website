@@ -5816,7 +5816,7 @@ button[onclick="pubFlipbookNext()"]:hover {
         <div id="ptab-content-fund" style="display:none;">
           <div class="ufa-pane-head">
             <div class="ufa-pane-title">Fund</div>
-            <div class="ufa-pane-sub">Board only. Every board member can edit everything here. Pitches move from the GM vote to the fund committee and then into the fund.</div>
+            <div class="ufa-pane-sub">What the investment team's fund currently holds. Pitches are voted on in Pitch Vote.</div>
           </div>
           <div id="fund-body"></div>
         </div>
@@ -6658,24 +6658,13 @@ button[onclick="pubFlipbookNext()"]:hover {
 
 
 /* ── Fund tab ── */
-.fd-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-bottom: 4px; }
-.fd-pitches { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 14px; }
-.fd-pitch { border: 1px solid #E3E8E0; border-radius: 12px; padding: 16px; background: #FBFBF9; }
-.fd-pitch.fd-committee { border-color: #B9D3B9; background: #F4F9F3; }
-.fd-pitch.fd-declined { opacity: .72; }
-.fd-tick { font-family: 'Playfair Display', Georgia, serif; font-size: 22px; color: #1C2B1C; line-height: 1.1; }
-.fd-vote { border-top: 1px solid #E3E8E0; margin-top: 12px; padding-top: 12px; }
-.fd-reason { flex: 1 1 160px; min-width: 0; padding-top: 6px; padding-bottom: 6px; font-size: 13px; }
-.fd-link { color: #2E6B2E; font-weight: 500; text-decoration: none; }
+.fd-link { color: #2E6B2E; font-weight: 500; font-size: 12.5px; text-decoration: none; }
 .fd-link:hover { text-decoration: underline; }
-.fd-mini { background: none; border: none; padding: 0; font: inherit; font-size: 12px; color: #2E6B2E; cursor: pointer; text-decoration: underline; }
 .fd-scroll { overflow-x: auto; }
-.fd-table { width: 100%; border-collapse: collapse; font-size: 13px; color: #1C2B1C; }
-.fd-table th { text-align: left; font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: #6B7D6B; padding: 8px 10px; border-bottom: 1px solid #E3E8E0; white-space: nowrap; }
-.fd-table td { padding: 10px; border-bottom: 1px solid #EEF1EC; vertical-align: top; }
-.fd-table tr.fd-cash td { background: #F4F7F2; border-bottom: none; }
-.fd-cashrow { display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid #EEF1EC; flex-wrap: wrap; }
-@media (max-width: 900px) { .fd-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.fd-table { width: 100%; border-collapse: collapse; font-size: 14px; color: #1C2B1C; }
+.fd-table th { text-align: left; font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: #6B7D6B; padding: 8px 12px; border-bottom: 1px solid #E3E8E0; white-space: nowrap; }
+.fd-table td { padding: 14px 12px; border-bottom: 1px solid #EEF1EC; vertical-align: top; }
+.fd-table tbody tr:last-child td { border-bottom: none; }
 
 /* Board Hours: contact actions on each card */
 .ufa-board-avail { font-size: 12.5px; color: #3D6B3D; font-weight: 500; margin-top: 10px; }
@@ -8163,7 +8152,6 @@ async function showDashboard() {
   const BOARD_ROLES = ['Board', 'President'];
   const isBoard = BOARD_ROLES.includes(role) && !isPending; // never show admin to a pending account, even if role looks like Board
   document.getElementById('ptab-admin').style.display = isBoard ? '' : 'none';
-  document.getElementById('ptab-fund').style.display = isBoard ? '' : 'none';
   if (isBoard) loadApprovals(); // populate badge count on login
 
   loadAnnouncement();
@@ -8177,7 +8165,7 @@ async function showDashboard() {
   // roster info, recruiting resources, etc. until a board member approves
   // them. This overrides whatever applyFeatureVisibility() and the isBoard
   // check above just set.
-  ['leaderboard','events','pitch','profile','recruiting'].forEach(function(t) {
+  ['leaderboard','events','pitch','fund','profile','recruiting'].forEach(function(t) {
     var btn = document.getElementById('ptab-' + t);
     if (btn) btn.style.display = isPending ? 'none' : '';
   });
@@ -9069,7 +9057,6 @@ async function saveProfile() {
 
   var BOARD_ROLES = ['Board', 'President'];
   document.getElementById('ptab-admin').style.display = BOARD_ROLES.includes(roleToSave) ? '' : 'none';
-  document.getElementById('ptab-fund').style.display = BOARD_ROLES.includes(roleToSave) ? '' : 'none';
 
   if (roleToSave.indexOf('-Pending') !== -1) {
     msg.style.display='block'; msg.style.color='#856404';
@@ -23766,10 +23753,10 @@ document.addEventListener('click', function (e) {
                 mock: 'Mock Interview', board: 'Board Hours', learn: 'Ask & Learn', pitch: 'Pitch Vote', fund: 'Fund', admin: 'Admin' };
   var SHORT = { mock: 'Mock', board: 'Board Hours', leaderboard: 'Leaderboard' };
   var GROUPS = [
-    { label: 'Home',    tabs: ['overview', 'leaderboard', 'events', 'pitch'] },
+    { label: 'Home',    tabs: ['overview', 'leaderboard', 'events', 'pitch', 'fund'] },
     { label: 'Grow',    tabs: ['mock', 'board', 'recruiting', 'learn'] },
     { label: 'Account', tabs: ['profile'] },
-    { label: 'Board',   tabs: ['fund', 'admin'] }
+    { label: 'Board',   tabs: ['admin'] }
   ];
   var BAR = ['overview', 'leaderboard', 'events', 'mock'];
   var ALL = ['overview', 'leaderboard', 'events', 'pitch', 'mock', 'board', 'recruiting', 'learn', 'profile', 'fund', 'admin'];
@@ -24551,29 +24538,15 @@ async function renderTrends() {
 </script>
 <script>
 /* ════════════════════════════════════════════════════════════════
-   FUND (board only)
-   Pipeline:  GM pitch  ->  fund committee vote  ->  added to the fund.
-   The GM vote is advisory. Any board member can send a pitch to the
-   committee, vote, record a trade, sell, edit, or delete.
-   Tables and board-only policies: fund-setup.sql
-   Prices: Twelve Data free plan, fetched from the browser by a board
-   member (key lives in fund_settings, which members cannot read).
+   FUND: a simple holdings list. Every approved member can see it.
+   Board members can add, edit, and remove rows. Table: fund_holdings
+   (see fund-setup.sql). Voting stays in the Pitch Vote tab.
    ════════════════════════════════════════════════════════════════ */
-var FD = {
-  pitches: [], tallies: {}, votes: [], positions: [], cash: [],
-  prices: {}, settings: {}, refreshing: false, status: '', setupOk: true
-};
-var FD_SETUP_MSG = 'The fund is not set up in the database yet. Run fund-setup.sql in the Supabase SQL editor, then reload.';
-var FD_STAGES = { gm: 'Pitched', committee: 'In committee', added: 'In the fund', declined: 'Declined' };
+var FD = { rows: [] };
+var FD_SETUP_MSG = 'The fund list is not set up in the database yet. Run fund-setup.sql in the Supabase SQL editor, then reload.';
 
-/* ── formatting ── */
-function fdNum(v) { var n = parseFloat(v); return isFinite(n) ? n : 0; }
-function fdMoney(n, dp) {
-  if (n == null || !isFinite(n)) return '\u2014';
-  var d = (dp == null) ? 2 : dp;
-  return (n < 0 ? '-' : '') + '$' + Math.abs(n).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
-}
-function fdPct(n) { return (n == null || !isFinite(n)) ? '\u2014' : (n >= 0 ? '+' : '') + (n * 100).toFixed(1) + '%'; }
+function fdNum(v) { var n = parseFloat(v); return isFinite(n) ? n : null; }
+function fdMoney(n) { return '$' + n.toLocaleString('en-US', { maximumFractionDigits: 2 }); }
 function fdToday() {
   var d = new Date();
   return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
@@ -24583,493 +24556,86 @@ function fdDate(iso) {
   var p = String(iso).split('-'); if (p.length < 3) return String(iso);
   return new Date(+p[0], +p[1] - 1, +p[2]).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
-function fdTone(n) { return n > 0 ? 'color:#2E6B2E;' : (n < 0 ? 'color:#A33A32;' : ''); }
-function fdSleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
-function fdTicker(v) { return String(v || '').trim().toUpperCase(); }
-function fdValidTicker(t) { return /^[A-Z][A-Z0-9.\-]{0,9}$/.test(t); }
-
-/* ── prices ── */
-function fdLatest(t) { var a = FD.prices[t]; return a && a.length ? a[a.length - 1] : null; }
-function fdPriceOn(t, d) {
-  var a = FD.prices[t]; if (!a || !a.length) return null;
-  var lo = 0, hi = a.length - 1, ans = -1;
-  while (lo <= hi) { var mid = (lo + hi) >> 1; if (a[mid].d <= d) { ans = mid; lo = mid + 1; } else hi = mid - 1; }
-  return ans === -1 ? a[0].c : a[ans].c;
-}
-function fdBenchTicker() { return fdTicker(FD.settings.benchmark) || 'SPY'; }
-
-/* ── load ── */
-async function fdLoadPrices() {
-  var out = {}, from = 0, size = 1000;
-  for (var guard = 0; guard < 60; guard++) {
-    var r = await sb.from('fund_prices').select('ticker,price_date,close')
-      .order('ticker', { ascending: true }).order('price_date', { ascending: true }).range(from, from + size - 1);
-    if (r.error) return { error: r.error };
-    (r.data || []).forEach(function (x) { (out[x.ticker] = out[x.ticker] || []).push({ d: x.price_date, c: fdNum(x.close) }); });
-    if (!r.data || r.data.length < size) break;
-    from += size;
-  }
-  return { data: out };
-}
 
 async function loadFundTab() {
   var body = document.getElementById('fund-body'); if (!body) return;
-  if (!ufaIsBoard()) { body.innerHTML = ''; return; }
-  if (!FD.positions.length && !FD.pitches.length) body.innerHTML = '<div class="ufa-card" style="color:#6B7D6B;">Loading\u2026</div>';
-  var r = await Promise.all([
-    sb.from('pitches').select('*').order('created_at', { ascending: false }),
-    sb.rpc('pitch_tallies'),
-    sb.from('fund_votes').select('*'),
-    sb.from('fund_positions').select('*').order('opened_on', { ascending: true }),
-    sb.from('fund_cash').select('*').order('flow_date', { ascending: true }),
-    sb.from('fund_settings').select('*'),
-    fdLoadPrices()
-  ]);
-  if (r[3].error || r[4].error || r[2].error || r[5].error || r[6].error) {
-    FD.setupOk = false;
-    body.innerHTML = '<div class="ufa-card" style="color:#6B7D6B;">' + FD_SETUP_MSG + '</div>';
-    return;
-  }
-  FD.setupOk = true;
-  FD.pitches = (r[0].data || []).map(function (p) { p.stage = p.stage || 'gm'; return p; });
-  FD.tallies = {}; (r[1].data || []).forEach(function (t) { FD.tallies[String(t.pitch_id)] = { yes: Number(t.yes_votes) || 0, no: Number(t.no_votes) || 0 }; });
-  FD.votes = r[2].data || [];
-  FD.positions = (r[3].data || []).map(function (p) { p.shares = fdNum(p.shares); p.cost_per_share = fdNum(p.cost_per_share); p.exit_price = p.exit_price == null ? null : fdNum(p.exit_price); return p; });
-  FD.cash = (r[4].data || []).map(function (c) { c.amount = fdNum(c.amount); return c; });
-  FD.settings = {}; (r[5].data || []).forEach(function (s) { FD.settings[s.key] = s.value; });
-  FD.prices = r[6].data;
+  var r = await sb.from('fund_holdings').select('*').order('added_on', { ascending: false }).order('created_at', { ascending: false });
+  if (r.error) { body.innerHTML = '<div class="ufa-card" style="color:#6B7D6B;">' + FD_SETUP_MSG + '</div>'; return; }
+  FD.rows = r.data || [];
   fdRender();
 }
 
-/* ── math ── */
-function fdCompute() {
-  var P = FD.positions, F = FD.cash;
-  var open = P.filter(function (p) { return p.status === 'open'; });
-  var closed = P.filter(function (p) { return p.status === 'closed'; });
-  var contrib = F.reduce(function (s, c) { return s + c.amount; }, 0);
-  var spent = P.reduce(function (s, p) { return s + p.shares * p.cost_per_share; }, 0);
-  var proceeds = closed.reduce(function (s, p) { return s + p.shares * (p.exit_price || 0); }, 0);
-  var cash = contrib - spent + proceeds;
-  var rows = open.map(function (p) {
-    var lp = fdLatest(p.ticker), price = lp ? lp.c : null;
-    var value = (price == null ? p.cost_per_share : price) * p.shares;
-    return { p: p, price: price, asOf: lp ? lp.d : null, value: value, cost: p.shares * p.cost_per_share };
-  });
-  var holdings = rows.reduce(function (s, r) { return s + r.value; }, 0);
-  var total = holdings + cash;
-  rows.forEach(function (r) { r.weight = total > 0 ? r.value / total : null; r.gain = r.value - r.cost; r.gainPct = r.cost ? r.gain / r.cost : null; });
-  var realized = closed.reduce(function (s, p) { return s + p.shares * ((p.exit_price || 0) - p.cost_per_share); }, 0);
-
-  var bt = fdBenchTicker(), bl = fdLatest(bt), bench = null;
-  if (bl && F.length) {
-    bench = F.reduce(function (s, c) { var px = fdPriceOn(bt, c.flow_date); return px ? s + c.amount / px * bl.c : s; }, 0);
-  }
-  var asOf = null;
-  rows.forEach(function (r) { if (r.asOf && (!asOf || r.asOf < asOf)) asOf = r.asOf; });
-  if (!asOf && bl) asOf = bl.d;
-  return { open: open, closed: closed, rows: rows, contrib: contrib, cash: cash, holdings: holdings, total: total,
-           gain: total - contrib, gainPct: contrib ? (total - contrib) / contrib : null, realized: realized,
-           bench: bench, benchPct: (bench != null && contrib) ? (bench - contrib) / contrib : null, asOf: asOf, bt: bt };
-}
-
-function fdSeries() {
-  var bt = fdBenchTicker(), bp = FD.prices[bt];
-  if (!bp || !bp.length || !FD.cash.length) return [];
-  var start = FD.cash[0].flow_date;
-  FD.positions.forEach(function (p) { if (p.opened_on < start) start = p.opened_on; });
-  var dates = bp.filter(function (x) { return x.d >= start; }).map(function (x) { return x.d; });
-  if (dates.length > 420) dates = dates.slice(dates.length - 420);
-  var out = [];
-  dates.forEach(function (d) {
-    var cash = 0, hold = 0, bench = 0;
-    FD.cash.forEach(function (c) {
-      if (c.flow_date <= d) { cash += c.amount; var px = fdPriceOn(bt, c.flow_date), now = fdPriceOn(bt, d); if (px && now) bench += c.amount / px * now; }
-    });
-    FD.positions.forEach(function (p) {
-      if (p.opened_on <= d) {
-        cash -= p.shares * p.cost_per_share;
-        var stillOpen = !p.closed_on || p.closed_on > d;
-        if (stillOpen) { var px2 = fdPriceOn(p.ticker, d); hold += p.shares * (px2 == null ? p.cost_per_share : px2); }
-        else cash += p.shares * (p.exit_price || 0);
-      }
-    });
-    out.push({ d: d, fund: cash + hold, bench: bench });
-  });
-  return out;
-}
-
-function fdChart(series) {
-  if (series.length < 2) return '<div style="color:#6B7D6B;font-size:13px;padding:18px 0;">The chart appears after you log a deposit and refresh prices.</div>';
-  var W = 760, H = 250, L = 64, R = 14, T = 14, B = 30;
-  var vals = []; series.forEach(function (s) { vals.push(s.fund, s.bench); });
-  var mn = Math.min.apply(null, vals), mx = Math.max.apply(null, vals);
-  if (mx === mn) { mx += 1; mn -= 1; }
-  var pad = (mx - mn) * 0.08; mn -= pad; mx += pad;
-  function X(i) { return L + (W - L - R) * i / (series.length - 1); }
-  function Y(v) { return T + (H - T - B) * (1 - (v - mn) / (mx - mn)); }
-  function line(key, color, dash) {
-    return '<polyline fill="none" stroke="' + color + '" stroke-width="2"' + (dash ? ' stroke-dasharray="5 4"' : '') + ' points="' +
-      series.map(function (s, i) { return X(i).toFixed(1) + ',' + Y(s[key]).toFixed(1); }).join(' ') + '"/>';
-  }
-  var grid = '';
-  for (var g = 0; g <= 3; g++) {
-    var v = mn + (mx - mn) * g / 3, y = Y(v);
-    grid += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + y.toFixed(1) + '" y2="' + y.toFixed(1) + '" stroke="#E6E9E3"/>' +
-      '<text x="' + (L - 8) + '" y="' + (y + 4).toFixed(1) + '" text-anchor="end" font-size="11" fill="#6B7D6B">' + fdMoney(v, 0) + '</text>';
-  }
-  return '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;height:auto;display:block;" role="img" aria-label="Fund value against benchmark">' + grid +
-    line('bench', '#8A918A', true) + line('fund', '#2E6B2E', false) +
-    '<text x="' + L + '" y="' + (H - 8) + '" font-size="11" fill="#6B7D6B">' + fdDate(series[0].d) + '</text>' +
-    '<text x="' + (W - R) + '" y="' + (H - 8) + '" text-anchor="end" font-size="11" fill="#6B7D6B">' + fdDate(series[series.length - 1].d) + '</text></svg>' +
-    '<div style="display:flex;gap:18px;font-size:12px;color:#4A5A4A;margin-top:6px;">' +
-    '<span><span style="display:inline-block;width:18px;border-top:2px solid #2E6B2E;vertical-align:middle;margin-right:6px;"></span>UFA fund</span>' +
-    '<span><span style="display:inline-block;width:18px;border-top:2px dashed #8A918A;vertical-align:middle;margin-right:6px;"></span>Same dollars in ' + ufaEsc(fdBenchTicker()) + '</span></div>';
-}
-
-/* ── render ── */
 function fdRender() {
   var body = document.getElementById('fund-body'); if (!body) return;
-  var c = fdCompute();
-  var stale = '';
-  if (c.asOf) {
-    var days = Math.floor((Date.now() - new Date(c.asOf + 'T12:00:00').getTime()) / 86400000);
-    if (days > 3) stale = ' <span style="color:#A33A32;">(' + days + ' days old, refresh)</span>';
+  var board = ufaIsBoard();
+  var head = board
+    ? '<div style="display:flex;justify-content:flex-end;margin-bottom:12px;"><button class="ufa-btn ufa-btn-sm" onclick="fdOpen(null)">Add a position</button></div>'
+    : '';
+  if (!FD.rows.length) {
+    body.innerHTML = '<div id="fund-alert" style="display:none;margin-bottom:14px;"></div>' + head +
+      '<div class="ufa-card" style="color:#6B7D6B;">' + (board ? 'No positions yet. Use Add a position when the fund buys something.' : 'The fund has no positions yet. Check back soon.') + '</div>';
+    return;
   }
-  var priceLine = FD.status ? ufaEsc(FD.status) :
-    (c.asOf ? 'Prices as of ' + fdDate(c.asOf) + stale : (c.open.length || FD.cash.length ? 'No prices yet. Add your Twelve Data key, then refresh.' : ''));
-
-  function stat(label, val, sub, style) {
-    return '<div class="ufa-card" style="padding:16px 18px;margin:0;"><div class="ufa-label" style="margin-bottom:6px;">' + label + '</div>' +
-      '<div style="font-family:\'Playfair Display\',Georgia,serif;font-size:24px;color:#1C2B1C;' + (style || '') + '">' + val + '</div>' +
-      '<div style="font-size:12px;color:#6B7D6B;margin-top:4px;">' + (sub || '&nbsp;') + '</div></div>';
-  }
-  var diff = (c.benchPct != null && c.gainPct != null) ? c.gainPct - c.benchPct : null;
-  var summary =
-    '<div class="fd-stats">' +
-      stat('Fund value', fdMoney(c.total, 0), 'Holdings ' + fdMoney(c.holdings, 0) + ' + cash ' + fdMoney(c.cash, 0)) +
-      stat('Contributed', fdMoney(c.contrib, 0), FD.cash.length + ' cash entr' + (FD.cash.length === 1 ? 'y' : 'ies')) +
-      stat('Total return', c.gainPct == null ? '\u2014' : fdPct(c.gainPct), c.contrib ? fdMoney(c.gain, 0) : 'Log a deposit first', fdTone(c.gain)) +
-      stat('Against ' + ufaEsc(c.bt), diff == null ? '\u2014' : (diff >= 0 ? '+' : '') + (diff * 100).toFixed(1) + ' pts', c.benchPct == null ? 'Refresh prices to compare' : ufaEsc(c.bt) + ' returned ' + fdPct(c.benchPct) + ' on the same dollars', fdTone(diff)) +
-    '</div>';
-
-  var warn = c.cash < -0.5 ? '<div class="ufa-alert ufa-alert-info" style="margin-bottom:14px;">Cash is negative. Log the deposit that paid for these positions under Cash.</div>' : '';
-
-  /* pipeline */
-  var order = { committee: 0, gm: 1, added: 2, declined: 3 };
-  var pitches = FD.pitches.slice().sort(function (a, b) { return (order[a.stage] - order[b.stage]) || String(b.pitch_date || '').localeCompare(String(a.pitch_date || '')); });
-  var me = ufaEmail();
-  var pitchHtml = pitches.length ? pitches.map(function (p) {
-    var id = String(p.id), votes = FD.votes.filter(function (v) { return String(v.pitch_id) === id; });
-    var cnt = { yes: 0, no: 0, abstain: 0 }; votes.forEach(function (v) { cnt[v.choice] = (cnt[v.choice] || 0) + 1; });
-    var mine = votes.filter(function (v) { return String(v.voter_email).toLowerCase() === me; })[0];
-    var t = FD.tallies[id] || { yes: 0, no: 0 };
-    var deck = p.deck_url
-      ? '<a href="' + ufaEsc(p.deck_url) + '" target="_blank" rel="noopener noreferrer" class="fd-link">Pitch deck</a> <button class="fd-mini" data-id="' + ufaEsc(id) + '" onclick="fdSetDeck(this.dataset.id)">edit</button>'
-      : '<button class="fd-mini" data-id="' + ufaEsc(id) + '" onclick="fdSetDeck(this.dataset.id)">Add deck link</button>';
-    var act = '';
-    if (p.stage === 'gm') {
-      act = '<button class="ufa-btn ufa-btn-sm" data-id="' + ufaEsc(id) + '" onclick="fdSetStage(this.dataset.id,\'committee\')">Send to committee</button>';
-    } else if (p.stage === 'committee') {
-      var voters = votes.length ? votes.map(function (v) {
-        return '<div style="font-size:12px;color:#4A5A4A;margin-top:4px;"><strong>' + ufaEsc(String(v.voter_name || v.voter_email).split(' ')[0]) + '</strong> ' +
-          '<span style="color:' + (v.choice === 'yes' ? '#2E6B2E' : v.choice === 'no' ? '#A33A32' : '#6B7D6B') + ';">' + ufaEsc(v.choice) + '</span>' +
-          (v.reason ? ' &middot; ' + ufaEsc(v.reason) : '') + '</div>';
-      }).join('') : '<div style="font-size:12px;color:#6B7D6B;margin-top:4px;">No committee votes yet.</div>';
-      act = '<div class="fd-vote">' +
-        '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">' +
-          ['yes', 'no', 'abstain'].map(function (ch) {
-            var on = mine && mine.choice === ch;
-            return '<button class="' + (on ? 'ufa-btn' : 'ufa-btn-ghost') + ' ufa-btn-sm" data-id="' + ufaEsc(id) + '" data-ch="' + ch + '" onclick="fdVote(this.dataset.id,this.dataset.ch)">' + ch.charAt(0).toUpperCase() + ch.slice(1) + '</button>';
-          }).join('') +
-          '<input class="ufa-input fd-reason" id="fd-reason-' + ufaEsc(id) + '" placeholder="Reason (optional)" value="' + ufaEsc(mine && mine.reason || '') + '">' +
-        '</div>' +
-        '<div style="font-size:13px;color:#1C2B1C;margin-top:10px;"><strong>Committee:</strong> ' + cnt.yes + ' yes, ' + cnt.no + ' no, ' + cnt.abstain + ' abstain</div>' + voters +
-        '<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">' +
-          '<button class="ufa-btn ufa-btn-sm" data-id="' + ufaEsc(id) + '" onclick="fdOpenTrade(\'add\',this.dataset.id)">Add to fund</button>' +
-          '<button class="ufa-btn-ghost ufa-btn-sm ufa-btn-danger" data-id="' + ufaEsc(id) + '" onclick="fdSetStage(this.dataset.id,\'declined\')">Decline</button>' +
-        '</div></div>';
-    } else if (p.stage === 'declined') {
-      act = '<button class="ufa-btn-ghost ufa-btn-sm" data-id="' + ufaEsc(id) + '" onclick="fdSetStage(this.dataset.id,\'committee\')">Reopen in committee</button>';
-    }
-    return '<div class="fd-pitch fd-' + p.stage + '">' +
-      '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;">' +
-        '<div><div class="fd-tick">' + ufaEsc(p.ticker) + '</div><div style="font-size:12px;color:#6B7D6B;">' + fdDate(p.pitch_date) + '</div></div>' +
-        '<span class="ufa-pill ' + (p.stage === 'added' ? 'ufa-pill-green' : 'ufa-pill-grey') + '">' + FD_STAGES[p.stage] + '</span></div>' +
-      '<div style="font-size:12px;color:#4A5A4A;margin:8px 0;">GM vote (advisory): ' + t.yes + ' yes, ' + t.no + ' no</div>' +
-      '<div style="font-size:13px;margin-bottom:10px;">' + deck + '</div>' + act + '</div>';
-  }).join('') : '<div style="color:#6B7D6B;font-size:13px;">No pitches yet. Create one in Admin, GM Pitches, and it shows up here.</div>';
-
-  /* positions */
-  var posHtml = c.rows.length
-    ? '<div class="fd-scroll"><table class="fd-table"><thead><tr><th>Ticker</th><th>Shares</th><th>Avg cost</th><th>Price</th><th>Value</th><th>Weight</th><th>Gain</th><th></th></tr></thead><tbody>' +
-      c.rows.map(function (r) {
-        var p = r.p;
-        return '<tr><td><strong>' + ufaEsc(p.ticker) + '</strong><div style="font-size:11px;color:#6B7D6B;">since ' + fdDate(p.opened_on) + '</div></td>' +
-          '<td>' + p.shares.toLocaleString('en-US', { maximumFractionDigits: 4 }) + '</td><td>' + fdMoney(p.cost_per_share) + '</td>' +
-          '<td>' + (r.price == null ? '<button class="fd-mini" data-t="' + ufaEsc(p.ticker) + '" onclick="fdManualPrice(this.dataset.t)">set</button>' : fdMoney(r.price)) + '</td>' +
-          '<td>' + fdMoney(r.value, 0) + '</td><td>' + (r.weight == null ? '\u2014' : (r.weight * 100).toFixed(1) + '%') + '</td>' +
-          '<td style="' + fdTone(r.gain) + '">' + fdMoney(r.gain, 0) + '<div style="font-size:11px;">' + fdPct(r.gainPct) + '</div></td>' +
-          '<td style="white-space:nowrap;"><button class="ufa-btn-ghost ufa-btn-sm" data-id="' + p.id + '" onclick="fdOpenTrade(\'sell\',this.dataset.id)">Sell</button> ' +
-          '<button class="ufa-btn-ghost ufa-btn-sm" data-id="' + p.id + '" onclick="fdOpenTrade(\'edit\',this.dataset.id)">Edit</button></td></tr>';
-      }).join('') +
-      '<tr class="fd-cash"><td><strong>Cash</strong></td><td></td><td></td><td></td><td>' + fdMoney(c.cash, 0) + '</td><td>' + (c.total > 0 ? (c.cash / c.total * 100).toFixed(1) + '%' : '\u2014') + '</td><td></td><td></td></tr>' +
-      '</tbody></table></div>'
-    : '<div style="color:#6B7D6B;font-size:13px;">No open positions yet. Approve a pitch above, or add one you already hold.</div>';
-
-  var closedHtml = c.closed.length
-    ? '<details style="margin-top:14px;"><summary style="cursor:pointer;font-size:13px;color:#2E6B2E;">Closed positions (' + c.closed.length + '), realized ' + fdMoney(c.realized, 0) + '</summary>' +
-      '<div class="fd-scroll"><table class="fd-table"><thead><tr><th>Ticker</th><th>Shares</th><th>Bought</th><th>Sold</th><th>Gain</th><th></th></tr></thead><tbody>' +
-      c.closed.map(function (p) {
-        var g = p.shares * ((p.exit_price || 0) - p.cost_per_share);
-        return '<tr><td><strong>' + ufaEsc(p.ticker) + '</strong></td><td>' + p.shares.toLocaleString('en-US', { maximumFractionDigits: 4 }) + '</td>' +
-          '<td>' + fdMoney(p.cost_per_share) + '<div style="font-size:11px;color:#6B7D6B;">' + fdDate(p.opened_on) + '</div></td>' +
-          '<td>' + fdMoney(p.exit_price) + '<div style="font-size:11px;color:#6B7D6B;">' + fdDate(p.closed_on) + '</div></td>' +
-          '<td style="' + fdTone(g) + '">' + fdMoney(g, 0) + '</td>' +
-          '<td><button class="ufa-btn-ghost ufa-btn-sm" data-id="' + p.id + '" onclick="fdOpenTrade(\'edit\',this.dataset.id)">Edit</button></td></tr>';
-      }).join('') + '</tbody></table></div></details>' : '';
-
-  /* cash */
-  var cashHtml = FD.cash.length
-    ? FD.cash.slice().reverse().map(function (x) {
-        return '<div class="fd-cashrow"><div style="min-width:110px;color:#6B7D6B;font-size:13px;">' + fdDate(x.flow_date) + '</div>' +
-          '<div style="flex:1;font-size:13px;color:#1C2B1C;">' + ufaEsc(x.note || (x.amount >= 0 ? 'Deposit' : 'Withdrawal')) + '</div>' +
-          '<div style="font-weight:600;' + fdTone(x.amount) + '">' + fdMoney(x.amount) + '</div>' +
-          '<button class="ufa-btn-ghost ufa-btn-sm ufa-btn-danger" data-id="' + x.id + '" onclick="fdDeleteCash(this.dataset.id)">Delete</button></div>';
-      }).join('')
-    : '<div style="color:#6B7D6B;font-size:13px;">No cash logged. Add the money the fund started with so returns are measured correctly.</div>';
-
-  body.innerHTML =
-    '<div id="fund-alert" style="display:none;margin-bottom:14px;"></div>' + warn + summary +
-    '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:12px 0 22px;">' +
-      '<div style="font-size:12.5px;color:#6B7D6B;">' + priceLine + '</div>' +
-      '<div style="display:flex;gap:8px;"><button class="ufa-btn-ghost ufa-btn-sm" onclick="fdOpenSettings()">Price settings</button>' +
-      '<button class="ufa-btn ufa-btn-sm" id="fd-refresh" onclick="fdRefreshPrices()"' + (FD.refreshing ? ' disabled' : '') + '>' + (FD.refreshing ? 'Refreshing\u2026' : 'Refresh prices') + '</button></div></div>' +
-    '<div class="ufa-card"><div class="ufa-label">Performance</div>' + fdChart(fdSeries()) + '</div>' +
-    '<div class="ufa-card"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;"><div class="ufa-label" style="margin:0;">Positions</div>' +
-      '<button class="ufa-btn-ghost ufa-btn-sm" onclick="fdOpenTrade(\'add\',null)">Add a position</button></div><div style="margin-top:12px;">' + posHtml + closedHtml + '</div></div>' +
-    '<div class="ufa-card"><div class="ufa-label">Pitch pipeline</div>' +
-      '<div class="ufa-pane-sub" style="margin-bottom:14px;">GMs vote for fun and to feel involved, so that vote never blocks anything. Any board member can send a pitch to the fund committee (all board members). When it is approved, record the trade to add it to the fund.</div>' +
-      '<div class="fd-pitches">' + pitchHtml + '</div></div>' +
-    '<div class="ufa-card"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;"><div class="ufa-label" style="margin:0;">Cash</div>' +
-      '<button class="ufa-btn-ghost ufa-btn-sm" onclick="fdOpenCash()">Log deposit or withdrawal</button></div><div style="margin-top:12px;">' + cashHtml + '</div></div>';
+  var rows = FD.rows.map(function (h) {
+    var size = [];
+    if (h.shares != null) size.push(Number(h.shares).toLocaleString('en-US', { maximumFractionDigits: 4 }) + ' shares');
+    if (h.amount != null) size.push(fdMoney(Number(h.amount)));
+    var name = ufaEsc(h.company) + (h.ticker ? ' <span style="color:#6B7D6B;">' + ufaEsc(h.ticker) + '</span>' : '');
+    var extra = (h.deck_url ? '<a class="fd-link" href="' + ufaEsc(h.deck_url) + '" target="_blank" rel="noopener noreferrer">Pitch deck</a>' : '') +
+      (h.note ? '<div style="font-size:12px;color:#6B7D6B;margin-top:3px;">' + ufaEsc(h.note) + '</div>' : '');
+    return '<tr><td><strong>' + name + '</strong>' + (extra ? '<div style="margin-top:4px;">' + extra + '</div>' : '') + '</td>' +
+      '<td>' + size.join(' &middot; ') + '</td><td style="white-space:nowrap;">' + fdDate(h.added_on) + '</td>' +
+      (board ? '<td style="white-space:nowrap;text-align:right;"><button class="ufa-btn-ghost ufa-btn-sm" data-id="' + h.id + '" onclick="fdOpen(this.dataset.id)">Edit</button> ' +
+        '<button class="ufa-btn-ghost ufa-btn-sm ufa-btn-danger" data-id="' + h.id + '" onclick="fdRemove(this.dataset.id)">Remove</button></td>' : '') + '</tr>';
+  }).join('');
+  body.innerHTML = '<div id="fund-alert" style="display:none;margin-bottom:14px;"></div>' + head +
+    '<div class="ufa-card"><div class="fd-scroll"><table class="fd-table"><thead><tr><th>Company</th><th>Position</th><th>Added</th>' + (board ? '<th></th>' : '') + '</tr></thead><tbody>' + rows + '</tbody></table></div></div>';
 }
 
-/* ── pipeline actions ── */
-async function fdSetStage(id, stage) {
-  var r = await sb.from('pitches').update({ stage: stage }).eq('id', id);
-  if (r.error) return ufaAlert('fund-alert', 'err', 'Could not update: ' + r.error.message + ' (has fund-setup.sql been run?)');
-  await loadFundTab();
-}
-function fdSetDeck(id) {
-  var p = FD.pitches.filter(function (x) { return String(x.id) === String(id); })[0];
-  var v = window.prompt('Link to the pitch deck (Google Drive, Slides, or a PDF link). Leave blank to remove.', p && p.deck_url || '');
-  if (v === null) return;
-  v = v.trim();
-  if (v && !/^https?:\/\//i.test(v)) return ufaAlert('fund-alert', 'err', 'The link has to start with https://');
-  sb.from('pitches').update({ deck_url: v || null }).eq('id', id).then(function (r) {
-    if (r.error) return ufaAlert('fund-alert', 'err', 'Could not save: ' + r.error.message);
-    loadFundTab();
-  });
-}
-async function fdVote(id, choice) {
-  var reasonEl = document.getElementById('fd-reason-' + id);
-  var me = (currentMember && currentMember.name) ? String(currentMember.name).trim() : ufaEmail();
-  var r = await sb.from('fund_votes').upsert({
-    pitch_id: String(id), voter_email: ufaEmail(), voter_name: me, choice: choice,
-    reason: reasonEl && reasonEl.value.trim() ? reasonEl.value.trim() : null, updated_at: new Date().toISOString()
-  }, { onConflict: 'pitch_id,voter_email' });
-  if (r.error) return ufaAlert('fund-alert', 'err', 'Could not save your vote: ' + r.error.message);
-  await loadFundTab();
-}
-
-/* ── trades ── */
-function fdOpenTrade(mode, ref) {
-  var pitch = null, pos = null;
-  if (mode === 'add' && ref) pitch = FD.pitches.filter(function (x) { return String(x.id) === String(ref); })[0] || null;
-  if (mode !== 'add') pos = FD.positions.filter(function (x) { return String(x.id) === String(ref); })[0];
-  if (mode !== 'add' && !pos) return;
-  var title = mode === 'add' ? (pitch ? 'Add ' + pitch.ticker + ' to the fund' : 'Add a position') : mode === 'sell' ? 'Sell ' + pos.ticker : 'Edit ' + pos.ticker;
-  var f = function (label, inner) { return '<div><div class="ufa-label">' + label + '</div>' + inner + '</div>'; };
-  var inputs;
-  if (mode === 'sell') {
-    inputs = f('Shares to sell', '<input type="number" step="any" id="fd-t-shares" class="ufa-input" value="' + pos.shares + '">') +
-      f('Sale price per share', '<input type="number" step="any" id="fd-t-price" class="ufa-input" value="' + (fdLatest(pos.ticker) ? fdLatest(pos.ticker).c : '') + '">') +
-      f('Date sold', '<input type="date" id="fd-t-date" class="ufa-input" value="' + fdToday() + '">');
-  } else {
-    inputs = f('Ticker', '<input id="fd-t-ticker" class="ufa-input" style="text-transform:uppercase;" value="' + ufaEsc(pitch ? pitch.ticker : pos ? pos.ticker : '') + '"' + (pitch ? ' readonly' : '') + '>') +
-      f('Shares', '<input type="number" step="any" id="fd-t-shares" class="ufa-input" value="' + (pos ? pos.shares : '') + '">') +
-      f('Price paid per share', '<input type="number" step="any" id="fd-t-price" class="ufa-input" value="' + (pos ? pos.cost_per_share : '') + '">') +
-      f('Date bought', '<input type="date" id="fd-t-date" class="ufa-input" value="' + (pos ? pos.opened_on : fdToday()) + '">') +
-      f('Note (optional)', '<input id="fd-t-note" class="ufa-input" value="' + ufaEsc(pos && pos.note || '') + '">');
-    if (pos && pos.status === 'closed') {
-      inputs += f('Sale price per share', '<input type="number" step="any" id="fd-t-exit" class="ufa-input" value="' + (pos.exit_price == null ? '' : pos.exit_price) + '">') +
-        f('Date sold', '<input type="date" id="fd-t-closed" class="ufa-input" value="' + (pos.closed_on || '') + '">');
-    }
-  }
+function fdOpen(id) {
+  var h = id ? FD.rows.filter(function (x) { return String(x.id) === String(id); })[0] : null;
+  if (id && !h) return;
+  var f = function (label, inner, full) { return '<div' + (full ? ' style="grid-column:1/-1;"' : '') + '><div class="ufa-label">' + label + '</div>' + inner + '</div>'; };
   ufaModal(
-    '<div class="ufa-modal-head"><div class="ufa-modal-title">' + ufaEsc(title) + '</div><button class="ufa-modal-x" onclick="ufaCloseModal()">&times;</button></div>' +
-    '<div class="ufa-modal-body"><div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">' + inputs + '</div>' +
-    (mode === 'add' ? '<div class="ufa-pane-sub" style="margin-top:14px;">Record this after you place the trade at the broker. The portal only keeps the record.</div>' : '') +
-    '<div id="fd-t-alert" style="margin-top:14px;"></div></div>' +
-    '<div class="ufa-modal-foot">' +
-      (mode === 'edit' ? '<button class="ufa-btn-ghost ufa-btn-danger" style="margin-right:auto;" data-id="' + ufaEsc(String(ref)) + '" onclick="fdDeletePosition(this.dataset.id)">Delete</button>' : '') +
-      '<button class="ufa-btn-ghost" onclick="ufaCloseModal()">Cancel</button>' +
-      '<button class="ufa-btn" id="fd-t-go" data-mode="' + mode + '" data-ref="' + ufaEsc(ref == null ? '' : String(ref)) + '" onclick="fdSubmitTrade(this.dataset.mode,this.dataset.ref)">' + (mode === 'sell' ? 'Record sale' : 'Save') + '</button>' +
-    '</div>');
-}
-
-async function fdSubmitTrade(mode, ref) {
-  var g = function (id) { var el = document.getElementById(id); return el ? el.value : ''; };
-  var shares = fdNum(g('fd-t-shares')), price = fdNum(g('fd-t-price')), date = g('fd-t-date');
-  var err = function (m) { ufaAlert('fd-t-alert', 'err', m); };
-  if (!(shares > 0)) return err('Enter the number of shares.');
-  if (!(price >= 0) || g('fd-t-price') === '') return err('Enter the price per share.');
-  if (!date) return err('Pick a date.');
-  var btn = document.getElementById('fd-t-go'); if (btn) btn.disabled = true;
-  var r, pitch = null, pos = null, addedTicker = null;
-  if (mode !== 'add') pos = FD.positions.filter(function (x) { return String(x.id) === String(ref); })[0];
-  if (mode === 'add' && ref) pitch = FD.pitches.filter(function (x) { return String(x.id) === String(ref); })[0] || null;
-
-  if (mode === 'sell') {
-    if (shares > pos.shares + 1e-9) { if (btn) btn.disabled = false; return err('You only hold ' + pos.shares + ' shares.'); }
-    if (shares < pos.shares - 1e-9) {
-      r = await sb.from('fund_positions').insert({ ticker: pos.ticker, shares: shares, cost_per_share: pos.cost_per_share, opened_on: pos.opened_on,
-        status: 'closed', closed_on: date, exit_price: price, pitch_id: pos.pitch_id, note: pos.note, created_by: ufaEmail() });
-      if (!r.error) r = await sb.from('fund_positions').update({ shares: pos.shares - shares }).eq('id', pos.id);
-    } else {
-      r = await sb.from('fund_positions').update({ status: 'closed', closed_on: date, exit_price: price }).eq('id', pos.id);
-    }
-  } else {
-    var t = fdTicker(g('fd-t-ticker'));
-    if (!fdValidTicker(t)) { if (btn) btn.disabled = false; return err('Enter a valid ticker.'); }
-    addedTicker = t;
-    var row = { ticker: t, shares: shares, cost_per_share: price, opened_on: date, note: g('fd-t-note').trim() || null };
-    if (mode === 'add') {
-      row.status = 'open'; row.created_by = ufaEmail(); if (pitch) row.pitch_id = String(pitch.id);
-      r = await sb.from('fund_positions').insert(row);
-      if (!r.error && pitch) r = await sb.from('pitches').update({ stage: 'added' }).eq('id', pitch.id);
-    } else {
-      if (pos.status === 'closed') { row.exit_price = fdNum(g('fd-t-exit')); row.closed_on = g('fd-t-closed') || null; }
-      r = await sb.from('fund_positions').update(row).eq('id', pos.id);
-    }
-  }
-  if (r && r.error) { if (btn) btn.disabled = false; return err('Could not save: ' + r.error.message); }
-  ufaCloseModal();
-  await loadFundTab();
-  if (addedTicker) fdRefreshIfNeeded(addedTicker);
-}
-
-async function fdDeletePosition(id) {
-  if (!window.confirm('Delete this position record? This cannot be undone.')) return;
-  var r = await sb.from('fund_positions').delete().eq('id', id);
-  if (r.error) return ufaAlert('fd-t-alert', 'err', 'Could not delete: ' + r.error.message);
-  ufaCloseModal(); await loadFundTab();
-}
-
-/* ── cash ── */
-function fdOpenCash() {
-  ufaModal(
-    '<div class="ufa-modal-head"><div class="ufa-modal-title">Log cash</div><button class="ufa-modal-x" onclick="ufaCloseModal()">&times;</button></div>' +
+    '<div class="ufa-modal-head"><div class="ufa-modal-title">' + (h ? 'Edit position' : 'Add a position') + '</div><button class="ufa-modal-x" onclick="ufaCloseModal()">&times;</button></div>' +
     '<div class="ufa-modal-body"><div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">' +
-      '<div><div class="ufa-label">Type</div><select id="fd-c-type" class="ufa-select"><option value="in">Deposit</option><option value="out">Withdrawal</option></select></div>' +
-      '<div><div class="ufa-label">Amount</div><input type="number" step="any" id="fd-c-amt" class="ufa-input" placeholder="5000"></div>' +
-      '<div><div class="ufa-label">Date</div><input type="date" id="fd-c-date" class="ufa-input" value="' + fdToday() + '"></div>' +
-      '<div><div class="ufa-label">Note (optional)</div><input id="fd-c-note" class="ufa-input" placeholder="Initial funding"></div>' +
-    '</div><div id="fd-c-alert" style="margin-top:14px;"></div></div>' +
-    '<div class="ufa-modal-foot"><button class="ufa-btn-ghost" onclick="ufaCloseModal()">Cancel</button><button class="ufa-btn" onclick="fdSubmitCash()">Save</button></div>');
-}
-async function fdSubmitCash() {
-  var amt = fdNum(document.getElementById('fd-c-amt').value), date = document.getElementById('fd-c-date').value;
-  if (!(amt > 0)) return ufaAlert('fd-c-alert', 'err', 'Enter an amount above zero.');
-  if (!date) return ufaAlert('fd-c-alert', 'err', 'Pick a date.');
-  var sign = document.getElementById('fd-c-type').value === 'out' ? -1 : 1;
-  var r = await sb.from('fund_cash').insert({ flow_date: date, amount: sign * amt, note: document.getElementById('fd-c-note').value.trim() || null, created_by: ufaEmail() });
-  if (r.error) return ufaAlert('fd-c-alert', 'err', 'Could not save: ' + r.error.message);
-  ufaCloseModal(); await loadFundTab();
-}
-async function fdDeleteCash(id) {
-  if (!window.confirm('Delete this cash entry?')) return;
-  var r = await sb.from('fund_cash').delete().eq('id', id);
-  if (r.error) return ufaAlert('fund-alert', 'err', 'Could not delete: ' + r.error.message);
-  await loadFundTab();
+      f('Company', '<input id="fd-company" class="ufa-input" value="' + ufaEsc(h ? h.company : '') + '" placeholder="Nvidia">', true) +
+      f('Ticker (optional)', '<input id="fd-ticker" class="ufa-input" style="text-transform:uppercase;" value="' + ufaEsc(h && h.ticker || '') + '" placeholder="NVDA">') +
+      f('Date added', '<input type="date" id="fd-date" class="ufa-input" value="' + (h ? h.added_on : fdToday()) + '">') +
+      f('Shares', '<input type="number" step="any" id="fd-shares" class="ufa-input" value="' + (h && h.shares != null ? h.shares : '') + '" placeholder="25">') +
+      f('Dollar amount', '<input type="number" step="any" id="fd-amount" class="ufa-input" value="' + (h && h.amount != null ? h.amount : '') + '" placeholder="2500">') +
+      f('Pitch deck link (optional)', '<input id="fd-deck" class="ufa-input" value="' + ufaEsc(h && h.deck_url || '') + '" placeholder="https://">', true) +
+      f('Note (optional)', '<input id="fd-note" class="ufa-input" value="' + ufaEsc(h && h.note || '') + '">', true) +
+    '</div><div class="ufa-pane-sub" style="margin-top:12px;">Enter shares, a dollar amount, or both.</div><div id="fd-alert" style="margin-top:12px;"></div></div>' +
+    '<div class="ufa-modal-foot"><button class="ufa-btn-ghost" onclick="ufaCloseModal()">Cancel</button>' +
+    '<button class="ufa-btn" id="fd-save" data-id="' + ufaEsc(id || '') + '" onclick="fdSave(this.dataset.id)">Save</button></div>');
 }
 
-/* ── price settings and refresh ── */
-function fdOpenSettings() {
-  var hasKey = !!FD.settings.twelvedata_key;
-  ufaModal(
-    '<div class="ufa-modal-head"><div class="ufa-modal-title">Price settings</div><button class="ufa-modal-x" onclick="ufaCloseModal()">&times;</button></div>' +
-    '<div class="ufa-modal-body">' +
-      '<div class="ufa-pane-sub" style="margin-bottom:14px;">Prices come from Twelve Data\u2019s free plan (8 requests a minute, 800 a day). Create a free key at twelvedata.com and paste it below. It is stored where only board members can read it.</div>' +
-      '<div class="ufa-label">Twelve Data key</div><input type="password" id="fd-s-key" class="ufa-input" autocomplete="off" placeholder="' + (hasKey ? 'Saved. Paste a new key to replace it.' : 'Paste your key') + '">' +
-      '<div class="ufa-label" style="margin-top:14px;">Benchmark ticker</div><input id="fd-s-bench" class="ufa-input" style="text-transform:uppercase;" value="' + ufaEsc(fdBenchTicker()) + '">' +
-      '<div class="ufa-pane-sub" style="margin-top:8px;">SPY tracks the S&amp;P 500. Changing it needs a price refresh.</div>' +
-      '<div id="fd-s-alert" style="margin-top:14px;"></div></div>' +
-    '<div class="ufa-modal-foot"><button class="ufa-btn-ghost" onclick="ufaCloseModal()">Cancel</button><button class="ufa-btn" onclick="fdSaveSettings()">Save</button></div>');
-}
-async function fdSaveSettings() {
-  var key = document.getElementById('fd-s-key').value.trim(), bench = fdTicker(document.getElementById('fd-s-bench').value);
-  if (!fdValidTicker(bench)) return ufaAlert('fd-s-alert', 'err', 'Enter a valid benchmark ticker.');
-  var rows = [{ key: 'benchmark', value: bench, updated_at: new Date().toISOString() }];
-  if (key) rows.push({ key: 'twelvedata_key', value: key, updated_at: new Date().toISOString() });
-  var r = await sb.from('fund_settings').upsert(rows, { onConflict: 'key' });
-  if (r.error) return ufaAlert('fd-s-alert', 'err', 'Could not save: ' + r.error.message);
+async function fdSave(id) {
+  var g = function (k) { return (document.getElementById(k) || {}).value || ''; };
+  var company = g('fd-company').trim(), ticker = g('fd-ticker').trim().toUpperCase();
+  var shares = fdNum(g('fd-shares')), amount = fdNum(g('fd-amount')), deck = g('fd-deck').trim();
+  var err = function (m) { ufaAlert('fd-alert', 'err', m); };
+  if (!company) return err('Enter the company.');
+  if ((shares == null || shares <= 0) && (amount == null || amount <= 0)) return err('Enter shares, a dollar amount, or both.');
+  if (shares != null && shares <= 0) shares = null;
+  if (amount != null && amount <= 0) amount = null;
+  if (deck && !/^https?:\/\//i.test(deck)) return err('The deck link has to start with https://');
+  if (!g('fd-date')) return err('Pick a date.');
+  var row = { company: company, ticker: ticker || null, shares: shares, amount: amount, added_on: g('fd-date'), deck_url: deck || null, note: g('fd-note').trim() || null };
+  var btn = document.getElementById('fd-save'); if (btn) btn.disabled = true;
+  var r = id ? await sb.from('fund_holdings').update(row).eq('id', id)
+             : await sb.from('fund_holdings').insert(Object.assign({ created_by: ufaEmail() }, row));
+  if (r.error) { if (btn) btn.disabled = false; return err('Could not save: ' + r.error.message); }
   ufaCloseModal(); await loadFundTab();
 }
 
-async function fdManualPrice(ticker) {
-  var v = window.prompt('Closing price for ' + ticker + ' today:', '');
-  if (v === null) return;
-  var px = fdNum(v); if (!(px > 0)) return ufaAlert('fund-alert', 'err', 'Enter a price above zero.');
-  var r = await sb.from('fund_prices').upsert({ ticker: ticker, price_date: fdToday(), close: px }, { onConflict: 'ticker,price_date' });
-  if (r.error) return ufaAlert('fund-alert', 'err', 'Could not save: ' + r.error.message);
+async function fdRemove(id) {
+  var h = FD.rows.filter(function (x) { return String(x.id) === String(id); })[0];
+  if (!window.confirm('Remove ' + (h ? h.company : 'this position') + ' from the fund list?')) return;
+  var r = await sb.from('fund_holdings').delete().eq('id', id);
+  if (r.error) return ufaAlert('fund-alert', 'err', 'Could not remove: ' + r.error.message);
   await loadFundTab();
-}
-
-async function fdRefreshIfNeeded(ticker) {
-  if (!FD.settings.twelvedata_key || !ticker) return;
-  if (FD.prices[ticker] && FD.prices[ticker].length) return;
-  fdRefreshPrices(true);
-}
-
-async function fdRefreshPrices(quiet) {
-  if (FD.refreshing) return;
-  var key = FD.settings.twelvedata_key;
-  if (!key) { if (!quiet) { ufaAlert('fund-alert', 'info', 'Add your Twelve Data key first.'); fdOpenSettings(); } return; }
-  var bench = fdBenchTicker(), seen = {}, tickers = [];
-  FD.positions.map(function (p) { return p.ticker; }).concat([bench]).forEach(function (t) { if (!seen[t]) { seen[t] = 1; tickers.push(t); } });
-  FD.refreshing = true; FD.status = 'Refreshing prices\u2026'; fdRender();
-  var chunks = []; for (var i = 0; i < tickers.length; i += 8) chunks.push(tickers.slice(i, i + 8));
-  var errors = [], saved = 0;
-  try {
-    for (var ci = 0; ci < chunks.length; ci++) {
-      var chunk = chunks[ci];
-      if (ci > 0) { FD.status = 'Waiting out the free-plan rate limit (about 1 minute)\u2026'; fdRender(); await fdSleep(62000); }
-      FD.status = 'Fetching ' + chunk.join(', ') + '\u2026'; fdRender();
-      var size = chunk.some(function (t) { return !(FD.prices[t] && FD.prices[t].length); }) ? 400 : 12;
-      var res = await fetch('https://api.twelvedata.com/time_series?symbol=' + encodeURIComponent(chunk.join(',')) + '&interval=1day&outputsize=' + size + '&apikey=' + encodeURIComponent(key));
-      var j = await res.json();
-      if (j && j.status === 'error' && !j.values && !j[chunk[0]]) { errors.push(j.message || 'The data provider returned an error.'); continue; }
-      var map = {}; if (chunk.length === 1) map[chunk[0]] = j; else map = j;
-      var rows = [];
-      chunk.forEach(function (sym) {
-        var d = map[sym];
-        if (!d || d.status === 'error' || !d.values) { errors.push(sym + ': ' + ((d && d.message) || 'no data returned')); return; }
-        d.values.forEach(function (v) { var px = parseFloat(v.close); if (isFinite(px)) rows.push({ ticker: sym, price_date: String(v.datetime).slice(0, 10), close: px }); });
-      });
-      for (var k = 0; k < rows.length; k += 500) {
-        var up = await sb.from('fund_prices').upsert(rows.slice(k, k + 500), { onConflict: 'ticker,price_date' });
-        if (up.error) { errors.push('Could not save prices: ' + up.error.message); break; }
-        saved += Math.min(500, rows.length - k);
-      }
-    }
-  } catch (e) {
-    errors.push('The browser could not reach the data provider (' + (e && e.message ? e.message : e) + '). You can still type prices in by hand with the set button.');
-  }
-  FD.refreshing = false; FD.status = '';
-  await loadFundTab();
-  if (errors.length) ufaAlert('fund-alert', 'err', errors.slice(0, 3).join(' | '));
-  else if (!quiet) ufaAlert('fund-alert', 'ok', 'Prices updated (' + saved + ' data points).');
 }
 
 </script>
