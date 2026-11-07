@@ -5132,7 +5132,6 @@ button[onclick="pubFlipbookNext()"]:hover {
           <button onclick="switchPortalTab('mock')" class="portal-tab" id="ptab-mock">Mock Interview</button>
           <button onclick="switchPortalTab('board')" class="portal-tab" id="ptab-board">Board Hours</button>
           <button onclick="switchPortalTab('learn')" class="portal-tab" id="ptab-learn" style="display:none;">Ask &amp; Learn</button>
-          <button onclick="switchPortalTab('fund')" class="portal-tab" id="ptab-fund" style="display:none;">Fund</button>
           <button onclick="switchPortalTab('admin')" class="portal-tab" id="ptab-admin" style="display:none;">Admin</button>
         </div>
       </div>
@@ -5806,19 +5805,13 @@ button[onclick="pubFlipbookNext()"]:hover {
         <!-- ── GM PITCH VOTE TAB ── -->
         <div id="ptab-content-pitch" style="display:none;">
           <div class="ufa-pane-head">
-            <div class="ufa-pane-title">Pitch Vote</div>
-            <div class="ufa-pane-sub">Vote yes or no on the stocks pitched at general meetings. Comments are optional.</div>
+            <div class="ufa-pane-title">Fund and Pitches</div>
+            <div class="ufa-pane-sub">What the investment team's fund holds, and the stocks pitched at general meetings. Vote yes or no on pitches. Comments are optional.</div>
           </div>
+          <div class="ufa-label">The fund</div>
+          <div id="fund-body" style="margin-bottom:30px;"></div>
+          <div class="ufa-label">Pitches</div>
           <div id="pitch-body"></div>
-        </div>
-
-        <!-- FUND TAB (board only) -->
-        <div id="ptab-content-fund" style="display:none;">
-          <div class="ufa-pane-head">
-            <div class="ufa-pane-title">Fund</div>
-            <div class="ufa-pane-sub">What the investment team's fund currently holds. Pitches are voted on in Pitch Vote.</div>
-          </div>
-          <div id="fund-body"></div>
         </div>
 
         <div id="ptab-content-admin" style="display:none;">
@@ -7795,7 +7788,7 @@ async function switchPortalTab(tab) {
   // showDashboard(). Guard here too in case something else calls this
   // directly.
   if (currentMember && currentMember.status === 'pending') tab = 'overview';
-  ['overview','leaderboard','events','pitch','profile','recruiting','mock','board','learn','fund','admin'].forEach(t => {
+  ['overview','leaderboard','events','pitch','profile','recruiting','mock','board','learn','admin'].forEach(t => {
     const btn = document.getElementById('ptab-' + t);
     const content = document.getElementById('ptab-content-' + t);
     if (btn) btn.classList.toggle('active', t === tab);
@@ -7820,7 +7813,6 @@ async function switchPortalTab(tab) {
   if (tab === 'admin') { switchAdminTab('sessions'); loadAdminSessions(); loadRosterBadge(); famLoadBadge(); }
   if (tab === 'recruiting') { groupRecruitingTabs(); switchRecruitTab(recruitTab); }
   if (tab === 'board')      { loadBoardTab(); }
-  if (tab === 'fund')       { loadFundTab(); }
 }
 
 // ── Resources ──
@@ -8165,12 +8157,12 @@ async function showDashboard() {
   // roster info, recruiting resources, etc. until a board member approves
   // them. This overrides whatever applyFeatureVisibility() and the isBoard
   // check above just set.
-  ['leaderboard','events','pitch','fund','profile','recruiting'].forEach(function(t) {
+  ['leaderboard','events','pitch','profile','recruiting'].forEach(function(t) {
     var btn = document.getElementById('ptab-' + t);
     if (btn) btn.style.display = isPending ? 'none' : '';
   });
   if (isPending) {
-    ['mock','board','learn','fund','admin'].forEach(function(t) {
+    ['mock','board','learn','admin'].forEach(function(t) {
       var btn = document.getElementById('ptab-' + t);
       if (btn) btn.style.display = 'none';
     });
@@ -23743,23 +23735,22 @@ document.addEventListener('click', function (e) {
     board:       '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
     learn:       '<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/>',
     pitch:       '<path d="M21 12A9 9 0 1 1 12 3v9z"/><path d="M16 3.6A9 9 0 0 1 20.4 8H16z"/>',
-    fund:        '<path d="M3 17l5-5 4 4 8-9"/><path d="M15 7h5v5"/>',
     admin:       '<path d="M12 3l8 3v6c0 4.5-3.2 8-8 9-4.8-1-8-4.5-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/>',
     more:        '<circle cx="5" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="19" cy="12" r="1.5" fill="currentColor"/>',
     out:         '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>',
     chevL:       '<path d="M15 18l-6-6 6-6"/>'
   };
   var LABEL = { overview: 'Overview', leaderboard: 'Leaderboard', events: 'Events', profile: 'Profile', recruiting: 'Recruiting',
-                mock: 'Mock Interview', board: 'Board Hours', learn: 'Ask & Learn', pitch: 'Pitch Vote', fund: 'Fund', admin: 'Admin' };
+                mock: 'Mock Interview', board: 'Board Hours', learn: 'Ask & Learn', pitch: 'Fund & Pitches', admin: 'Admin' };
   var SHORT = { mock: 'Mock', board: 'Board Hours', leaderboard: 'Leaderboard' };
   var GROUPS = [
-    { label: 'Home',    tabs: ['overview', 'leaderboard', 'events', 'pitch', 'fund'] },
+    { label: 'Home',    tabs: ['overview', 'leaderboard', 'events', 'pitch'] },
     { label: 'Grow',    tabs: ['mock', 'board', 'recruiting', 'learn'] },
     { label: 'Account', tabs: ['profile'] },
     { label: 'Board',   tabs: ['admin'] }
   ];
   var BAR = ['overview', 'leaderboard', 'events', 'mock'];
-  var ALL = ['overview', 'leaderboard', 'events', 'pitch', 'mock', 'board', 'recruiting', 'learn', 'profile', 'fund', 'admin'];
+  var ALL = ['overview', 'leaderboard', 'events', 'pitch', 'mock', 'board', 'recruiting', 'learn', 'profile', 'admin'];
 
   var wrap = document.getElementById('portal-dashboard') && document.getElementById('portal-dashboard').parentNode;
   var dash = document.getElementById('portal-dashboard');
@@ -24011,6 +24002,7 @@ async function pitchFetchAll() {
 
 async function loadPitchTab() {
   var box = document.getElementById('pitch-body'); if (!box) return;
+  if (typeof loadFundTab === 'function') loadFundTab();
   box.innerHTML = '<div class="pv-note">Loading…</div>';
   if (!(await pitchFetchAll())) { box.innerHTML = '<div class="pv-card pv-note">' + PITCH_SETUP_MSG + '</div>'; return; }
   renderPitchTab();
