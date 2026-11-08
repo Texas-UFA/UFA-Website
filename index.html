@@ -1569,7 +1569,16 @@ align-items: flex-end;
     background: var(--green-dark);
     padding: 56px 72px 32px;
   }
-  .footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; margin-bottom: 48px; }
+  .footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1.3fr; gap: 48px; margin-bottom: 48px; }
+  /* Sponsors live in the footer's right-hand column. The light tile keeps a dark logo readable on the green. */
+  .footer-sponsor .sponsor-logos { justify-content: flex-start; gap: 12px; }
+  .footer-sponsor .sponsor-logo-link { background: rgba(255,255,255,0.96); padding: 10px 14px; border-radius: 8px; }
+  .footer-sponsor .sponsor-logo-link img,
+  .footer-sponsor .sponsor-logo-link img.is-trimmed { height: 52px; max-width: 100%; }
+  @media (max-width: 1100px) {
+    .footer-top { grid-template-columns: 2fr 1fr 1fr 1fr; }
+    .footer-sponsor { grid-column: 1 / -1; }
+  }
   .footer-brand { }
   .footer-logo-text { font-family: var(--font-display); font-size: 18px; font-weight: 500; color: var(--white); margin-bottom: 12px; }
   .footer-tagline { font-size: 14px; color: rgba(255,255,255,0.6); line-height: 1.65; max-width: 240px; }
@@ -1951,6 +1960,7 @@ align-items: flex-end;
     grid-template-columns: 1fr 1fr;
     gap: 32px 24px;
   }
+  .footer-sponsor { grid-column: 1 / -1; }
   .footer-brand {
     display: none;
   }
@@ -3782,16 +3792,6 @@ button[onclick="pubFlipbookNext()"]:hover {
       <a href="https://www.instagram.com/p/DXFrIVilJ6E/" target="_blank" rel="noopener noreferrer" class="insta-card reveal">
         <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/instagram/F77DE977-1361-474A-B485-5729A9CAAA09.png" alt="HBA x UFA Case Competition">
         <div class="insta-meta"><strong class="insta-handle" style="color:var(--green-accent)">@texasufa</strong> <span class="insta-cap">HBA × UFA Case Competition</span></div>
-      </a>
-    </div>
-  </section>
-
-  <!-- SPONSORS -->
-  <section class="sponsor-band" aria-label="Sponsors">
-    <p class="sponsor-band-label">Proudly supported by</p>
-    <div class="sponsor-logos">
-      <a class="sponsor-logo-link" href="https://equitable.com" target="_blank" rel="noopener noreferrer">
-        <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/Equitable-logo-1400x1400-20230310-p5s7lsmj0n.png" alt="Equitable Advisors">
       </a>
     </div>
   </section>
@@ -7673,11 +7673,13 @@ button[onclick="pubFlipbookNext()"]:hover {
 }
 
 /* Board Hours: people who serve in the same area sit side by side in one row */
-/* each pair is one unit; units flow side by side (2 pairs = 4 across at laptop width, 3 pairs = 6 on very wide screens) */
-.ufa-board-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 500px), 1fr)); gap: 18px; }
-.ufa-board-group { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
-.ufa-board-grid .ufa-board-group .ufa-board-card { height: auto; }   /* grid stretch keeps a pair the same height; 100% would clip */
-@media (max-width: 640px) { .ufa-board-group { grid-template-columns: 1fr; } }
+/* Rows stretch cards to equal height on their own; 100% height would clip them against the next row. */
+.ufa-board-grid .ufa-board-card { height: auto; }
+/* Board Hours directory: cards flow in area order (pairs adjacent) with no wrapper, so a
+   missing person never leaves a hole. Column counts are always even, so pairs stay on one row. */
+.ufa-board-grid { grid-template-columns: 1fr; gap: 18px; }
+@media (min-width: 641px) { .ufa-board-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1300px) { .ufa-board-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 
 /* Board Hours: three-step intro */
 .bh-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 16px; max-width: 760px; }
@@ -16004,30 +16006,48 @@ const UFA_BOARD_ORDER = [
   'Aryan Jhaveri'
 ];
 
-/* People who serve in the same area are shown together, one row per group.
-   Anyone not listed here (a new hire before this gets updated) is placed after
-   the listed groups, two to a row. */
-const UFA_BOARD_GROUPS = [
-  ['Caden Warner', 'Alika Frankovska'],
-  ['Nathan Li', 'Emily Liu'],
-  ['Shreyas Sripurushottam', 'Seyoon (Sam) Jung'],
-  ['Varsha Ravi', 'Grace Miller'],
-  ['Layne Nguyen', 'Emma Nowotny'],
-  ['Nikhil Parida', 'Aryan Jhaveri']
+/* Areas, in display order. Cards are ordered by area so people who serve together sit
+   next to each other. Matching uses the (standardized) title, so it does not depend on how
+   a name happens to be spelled. */
+const UFA_BOARD_AREAS = [
+  ['President', 'Vice President'],
+  ['Director of Investment'],
+  ['Director of Consulting'],
+  ['Director of Corporate Relations'],
+  ['Director of Marketing'],
+  ['Director of External Affairs', 'Treasurer']
 ];
 
-function ufaGroupBoard(list) {
-  var used = {};
-  var groups = UFA_BOARD_GROUPS.map(function (names) {
-    return names.map(function (n) {
-      var hit = list.filter(function (p) { return String(p.name || '').trim() === n; })[0];
-      if (hit) used[hit.email] = true;
-      return hit;
-    }).filter(Boolean);
-  }).filter(function (g) { return g.length; });
-  var rest = list.filter(function (p) { return !used[p.email]; });
-  for (var i = 0; i < rest.length; i += 2) groups.push(rest.slice(i, i + 2));
-  return groups;
+/* Maps older, hand-typed titles (e.g. "Head Director of Investments", "Director of Corporate
+   Outreach") onto the standard list so every card reads the same. Unknown titles pass through. */
+function ufaCanonPosition(raw) {
+  var t = String(raw || '').trim(), l = t.toLowerCase();
+  if (!l) return '';
+  if (/vice/.test(l) && /president/.test(l)) return 'Vice President';
+  if (/president/.test(l)) return 'President';
+  if (/treasur/.test(l)) return 'Treasurer';
+  if (/corporate/.test(l)) return 'Director of Corporate Relations';
+  if (/external/.test(l)) return 'Director of External Affairs';
+  if (/invest/.test(l)) return 'Director of Investment';
+  if (/consult/.test(l)) return 'Director of Consulting';
+  if (/market/.test(l)) return 'Director of Marketing';
+  return t;
+}
+
+function ufaOrderByArea(list) {
+  function rank(p) {
+    var pos = ufaCanonPosition(p.position);
+    for (var a = 0; a < UFA_BOARD_AREAS.length; a++) {
+      var i = UFA_BOARD_AREAS[a].indexOf(pos);
+      if (i !== -1) return a * 10 + i;
+    }
+    return 999;
+  }
+  return list.slice().sort(function (x, y) {
+    return (rank(x) - rank(y)) ||
+      (ufaBoardSortIndex(x.name) - ufaBoardSortIndex(y.name)) ||
+      String(x.name || '').localeCompare(String(y.name || ''));
+  });
 }
 
 function ufaBoardSortIndex(name) {
@@ -16429,7 +16449,7 @@ function renderBoardDirectory() {
     return '<div class="ufa-board-card" data-bk-card="' + ufaEsc(p.email) + '">' +
       avatar +
       '<div class="ufa-board-name">' + ufaEsc(p.name) + '</div>' +
-      (p.position ? '<div class="ufa-board-role">' + ufaEsc(p.position) + '</div>' : '') +
+      (p.position ? '<div class="ufa-board-role">' + ufaEsc(ufaCanonPosition(p.position)) + '</div>' : '') +
       (p.bio ? '<div style="font-size:13px;color:#4A5A4A;line-height:1.6;margin-top:12px;">' + ufaEsc(p.bio) + '</div>' : '') +
       (!BOARD_CALENDAR_ENABLED && p.availability_note ? '<div class="ufa-board-avail">Usually free: ' + ufaEsc(p.availability_note) + '</div>' : '') +
       '<div class="ufa-board-contact">' +
@@ -16439,9 +16459,7 @@ function renderBoardDirectory() {
       action +
     '</div>';
   };
-  dir.innerHTML = ufaGroupBoard(boardProfiles).map(function (g) {
-    return '<div class="ufa-board-group">' + g.map(cardHtml).join('') + '</div>';
-  }).join('');
+  dir.innerHTML = ufaOrderByArea(boardProfiles).map(cardHtml).join('');
   bkPlacePanel();
 }
 
@@ -16936,7 +16954,7 @@ async function bhLoadCardForm() {
       (myBoardProfile ? '' : ' They have no card yet, so saving creates one.');
 
   document.getElementById('bp-name').value = shownName;
-  bhSetPosition(myBoardProfile ? myBoardProfile.position : '');
+  bhSetPosition(myBoardProfile ? ufaCanonPosition(myBoardProfile.position) : '');
 
   document.getElementById('bp-bio').value = myBoardProfile ? (myBoardProfile.bio || '') : '';
   document.getElementById('bp-booking').checked = myBoardProfile ? !!myBoardProfile.booking_enabled : true;
@@ -19045,6 +19063,15 @@ async function toggleVisibility(uiKey, settingKey, turnOn) {
       <ul class="footer-links">
         <li><a href="https://utexas.campuslabs.com/engage/organization/texasufa" target="_blank" rel="noopener noreferrer">General Membership</a></li>
       </ul>
+    </div>
+    <!-- SPONSORS: to add one, copy the <a class="sponsor-logo-link"> below -->
+    <div class="footer-sponsor">
+      <div class="footer-col-title">Proudly supported by</div>
+      <div class="sponsor-logos">
+        <a class="sponsor-logo-link" href="https://equitable.com" target="_blank" rel="noopener noreferrer">
+          <img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/Equitable-logo-1400x1400-20230310-p5s7lsmj0n.png" alt="Equitable Advisors">
+        </a>
+      </div>
     </div>
   </div>
   <div class="footer-bottom">
