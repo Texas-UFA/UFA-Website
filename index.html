@@ -5532,7 +5532,12 @@ button[onclick="pubFlipbookNext()"]:hover {
         <div id="ptab-content-board" style="display:none;">
           <div class="ufa-pane-head">
             <div class="ufa-pane-title">Board Hours</div>
-            <div class="ufa-pane-sub">Reach out to any board member directly. Tap <strong>Email</strong> for a message that is already filled in with your name, topic, and times. Board schedules change week to week, so check the availability note on each card. <strong>After you meet, tap Log meeting on their card.</strong> Once they confirm it happened, you earn a one-time +0.5 pts.</div>
+            <div class="ufa-pane-sub">Set up a one-on-one with any board member.</div>
+            <div class="bh-steps">
+              <div class="bh-step"><span class="bh-step-n">1</span><span><strong>Email them</strong>Tap Email on their card for a message that is already filled in.</span></div>
+              <div class="bh-step"><span class="bh-step-n">2</span><span><strong>Meet</strong>Pick a time that works for both of you.</span></div>
+              <div class="bh-step"><span class="bh-step-n">3</span><span><strong>Log it</strong>Tap Log meeting on their card. Once they confirm, you earn +0.5 pts.</span></div>
+            </div>
           </div>
 
           <div id="board-visibility"></div>
@@ -6203,9 +6208,11 @@ button[onclick="pubFlipbookNext()"]:hover {
           <div id="atab-content-engagement" style="display:none;"></div>
 
           <!-- ── ADMIN: BOARD HOURS ──
-               Each board member maintains their own card, their weekly
-               availability, and any one-off blackout dates. Nobody can
-               edit anyone else's — that's enforced by RLS, not just here. -->
+               Board members maintain cards, weekly availability, and one-off
+               blackout dates. Everyone edits their own by default, and the
+               picker below lets anyone in BOARD_EDIT_ALL_ROLES edit any other
+               board member's card too. The database must allow it as well:
+               run board-hours-edit-all.sql in Supabase. -->
           <div id="atab-content-boardhours" style="display:none;">
             <div class="ufa-card" id="bh-confirm-card">
               <div class="ufa-label">Meetings to confirm</div>
@@ -6217,9 +6224,14 @@ button[onclick="pubFlipbookNext()"]:hover {
               <div id="bh-confirm-list"><div class="ufa-empty" style="padding:16px;">Loading…</div></div>
             </div>
 
-            <div class="ufa-label">Your board card</div>
-            <div class="ufa-pane-sub" style="margin-bottom:16px;">
-              This is what members see in the Board Hours tab. You can only edit your own.
+            <div class="ufa-label" id="bp-card-title">Your board card</div>
+            <div class="ufa-pane-sub" style="margin-bottom:16px;" id="bp-card-sub">
+              This is what members see in the Board Hours tab.
+            </div>
+
+            <div id="bp-editing-wrap" style="display:none;margin-bottom:16px;max-width:380px;">
+              <div class="ufa-label">Editing card for</div>
+              <select id="bp-editing" class="ufa-select" onchange="bhPickEditing(this.value)"></select>
             </div>
 
             <div id="boardhours-alert" style="display:none;"></div>
@@ -7649,12 +7661,29 @@ button[onclick="pubFlipbookNext()"]:hover {
 .ufa-board-name { font-size: 17px; }
 .ufa-board-role {
   display: inline-block;
+  align-self: flex-start;           /* hug the text instead of stretching across the card */
+  max-width: calc(100% + 10px);
+  margin: 8px 0 0 -10px;            /* pulled left by its own padding so the text lines up with the name */
   background: #EEF5EE;
   padding: 3px 10px;
-  border-radius: 999px;
-  margin-top: 8px;
+  border-radius: 12px;              /* rounded box, so a title that wraps to 2 lines still looks tidy */
   font-size: 11px;
+  line-height: 1.4;
+  letter-spacing: 0.06em;
 }
+
+/* Board Hours: people who serve in the same area sit side by side in one row */
+.ufa-board-grid { grid-template-columns: 1fr; }
+.ufa-board-group { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.ufa-board-grid .ufa-board-group .ufa-board-card { height: auto; }   /* grid stretch keeps a pair the same height; 100% would clip */
+@media (max-width: 640px) { .ufa-board-group { grid-template-columns: 1fr; } }
+
+/* Board Hours: three-step intro */
+.bh-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 16px; max-width: 760px; }
+.bh-step { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; line-height: 1.45; color: #3A4A3A; }
+.bh-step-n { flex: 0 0 22px; height: 22px; border-radius: 50%; background: #E4EDE4; border: 1px solid rgba(46,74,46,0.18); color: #2E4A2E; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.bh-step strong { display: block; color: #1C2B1C; font-weight: 600; }
+@media (max-width: 640px) { .bh-steps { grid-template-columns: 1fr; } }
 .ufa-board-grid .ufa-board-card .ufa-btn { border-radius: 10px; }
 
 /* Booking week grid */
@@ -15974,6 +16003,32 @@ const UFA_BOARD_ORDER = [
   'Aryan Jhaveri'
 ];
 
+/* People who serve in the same area are shown together, one row per group.
+   Anyone not listed here (a new hire before this gets updated) is placed after
+   the listed groups, two to a row. */
+const UFA_BOARD_GROUPS = [
+  ['Caden Warner', 'Alika Frankovska'],
+  ['Nathan Li', 'Emily Liu'],
+  ['Shreyas Sripurushottam', 'Seyoon (Sam) Jung'],
+  ['Varsha Ravi', 'Grace Miller'],
+  ['Layne Nguyen', 'Emma Nowotny'],
+  ['Nikhil Parida', 'Aryan Jhaveri']
+];
+
+function ufaGroupBoard(list) {
+  var used = {};
+  var groups = UFA_BOARD_GROUPS.map(function (names) {
+    return names.map(function (n) {
+      var hit = list.filter(function (p) { return String(p.name || '').trim() === n; })[0];
+      if (hit) used[hit.email] = true;
+      return hit;
+    }).filter(Boolean);
+  }).filter(function (g) { return g.length; });
+  var rest = list.filter(function (p) { return !used[p.email]; });
+  for (var i = 0; i < rest.length; i += 2) groups.push(rest.slice(i, i + 2));
+  return groups;
+}
+
 function ufaBoardSortIndex(name) {
   var i = UFA_BOARD_ORDER.indexOf(String(name || '').trim());
   return i === -1 ? UFA_BOARD_ORDER.length : i;
@@ -16348,9 +16403,10 @@ function renderBoardDirectory() {
     return;
   }
 
-  dir.innerHTML = boardProfiles.map(function (p) {
+  var cardHtml = function (p) {
     var initials = String(p.name || '?').trim().split(/\s+/)
-      .map(function (w) { return w[0]; }).slice(0, 2).join('').toUpperCase();
+      .filter(function (w) { return /^[A-Za-z]/.test(w); })   // skips nicknames like "(Sam)"
+      .map(function (w) { return w[0]; }).slice(0, 2).join('').toUpperCase() || '?';
     var avatar = p.photo_url
       ? '<img src="' + ufaEsc(p.photo_url) + '" alt="" class="ufa-board-avatar">'
       : '<div class="ufa-board-avatar">' + ufaEsc(initials) + '</div>';
@@ -16381,6 +16437,9 @@ function renderBoardDirectory() {
       '</div>' +
       action +
     '</div>';
+  };
+  dir.innerHTML = ufaGroupBoard(boardProfiles).map(function (g) {
+    return '<div class="ufa-board-group">' + g.map(cardHtml).join('') + '</div>';
   }).join('');
   bkPlacePanel();
 }
@@ -16780,18 +16839,84 @@ async function cancelBooking(id) {
 }
 
 
-/* ── Board Hours: admin side (each board member edits only their own) ── */
+/* ── Board Hours: admin side ──
+   Everyone edits their own card by default. Roles in BOARD_EDIT_ALL_ROLES also get a
+   picker to edit any other board member's card (narrow this to ['President'] to limit it).
+   "Meetings to confirm" always stays personal: only the named board member confirms. */
+
+const BOARD_EDIT_ALL_ROLES = ['Board', 'President'];
 
 var myBoardProfile = null;
 var myAvail = [];
 var myBlackouts = [];
+var bhEditTarget = '';        // email of the card being edited; '' means my own
+var bhPeopleNames = {};       // email -> name, for people who have no card yet
+
+function bhEditEmail() { return bhEditTarget || ufaEmail(); }
+function bhCanEditAll() {
+  return !!(currentMember && BOARD_EDIT_ALL_ROLES.indexOf(currentMember.role) !== -1);
+}
+
+async function bhFillEditPicker() {
+  var wrap = document.getElementById('bp-editing-wrap'), sel = document.getElementById('bp-editing');
+  if (!wrap || !sel) return;
+  if (!bhCanEditAll()) { wrap.style.display = 'none'; bhEditTarget = ''; return; }
+
+  var me = ufaEmail();
+  var rp = await sb.from('board_profiles').select('email, name, active');
+  var rm = await sb.from('members').select('email, name, role').in('role', ['Board', 'President']);
+  var people = {};
+  (rm.data || []).forEach(function (m) {
+    var k = String(m.email || '').toLowerCase();
+    if (k) people[k] = { email: m.email, name: m.name || m.email, hidden: false };
+  });
+  (rp.data || []).forEach(function (b) {
+    var k = String(b.email || '').toLowerCase();
+    if (k) people[k] = { email: b.email, name: b.name || (people[k] && people[k].name) || b.email, hidden: b.active === false };
+  });
+  delete people[me];
+
+  var others = sortToBoardPageOrder(Object.keys(people).map(function (k) { return people[k]; }));
+  bhPeopleNames = {};
+  others.forEach(function (o) { bhPeopleNames[o.email] = o.name; });
+
+  var myName = (currentMember && currentMember.name) || me;
+  sel.innerHTML = '<option value="">My own card (' + ufaEsc(myName) + ')</option>' + others.map(function (o) {
+    return '<option value="' + ufaEsc(o.email) + '">' + ufaEsc(o.name) + (o.hidden ? ' (hidden)' : '') + '</option>';
+  }).join('');
+  if (bhEditTarget && !bhPeopleNames[bhEditTarget]) bhEditTarget = '';
+  sel.value = bhEditTarget;
+  wrap.style.display = '';
+}
+
+async function bhPickEditing(val) {
+  bhEditTarget = val || '';
+  var al = document.getElementById('boardhours-alert');
+  if (al) al.style.display = 'none';
+  await bhLoadCardForm();
+}
 
 async function loadBoardHoursAdmin() {
-  var email = ufaEmail();
+  await bhFillEditPicker();
+  await bhLoadCardForm();
+  await bhLoadConfirmCard();
+}
+
+async function bhLoadCardForm() {
+  var email = bhEditEmail();
+  var self = !bhEditTarget;
   var r = await sb.from('board_profiles').select('*').eq('email', email).maybeSingle();
   myBoardProfile = (r && r.data) ? r.data : null;
 
-  document.getElementById('bp-name').value = myBoardProfile ? (myBoardProfile.name || '') : ((currentMember && currentMember.name) || '');
+  var shownName = myBoardProfile ? (myBoardProfile.name || '')
+    : (self ? ((currentMember && currentMember.name) || '') : (bhPeopleNames[email] || ''));
+  document.getElementById('bp-card-title').textContent = self ? 'Your board card' : (shownName || email) + '\u2019s board card';
+  document.getElementById('bp-card-sub').textContent = self
+    ? 'This is what members see in the Board Hours tab.'
+    : 'You are editing someone else\u2019s card. This is what members see in the Board Hours tab.' +
+      (myBoardProfile ? '' : ' They have no card yet, so saving creates one.');
+
+  document.getElementById('bp-name').value = shownName;
   document.getElementById('bp-position').value = myBoardProfile ? (myBoardProfile.position || '') : '';
 
   document.getElementById('bp-bio').value = myBoardProfile ? (myBoardProfile.bio || '') : '';
@@ -16805,9 +16930,8 @@ async function loadBoardHoursAdmin() {
 
   if (BOARD_CALENDAR_ENABLED) {
     await refreshMyAvailability();
-    await refreshMyBoardBookings();
+    if (self) await refreshMyBoardBookings();
   }
-  await bhLoadConfirmCard();
 }
 
 async function saveBoardProfile() {
@@ -16815,8 +16939,9 @@ async function saveBoardProfile() {
   if (!name) { ufaAlert('boardhours-alert', 'err', 'Your name cannot be empty.'); return; }
 
   var slots = document.getElementById('bp-slots').value.split(',').map(Number);
+  var editingOther = !!bhEditTarget;
   var row = {
-    email: ufaEmail(),
+    email: bhEditEmail(),
     name: name,
     position: document.getElementById('bp-position').value.trim(),
     bio: document.getElementById('bp-bio').value.trim(),
@@ -16824,7 +16949,7 @@ async function saveBoardProfile() {
     booking_enabled: document.getElementById('bp-booking').checked,
     slot_lengths: slots,
     buffer_min: Number(document.getElementById('bp-buffer').value),
-    active: true,
+    active: (editingOther && myBoardProfile) ? myBoardProfile.active !== false : true,
     updated_at: new Date().toISOString()
   };
   var phoneVal = document.getElementById('bp-phone').value.trim();
@@ -16844,15 +16969,24 @@ async function saveBoardProfile() {
       return;
     }
   }
-  if (res.error) { ufaAlert('boardhours-alert', 'err', 'Could not save: ' + res.error.message); return; }
+  if (res.error) {
+    var rls = editingOther && /row-level security|permission denied/i.test(res.error.message || '');
+    ufaAlert('boardhours-alert', 'err', rls
+      ? 'The database blocked editing someone else\u2019s card. Run board-hours-edit-all.sql in Supabase, then try again.'
+      : 'Could not save: ' + res.error.message);
+    return;
+  }
   row = Object.assign(row, newCols);
   myBoardProfile = row;
-  ufaAlert('boardhours-alert', 'ok', 'Saved. Members can see this in Board Hours now.');
+  ufaAlert('boardhours-alert', 'ok', editingOther
+    ? 'Saved ' + name + '\u2019s card. Members can see this in Board Hours now.'
+    : 'Saved. Members can see this in Board Hours now.');
+  if (bhCanEditAll()) await bhFillEditPicker();
 }
 
 async function refreshMyAvailability() {
-  var r1 = await sb.from('board_availability').select('*').eq('board_email', ufaEmail());
-  var r2 = await sb.from('board_blackouts').select('*').eq('board_email', ufaEmail());
+  var r1 = await sb.from('board_availability').select('*').eq('board_email', bhEditEmail());
+  var r2 = await sb.from('board_blackouts').select('*').eq('board_email', bhEditEmail());
   myAvail = (r1.data || []).sort(function (a, b) {
     return (a.weekday - b.weekday) || (a.start_min - b.start_min);
   });
@@ -16887,14 +17021,14 @@ function ufaTimeToMin(v) {
 }
 
 async function addAvailability() {
-  if (!myBoardProfile) { ufaAlert('boardhours-alert', 'err', 'Save your card first, then add hours.'); return; }
+  if (!myBoardProfile) { ufaAlert('boardhours-alert', 'err', 'Save the card first, then add hours.'); return; }
   var day = Number(document.getElementById('bp-av-day').value);
   var s = ufaTimeToMin(document.getElementById('bp-av-start').value);
   var e = ufaTimeToMin(document.getElementById('bp-av-end').value);
   if (!(e > s)) { ufaAlert('boardhours-alert', 'err', 'The end time has to be after the start time.'); return; }
 
   var res = await sb.from('board_availability').insert({
-    board_email: ufaEmail(), weekday: day, start_min: s, end_min: e
+    board_email: bhEditEmail(), weekday: day, start_min: s, end_min: e
   });
   if (res.error) { ufaAlert('boardhours-alert', 'err', 'Could not add: ' + res.error.message); return; }
   await refreshMyAvailability();
@@ -16907,14 +17041,14 @@ async function removeAvailability(id) {
 }
 
 async function addBlackout() {
-  if (!myBoardProfile) { ufaAlert('boardhours-alert', 'err', 'Save your card first.'); return; }
+  if (!myBoardProfile) { ufaAlert('boardhours-alert', 'err', 'Save the card first.'); return; }
   var s = document.getElementById('bp-bl-start').value;
   var e = document.getElementById('bp-bl-end').value;
   if (!s || !e) { ufaAlert('boardhours-alert', 'err', 'Pick both a start and an end.'); return; }
   if (new Date(e) <= new Date(s)) { ufaAlert('boardhours-alert', 'err', 'The end has to be after the start.'); return; }
 
   var res = await sb.from('board_blackouts').insert({
-    board_email: ufaEmail(),
+    board_email: bhEditEmail(),
     start_ts: new Date(s).toISOString(),
     end_ts: new Date(e).toISOString(),
     reason: document.getElementById('bp-bl-reason').value.trim()
