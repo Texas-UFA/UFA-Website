@@ -6244,7 +6244,7 @@ button[onclick="pubFlipbookNext()"]:hover {
                 </div>
                 <div>
                   <div class="ufa-label">Position</div>
-                  <input type="text" id="bp-position" class="ufa-input" placeholder="VP of Investments">
+                  <select id="bp-position" class="ufa-select"></select>
                 </div>
               </div>
 
@@ -7673,7 +7673,8 @@ button[onclick="pubFlipbookNext()"]:hover {
 }
 
 /* Board Hours: people who serve in the same area sit side by side in one row */
-.ufa-board-grid { grid-template-columns: 1fr; }
+/* each pair is one unit; units flow side by side (2 pairs = 4 across at laptop width, 3 pairs = 6 on very wide screens) */
+.ufa-board-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 500px), 1fr)); gap: 18px; }
 .ufa-board-group { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
 .ufa-board-grid .ufa-board-group .ufa-board-card { height: auto; }   /* grid stretch keeps a pair the same height; 100% would clip */
 @media (max-width: 640px) { .ufa-board-group { grid-template-columns: 1fr; } }
@@ -16846,6 +16847,24 @@ async function cancelBooking(id) {
 
 const BOARD_EDIT_ALL_ROLES = ['Board', 'President'];
 
+/* The only titles that can be picked, so every card uses the same wording. */
+const UFA_BOARD_POSITIONS = [
+  'President', 'Vice President', 'Treasurer',
+  'Director of External Affairs', 'Director of Investment', 'Director of Consulting',
+  'Director of Corporate Relations', 'Director of Marketing'
+];
+
+function bhSetPosition(val) {
+  var sel = document.getElementById('bp-position');
+  val = String(val || '').trim();
+  var list = UFA_BOARD_POSITIONS.slice();
+  if (val && list.indexOf(val) === -1) list.push(val);   // keep an older custom title until it is changed
+  sel.innerHTML = '<option value="">Select a title…</option>' + list.map(function (t) {
+    return '<option value="' + ufaEsc(t) + '">' + ufaEsc(t) + (UFA_BOARD_POSITIONS.indexOf(t) === -1 ? ' (old title)' : '') + '</option>';
+  }).join('');
+  sel.value = val;
+}
+
 var myBoardProfile = null;
 var myAvail = [];
 var myBlackouts = [];
@@ -16917,7 +16936,7 @@ async function bhLoadCardForm() {
       (myBoardProfile ? '' : ' They have no card yet, so saving creates one.');
 
   document.getElementById('bp-name').value = shownName;
-  document.getElementById('bp-position').value = myBoardProfile ? (myBoardProfile.position || '') : '';
+  bhSetPosition(myBoardProfile ? myBoardProfile.position : '');
 
   document.getElementById('bp-bio').value = myBoardProfile ? (myBoardProfile.bio || '') : '';
   document.getElementById('bp-booking').checked = myBoardProfile ? !!myBoardProfile.booking_enabled : true;
@@ -16936,7 +16955,8 @@ async function bhLoadCardForm() {
 
 async function saveBoardProfile() {
   var name = document.getElementById('bp-name').value.trim();
-  if (!name) { ufaAlert('boardhours-alert', 'err', 'Your name cannot be empty.'); return; }
+  if (!name) { ufaAlert('boardhours-alert', 'err', 'The name cannot be empty.'); return; }
+  if (!document.getElementById('bp-position').value) { ufaAlert('boardhours-alert', 'err', 'Pick a title from the list.'); return; }
 
   var slots = document.getElementById('bp-slots').value.split(',').map(Number);
   var editingOther = !!bhEditTarget;
