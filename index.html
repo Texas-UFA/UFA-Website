@@ -1569,12 +1569,14 @@ align-items: flex-end;
     background: var(--green-dark);
     padding: 56px 72px 32px;
   }
-  .footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1.3fr; gap: 48px; margin-bottom: 48px; }
+  .footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; margin-bottom: 48px; }
   /* Sponsors live in the footer's right-hand column. The light tile keeps a dark logo readable on the green. */
-  .footer-sponsor .sponsor-logos { justify-content: flex-start; gap: 12px; }
-  .footer-sponsor .sponsor-logo-link { background: rgba(255,255,255,0.96); padding: 10px 14px; border-radius: 8px; }
+  .footer-sponsor { grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; text-align: center; }
+  .footer-sponsor .footer-col-title { margin-bottom: 16px; }
+  .footer-sponsor .sponsor-logos { justify-content: center; gap: 12px; }
+  .footer-sponsor .sponsor-logo-link { background: rgba(255,255,255,0.96); padding: 14px 20px; border-radius: 10px; }
   .footer-sponsor .sponsor-logo-link img,
-  .footer-sponsor .sponsor-logo-link img.is-trimmed { height: 52px; max-width: 100%; }
+  .footer-sponsor .sponsor-logo-link img.is-trimmed { height: 76px; max-width: 100%; }
   @media (max-width: 1100px) {
     .footer-top { grid-template-columns: 2fr 1fr 1fr 1fr; }
     .footer-sponsor { grid-column: 1 / -1; }
@@ -5966,6 +5968,10 @@ button[onclick="pubFlipbookNext()"]:hover {
                       <option value="Speaker">Speaker</option>
                       <option value="Workshop">Workshop</option>
                       <option value="Community Service">Community Service</option>
+                      <option value="Meeting">Meeting</option>
+                      <option value="Family">Family</option>
+                      <option value="Board Hours">Board Hours</option>
+                      <option value="Mock Interview">Mock Interview</option>
                     </select>
                   </div>
                   <div>
@@ -7682,8 +7688,8 @@ button[onclick="pubFlipbookNext()"]:hover {
 @media (min-width: 1300px) { .ufa-board-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 
 /* Board Hours: three-step intro */
-.bh-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 16px; max-width: 760px; }
-.bh-step { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; line-height: 1.45; color: #3A4A3A; }
+.bh-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 16px; max-width: none; width: 100%; }
+.bh-step { display: flex; gap: 12px; padding-right: 24px; align-items: flex-start; font-size: 13px; line-height: 1.45; color: #3A4A3A; }
 .bh-step-n { flex: 0 0 22px; height: 22px; border-radius: 50%; background: #E4EDE4; border: 1px solid rgba(46,74,46,0.18); color: #2E4A2E; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
 .bh-step strong { display: block; color: #1C2B1C; font-weight: 600; }
 @media (max-width: 640px) { .bh-steps { grid-template-columns: 1fr; } }
@@ -8594,11 +8600,22 @@ async function getEventFileCounts(codes) {
   return counts;
 }
 
+/* Analyst meetings are restricted: only Analysts, Board, and the President can see them. */
+function ufaIsAnalystEvent(sess) {
+  return /analyst/i.test(sess.event_type || '') || /analyst/i.test(sess.meeting_name || '');
+}
+function ufaCanSeeAnalystEvents() {
+  var role = (currentMember && currentMember.role) || '';
+  return role === 'Analyst' || role === 'Board' || role === 'President';
+}
+
 async function renderUpcoming() {
   var upcomingBox = document.getElementById('upcoming-events-list');
   var pastBox = document.getElementById('past-events-list');
   var res = await sb.from('sessions').select('*');
   var sessions = res.data || [];
+  // Analyst meetings (and their slides) are only visible to Analysts and the board
+  if (!ufaCanSeeAnalystEvents()) sessions = sessions.filter(function (x) { return !ufaIsAnalystEvent(x); });
   if (!sessions.length) {
     upcomingBox.innerHTML = '<div style="padding:20px;background:#EEF5EE;font-size:13px;color:#6B7D6B;text-align:center;">No events scheduled yet.</div>';
     if (pastBox) pastBox.innerHTML = '<div style="padding:20px;background:#EEF5EE;font-size:13px;color:#6B7D6B;text-align:center;">Nothing here yet.</div>';
@@ -9614,7 +9631,12 @@ function onManualAttSessionChange() {
   if (!s) return; // "Custom" selected — leave fields as typed
   document.getElementById('manual-att-name').value = s.meeting_name || '';
   document.getElementById('manual-att-date').value = ufaDateToInput(s.meeting_date);
-  document.getElementById('manual-att-type').value = s.event_type || 'Meeting';
+  var typeSel = document.getElementById('manual-att-type');
+  var evType = s.event_type || 'Meeting';
+  // Any event type works: if the session's type isn't in the list yet, add it on the fly
+  var hasType = Array.prototype.some.call(typeSel.options, function(o){ return o.value === evType; });
+  if (!hasType) { var opt = document.createElement('option'); opt.value = evType; opt.textContent = evType; typeSel.appendChild(opt); }
+  typeSel.value = evType;
   document.getElementById('manual-att-points').value = s.points || 1;
 }
 
@@ -9679,6 +9701,8 @@ async function addManualAttendance() {
   var code   = document.getElementById('manual-att-session').value;
   var name   = document.getElementById('manual-att-name').value.trim();
   var date   = ufaInputToDate(document.getElementById('manual-att-date').value);
+  // If the picked session has a date the calendar input can't show, keep the session's own date text
+  if (!date && code && attendanceSessionMap[code]) date = attendanceSessionMap[code].meeting_date || '';
   var type   = document.getElementById('manual-att-type').value;
   var points = parseFloat(document.getElementById('manual-att-points').value) || 1;
   var msg    = document.getElementById('manual-att-msg');
