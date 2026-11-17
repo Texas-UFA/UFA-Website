@@ -1574,7 +1574,7 @@ align-items: flex-end;
   .footer-sponsor { grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; text-align: center; }
   .footer-sponsor .footer-col-title { margin-bottom: 16px; }
   .footer-sponsor .sponsor-logos { justify-content: center; gap: 12px; }
-  .footer-sponsor .sponsor-logo-link { background: rgba(255,255,255,0.96); padding: 14px 20px; border-radius: 10px; }
+  .footer-sponsor .sponsor-logo-link { background: var(--cream); padding: 14px 20px; border-radius: 10px; }
   .footer-sponsor .sponsor-logo-link img,
   .footer-sponsor .sponsor-logo-link img.is-trimmed { height: 76px; max-width: 100%; }
   @media (max-width: 1100px) {
@@ -5133,7 +5133,7 @@ button[onclick="pubFlipbookNext()"]:hover {
           <button onclick="switchPortalTab('recruiting')" class="portal-tab" id="ptab-recruiting">Recruiting</button>
           <button onclick="switchPortalTab('mock')" class="portal-tab" id="ptab-mock">Mock Interview</button>
           <button onclick="switchPortalTab('board')" class="portal-tab" id="ptab-board">Board Hours</button>
-          <button onclick="switchPortalTab('learn')" class="portal-tab" id="ptab-learn" style="display:none;">Ask &amp; Learn</button>
+          <button onclick="switchPortalTab('learn')" class="portal-tab" id="ptab-learn" style="display:none;">Learn</button>
           <button onclick="switchPortalTab('admin')" class="portal-tab" id="ptab-admin" style="display:none;">Admin</button>
         </div>
       </div>
@@ -5803,8 +5803,8 @@ button[onclick="pubFlipbookNext()"]:hover {
              Board-only until published (setting: visibility_learn). -->
         <div id="ptab-content-learn" style="display:none;">
           <div class="ufa-pane-head">
-            <div class="ufa-pane-title">Ask &amp; Learn</div>
-            <div class="ufa-pane-sub">Ask anything anonymously, and follow along with Market Watch.</div>
+            <div class="ufa-pane-title">Learn</div>
+            <div class="ufa-pane-sub">Follow along with Market Watch, one slide at a time.</div>
           </div>
           <div id="learn-body"></div>
         </div>
@@ -5840,7 +5840,7 @@ button[onclick="pubFlipbookNext()"]:hover {
             <button onclick="switchAdminTab('engagement')" class="admin-tab" id="atab-engagement">Engagement</button>
             <button onclick="switchAdminTab('pitches')" class="admin-tab" id="atab-pitches">GM Pitches</button>
             <button onclick="switchAdminTab('activity')" class="admin-tab" id="atab-activity">Activity</button>
-            <button onclick="switchAdminTab('learn')" class="admin-tab" id="atab-learn">Ask &amp; Learn</button>
+            <button onclick="switchAdminTab('learn')" class="admin-tab" id="atab-learn">Learn</button>
             <button onclick="switchAdminTab('families')" class="admin-tab" id="atab-families">Families <span id="fam-badge" style="display:none;background:#c0392b;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;margin-left:4px;">0</span></button>
           </div>
 
@@ -6206,7 +6206,7 @@ button[onclick="pubFlipbookNext()"]:hover {
           <div id="atab-content-activity" style="display:none;"><div id="activity-body"></div></div>
 
           <div id="atab-content-learn" style="display:none;">
-            <div class="ufa-pane-sub" style="margin-bottom:18px;">Anonymous Q&amp;A and the Market Watch guide. Board only until you publish it.</div>
+            <div class="ufa-pane-sub" style="margin-bottom:18px;">The Market Watch guide. Board only until you publish it.</div>
             <div id="learn-admin-body"><div class="ufa-pane-sub">Loading…</div></div>
           </div>
 
@@ -9564,6 +9564,7 @@ var allAttendanceData = [];   // flat list of {..attendance row.., memberName}
 var attendanceMemberMap = {}; // email(lower) -> member row, for name lookups
 var attendanceMembersList = []; // [{name,email}], for the name-search picker
 var attendanceSessionMap = {}; // code -> session row, for the manual-checkin dropdown
+var attendanceManualOptions = {}; // dropdown value -> {code_used, meeting_name, meeting_date, event_type, points}
 
 async function loadAdminAttendance() {
   var r1 = await sb.from('attendance').select('*').order('meeting_date', { ascending: false });
@@ -9604,8 +9605,33 @@ async function loadAdminAttendance() {
   // Populate session dropdowns (manual check-in form + filter)
   var sessSelect = document.getElementById('manual-att-session');
   if (sessSelect) {
-    sessSelect.innerHTML = '<option value="">— Custom (fill in below) —</option>'
-      + sessions.map(function(s){ return '<option value="'+ufaEsc(s.code)+'">'+ufaEsc(ufaPrettyDate(s.meeting_date||''))+' — '+ufaEsc(s.meeting_name||s.code)+'</option>'; }).join('');
+    // Every event: live sessions first, then any other event that already has attendance
+    // (Mock Interview, Board Hours credit, Family Meetups, Socials, Profit Shares, and so on).
+    attendanceManualOptions = {};
+    var optHtml = '<option value="">— Custom (fill in below) —</option>';
+    sessions.forEach(function(s){
+      var k = 'sess:' + s.code;
+      attendanceManualOptions[k] = { code_used: s.code, meeting_name: s.meeting_name || s.code, meeting_date: s.meeting_date || '', event_type: s.event_type || 'Meeting', points: s.points || 1 };
+      optHtml += '<option value="'+ufaEsc(k)+'">'+ufaEsc(ufaPrettyDate(s.meeting_date||''))+' — '+ufaEsc(s.meeting_name||s.code)+'</option>';
+    });
+    var sessCodes = {}; sessions.forEach(function(s){ sessCodes[s.code] = true; });
+    var groups = {}, order = [];
+    att.forEach(function(r){
+      if (r.code_used && sessCodes[r.code_used]) return;            // already listed as a session
+      var gk = [r.meeting_name || '', r.meeting_date || '', r.event_type || ''].join('|');
+      if (!groups[gk]) { groups[gk] = { rows: [] }; order.push(gk); }
+      groups[gk].rows.push(r);
+    });
+    order.forEach(function(gk){
+      var rows = groups[gk].rows, f = rows[0];
+      var codes = {}; rows.forEach(function(r){ codes[r.code_used || ''] = true; });
+      var codeList = Object.keys(codes);
+      var sharedCode = (codeList.length === 1 && codeList[0]) ? codeList[0] : null; // only reuse a code every row shares
+      var k = 'evt:' + gk;
+      attendanceManualOptions[k] = { code_used: sharedCode, meeting_name: f.meeting_name || 'Event', meeting_date: f.meeting_date || '', event_type: f.event_type || 'Meeting', points: f.points || 1 };
+      optHtml += '<option value="'+ufaEsc(k)+'">'+ufaEsc(ufaPrettyDate(f.meeting_date||''))+' — '+ufaEsc(ufaMeetingName(f.meeting_name||'Event', f.event_type))+'</option>';
+    });
+    sessSelect.innerHTML = optHtml;
   }
   var filterSelect = document.getElementById('attendance-session-filter');
   if (filterSelect) {
@@ -9626,8 +9652,7 @@ async function loadAdminAttendance() {
 }
 
 function onManualAttSessionChange() {
-  var code = document.getElementById('manual-att-session').value;
-  var s = attendanceSessionMap[code];
+  var s = attendanceManualOptions[document.getElementById('manual-att-session').value];
   if (!s) return; // "Custom" selected — leave fields as typed
   document.getElementById('manual-att-name').value = s.meeting_name || '';
   document.getElementById('manual-att-date').value = ufaDateToInput(s.meeting_date);
@@ -9698,11 +9723,12 @@ document.addEventListener('click', function(e){
 
 async function addManualAttendance() {
   var email  = document.getElementById('manual-att-email').value.trim().toLowerCase();
-  var code   = document.getElementById('manual-att-session').value;
+  var picked = attendanceManualOptions[document.getElementById('manual-att-session').value] || null;
+  var code   = picked ? (picked.code_used || '') : '';
   var name   = document.getElementById('manual-att-name').value.trim();
   var date   = ufaInputToDate(document.getElementById('manual-att-date').value);
   // If the picked session has a date the calendar input can't show, keep the session's own date text
-  if (!date && code && attendanceSessionMap[code]) date = attendanceSessionMap[code].meeting_date || '';
+  if (!date && picked) date = picked.meeting_date || '';
   var type   = document.getElementById('manual-att-type').value;
   var points = parseFloat(document.getElementById('manual-att-points').value) || 1;
   var msg    = document.getElementById('manual-att-msg');
@@ -9713,6 +9739,12 @@ async function addManualAttendance() {
   if (code) {
     var existRes = await sb.from('attendance').select('*').eq('email', email).eq('code_used', code).maybeSingle();
     if (existRes.data) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='This member is already checked in to that session.'; return; }
+  }
+
+  // Events with no shared code: still stop an exact duplicate (same member, name, and date)
+  if (!code) {
+    var dupRes = await sb.from('attendance').select('id').eq('email', email).eq('meeting_name', name).eq('meeting_date', date).limit(1);
+    if (dupRes.data && dupRes.data.length) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='This member already has a check-in for that event.'; return; }
   }
 
   var row = { email: email, meeting_name: name, meeting_date: date, event_type: type, points: points };
@@ -22752,7 +22784,11 @@ var GUIDE = [
       ['Dual mandate', 'The Fed has two jobs: stable prices (it targets 2% inflation) and maximum employment. Hikes fight inflation but can cost jobs, which is why slides say the Fed "must balance" the two.', true],
       ['Dot plot', 'A chart where each Fed official marks where they expect interest rates to be in the future. It shows how many officials expect more hikes, like "16 of 18 officials."', true],
       ['Odds of a hike, and "priced in"', 'Traders bet on what the Fed will do, and those bets imply a probability, like "20% chance of a hike." If something is "priced in," the market already expects it, so the announcement barely moves prices. Surprises are what move markets.', true],
-      ['Other central banks', 'The Bank of England (UK) and the European Central Bank set their own rates. When they move differently from the Fed, currencies like the pound and euro can swing against the dollar.', true]
+      ['Other central banks', 'The Bank of England (UK) and the European Central Bank set their own rates. When they move differently from the Fed, currencies like the pound and euro can swing against the dollar.', true],
+      ["Data dependent", "The Fed says it decides meeting by meeting based on new numbers, like jobs and inflation. That is why every report on these slides matters."],
+      ["Pause", "Holding rates steady for a meeting after a hike or cut. A pause is not the end of the story: more moves can follow if inflation stays high."],
+      ["Wage-price spiral", "When rising wages push companies to raise prices, which pushes workers to ask for even higher wages. The Fed raises rates to break that loop before it starts.", true],
+      ["Dissent", "When a Fed official votes against the group decision. \"Two officials favored a hike\" means they wanted tighter policy than the committee chose, a hint of where rates may go next.", true]
     ] },
     { key: 'econ', n: 2, title: 'Economic Reports', blurb: 'Data on how the economy is doing', terms: [
       ['Jobs report (nonfarm payrolls)', 'A monthly report on how many jobs the economy added, not counting farm work. "Added 29k jobs vs. 90k expected" means hiring was far weaker than forecast.'],
@@ -22770,7 +22806,12 @@ var GUIDE = [
       ['YoY, MoM, QoQ', 'Year over year, month over month, quarter over quarter. The period a change is measured against.'],
       ['K, M, B', 'Thousand, million, billion. "162K jobs" is 162,000. "$100M" is 100 million dollars.'],
       ['% vs. percentage points', 'If unemployment goes from 4.1% to 4.2%, it rose 0.1 percentage points, not 0.1%.'],
-      ['ET', 'Eastern Time. Data often comes out at 8:30 a.m. ET.']
+      ['ET', 'Eastern Time. Data often comes out at 8:30 a.m. ET.'],
+      ["Hourly earnings", "How much the average paycheck per hour rose. Compare it to inflation: if pay rises slower than prices, workers lose buying power."],
+      ["Job openings (JOLTS)", "A monthly report on how many jobs employers are trying to fill. High openings mean companies still want to hire, which can keep wages and inflation up."],
+      ["Saving rate", "The share of income households keep instead of spending. A low rate means people have a thinner cushion if prices keep rising.", true],
+      ["Prices paid (inside ISM)", "A part of the ISM survey that tracks what businesses pay for supplies. A high number means costs are rising, which can feed into inflation.", true],
+      ["Missing data", "Sometimes a report is missing or distorted, such as a month the government did not collect prices. Analysts then compare to other periods, so a gap on a slide is not a typo.", true]
     ] },
     { key: 'rates', n: 3, title: 'Rates & Inflation', blurb: 'How fast prices rise, and what borrowing costs', terms: [
       ['Inflation', 'The rate at which prices rise over time. A dollar buys less when inflation is high.'],
@@ -22783,7 +22824,10 @@ var GUIDE = [
       ['PCE and core PCE', 'Another inflation measure, and the one the Fed officially prefers for its 2% target. Core PCE strips out food and energy.', true],
       ['Sticky inflation', 'Inflation that stays high even after the Fed has raised rates.', true],
       ['Treasuries vs. dividends', 'When safe Treasuries pay 5%, dividend-paying stocks like utilities look less attractive by comparison, so investors sell them. That is what "Treasuries compete with dividends" means.', true],
-      ['bps', 'Basis points. 100 bps equals 1 percentage point, so a 25 bps hike is 0.25 percentage points.']
+      ['bps', 'Basis points. 100 bps equals 1 percentage point, so a 25 bps hike is 0.25 percentage points.'],
+      ["Gas prices", "A fast-moving part of CPI. People see gas prices every day, so a jump can push inflation headlines even when other prices are calm."],
+      ["Hot and cool reports", "\"Hotter than expected\" inflation raises the odds of rate hikes and usually hurts stocks. \"Cooler than expected\" does the opposite."],
+      ["PPI (producer prices)", "The Producer Price Index tracks what businesses pay to make goods, before they reach shoppers. When PPI runs far above CPI, factories face higher costs than consumers will pay, which squeezes profits.", true]
     ] },
     { key: 'world', n: 4, title: 'World News', blurb: 'Events overseas that move markets', terms: [
       ['Brent and WTI', 'Two benchmark oil prices, quoted per barrel (bbl). WTI is the US benchmark and Brent is the global one.'],
@@ -22794,7 +22838,10 @@ var GUIDE = [
       ['Export ban', 'A government blocking sales of a product abroad to keep more at home and hold domestic prices down, like a diesel export ban.'],
       ['Supply shock', 'A sudden drop in supply, such as pipeline attacks, that sends prices up quickly. It is different from prices rising because demand grew.', true],
       ['Sovereign debt', 'Debt issued by a government. "France\u2019s debt concerns" means investors worry about its finances, which can hit its bonds, stocks and currency.', true],
-      ['Geopolitical risk', 'Conflict and politics that can disrupt trade or energy supply and make markets nervous.', true]
+      ['Geopolitical risk', 'Conflict and politics that can disrupt trade or energy supply and make markets nervous.', true],
+      ["Elections and markets", "Markets react to which party controls Congress because that can change taxes, spending, and regulation. A split government is usually expected to pass fewer big laws, so some investors read it as less policy risk."],
+      ["Peace talks and oil", "Hopes of a deal in a conflict zone can pull oil down fast because traders expect supply to stay safe. Prices can jump back on bad news.", true],
+      ["Attacks on infrastructure", "Strikes on power grids, bridges, or ports can disrupt energy and supply chains, which feeds into prices far from the fighting.", true]
     ] },
     { key: 'ahead', n: 5, title: 'The Week Ahead', blurb: 'Earnings and events on the calendar', terms: [
       ['Earnings report', 'A public company\u2019s results for the last three months, released every quarter.'],
@@ -22805,7 +22852,9 @@ var GUIDE = [
       ['Magnificent 7', 'Seven giant tech-focused companies (Apple, Microsoft, Alphabet, Amazon, Nvidia, Meta and Tesla) that make up a large share of the S&P 500, so their results can move the whole market.', true],
       ['Guidance', 'A company\u2019s own forecast for the next quarter or year. A stock can fall after a beat if the guidance disappoints.', true],
       ['Bank earnings as a check-up', 'Banks earn the gap between what they charge on loans and pay on deposits, and they set money aside for loans that may go bad. Their results hint at how consumers and the economy are doing.', true],
-      ['Q1\u2013Q4', 'The four quarters of a company\u2019s financial year.']
+      ['Q1\u2013Q4', 'The four quarters of a company\u2019s financial year.'],
+      ["Pre-market and after the close", "Companies often report earnings outside trading hours. Pre-market means before the 9:30 a.m. ET open. After the close means after 4 p.m. ET. Stocks often jump or drop the moment trading resumes."],
+      ["Bond market holidays", "On some holidays, like Veterans Day, stocks trade but the bond market is closed. Slides note this because there is no Treasury trading that day.", true]
     ] }
   ] },
 
@@ -22832,7 +22881,10 @@ var GUIDE = [
       ['Gainers and decliners', 'The stocks that rose or fell the most over the week, shown as percent change.'],
       ['Catalyst', 'A specific event that triggers a big move: an earnings report, a product launch, a deal, an analyst downgrade.', true],
       ['Consumption-based pricing', 'Customers pay for what they use (like Snowflake\u2019s credits) instead of a flat subscription, so revenue rises as customers use the product more.', true],
-      ['SQL', 'The language used to ask databases questions. It normally takes an engineer, which is why tools that let non-technical people query data in plain English are a selling point.', true]
+      ['SQL', 'The language used to ask databases questions. It normally takes an engineer, which is why tools that let non-technical people query data in plain English are a selling point.', true],
+      ["Earnings reaction", "A stock can fall on good profit if results or guidance fall short of what investors hoped. Moves of 15% or more in a day almost always have a clear catalyst."],
+      ["Growth stock", "A company expected to grow fast, so its price already assumes a lot of future profit. These stocks fall hardest when rates rise, because future profits are worth less today.", true],
+      ["Leadership scandal", "When a leader faces an investigation, shares can drop sharply because investors fear distraction, legal costs, or a change at the top. The board often opens its own review.", true]
     ] },
     { key: 'ind', n: 4, title: 'Industry Performance', blurb: 'Which sectors led and lagged', terms: [
       ['Sector', 'A group of companies in the same kind of business. The market has 11 sectors, including Technology, Health Care, Financials, Energy, Utilities, Real Estate and Consumer Staples.'],
@@ -22843,13 +22895,18 @@ var GUIDE = [
       ['Rate-sensitive sectors', 'Sectors hurt by higher borrowing costs, like utilities and real estate, because they carry a lot of debt and pay dividends that compete with bond yields.', true],
       ['Capital-intensive', 'Businesses that need lots of expensive equipment or infrastructure, like utilities, so higher borrowing costs hit them hard.', true],
       ['CapEx and free cash flow (FCF)', 'CapEx is money spent on long-term assets like data centers and equipment. FCF is the cash left after operating costs and CapEx. "Lower CapEx means better future FCF" means spending less leaves more cash for shareholders.', true],
-      ['AI spending', 'Big tech companies are spending heavily on chips and data centers for AI. That lifts chipmakers\u2019 sales, while investors question whether the spending will pay off.', true]
+      ['AI spending', 'Big tech companies are spending heavily on chips and data centers for AI. That lifts chipmakers\u2019 sales, while investors question whether the spending will pay off.', true],
+      ["Communication Services", "A sector that holds media and internet companies, such as Alphabet, Meta, and Netflix."],
+      ["Health care and policy", "Insurers and hospital operators react to government policy, like what insurance covers and pays. Election results or new rules can move them more than the economy does.", true],
+      ["Oil producers and refiners", "Producers earn more when oil rises. Refiners buy crude and sell fuel, so they live off the gap between the two, and a sharp swing in oil can hurt them either way.", true]
     ] },
     { key: 'news', n: 5, title: 'Finance News', blurb: 'Deals, leadership changes, headlines', terms: [
       ['M&A', 'Mergers and acquisitions: companies combining, or one company buying another. Investment banks earn fees advising on these deals.'],
       ['Acquire', 'To buy another company. The buyer is the acquirer and the company being bought is the target.'],
       ['Chairman vs. CEO', 'The chairman leads the board of directors. The CEO runs the company day to day. "Chairman emeritus" is an honorary title for a retired leader.'],
-      ['Surging Treasury yields', 'When yields reach multi-decade highs it reflects expectations for more rate hikes, sticky inflation and heavy bond supply. "Large corporate bond supply" means many companies selling bonds at once, which pushes prices down and yields up.', true]
+      ['Surging Treasury yields', 'When yields reach multi-decade highs it reflects expectations for more rate hikes, sticky inflation and heavy bond supply. "Large corporate bond supply" means many companies selling bonds at once, which pushes prices down and yields up.', true],
+      ["AI selloff", "A sharp drop in AI-related stocks, often driven by fears that companies are spending too much on chips and data centers and may not earn it back.", true],
+      ["Board investigation", "When a company\u2019s board hires outside lawyers or committees to look into a leader or an event. It signals a serious governance issue.", true]
     ] }
   ] },
 
@@ -22952,7 +23009,7 @@ function learnGuideDraw() {
         return '<div class="fx-term"><dt>' + ufaEsc(fxTitleCase(h.t[0])) + (h.t[2] ? ' <span class="fx-pill mute" style="margin-left:6px;">Going Deeper</span>' : '') + '</dt><dd>' + ufaEsc(h.t[1]) + '</dd>' +
           '<button class="fx-link" data-s="' + h.s.id + '" data-b="' + h.b.key + '" onclick="learnGuideSelect(this.dataset.s,this.dataset.b)">Show where it appears: ' + ufaEsc(h.s.title) + (h.b.n ? ', ' + ufaEsc(h.b.title) : '') + '</button></div>';
       }).join('') + '</dl>'
-        : '<div class="fx-empty" style="border:0;">' + fxIcon('chat', 26) + 'Nothing matches yet.<br><button class="fx-btn sm" style="margin-top:12px;" onclick="learnAskFromSearch()">Ask it anonymously instead</button></div>') +
+        : '<div class="fx-empty" style="border:0;">' + fxIcon('chat', 26) + 'Nothing matches yet.<br>Try a shorter word, or ask a board member at the next meeting.</div>') +
       '</div>';
     return;
   }
@@ -23054,7 +23111,7 @@ var LEARN_PALETTE = ['#2E4A2E', '#9A6414', '#1E4A8A', '#8A2E55', '#1E6B7A', '#5A
 .fx-learn-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(300px,1fr);gap:40px;align-items:start;margin-bottom:0;}
 .fx-learn-grid.solo{grid-template-columns:minmax(0,1fr);}
 #learn-ask{margin-bottom:0;}
-#learn-guide{margin-top:44px;padding-top:40px;border-top:1px solid var(--fx-line);}
+#learn-guide{margin-top:0;padding-top:0;border-top:0;}
 .fx-side{position:sticky;top:100px;}
 
 
@@ -23189,31 +23246,9 @@ async function loadLearnTab() {
     }
   }
   host.innerHTML = banner +
-    '<div class="fx-learn-grid solo" id="learn-grid">' +
-      '<section id="learn-ask" class="fx-sec">' +
-        '<div><h3 class="fx-h2">Ask a question</h3>' +
-          '<p class="fx-sub">Nothing is too basic, and someone else is probably wondering the same thing. Upvote the ones you want answered.</p></div>' +
-        '<div class="fx-composer">' +
-          '<textarea id="learn-q-input" maxlength="300" rows="3" placeholder="What is a dot plot? Why do rising yields hurt utilities?" aria-label="Your question"></textarea>' +
-          '<div class="fx-composer-bar"><span class="fx-anon">' + fxIcon('lock', 15) + 'Anonymous to other members</span>' +
-            '<span id="learn-q-count" class="fx-count">0 / 300</span>' +
-            '<button id="learn-q-btn" class="fx-btn" onclick="learnSubmitQuestion()">Post anonymously</button></div>' +
-        '</div>' +
-        '<div id="learn-q-msg" class="fx-msg" style="display:none;margin-top:12px;"></div>' +
-        '<div class="fx-feed-head"><h4 class="fx-h3">This week\'s questions</h4><span class="fx-sub" style="margin:0;">Most upvoted first</span></div>' +
-        '<div id="learn-q-list"></div>' +
-      '</section>' +
-    '</div>' +
     '<section id="learn-guide" class="fx-sec">' + learnGuideShell() + '</section>';
 
-  var ta = document.getElementById('learn-q-input');
-  ta.addEventListener('input', function () {
-    document.getElementById('learn-q-count').textContent = ta.value.length + ' / 300';
-  });
-
   learnGuideDraw();
-  await learnRefreshQuestions();
-  learnStartPolling();
 }
 
 function learnStartPolling() {
@@ -23285,63 +23320,12 @@ async function loadLearnAdmin() {
   if (!host) return;
   host.innerHTML = '<div class="fx-sub">Loading…</div>';
   try {
-    var res = await Promise.all([
-      sb.from('qa_questions').select('*').order('created_at', { ascending: false }).limit(300),
-      sb.from('qa_question_authors').select('*'),
-      sb.from('members').select('email, name')
-    ]);
-    for (var i = 0; i < res.length; i++) if (res[i].error) throw res[i].error;
-    var allQs = res[0].data || [], authors = res[1].data || [], members = res[2].data || [];
-    var qs = allQs.filter(function (q) { return !q.archived_at; });
-    var archivedQs = allQs.filter(function (q) { return q.archived_at; });
-
-    var nameBy = {};
-    members.forEach(function (m) { nameBy[String(m.email).toLowerCase()] = m.name || m.email; });
-    var authorBy = {};
-    authors.forEach(function (a) { authorBy[a.question_id] = nameBy[String(a.email).toLowerCase()] || a.email; });
-
-    qs.sort(function (a, b) {
-      return (a.hidden - b.hidden) || (a.answered - b.answered) || (b.votes - a.votes) || (new Date(b.created_at) - new Date(a.created_at));
-    });
-
-    var panel = 'class="fx-panel" style="overflow:hidden;"';
-    var openQs = qs.filter(function (q) { return !q.hidden && !q.answered; }).length;
-
-    var qHtml = qs.length ? qs.map(function (q) {
-      return '<div class="fx-qrow' + (q.hidden ? ' off' : '') + '">' +
-        '<div class="v">' + q.votes + '<small>votes</small></div>' +
-        '<div class="t"><p' + (q.hidden ? ' style="text-decoration:line-through;"' : '') + '>' + ufaEsc(q.body) + '</p>' +
-          '<small>' + fxAvatar(authorBy[q.id] || '?', 20) + '<span>Asked by <b>' + ufaEsc(authorBy[q.id] || 'unknown') + '</b></span><span>' + learnAgo(q.created_at) + '</span>' +
-            (q.answered ? fxPill('ok', 'Answered', 'check') : '') + (q.hidden ? fxPill('mute', 'Hidden from members') : '') + '</small></div>' +
-        '<div class="a">' +
-          '<button class="fx-btn sm ghost" data-id="' + q.id + '" data-a="answer" onclick="learnAdminQ(this.dataset.id,this.dataset.a)">' + (q.answered ? 'Unmark answered' : 'Mark answered') + '</button>' +
-          '<button class="fx-btn sm ghost" data-id="' + q.id + '" data-a="hide" onclick="learnAdminQ(this.dataset.id,this.dataset.a)">' + (q.hidden ? 'Unhide' : 'Hide') + '</button>' +
-          '<button class="fx-icon-btn danger" title="Delete" aria-label="Delete question" data-id="' + q.id + '" data-a="delete" onclick="learnAdminQ(this.dataset.id,this.dataset.a)">' + fxIcon('trash', 17) + '</button>' +
-        '</div></div>';
-    }).join('') : '<div class="fx-empty" style="border:0;">' + fxIcon('chat', 26) + 'No questions yet this week.</div>';
-
-    var archivedHtml = archivedQs.length
-      ? '<details style="margin-top:14px;"><summary class="fx-link" style="cursor:pointer;">Past weeks (' + archivedQs.length + ' question' + (archivedQs.length === 1 ? '' : 's') + ')</summary>' +
-        '<div class="fx-panel" style="overflow:hidden;margin-top:10px;">' + archivedQs.map(function (q) {
-          return '<div class="fx-qrow"><div class="v" style="color:#6B7D6B;">' + q.votes + '<small>votes</small></div>' +
-            '<div class="t"><p style="color:#3A4A3A;">' + ufaEsc(q.body) + '</p><small><span>' + ufaEsc(authorBy[q.id] || 'unknown') + '</span><span>week of ' + new Date(q.archived_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + '</span>' + (q.answered ? fxPill('ok', 'Answered', 'check') : '') + '</small></div>' +
-            '<div class="a"><button class="fx-icon-btn danger" title="Delete" aria-label="Delete question" data-id="' + q.id + '" data-a="delete" onclick="learnAdminQ(this.dataset.id,this.dataset.a)">' + fxIcon('trash', 17) + '</button></div></div>';
-        }).join('') + '</div></details>' : '';
-
     host.innerHTML =
       '<div id="learn-visibility" style="margin-bottom:20px;"></div>' +
       '<div id="learn-alert" class="ufa-alert" style="display:none;margin-bottom:16px;"></div>' +
       '<div id="learn-admin-msg" class="fx-msg" style="display:none;"></div>' +
-      '<div class="fx-stats">' +
-        '<div class="fx-stat"><b>' + openQs + '</b><span>Open questions this week</span></div>' +
-      '</div>' +
-      '<div style="display:flex;gap:10px;flex-wrap:wrap;margin:-6px 0 34px;">' +
-        '<button class="fx-btn lg" onclick="learnOpenProjector()">' + fxIcon('screen', 18) + ' Open projector view</button>' +
-        '<button class="fx-btn lg ghost" onclick="switchPortalTab(\'learn\')">Preview the member screen</button></div>' +
-
-      '<section class="fx-sec"><div class="fx-sec-head"><div><h3 class="fx-h2">Questions this week</h3><p class="fx-sub">You can see who asked. Members cannot.</p></div>' +
-        '<button class="fx-btn sm ghost" onclick="learnArchiveWeek()">' + fxIcon('refresh', 15) + ' Start a new week</button></div>' +
-        '<div ' + panel + '>' + qHtml + '</div>' + archivedHtml + '</section>';
+      '<div style="display:flex;gap:10px;flex-wrap:wrap;margin:0 0 20px;">' +
+        '<button class="fx-btn lg ghost" onclick="switchPortalTab(\'learn\')">Preview the member screen</button></div>';
 
     await renderVisibilityToggle('learn', 'visibility_learn');
   } catch (e) {
