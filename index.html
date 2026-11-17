@@ -906,52 +906,6 @@ background-position: center 95%;
 
   /* ── TEAM GRID ──
      Grid layout for displaying executive board members. */
-  /* ── BOARD ──
-     13 people in two rows: 6 then 7, ordered by function so co-directors sit
-     adjacent. Group headings are gone — every card states its own title now, so
-     a "Directors of Investment" heading above two cards each reading "Director
-     of Investment" was pure repetition.
-
-     Card width is one value for the whole page (--bd-card), sized off the
-     denser row: 7 cards + 6 gaps. Cards are DIRECT children of the row — a
-     percentage inside a custom property resolves against whichever element
-     consumes it, so nesting cards in a half-width wrapper would compute each as
-     a seventh of the WRAPPER rather than the row, halving every photo.
-
-     `justify-content: space-between` spreads the leftover width equally across
-     every gap, so spacing between any two adjacent photos in a row is
-     identical and cards never stretch — that's what keeps all 13 headshots the
-     same size. The 6-card row has one card's slack to spread, so its gaps run
-     wider than the 7-card row's; that's the cost of both rows filling the full
-     width at a fixed photo size. */
-  .board-rows {
-    display: flex; flex-direction: column; gap: 44px;
-    --bd-gap: 24px;   /* minimum gap — binds in the dense 7-card row */
-  }
-  .board-row {
-    --bd-card: calc((100% - 6 * var(--bd-gap)) / 7);
-    display: grid;
-    grid-template-columns: repeat(6, var(--bd-card));
-    justify-content: space-between;
-  }
-  .board-row--last { grid-template-columns: repeat(7, var(--bd-card)); }
-  /* Headings sit on grid row 1 spanning their group's columns; cards land on
-     row 2 and auto-place left to right. Kept deliberately quiet — small, green,
-     uppercase, hairline rule — because each card now carries its own title, so
-     these only need to bracket the group, not compete with the names. */
-  .board-card { grid-row: 2; }
-  .board-group {
-    grid-row: 1; margin: 0 0 18px;
-    font-size: 11px; font-weight: 500;
-    letter-spacing: 0.16em; text-transform: uppercase;
-    color: var(--green-accent);
-    padding-bottom: 10px;
-    border-bottom: 1px solid var(--border);
-  }
-  .board-group--a { grid-column: 1 / span 2; }
-  .board-group--b { grid-column: 3 / span 2; }
-  .board-group--c { grid-column: 5 / span 2; }
-  .board-row--last .board-group--c { grid-column: 5 / span 3; }
   .board-card { text-align: center; display: flex; flex-direction: column; }
   .board-photo { width: 100%; aspect-ratio: 1; border-radius: 8px; overflow: hidden; margin-bottom: 12px; background: var(--green-wash); position: relative; flex-shrink: 0; }
   .board-photo-link { display: block; width: 100%; height: 100%; position: relative; }
@@ -973,32 +927,18 @@ background-position: center 95%;
   .board-role { font-size: 12px; color: var(--text-muted); line-height: 1.45; }
   .board-name--static { cursor: default; }
   .board-name--static:hover { color: var(--text-dark); }
-  /* Executive board: 5 across (14 cards), Freshman Liaisons last.
-     3 across on tablets (5 even rows), 2 across on phones (last card centered). */
-  .board-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 40px 24px; max-width: 1400px; }
-  .board-grid .board-card { grid-row: auto; flex: none; }
-  @media (max-width: 900px) { .board-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px 16px; } }
+  /* Executive board: 14 cards as 4 / 5 / 5 on a 10-column grid (each card spans 2),
+     so the opening row of 4 sits centered. 3 across on tablets, 2 on phones (last card centered). */
+  .board-grid { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 44px 28px; max-width: 1200px; margin: 0 auto; }
+  .board-grid .board-card { grid-column: span 2; }
+  .board-grid .board-card:first-child { grid-column: 2 / span 2; }
+  @media (max-width: 900px) {
+    .board-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px 16px; }
+    .board-grid .board-card, .board-grid .board-card:first-child { grid-column: auto; }
+  }
   @media (max-width: 560px) {
     .board-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 12px; }
     .board-grid .board-card:nth-child(odd):last-child { grid-column: 1 / -1; width: calc(50% - 6px); justify-self: center; }
-  }
-  /* .board-cluster / .board-cluster-cards are legacy wrappers; they flatten away. */
-  .board-cluster, .board-cluster-cards { display: contents; }
-  @media (max-width: 1500px) {
-    .board-rows {
-      flex-direction: row; flex-wrap: wrap; justify-content: flex-start;
-      align-items: flex-start;
-      gap: 32px var(--bd-gap);
-    }
-    .board-row, .board-row--last { display: contents; }
-    .board-cluster {
-      display: flex; flex-direction: column;
-    }
-    .board-cluster-cards {
-      display: flex; flex-direction: row; flex-wrap: nowrap;
-      gap: var(--bd-gap);
-    }
-    .board-card { flex: 0 0 180px; }
   }
   .board-photo img {
       width: 100%;
@@ -1569,17 +1509,16 @@ align-items: flex-end;
     background: var(--green-dark);
     padding: 56px 72px 32px;
   }
-  .footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1.3fr; gap: 48px; margin-bottom: 48px; }
+  .footer-top { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr 1.2fr; gap: 56px; margin-bottom: 48px; }
   /* Sponsors live in the footer's right-hand column. The light tile keeps a dark logo readable on the green. */
-  .footer-sponsor { display: flex; flex-direction: column; align-items: flex-end; text-align: right; }
-  .footer-sponsor .sponsor-logos { justify-content: flex-end; gap: 12px; }
+  .footer-sponsor { display: flex; flex-direction: column; align-items: flex-start; }
+  .footer-sponsor .sponsor-logos { justify-content: flex-start; gap: 12px; }
   .footer-sponsor .sponsor-logo-link { background: var(--cream); padding: 12px 18px; border-radius: 10px; }
   .footer-sponsor .sponsor-logo-link img,
   .footer-sponsor .sponsor-logo-link img.is-trimmed { height: 64px; max-width: 100%; }
   @media (max-width: 1100px) {
-    .footer-top { grid-template-columns: 2fr 1fr 1fr 1fr; }
-    .footer-sponsor { grid-column: 1 / -1; align-items: flex-start; text-align: left; }
-    .footer-sponsor .sponsor-logos { justify-content: flex-start; }
+    .footer-top { grid-template-columns: 1.6fr 1fr 1fr 1fr; }
+    .footer-sponsor { grid-column: 1 / -1; }
   }
   .footer-brand { }
   .footer-logo-text { font-family: var(--font-display); font-size: 18px; font-weight: 500; color: var(--white); margin-bottom: 12px; }
@@ -1816,19 +1755,6 @@ align-items: flex-end;
     grid-template-columns: 1fr;
   }
 
-  /* Board — 2 across on phones. Clusters exist so 769-1500px can let two
-     small teams share a row (see that breakpoint above); on a phone there's
-     only room for one team's photos at a time anyway, so clusters go back to
-     display:contents and .board-group is forced onto its own full-width line
-     again — that lets .board-card fall back to being a direct flex child of
-     .board-rows, which is what the 2-per-row percentage below assumes. */
-  .board-cluster, .board-cluster-cards { display: contents; }
-  .board-group { flex-basis: 100%; width: 100%; margin: 32px 0 0; }
-  .board-group:first-of-type { margin-top: 0; }
-  .board-rows { gap: 28px var(--bd-gap); --bd-gap: 12px; }
-  .board-card {
-    flex-basis: calc((100% - 1 * var(--bd-gap)) / 2); /* 2 per row */
-  }
   .board-photo {
     aspect-ratio: 1 !important;
   }
@@ -3857,16 +3783,6 @@ button[onclick="pubFlipbookNext()"]:hover {
           <a class="board-name" href="https://www.linkedin.com/in/alikafrankovska/" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg><span>Alika Frankovska</span></a>
           <div class="board-role">Vice President</div>
         </div>
-        <div class="board-card reveal">
-          <div class="board-photo"><a href="https://www.linkedin.com/in/aryanjhaveri07/" target="_blank" rel="noopener noreferrer" class="board-photo-link" tabindex="-1" aria-hidden="true"><img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1773078471094.jpeg" alt="Aryan Jhaveri" onerror="this.style.display='none'"></a></div>
-          <a class="board-name" href="https://www.linkedin.com/in/aryanjhaveri07/" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg><span>Aryan Jhaveri</span></a>
-          <div class="board-role">Treasurer</div>
-        </div>
-        <div class="board-card reveal">
-          <div class="board-photo"><a href="https://www.linkedin.com/in/nikhilparida/" target="_blank" rel="noopener noreferrer" class="board-photo-link" tabindex="-1" aria-hidden="true"><img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1759271799751.png" alt="Nikhil Parida" onerror="this.style.display='none'"></a></div>
-          <a class="board-name" href="https://www.linkedin.com/in/nikhilparida/" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg><span>Nikhil Parida</span></a>
-          <div class="board-role">Director of External Affairs</div>
-        </div>
                 <div class="board-card reveal">
           <div class="board-photo"><a href="https://www.linkedin.com/in/nathanyuxianli/" target="_blank" rel="noopener noreferrer" class="board-photo-link" tabindex="-1" aria-hidden="true"><img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/Headshot.jpg" alt="Nathan Li" onerror="this.style.display='none'"></a></div>
           <a class="board-name" href="https://www.linkedin.com/in/nathanyuxianli/" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg><span>Nathan Li</span></a>
@@ -3888,6 +3804,11 @@ button[onclick="pubFlipbookNext()"]:hover {
           <div class="board-role">Director of Consulting</div>
         </div>
         <div class="board-card reveal">
+          <div class="board-photo"><a href="https://www.linkedin.com/in/nikhilparida/" target="_blank" rel="noopener noreferrer" class="board-photo-link" tabindex="-1" aria-hidden="true"><img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1759271799751.png" alt="Nikhil Parida" onerror="this.style.display='none'"></a></div>
+          <a class="board-name" href="https://www.linkedin.com/in/nikhilparida/" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg><span>Nikhil Parida</span></a>
+          <div class="board-role">Director of External Affairs</div>
+        </div>
+        <div class="board-card reveal">
           <div class="board-photo"><a href="https://www.linkedin.com/in/varsha-ravi108/" target="_blank" rel="noopener noreferrer" class="board-photo-link" tabindex="-1" aria-hidden="true"><img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1763951935507.jpeg" alt="Varsha Ravi" onerror="this.style.display='none'"></a></div>
           <a class="board-name" href="https://www.linkedin.com/in/varsha-ravi108/" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg><span>Varsha Ravi</span></a>
           <div class="board-role">Director of Corporate Relations</div>
@@ -3906,6 +3827,11 @@ button[onclick="pubFlipbookNext()"]:hover {
           <div class="board-photo"><a href="https://www.linkedin.com/in/emmanowotny/" target="_blank" rel="noopener noreferrer" class="board-photo-link" tabindex="-1" aria-hidden="true"><img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1768946413296.jpeg" alt="Emma Nowotny" onerror="this.style.display='none'"></a></div>
           <a class="board-name" href="https://www.linkedin.com/in/emmanowotny/" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg><span>Emma Nowotny</span></a>
           <div class="board-role">Director of Marketing</div>
+        </div>
+        <div class="board-card reveal">
+          <div class="board-photo"><a href="https://www.linkedin.com/in/aryanjhaveri07/" target="_blank" rel="noopener noreferrer" class="board-photo-link" tabindex="-1" aria-hidden="true"><img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/ufa%20board%20headshots/1773078471094.jpeg" alt="Aryan Jhaveri" onerror="this.style.display='none'"></a></div>
+          <a class="board-name" href="https://www.linkedin.com/in/aryanjhaveri07/" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg><span>Aryan Jhaveri</span></a>
+          <div class="board-role">Treasurer</div>
         </div>
         <div class="board-card reveal">
           <div class="board-photo"><a href="https://www.linkedin.com/in/william-wied-915249430" target="_blank" rel="noopener noreferrer" class="board-photo-link" tabindex="-1" aria-hidden="true"><img loading="lazy" src="https://pub-6f59cfb453df44c4b5c1a8373848d609.r2.dev/william-wied.jpg" alt="William Wied" onerror="this.style.display='none'"></a></div>
@@ -5245,66 +5171,68 @@ button[onclick="pubFlipbookNext()"]:hover {
           <div style="font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:500;color:#1C2B1C;margin-bottom:24px;">Your Profile</div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start;">
 
-            <!-- Left column: info + password -->
-            <div style="display:flex;flex-direction:column;gap:24px;">
-              <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:32px;">
-                <div class="pf-photo">
-                  <div class="pf-av" id="pf-av">M</div>
-                  <div class="pf-photo-main">
-                    <div class="pf-who" id="pf-who">Your profile</div>
-                    <div class="pf-sub" id="pf-sub"></div>
-                  </div>
-                </div>
-                <div style="display:grid;gap:16px;">
-                  <div>
-                    <div class="portal-field-label" style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:4px;">Full Name</div>
-                    <input id="profile-name" type="text" style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;">
-                  </div>
-                  <div>
-                    <div class="portal-field-label" style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:4px;">UT EID</div>
-                    <input id="profile-eid" type="text" readonly style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#6B7D6B;background:#efefef;box-sizing:border-box;cursor:not-allowed;">
-                  </div>
-                  <div>
-                    <div class="portal-field-label" style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:4px;">Email</div>
-                    <input id="profile-email" type="email" style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;">
-                    <div class="portal-field-note" style="font-size:11px;color:#6B7D6B;margin-top:4px;">Changing your email will require you to sign in again.</div>
-                  </div>
-                  <div>
-                    <div class="portal-field-label" style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:4px;">Role</div>
-                    <select id="profile-role" style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;appearance:none;-webkit-appearance:none;background-image:url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2712%27 height=%278%27 viewBox=%270 0 12 8%27%3E%3Cpath d=%27M1 1l5 5 5-5%27 stroke=%27%236B7D6B%27 stroke-width=%271.5%27 fill=%27none%27 stroke-linecap=%27round%27/%3E%3C/svg%3E');background-repeat:no-repeat;background-position:right 14px center;">
-                      <option value="General Member">General Member</option>
-                      <option value="Analyst">Analyst</option>
-                      <option value="Investment Associate">Investment Associate</option>
-                      <option value="Consulting Associate">Consulting Associate</option>
-                      <option value="Board">Board</option>
-                      <option value="President">President</option>
-                    </select>
-                  </div>
-                  <div class="pf-section">About you</div>
-                  <div class="pf-two">
-                    <div>
-                      <div class="portal-field-label" style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:4px;">Major</div>
-                      <input id="profile-major" type="text" maxlength="80" placeholder="e.g. Finance" style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;">
-                    </div>
-                    <div>
-                      <div class="portal-field-label" style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:4px;">Graduation year</div>
-                      <select id="profile-gradyear" style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;"><option value="">Choose year</option>
-                        <option value="2026">2026</option><option value="2027">2027</option><option value="2028">2028</option><option value="2029">2029</option><option value="2030">2030</option><option value="2031">2031</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div>
-                    <div class="portal-field-label" style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:4px;">LinkedIn</div>
-                    <input id="profile-linkedin" type="text" maxlength="200" placeholder="linkedin.com/in/your-name" style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;">
-                  </div>
-                  <div>
-                    <div class="portal-field-label" style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:4px;">Phone number</div>
-                    <input id="profile-phone" type="tel" maxlength="20" placeholder="(512) 555-0134" autocomplete="tel" style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;">
-                  </div>
-                  <button onclick="saveProfile()" style="background:#3D6B3D;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:12px;border-radius:4px;border:none;cursor:pointer;">Save changes</button>
-                  <div id="profile-msg" style="display:none;font-size:13px;color:#2e6b2e;text-align:center;"></div>
+            <!-- Left column: profile -->
+            <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:32px;">
+              <div class="pf-photo">
+                <div class="pf-av" id="pf-av">M</div>
+                <div class="pf-photo-main">
+                  <div class="pf-who" id="pf-who">Your profile</div>
+                  <div class="pf-sub" id="pf-sub"></div>
                 </div>
               </div>
+              <div style="display:grid;gap:16px;">
+                <div>
+                  <div class="portal-field-label" style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:4px;">Full Name</div>
+                  <input id="profile-name" type="text" style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;">
+                </div>
+                <div>
+                  <div class="portal-field-label" style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:4px;">UT EID</div>
+                  <input id="profile-eid" type="text" readonly style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#6B7D6B;background:#efefef;box-sizing:border-box;cursor:not-allowed;">
+                </div>
+                <div>
+                  <div class="portal-field-label" style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:4px;">Email</div>
+                  <input id="profile-email" type="email" style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;">
+                  <div class="portal-field-note" style="font-size:11px;color:#6B7D6B;margin-top:4px;">Changing your email will require you to sign in again.</div>
+                </div>
+                <div>
+                  <div class="portal-field-label" style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:4px;">Role</div>
+                  <select id="profile-role" style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;appearance:none;-webkit-appearance:none;background-image:url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2712%27 height=%278%27 viewBox=%270 0 12 8%27%3E%3Cpath d=%27M1 1l5 5 5-5%27 stroke=%27%236B7D6B%27 stroke-width=%271.5%27 fill=%27none%27 stroke-linecap=%27round%27/%3E%3C/svg%3E');background-repeat:no-repeat;background-position:right 14px center;">
+                    <option value="General Member">General Member</option>
+                    <option value="Analyst">Analyst</option>
+                    <option value="Investment Associate">Investment Associate</option>
+                    <option value="Consulting Associate">Consulting Associate</option>
+                    <option value="Board">Board</option>
+                    <option value="President">President</option>
+                  </select>
+                </div>
+                <div class="pf-section">About you</div>
+                <div class="pf-two">
+                  <div>
+                    <div class="portal-field-label" style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:4px;">Major</div>
+                    <input id="profile-major" type="text" maxlength="80" placeholder="e.g. Finance" style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;">
+                  </div>
+                  <div>
+                    <div class="portal-field-label" style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:4px;">Graduation year</div>
+                    <select id="profile-gradyear" style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;"><option value="">Choose year</option>
+                      <option value="2026">2026</option><option value="2027">2027</option><option value="2028">2028</option><option value="2029">2029</option><option value="2030">2030</option><option value="2031">2031</option>
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <div class="portal-field-label" style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:4px;">LinkedIn</div>
+                  <input id="profile-linkedin" type="text" maxlength="200" placeholder="linkedin.com/in/your-name" style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;">
+                </div>
+                <div>
+                  <div class="portal-field-label" style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:4px;">Phone number</div>
+                  <input id="profile-phone" type="tel" maxlength="20" placeholder="(512) 555-0134" autocomplete="tel" style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;">
+                </div>
+                <button onclick="saveProfile()" style="background:#3D6B3D;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:12px;border-radius:4px;border:none;cursor:pointer;">Save changes</button>
+                <div id="profile-msg" style="display:none;font-size:13px;color:#2e6b2e;text-align:center;"></div>
+              </div>
+            </div>
+
+            <!-- Right column: password, then milestones -->
+            <div style="display:flex;flex-direction:column;gap:24px;">
               <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:32px;">
                 <div style="font-size:15px;font-weight:500;color:#1C2B1C;margin-bottom:16px;">Change Password</div>
                 <div style="display:grid;gap:12px;">
@@ -5314,13 +5242,11 @@ button[onclick="pubFlipbookNext()"]:hover {
                   <div id="pw-change-msg" style="display:none;font-size:13px;text-align:center;"></div>
                 </div>
               </div>
-            </div>
-
-            <!-- Right column: milestones -->
-            <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:32px;">
-              <div style="font-family:'Playfair Display',Georgia,serif;font-size:18px;font-weight:500;color:#1C2B1C;margin-bottom:6px;">Milestones</div>
-              <div style="font-size:13px;color:#6B7D6B;margin-bottom:20px;">Badges earned through your involvement with UFA.</div>
-              <div id="badges-row" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;"></div>
+              <div style="background:#fff;border:1px solid rgba(46,74,46,0.12);border-radius:8px;padding:32px;">
+                <div style="font-family:'Playfair Display',Georgia,serif;font-size:18px;font-weight:500;color:#1C2B1C;margin-bottom:6px;">Milestones</div>
+                <div style="font-size:13px;color:#6B7D6B;margin-bottom:20px;">Badges earned through your involvement with UFA.</div>
+                <div id="badges-row" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;"></div>
+              </div>
             </div>
 
           </div>
@@ -5947,11 +5873,13 @@ button[onclick="pubFlipbookNext()"]:hover {
                     <div id="manual-att-member-suggestions" style="display:none;position:absolute;top:100%;left:0;right:0;z-index:20;background:#fff;border:1px solid rgba(46,74,46,0.2);border-radius:4px;margin-top:2px;max-height:220px;overflow-y:auto;box-shadow:0 4px 12px rgba(0,0,0,0.1);"></div>
                     <div id="manual-att-name-hint" style="font-size:11px;color:#6B7D6B;margin-top:4px;"></div>
                   </div>
-                  <div>
-                    <label style="font-size:12px;font-weight:500;color:#3A4A3A;display:block;margin-bottom:4px;">Session</label>
-                    <select id="manual-att-session" onchange="onManualAttSessionChange()" style="width:100%;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;background:#F7F4EE;box-sizing:border-box;">
-                      <option value="">— Custom (fill in below) —</option>
-                    </select>
+                  <div style="grid-column:1/-1;">
+                    <label style="font-size:12px;font-weight:500;color:#3A4A3A;display:block;margin-bottom:6px;">1. Event type</label>
+                    <div id="manual-att-chips" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+                  </div>
+                  <div id="manual-att-event-wrap" style="grid-column:1/-1;display:none;">
+                    <label style="font-size:12px;font-weight:500;color:#3A4A3A;display:block;margin-bottom:4px;">2. Event</label>
+                    <select id="manual-att-session" onchange="onManualAttSessionChange()" style="width:100%;padding:9px 12px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;background:#F7F4EE;box-sizing:border-box;"></select>
                   </div>
                   <div>
                     <label style="font-size:12px;font-weight:500;color:#3A4A3A;display:block;margin-bottom:4px;">Event name</label>
@@ -5987,6 +5915,9 @@ button[onclick="pubFlipbookNext()"]:hover {
             </div>
 
             <style>
+              .att-chip { padding:7px 14px; border:1px solid rgba(46,74,46,0.25); border-radius:999px; background:#fff; color:#2E4A2E; font-family:'DM Sans',sans-serif; font-size:13px; cursor:pointer; transition:background .15s,color .15s; }
+              .att-chip:hover { background:#F7F4EE; }
+              .att-chip.on { background:#2E4A2E; color:#fff; border-color:#2E4A2E; }
               #att-filter-bar { display:flex; align-items:center; gap:10px; margin-bottom:16px; flex-wrap:nowrap; }
               #att-filter-bar input[type=text], #att-filter-bar select { min-width:0; padding:9px 12px; border:1px solid rgba(46,74,46,0.2); border-radius:4px; font-family:'DM Sans',sans-serif; font-size:13px; background-color:#fff; box-sizing:border-box; height:38px; }
               #att-filter-bar input[type=text] { flex:1.4 1 0; }
@@ -7838,7 +7769,6 @@ async function switchPortalTab(tab) {
   else if (typeof annMarkRead === 'function') annMarkRead();
   if (tab === 'leaderboard') renderLeaderboard();
   if (tab === 'events') { renderUpcoming(); loadMyFamily(); }
-  if (tab !== 'learn') learnStopPolling();
   if (tab === 'learn') loadLearnTab();
   if (tab === 'pitch') loadPitchTab();
   if (tab === 'mock') loadMockTab();
@@ -9565,8 +9495,8 @@ function exportRoster() {
 var allAttendanceData = [];   // flat list of {..attendance row.., memberName}
 var attendanceMemberMap = {}; // email(lower) -> member row, for name lookups
 var attendanceMembersList = []; // [{name,email}], for the name-search picker
-var attendanceSessionMap = {}; // code -> session row, for the manual-checkin dropdown
 var attendanceManualOptions = {}; // dropdown value -> {code_used, meeting_name, meeting_date, event_type, points}
+var attendanceManualCats = {};    // event type -> <option> html for step 2
 
 async function loadAdminAttendance() {
   var r1 = await sb.from('attendance').select('*').order('meeting_date', { ascending: false });
@@ -9584,8 +9514,6 @@ async function loadAdminAttendance() {
   members.forEach(function(m){ if (m.email) attendanceMemberMap[m.email.toLowerCase()] = m; });
   attendanceMembersList = members.filter(function(m){ return m.name && m.email; });
 
-  attendanceSessionMap = {};
-  sessions.forEach(function(s){ attendanceSessionMap[s.code] = s; });
 
   allAttendanceData = att.map(function(r) {
     var m = attendanceMemberMap[(r.email||'').toLowerCase()];
@@ -9642,19 +9570,23 @@ async function loadAdminAttendance() {
       var sharedCode = (!g.collapse && codeList.length === 1 && codeList[0]) ? codeList[0] : null; // only reuse a code every row shares
       entries.push({ k: 'evt:' + gk, cat: g.cat, opt: { code_used: sharedCode, meeting_name: f.meeting_name || 'Event', meeting_date: g.collapse ? '' : (f.meeting_date || ''), event_type: f.event_type || 'Meeting', points: f.points || 1, askDate: g.collapse } });
     });
-    var optHtml = '<option value="">— Custom (fill in below) —</option>';
+    attendanceManualCats = {};
     GROUP_ORDER.forEach(function(gname){
       var list = entries.filter(function(e){ return e.cat === gname; });
       if (!list.length) return;
       list.forEach(function(e){ var dk = ufaDateKey(e.opt.meeting_date); e._dk = (dk === null || dk === undefined) ? -Infinity : dk; });
       list.sort(function(x, y){ return y._dk - x._dk; });
-      optHtml += '<optgroup label="' + ufaEsc(gname) + '">' + list.map(function(e){
+      attendanceManualCats[gname] = '<option value="">Choose an event…</option>' + list.map(function(e){
         attendanceManualOptions[e.k] = e.opt;
         var nm = ufaEsc(ufaMeetingName(e.opt.meeting_name, e.opt.event_type));
         return '<option value="' + ufaEsc(e.k) + '">' + (e.opt.askDate || !e.opt.meeting_date ? '' : ufaEsc(ufaPrettyDate(e.opt.meeting_date)) + ' — ') + nm + '</option>';
-      }).join('') + '</optgroup>';
+      }).join('');
     });
-    sessSelect.innerHTML = optHtml;
+    var chipBox = document.getElementById('manual-att-chips');
+    chipBox.innerHTML = Object.keys(attendanceManualCats).concat(['Custom']).map(function(c){
+      return '<button type="button" class="att-chip" data-cat="' + ufaEsc(c) + '" onclick="pickManualAttCategory(this.dataset.cat)">' + ufaEsc(c) + '</button>';
+    }).join('');
+    document.getElementById('manual-att-event-wrap').style.display = 'none';
   }
   var filterSelect = document.getElementById('attendance-session-filter');
   if (filterSelect) {
@@ -9674,9 +9606,21 @@ async function loadAdminAttendance() {
   renderAdminAttendanceTable(allAttendanceData);
 }
 
+/** Step 1 of the manual check-in: choose an event type, which fills the event list for step 2. */
+function pickManualAttCategory(cat) {
+  Array.prototype.forEach.call(document.querySelectorAll('#manual-att-chips .att-chip'), function(b){
+    b.classList.toggle('on', b.dataset.cat === cat);
+  });
+  var wrap = document.getElementById('manual-att-event-wrap'), sel = document.getElementById('manual-att-session');
+  sel.innerHTML = attendanceManualCats[cat] || '';
+  wrap.style.display = attendanceManualCats[cat] ? 'block' : 'none';
+  ['manual-att-name', 'manual-att-date'].forEach(function(id){ document.getElementById(id).value = ''; });
+  document.getElementById('manual-att-points').value = '1';
+}
+
 function onManualAttSessionChange() {
   var s = attendanceManualOptions[document.getElementById('manual-att-session').value];
-  if (!s) return; // "Custom" selected — leave fields as typed
+  if (!s) return;
   document.getElementById('manual-att-name').value = s.meeting_name || '';
   document.getElementById('manual-att-date').value = s.askDate ? '' : ufaDateToInput(s.meeting_date);
   var typeSel = document.getElementById('manual-att-type');
@@ -9781,7 +9725,9 @@ async function addManualAttendance() {
   document.getElementById('manual-att-name-search').value = '';
   document.getElementById('manual-att-email').value = '';
   document.getElementById('manual-att-name-hint').textContent = '';
-  document.getElementById('manual-att-session').value = '';
+  document.getElementById('manual-att-event-wrap').style.display = 'none';
+  document.getElementById('manual-att-session').innerHTML = '';
+  Array.prototype.forEach.call(document.querySelectorAll('#manual-att-chips .att-chip'), function(b){ b.classList.remove('on'); });
   document.getElementById('manual-att-name').value = '';
   document.getElementById('manual-att-date').value = '';
   document.getElementById('manual-att-points').value = '1';
@@ -19653,16 +19599,16 @@ async function sendMagicLink() {
   msg.style.display = 'none'; err.style.display = 'none';
   if (!email) { err.style.display='block'; err.textContent='Please enter your UT email.'; return; }
 
-  // Check that the email exists in the members table before sending a magic link
-  const member = await fetchMember(email);
-  if (!member) {
+  // Supabase itself refuses to send a link to an email with no account
+  // (shouldCreateUser: false), so no logged-out read of the members table is needed.
+  const { error } = await sb.auth.signInWithOtp({ email, options: { shouldCreateUser: false } });
+  if (error) {
     err.style.display = 'block';
-    err.textContent = 'No account found for that email. Please create an account first, or contact a board member if you believe this is an error.';
+    err.textContent = /signups not allowed|not found/i.test(error.message)
+      ? 'No account found for that email. Please create an account first, or contact a board member if you believe this is an error.'
+      : error.message;
     return;
   }
-
-  const { error } = await sb.auth.signInWithOtp({ email });
-  if (error) { err.style.display='block'; err.textContent=error.message; return; }
   msg.style.display = 'block';
   msg.textContent = 'Magic link sent! Check your email and click the link to sign in.';
 }
@@ -22621,7 +22567,7 @@ function mockBeginnerLabel() {
 </script>
 <script>
 /* ════════════════════════════════════════════════════════════════
-   UFA UI KIT (fx): shared look for Families and Ask & Learn.
+   UFA UI KIT (fx): shared look for Families and the Learn guide.
    Built on the site's own tokens (forest green, cream, Playfair + DM Sans)
    so it sits naturally next to the rest of the portal.
    ════════════════════════════════════════════════════════════════ */
@@ -22805,12 +22751,11 @@ function fxLightbox(url) {
    ════════════════════════════════════════════════════════════════ */
 var GUIDE = [
   { id: 'macro', title: 'Macro Slide', sub: 'The Fed, data, rates and world news', heading: 'Macro Environment',
-    layout: ['fed', 'econ', 'ahead', 'rates', 'world', 'ahead'], boxes: [
+    boxes: [
     { key: 'fed', n: 1, title: 'The Fed', blurb: 'What the central bank did and might do next', terms: [
       ['The Fed and the FOMC', 'The Federal Reserve is the US central bank. The FOMC is the committee that votes on interest rates, about eight times a year.'],
       ['Rate hike, cut, hold', 'A hike raises interest rates to cool inflation. A cut lowers them to boost growth. A hold means no change.'],
       ['Target range (like 3.75\u20134.00%)', 'The Fed does not pick one exact rate. It sets a range, a floor and a ceiling, for the rate banks charge each other overnight.'],
-      ['bps (basis points)', 'One hundredth of a percent, so 25 bps is 0.25%.'],
       ['Hawkish / dovish', 'Hawkish means leaning toward higher rates to fight inflation. Dovish means leaning toward lower rates to support growth.'],
       ['Higher for longer', 'The idea that rates will stay high for an extended time instead of being cut soon.'],
       ['Tightening / easing', 'Tightening makes money costlier and harder to borrow (rate hikes). Easing does the opposite (cuts).'],
@@ -22891,15 +22836,14 @@ var GUIDE = [
     ] }
   ] },
 
-  { id: 'equities', title: 'Equities Slide', sub: 'Indexes, sectors, movers and news', heading: 'Equities Market',
+  { id: 'equities', title: 'Equities Slide', sub: 'Indexes, sectors, movers, news and sentiment', heading: 'Equities & Market Sentiment',
     layout: ['chart', 'chart', 'chart', 'chart', 'idx', 'idx', 'movers', 'movers', 'ind', 'ind', 'news', 'news'], cols: 6, boxes: [
     { key: 'chart', n: 1, title: 'S&P Performance This Week', blurb: 'How the whole market moved', terms: [
       ['S&P 500', 'An index of 500 of the largest US public companies. It is the most common stand-in for "the stock market."'],
       ['Index', 'A basket of stocks tracked as a single number. "The S&P is down 0.75%" means the basket as a whole fell 0.75%.'],
       ['Percent change, not points', 'Slides show the percent change since the start of the week, which compares fairly across indexes. Raw point moves do not.'],
-      ['YTD', 'Year to date: the change since January 1.'],
-      ['Correction and bear market', 'A correction is a drop of 10% or more from a recent high. A bear market is 20% or more. A bull market is a long stretch of rising prices.', true],
-      ['YTD', 'Year to date, meaning since January 1.']
+      ['YTD', 'Year to date: the change since January 1. "Up 43% YTD" means it has risen 43% so far this year.'],
+      ['Correction and bear market', 'A correction is a drop of 10% or more from a recent high. A bear market is 20% or more. A bull market is a long stretch of rising prices.', true]
     ] },
     { key: 'idx', n: 2, title: 'Equity Markets', blurb: 'The major indexes side by side', terms: [
       ['Dow Jones (DJIA)', 'An index of 30 large, well-known US companies. It is older and narrower than the S&P 500.'],
@@ -22909,15 +22853,12 @@ var GUIDE = [
       ['Market cap', 'A company\u2019s total stock-market value: share price times number of shares. Large caps are the biggest companies.'],
       ['Price-weighted vs. cap-weighted', 'The Dow adds up share prices, so high-priced stocks count for more. The S&P 500 and Nasdaq weight companies by total value, so giants like Nvidia matter most. That is one reason the Dow can rise while the Nasdaq falls.', true]
     ] },
-    { key: 'movers', n: 3, title: 'Notable Equity Movers', blurb: 'The week\u2019s biggest winners and losers', terms: [
+    { key: "movers", n: 3, title: "Notable Equity Movers", blurb: "The week\u2019s biggest winners and losers", terms: [
       ['Ticker', 'A short code for a stock, like AAPL for Apple or CRWD for CrowdStrike. Movers are listed by ticker.'],
       ['Gainers and decliners', 'The stocks that rose or fell the most over the week, shown as percent change.'],
       ['Catalyst', 'A specific event that triggers a big move: an earnings report, a product launch, a deal, an analyst downgrade.', true],
-      ['Consumption-based pricing', 'Customers pay for what they use (like Snowflake\u2019s credits) instead of a flat subscription, so revenue rises as customers use the product more.', true],
-      ['SQL', 'The language used to ask databases questions. It normally takes an engineer, which is why tools that let non-technical people query data in plain English are a selling point.', true],
       ["Earnings reaction", "A stock can fall on good profit if results or guidance fall short of what investors hoped. Moves of 15% or more in a day almost always have a clear catalyst."],
-      ["Growth stock", "A company expected to grow fast, so its price already assumes a lot of future profit. These stocks fall hardest when rates rise, because future profits are worth less today.", true],
-      ["Leadership scandal", "When a leader faces an investigation, shares can drop sharply because investors fear distraction, legal costs, or a change at the top. The board often opens its own review.", true]
+      ["Valuation after a big run", "A stock that is up a lot may already reflect the good news, so the question becomes whether it can keep delivering.", true]
     ] },
     { key: 'ind', n: 4, title: 'Industry Performance', blurb: 'Which sectors led and lagged', terms: [
       ['Sector', 'A group of companies in the same kind of business. The market has 11 sectors, including Technology, Health Care, Financials, Energy, Utilities, Real Estate and Consumer Staples.'],
@@ -22940,38 +22881,22 @@ var GUIDE = [
       ['Surging Treasury yields', 'When yields reach multi-decade highs it reflects expectations for more rate hikes, sticky inflation and heavy bond supply. "Large corporate bond supply" means many companies selling bonds at once, which pushes prices down and yields up.', true],
       ["AI selloff", "A sharp drop in AI-related stocks, often driven by fears that companies are spending too much on chips and data centers and may not earn it back.", true],
       ["Board investigation", "When a company\u2019s board hires outside lawyers or committees to look into a leader or an event. It signals a serious governance issue.", true]
-    ] }
-  ] },
-
-  { id: 'sentiment', title: 'Sentiment Slide', sub: 'Heatmap, commodities and mood', heading: 'Indices, Rates & Sentiment',
-    layout: ['heat', 'comm', 'mkts', 'heat', 'fear', 'stock'], boxes: [
-    { key: 'heat', n: 1, title: 'Stock Heatmap', blurb: 'A picture of the whole market', terms: [
-      ['Heatmap', 'A color-coded map of the market: green tiles rose, red tiles fell, and bigger tiles are bigger companies. It shows at a glance which stocks and sectors moved.'],
-      ['Breadth', 'Whether most stocks moved together or only a few did. A market led by a handful of giants can look healthy while most stocks fall.', true]
     ] },
-    { key: 'comm', n: 2, title: 'Commodities', blurb: 'Crude oil and gold', terms: [
-      ['Crude oil', 'Unrefined oil, priced per barrel. Brent above $100 means oil is expensive, which lifts gas prices and costs for airlines and shippers.'],
-      ['Gold', 'A "safe haven" that investors buy when they are nervous. It pays no interest, so rising yields make it less attractive.'],
-      ['Safe haven', 'An asset people move into when they are worried, because it tends to hold its value.'],
-      ['Opportunity cost', 'What you give up by choosing one thing over another. Gold pays nothing, so when Treasuries pay 5%, holding gold costs you that income.', true],
-      ['bbl', 'Barrel, the unit oil is priced in.']
+    { key: "mood", n: 6, title: "Market Mood", blurb: "Heatmap, fear, and sentiment", terms: [
+      ["Heatmap", "A color-coded map of the market: green tiles rose, red tiles fell, and bigger tiles are bigger companies. It shows at a glance which stocks and sectors moved."],
+      ["Fear & Greed Index", "A 0 to 100 score built from several market signals. Low numbers mean fear (investors selling and avoiding risk). High numbers mean greed (investors buying aggressively). Below 50 leans fearful."],
+      ["VIX", "Often called the \"fear gauge.\" It estimates how much the S&P 500 is expected to swing over the next 30 days. A rising VIX means more nervousness. As a rule of thumb, the teens are calm and 30+ means stress."],
+      ["Sentiment", "The overall mood of investors, which can push prices beyond what the news alone would justify."],
+      ["Breadth", "Whether most stocks moved together or only a few did. A market led by a handful of giants can look healthy while most stocks fall.", true],
+      ["Contrarian investing", "Doing the opposite of the crowd: buying when fear is extreme and getting cautious when greed is extreme.", true]
     ] },
-    { key: 'mkts', n: 3, title: 'Equity & Debt Markets', blurb: 'VIX, dollar, Bitcoin and yields', terms: [
-      ['Equity vs. debt markets', 'Equity markets are stocks. Debt markets are bonds and loans.'],
-      ['VIX', 'Often called the "fear gauge." It estimates how much the S&P 500 is expected to swing over the next 30 days. A rising VIX means more nervousness. As a rule of thumb, the teens are calm and 30+ means stress.'],
-      ['DXY (dollar index)', 'The dollar measured against a basket of six major currencies, including the euro and yen. Up means a stronger dollar.'],
-      ['US10Yr', 'Shorthand for the 10-year Treasury yield. Changes are quoted in bps, so "+9 bps" means it rose 0.09 percentage points.'],
-      ['Bitcoin', 'The largest cryptocurrency. Its price swings a lot, and people watch it as a gauge of appetite for risk.']
-    ] },
-    { key: 'fear', n: 4, title: 'Fear & Greed Index', blurb: 'The market\u2019s mood in one number', terms: [
-      ['Fear & Greed Index', 'A 0 to 100 score built from several market signals. Low numbers mean fear (investors selling and avoiding risk). High numbers mean greed (investors buying aggressively). Below 50 leans fearful.'],
-      ['Sentiment', 'The overall mood of investors, which can push prices beyond what the news alone would justify.'],
-      ['Contrarian investing', 'Doing the opposite of the crowd: buying when fear is extreme and getting cautious when greed is extreme.', true]
-    ] },
-    { key: 'stock', n: 5, title: 'Stock of the Week', blurb: 'One company in focus', terms: [
-      ['YTD', 'Year to date: the change since January 1. "Up 43% YTD" means the stock has risen 43% so far this year.'],
-      ['Q1\u2013Q4 (fiscal quarters)', 'Companies split the year into four quarters. Q3 is the third, usually July through September for companies whose year matches the calendar.'],
-      ['Valuation after a big run', 'A stock that is up a lot may already reflect the good news, so the question becomes whether it can keep delivering.', true]
+    { key: "comm", n: 7, title: "Commodities and Currencies", blurb: "Oil, gold, the dollar, and yields", terms: [
+      ["Crude oil", "Unrefined oil, priced per barrel. Brent above $100 means oil is expensive, which lifts gas prices and costs for airlines and shippers."],
+      ["Gold", "A \"safe haven\": investors buy it when they are nervous because it tends to hold its value. It pays no interest, so rising yields make it less attractive."],
+      ["DXY (dollar index)", "The dollar measured against a basket of six major currencies, including the euro and yen. Up means a stronger dollar."],
+      ["US10Yr", "Shorthand for the 10-year Treasury yield. Changes are quoted in bps, so \"+9 bps\" means it rose 0.09 percentage points."],
+      ["Bitcoin", "The largest cryptocurrency. Its price swings a lot, and people watch it as a gauge of appetite for risk."],
+      ["Opportunity cost", "What you give up by choosing one thing over another. Gold pays nothing, so when Treasuries pay 5%, holding gold costs you that income.", true]
     ] }
   ] }
 ];
@@ -23116,36 +23041,17 @@ function learnAskFromSearch() {
   ta.focus();
 }
 
-/* ════════════════════════════════════════════════════════════════
-   ASK & LEARN
-     • Anonymous Q&A with upvotes (the board can see who asked)
-          • Market Watch follow-along guide (see learn_guide.js)
-     • Projector view for the meeting room (board only)
-
-   HIDDEN FROM MEMBERS until the board publishes it. The tab, and the
-   data behind it, are board-only until "Publish to members" is switched
-   on in Admin → Ask & Learn (setting key: visibility_learn). The
-   database enforces this, see learn-setup.sql.
-
-   Phones: the member screen is built so posting is a ten-second action
-   and the room looks at the projector, not at a feed.
-   ════════════════════════════════════════════════════════════════ */
-var LEARN_POLL_MS = 6000;
-var LEARN_PROJ_POLL_MS = 4000;
-var learnTimer = null;
-var learnProjTimer = null;
-var LEARN_PALETTE = ['#2E4A2E', '#9A6414', '#1E4A8A', '#8A2E55', '#1E6B7A', '#5A4A8A', '#3D6B3D'];
-
+/* ═══════════════════════════════════════
+   LEARN: Market Watch follow-along guide (data in GUIDE below).
+   Board-only until "Publish to members" is switched on in Admin → Learn
+   (setting key: visibility_learn).
+   ═══════════════════════════════════════ */
 (function learnInjectCss() {
   if (document.getElementById('learn-css')) return;
   var st = document.createElement('style');
   st.id = 'learn-css';
   st.textContent = `
-.fx-learn-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(300px,1fr);gap:40px;align-items:start;margin-bottom:0;}
-.fx-learn-grid.solo{grid-template-columns:minmax(0,1fr);}
-#learn-ask{margin-bottom:0;}
 #learn-guide{margin-top:0;padding-top:0;border-top:0;}
-.fx-side{position:sticky;top:100px;}
 
 
 /* composer + feed */
@@ -23184,8 +23090,8 @@ var LEARN_PALETTE = ['#2E4A2E', '#9A6414', '#1E4A8A', '#8A2E55', '#1E6B7A', '#5A
 .fx-slide-top em{font-style:normal;font-size:12.5px;color:#9FB59F;}
 .fx-slide-grid{display:grid;gap:10px;grid-template-columns:repeat(6,1fr);}
 .fx-slide-grid .fx-tile{grid-column:span 2;}
-.s-macro .fx-tile:nth-child(n+4),.s-sentiment .fx-tile:nth-child(n+4){grid-column:span 3;}
-.s-equities .fx-tile:nth-child(-n+2){grid-column:span 3;}
+.s-macro .fx-tile:nth-child(n+4){grid-column:span 3;}
+.s-equities .fx-tile:nth-child(-n+2),.s-equities .fx-tile:nth-child(n+6){grid-column:span 3;}
 .fx-tile{text-align:left;border-radius:14px;border:1.5px solid rgba(255,255,255,.14);background:rgba(255,255,255,.07);color:#fff;padding:13px 13px 15px;cursor:pointer;display:flex;flex-direction:column;align-items:flex-start;gap:8px;min-height:112px;font-family:inherit;transition:background .15s,border-color .15s,transform .05s;}
 .fx-tile:hover{background:rgba(255,255,255,.14);}
 .fx-tile.on{background:var(--fx-paper);color:var(--fx-ink);border-color:var(--fx-chalk);box-shadow:0 0 0 3px rgba(243,227,184,.4);}
@@ -23208,28 +23114,9 @@ var LEARN_PALETTE = ['#2E4A2E', '#9A6414', '#1E4A8A', '#8A2E55', '#1E6B7A', '#5A
 .fx-results{max-width:760px;}
 
 /* admin */
-.fx-qrow{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;padding:16px 20px;border-top:1px solid rgba(46,74,46,.08);}
-.fx-qrow:first-child{border-top:0;}
-.fx-qrow.off{opacity:.55;}
-.fx-qrow .v{flex:none;width:46px;text-align:center;font:500 22px/1 var(--font-display,Georgia,serif);color:var(--fx-pine);}
-.fx-qrow .v small{display:block;font:400 11px var(--font-body,sans-serif);color:var(--fx-soft);margin-top:3px;}
-.fx-qrow .t{flex:1;min-width:220px;}
-.fx-qrow .t p{margin:0;font-size:15px;line-height:1.5;color:var(--fx-ink);}
-.fx-qrow .t small{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--fx-muted);margin-top:6px;flex-wrap:wrap;}
-.fx-qrow .a{display:flex;gap:6px;flex-wrap:wrap;}
 .fx-form-card{background:#fff;border:1px solid var(--fx-line);border-radius:18px;padding:20px;}
 
-/* projector */
-#learn-projector{position:fixed;inset:0;z-index:9999;background:#111D14;color:#F2F5F0;overflow:auto;font-family:var(--font-body,sans-serif);}
-#learn-projector .lp-q{display:flex;gap:22px;align-items:flex-start;padding:20px 0;border-top:1px solid rgba(255,255,255,.12);font-size:clamp(20px,2.3vw,34px);line-height:1.3;}
-#learn-projector .lp-q:first-child{border-top:0;}
-#learn-projector .lp-votes{flex:none;min-width:72px;text-align:center;font:500 clamp(26px,3vw,44px)/1 var(--font-display,Georgia,serif);color:var(--fx-chalk);}
-#learn-projector .lp-votes small{display:block;font:400 12px var(--font-body,sans-serif);letter-spacing:.06em;color:#8FA08F;margin-top:6px;}
-#learn-projector .lp-h{font:500 14px var(--font-body,sans-serif);color:#8FA08F;margin:0 0 8px;}
-#learn-projector button{font-family:inherit;}
-
 @media (max-width:980px){
-  .fx-learn-grid{grid-template-columns:1fr;gap:6px;} .fx-side{position:static;}
   .fx-terms dl{column-count:1;} .fx-slide{position:static;}
 }
 @media (max-width:640px){
@@ -23241,30 +23128,6 @@ var LEARN_PALETTE = ['#2E4A2E', '#9A6414', '#1E4A8A', '#8A2E55', '#1E6B7A', '#5A
   document.head.appendChild(st);
 })();
 
-function learnErr(e) {
-  var m = (e && e.message) ? e.message : String(e || 'Something went wrong');
-  if (/does not exist|schema cache|Could not find the function|permission denied for (table|function)/i.test(m)) {
-    return 'Ask & Learn is not set up in the database yet. Run learn-setup.sql in Supabase first.';
-  }
-  return m;
-}
-function learnMsg(id, kind, text) {
-  var el = document.getElementById(id);
-  if (!el) return;
-  if (!text) { el.style.display = 'none'; return; }
-  el.className = 'fx-msg ' + (kind === 'ok' ? 'ok' : (kind === 'info' ? 'info' : 'err'));
-  el.style.display = 'block';
-  el.style.whiteSpace = 'pre-line';
-  el.textContent = text;
-}
-function learnAgo(iso) {
-  var s = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 1000));
-  if (s < 60) return 'just now';
-  if (s < 3600) return Math.round(s / 60) + ' min ago';
-  if (s < 86400) return Math.round(s / 3600) + ' hr ago';
-  return Math.round(s / 86400) + ' d ago';
-}
-
 /* ═════════════════════════ MEMBER TAB ═════════════════════════ */
 
 async function loadLearnTab() {
@@ -23275,75 +23138,13 @@ async function loadLearnTab() {
     var cur = await ufaGetSetting('visibility_learn');
     if (!(cur && cur.members)) {
       banner = '<div class="fx-msg info" style="margin-bottom:26px;"><strong>Board preview.</strong> Members cannot see this tab yet. ' +
-        'Try everything here, and publish it from Admin &rarr; Ask &amp; Learn when you are ready.</div>';
+        'Try everything here, and publish it from Admin &rarr; Learn when you are ready.</div>';
     }
   }
   host.innerHTML = banner +
     '<section id="learn-guide" class="fx-sec">' + learnGuideShell() + '</section>';
 
   learnGuideDraw();
-}
-
-function learnStartPolling() {
-  learnStopPolling();
-  learnTimer = setInterval(function () {
-    if (document.hidden) return;
-    var pane = document.getElementById('ptab-content-learn');
-    if (!pane || pane.style.display === 'none' || !document.getElementById('learn-q-list')) { learnStopPolling(); return; }
-    learnRefreshQuestions();
-  }, LEARN_POLL_MS);
-}
-function learnStopPolling() {
-  if (learnTimer) { clearInterval(learnTimer); learnTimer = null; }
-}
-
-
-async function learnRefreshQuestions() {
-  var box = document.getElementById('learn-q-list');
-  if (!box) return;
-  var r = await sb.rpc('qa_list');
-  if (r.error) { box.innerHTML = '<div class="fx-msg err">' + ufaEsc(learnErr(r.error)) + '</div>'; return; }
-  var rows = r.data || [];
-  if (!rows.length) {
-    box.innerHTML = '<div class="fx-empty" style="margin-top:8px;">' + fxIcon('chat', 28) + 'No questions yet.<br>Ask the one you have been holding back.</div>';
-    return;
-  }
-  var topId = (!rows[0].answered && rows[0].votes > 0) ? rows[0].id : null;
-  box.innerHTML = rows.map(function (q) {
-    return '<div class="fx-q' + (q.answered ? ' done' : '') + '">' +
-      '<button class="fx-vote' + (q.voted ? ' on' : '') + '" ' + (q.mine ? 'disabled title="You can\'t upvote your own question"' : 'title="' + (q.voted ? 'Take back your upvote' : 'Upvote') + '"') +
-        ' data-id="' + q.id + '" onclick="learnVote(this.dataset.id)" aria-label="' + (q.voted ? 'Upvoted' : 'Upvote') + '. ' + q.votes + ' votes">' +
-        fxIcon('up', 18) + '<b>' + q.votes + '</b></button>' +
-      '<div style="min-width:0;flex:1;"><p>' + ufaEsc(q.body) + '</p>' +
-        '<div class="fx-q-meta">' +
-          (q.answered ? fxPill('ok', 'Answered', 'check') : '') +
-          (q.id === topId ? fxPill('wait', 'Most wanted') : '') +
-          (q.mine ? fxPill('info', 'You asked this') : '') +
-          '<span>' + learnAgo(q.created_at) + '</span>' +
-        '</div></div></div>';
-  }).join('');
-}
-
-async function learnSubmitQuestion() {
-  var ta = document.getElementById('learn-q-input');
-  var btn = document.getElementById('learn-q-btn');
-  var body = ta.value.replace(/\s+/g, ' ').trim();
-  if (body.length < 3) return learnMsg('learn-q-msg', 'err', 'Type your question first (at least a few characters).');
-  btn.disabled = true;
-  var r = await sb.rpc('qa_submit', { p_body: body });
-  btn.disabled = false;
-  if (r.error) return learnMsg('learn-q-msg', 'err', learnErr(r.error));
-  ta.value = '';
-  document.getElementById('learn-q-count').textContent = '0 / 300';
-  learnMsg('learn-q-msg', 'ok', 'Posted. Other members can\'t see who asked.');
-  setTimeout(function () { learnMsg('learn-q-msg', 'ok', ''); }, 3500);
-  learnRefreshQuestions();
-}
-
-async function learnVote(id) {
-  var r = await sb.rpc('qa_toggle_vote', { p_question: id });
-  if (r.error) { learnMsg('learn-q-msg', 'err', learnErr(r.error)); return; }
-  learnRefreshQuestions();
 }
 
 /* ═════════════════════════ BOARD: ADMIN TAB ═════════════════════════ */
@@ -23363,96 +23164,9 @@ async function loadLearnAdmin() {
     await renderVisibilityToggle('learn', 'visibility_learn');
   } catch (e) {
     console.error('loadLearnAdmin', e);
-    host.innerHTML = '<div class="fx-msg err">Could not load: ' + ufaEsc(learnErr(e)) + '</div>';
+    host.innerHTML = '<div class="fx-msg err">Could not load: ' + ufaEsc((e && e.message) || 'Unknown error') + '</div>';
   }
 }
-
-async function learnAdminQ(id, action) {
-  if (!ufaIsBoard()) return;
-  var r;
-  if (action === 'delete') {
-    if (!confirm('Delete this question for good?')) return;
-    r = await sb.from('qa_questions').delete().eq('id', id).select();
-  } else {
-    var cur = await sb.from('qa_questions').select('hidden, answered').eq('id', id).maybeSingle();
-    if (!cur.data) return learnMsg('learn-admin-msg', 'err', 'Could not find that question.');
-    var patch = action === 'hide' ? { hidden: !cur.data.hidden } : { answered: !cur.data.answered };
-    r = await sb.from('qa_questions').update(patch).eq('id', id).select();
-  }
-  if (r.error || !r.data || !r.data.length) return learnMsg('learn-admin-msg', 'err', 'Could not save: ' + (r.error ? learnErr(r.error) : 'permission issue'));
-  if (learnProjectorOpen()) learnProjRefresh();
-  if (learnAdminVisible()) loadLearnAdmin();
-}
-
-async function learnArchiveWeek() {
-  if (!ufaIsBoard()) return;
-  if (!confirm('Start a new week? Every current question disappears for members. You can still see them under "Past weeks" here.')) return;
-  var r = await sb.from('qa_questions').update({ archived_at: new Date().toISOString() }).is('archived_at', null).select();
-  if (r.error) return learnMsg('learn-admin-msg', 'err', 'Could not start a new week: ' + learnErr(r.error));
-  if (learnProjectorOpen()) learnProjRefresh();
-  await loadLearnAdmin();
-  learnMsg('learn-admin-msg', 'ok', 'New week started. ' + (r.data || []).length + ' question' + ((r.data || []).length === 1 ? '' : 's') + ' archived, and members now see a clean list.');
-}
-
-
-
-/* ═════════════════════════ PROJECTOR VIEW (board only) ═════════════════════════ */
-
-function learnProjectorOpen() { return !!document.getElementById('learn-projector'); }
-function learnAdminVisible() {
-  var el = document.getElementById('atab-content-learn');
-  return !!el && el.style.display !== 'none';
-}
-
-async function learnOpenProjector() {
-  if (!ufaIsBoard() || learnProjectorOpen()) return;
-  var el = document.createElement('div');
-  el.id = 'learn-projector';
-  el.innerHTML =
-    '<div style="max-width:1560px;margin:0 auto;padding:30px 48px 70px;">' +
-      '<div style="display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap;margin-bottom:28px;">' +
-        '<div style="font-family:var(--font-display,Georgia,serif);font-size:clamp(22px,2.2vw,32px);">UFA <span style="color:#6E8A6E;">&middot;</span> Ask &amp; Learn</div>' +
-        '<button onclick="learnCloseProjector()" style="background:transparent;border:1px solid rgba(255,255,255,.3);color:#F2F5F0;border-radius:10px;padding:9px 18px;font-size:14px;cursor:pointer;">Close (Esc)</button>' +
-      '</div>' +
-      '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:56px;align-items:start;">' +
-        '<div><div class="lp-h">Top questions</div><div id="lp-questions"></div></div>' +
-      '</div>' +
-    '</div>';
-  document.body.appendChild(el);
-  document.body.style.overflow = 'hidden';
-  await learnProjRefresh();
-  learnProjTimer = setInterval(function () { if (!document.hidden) learnProjRefresh(); }, LEARN_PROJ_POLL_MS);
-}
-
-function learnCloseProjector() {
-  if (learnProjTimer) { clearInterval(learnProjTimer); learnProjTimer = null; }
-  var el = document.getElementById('learn-projector');
-  if (el) el.remove();
-  document.body.style.overflow = '';
-}
-
-async function learnProjRefresh() {
-  if (!learnProjectorOpen()) return;
-  var res = await Promise.all([
-    sb.from('qa_questions').select('*').eq('hidden', false).is('archived_at', null).order('answered', { ascending: true }).order('votes', { ascending: false }).order('created_at', { ascending: false }).limit(8)
-  ]);
-  var qs = res[0].data || [];
-
-  var qBox = document.getElementById('lp-questions');
-  if (qBox) qBox.innerHTML = qs.length ? qs.map(function (q) {
-    return '<div class="lp-q" style="' + (q.answered ? 'opacity:.42;' : '') + '">' +
-      '<div class="lp-votes">' + q.votes + '<small>votes</small></div>' +
-      '<div style="flex:1;min-width:0;word-break:break-word;">' + ufaEsc(q.body) + '</div>' +
-      '<button title="' + (q.answered ? 'Mark as not answered' : 'Mark as answered') + '" aria-label="Toggle answered" data-id="' + q.id + '" onclick="learnAdminQ(this.dataset.id,\'answer\')" ' +
-        'style="flex:none;background:' + (q.answered ? '#2E6B2E' : 'transparent') + ';border:1.5px solid rgba(255,255,255,.3);color:#F2F5F0;border-radius:12px;width:46px;height:46px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;">' + fxIcon('check', 22) + '</button>' +
-      '</div>';
-  }).join('') : '<div style="padding:18px 0;font-size:clamp(18px,1.8vw,26px);color:#8FA08F;">Questions will show up here as people post them.</div>';
-
-}
-
-document.addEventListener('keydown', function (e) {
-  if (e.key === 'Escape' && learnProjectorOpen()) learnCloseProjector();
-});
 
 </script>
 <style id="ufa-shell-v4">
@@ -23878,7 +23592,7 @@ input[type="date"].fx-input::-webkit-date-and-time-value { text-align: left; }
 }
 }
 
-/* Ask & Learn on phones: one tile per row, the opened section sits right under its tile */
+/* Learn guide on phones: one tile per row, the opened section sits right under its tile */
 @media (max-width: 640px) {
   #portal-dashboard .fx-slide-grid { grid-template-columns: 1fr !important; }
   #portal-dashboard .fx-slide-grid .fx-tile, #portal-dashboard .fx-slide-grid .fx-tile:last-child { grid-column: auto !important; min-height: 0; }
@@ -24398,11 +24112,6 @@ async function pitchDelete(id) {
 .pf-photo-main{min-width:0;}
 .pf-who{font-family:'Playfair Display',Georgia,serif;font-size:22px;color:#1C2B1C;line-height:1.2;}
 .pf-sub{font-size:13px;color:#6B7D6B;margin:2px 0 12px;}
-.pf-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
-#ptab-content-profile .pf-btn{background:#fff !important;color:#1C2B1C !important;border:1px solid rgba(46,74,46,0.28) !important;box-shadow:none !important;transform:none !important;padding:8px 16px;border-radius:8px !important;font:500 13px 'DM Sans',sans-serif;cursor:pointer;}
-#ptab-content-profile .pf-btn:hover{background:#F2F6F2 !important;transform:none !important;box-shadow:none !important;}
-#ptab-content-profile .pf-btn.link{background:none !important;border:none !important;color:#8b2e2e !important;padding:8px 2px;text-decoration:underline;}
-.pf-note{font-size:12px;color:#6B7D6B;margin-top:8px;}
 .pf-section{font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;padding-top:20px;margin-top:6px;border-top:1px solid rgba(46,74,46,0.1);}
 .pf-two{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
 @media (max-width:600px){.pf-two{grid-template-columns:1fr;}.pf-photo{gap:16px;}.pf-av{width:72px;height:72px;font-size:24px;}}
@@ -24540,61 +24249,9 @@ function profileFillExtras() {
     if (currentMember.avatar_url) { av.style.backgroundImage = 'url("' + currentMember.avatar_url + '")'; av.textContent = ''; }
     else { av.style.backgroundImage = ''; av.textContent = ufaInitials(currentMember.name); }
   }
-  var rm = document.getElementById('pf-remove'); if (rm) rm.style.display = currentMember.avatar_url ? '' : 'none';
   var wn = document.getElementById('pf-who'); if (wn) wn.textContent = currentMember.name || 'Your profile';
   var ws = document.getElementById('pf-sub'); if (ws) ws.textContent = (currentMember.role || '').replace('-Pending', '');
   var gsel = document.getElementById('profile-gradyear'); if (gsel && gsel.selectedIndex < 0) gsel.selectedIndex = 0;
-}
-
-function ufaResizeImage(file, size) {
-  return new Promise(function (resolve, reject) {
-    var img = new Image(), url = URL.createObjectURL(file);
-    img.onload = function () {
-      var s = Math.min(img.width, img.height), sx = (img.width - s) / 2, sy = (img.height - s) / 2;
-      var c = document.createElement('canvas'); c.width = size; c.height = size;
-      c.getContext('2d').drawImage(img, sx, sy, s, s, 0, 0, size, size);
-      URL.revokeObjectURL(url);
-      c.toBlob(function (b) { b ? resolve(b) : reject(new Error('Could not process that image.')); }, 'image/jpeg', 0.86);
-    };
-    img.onerror = function () { URL.revokeObjectURL(url); reject(new Error('That file could not be read as an image.')); };
-    img.src = url;
-  });
-}
-
-function pfMsg(text, ok) {
-  var m = document.getElementById('pf-photo-msg'); if (!m) return;
-  m.style.display = text ? 'block' : 'none'; m.style.color = ok ? '#2e6b2e' : '#8b2e2e'; m.textContent = text || '';
-}
-
-async function profilePhotoPicked(input) {
-  var f = input.files && input.files[0]; input.value = '';
-  if (!f || !currentMember) return;
-  if (!/^image\//.test(f.type)) { pfMsg('Choose an image file.', false); return; }
-  pfMsg('Uploading…', true);
-  try {
-    var blob = await ufaResizeImage(f, 400);
-    var path = currentUser.id + '/avatar.jpg';
-    var up = await sb.storage.from('avatars').upload(path, blob, { upsert: true, contentType: 'image/jpeg', cacheControl: '3600' });
-    if (up.error) throw up.error;
-    var url = sb.storage.from('avatars').getPublicUrl(path).data.publicUrl + '?v=' + Date.now();
-    var u = await sb.from('members').update({ avatar_url: url }).eq('email', currentMember.email);
-    if (u.error) throw u.error;
-    currentMember.avatar_url = url; window.UFA_AVATAR = url;
-    profileFillExtras(); if (window.ufaShellWho) window.ufaShellWho();
-    pfMsg('Photo updated.', true); setTimeout(function () { pfMsg(''); }, 3000);
-  } catch (e) {
-    pfMsg('Could not upload the photo' + (e && e.message ? ': ' + e.message : '.') + ' (Has portal-upgrade.sql been run?)', false);
-  }
-}
-
-async function profilePhotoRemove() {
-  if (!currentMember || !confirm('Remove your profile photo?')) return;
-  try { await sb.storage.from('avatars').remove([currentUser.id + '/avatar.jpg']); } catch (_) {}
-  var u = await sb.from('members').update({ avatar_url: null }).eq('email', currentMember.email);
-  if (u.error) { pfMsg('Could not remove the photo.', false); return; }
-  currentMember.avatar_url = null; window.UFA_AVATAR = '';
-  profileFillExtras(); if (window.ufaShellWho) window.ufaShellWho();
-  pfMsg('Photo removed.', true); setTimeout(function () { pfMsg(''); }, 3000);
 }
 
 /* Saved right after saveProfile's own update, so the core save never depends on the new columns. */
