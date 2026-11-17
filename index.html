@@ -1569,17 +1569,17 @@ align-items: flex-end;
     background: var(--green-dark);
     padding: 56px 72px 32px;
   }
-  .footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; margin-bottom: 48px; }
+  .footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1.3fr; gap: 48px; margin-bottom: 48px; }
   /* Sponsors live in the footer's right-hand column. The light tile keeps a dark logo readable on the green. */
-  .footer-sponsor { grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; text-align: center; }
-  .footer-sponsor .footer-col-title { margin-bottom: 16px; }
-  .footer-sponsor .sponsor-logos { justify-content: center; gap: 12px; }
-  .footer-sponsor .sponsor-logo-link { background: var(--cream); padding: 14px 20px; border-radius: 10px; }
+  .footer-sponsor { display: flex; flex-direction: column; align-items: flex-end; text-align: right; }
+  .footer-sponsor .sponsor-logos { justify-content: flex-end; gap: 12px; }
+  .footer-sponsor .sponsor-logo-link { background: var(--cream); padding: 12px 18px; border-radius: 10px; }
   .footer-sponsor .sponsor-logo-link img,
-  .footer-sponsor .sponsor-logo-link img.is-trimmed { height: 76px; max-width: 100%; }
+  .footer-sponsor .sponsor-logo-link img.is-trimmed { height: 64px; max-width: 100%; }
   @media (max-width: 1100px) {
     .footer-top { grid-template-columns: 2fr 1fr 1fr 1fr; }
-    .footer-sponsor { grid-column: 1 / -1; }
+    .footer-sponsor { grid-column: 1 / -1; align-items: flex-start; text-align: left; }
+    .footer-sponsor .sponsor-logos { justify-content: flex-start; }
   }
   .footer-brand { }
   .footer-logo-text { font-family: var(--font-display); font-size: 18px; font-weight: 500; color: var(--white); margin-bottom: 12px; }
@@ -4994,6 +4994,10 @@ button[onclick="pubFlipbookNext()"]:hover {
               <input id="signup-major" type="text" placeholder="Finance" aria-label="Major" style="width:100%;padding:10px 13px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;">
             </div>
           </div>
+          <div style="margin-bottom:12px;">
+            <label style="display:block;font-size:12px;font-weight:600;color:#3A4A3A;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.06em;">Phone Number</label>
+            <input id="signup-phone" type="tel" placeholder="(512) 555-0134" aria-label="Phone number" autocomplete="tel" maxlength="20" style="width:100%;padding:10px 13px;border:1px solid rgba(46,74,46,0.2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#fff;box-sizing:border-box;">
+          </div>
           <div class="signup-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
             <div>
               <label style="display:block;font-size:12px;font-weight:600;color:#3A4A3A;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.06em;">Password</label>
@@ -5249,12 +5253,6 @@ button[onclick="pubFlipbookNext()"]:hover {
                   <div class="pf-photo-main">
                     <div class="pf-who" id="pf-who">Your profile</div>
                     <div class="pf-sub" id="pf-sub"></div>
-                    <div class="pf-actions">
-                      <button type="button" class="pf-btn" onclick="document.getElementById('pf-file').click()">Upload photo</button>
-                      <button type="button" class="pf-btn link" id="pf-remove" onclick="profilePhotoRemove()" style="display:none;">Remove</button>
-                    </div>
-                    <input type="file" id="pf-file" accept="image/*" style="display:none;" onchange="profilePhotoPicked(this)">
-                    <div class="pf-note" id="pf-photo-msg" style="display:none;"></div>
                   </div>
                 </div>
                 <div style="display:grid;gap:16px;">
@@ -5298,6 +5296,10 @@ button[onclick="pubFlipbookNext()"]:hover {
                   <div>
                     <div class="portal-field-label" style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:4px;">LinkedIn</div>
                     <input id="profile-linkedin" type="text" maxlength="200" placeholder="linkedin.com/in/your-name" style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;">
+                  </div>
+                  <div>
+                    <div class="portal-field-label" style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6B7D6B;margin-bottom:4px;">Phone number</div>
+                    <input id="profile-phone" type="tel" maxlength="20" placeholder="(512) 555-0134" autocomplete="tel" style="width:100%;padding:10px 14px;border:1px solid rgba(46,74,46,0.2);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1C2B1C;background:#F7F4EE;box-sizing:border-box;">
                   </div>
                   <button onclick="saveProfile()" style="background:#3D6B3D;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;padding:12px;border-radius:4px;border:none;cursor:pointer;">Save changes</button>
                   <div id="profile-msg" style="display:none;font-size:13px;color:#2e6b2e;text-align:center;"></div>
@@ -9371,7 +9373,7 @@ async function loadApprovals() {
     <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid rgba(46,74,46,0.08);flex-wrap:wrap;gap:10px;">
       <div>
         <div style="font-size:14px;font-weight:500;color:#1C2B1C;">${m.name || '—'}</div>
-        <div style="font-size:12px;color:#6B7D6B;margin-top:2px;">${m.email} · ${m.role || '—'} · ${m.major || '—'} · Class of ${m.grad_year || '—'}</div>
+        <div style="font-size:12px;color:#6B7D6B;margin-top:2px;">${m.email}${m.phone ? ' · ' + m.phone : ''} · ${m.role || '—'} · ${m.major || '—'} · Class of ${m.grad_year || '—'}</div>
       </div>
       <div style="display:flex;gap:8px;flex-shrink:0;">
         <button onclick="approveMember('${m.email}')" style="background:#1C2B1C;color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;padding:7px 16px;border-radius:4px;border:none;cursor:pointer;">Approve</button>
@@ -9550,8 +9552,8 @@ async function changeMemberRole(email, newRole) {
 }
 
 function exportRoster() {
-  var rows = [['Name','Email','EID','Role','Semester','Major','Grad year','LinkedIn','Points']];
-  allRosterData.forEach(function(m){ rows.push([m.name||'',m.email||'',m.eid||'',m.role||'',m.semester||'',m.major||'',m.grad_year||'',m.linkedin||'',m.totalPoints]); });
+  var rows = [['Name','Email','Phone','EID','Role','Semester','Major','Grad year','LinkedIn','Points']];
+  allRosterData.forEach(function(m){ rows.push([m.name||'',m.email||'',m.phone||'',m.eid||'',m.role||'',m.semester||'',m.major||'',m.grad_year||'',m.linkedin||'',m.totalPoints]); });
   var csv = rows.map(function(r){ return r.map(function(v){ return '"'+String(v).replace(/"/g,'""')+'"'; }).join(','); }).join('\n');
   var a = document.createElement('a');
   a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
@@ -9605,31 +9607,52 @@ async function loadAdminAttendance() {
   // Populate session dropdowns (manual check-in form + filter)
   var sessSelect = document.getElementById('manual-att-session');
   if (sessSelect) {
-    // Every event: live sessions first, then any other event that already has attendance
-    // (Mock Interview, Board Hours credit, Family Meetups, Socials, Profit Shares, and so on).
+    // Every event, in groups, newest first. Sessions come from the sessions table; anything else
+    // (socials, family meetups, board hours, mock interviews) comes from existing attendance.
     attendanceManualOptions = {};
-    var optHtml = '<option value="">— Custom (fill in below) —</option>';
-    sessions.forEach(function(s){
-      var k = 'sess:' + s.code;
-      attendanceManualOptions[k] = { code_used: s.code, meeting_name: s.meeting_name || s.code, meeting_date: s.meeting_date || '', event_type: s.event_type || 'Meeting', points: s.points || 1 };
-      optHtml += '<option value="'+ufaEsc(k)+'">'+ufaEsc(ufaPrettyDate(s.meeting_date||''))+' — '+ufaEsc(s.meeting_name||s.code)+'</option>';
+    var GROUP_ORDER = ['General Meetings', 'Analyst Meetings', 'Socials', 'Family Meetups', 'Board Hours and Mock Interviews', 'Other'];
+    function catOf(type, name) {
+      var t = String(type || '').toLowerCase(), n = String(name || '').toLowerCase();
+      if (/analyst/.test(t) || /analyst/.test(n)) return 'Analyst Meetings';
+      if (/board hours|mock interview/.test(t) || /^board hours|^mock interview/.test(n)) return 'Board Hours and Mock Interviews';
+      if (/family/.test(t) || /family/.test(n)) return 'Family Meetups';
+      if (/social|profit share/.test(t) || /social|profit share/.test(n)) return 'Socials';
+      if (t === 'general meeting' || t === 'meeting' || /^week \d+ meeting/.test(n)) return 'General Meetings';
+      return 'Other';
+    }
+    var entries = [];
+    sessions.forEach(function(s2){
+      entries.push({ k: 'sess:' + s2.code, cat: catOf(s2.event_type, s2.meeting_name), opt: { code_used: s2.code, meeting_name: s2.meeting_name || s2.code, meeting_date: s2.meeting_date || '', event_type: s2.event_type || 'Meeting', points: s2.points || 1 } });
     });
-    var sessCodes = {}; sessions.forEach(function(s){ sessCodes[s.code] = true; });
+    var sessCodes = {}; sessions.forEach(function(s2){ sessCodes[s2.code] = true; });
     var groups = {}, order = [];
     att.forEach(function(r){
       if (r.code_used && sessCodes[r.code_used]) return;            // already listed as a session
-      var gk = [r.meeting_name || '', r.meeting_date || '', r.event_type || ''].join('|');
-      if (!groups[gk]) { groups[gk] = { rows: [] }; order.push(gk); }
+      var cat = catOf(r.event_type, r.meeting_name);
+      // Board hours and mock interviews repeat on many dates: one entry per name, and you pick the date.
+      var collapse = cat === 'Board Hours and Mock Interviews';
+      var gk = collapse ? [r.meeting_name || '', r.event_type || ''].join('|') : [r.meeting_name || '', r.meeting_date || '', r.event_type || ''].join('|');
+      if (!groups[gk]) { groups[gk] = { rows: [], collapse: collapse, cat: cat }; order.push(gk); }
       groups[gk].rows.push(r);
     });
     order.forEach(function(gk){
-      var rows = groups[gk].rows, f = rows[0];
-      var codes = {}; rows.forEach(function(r){ codes[r.code_used || ''] = true; });
+      var g = groups[gk], f = g.rows[0];
+      var codes = {}; g.rows.forEach(function(r){ codes[r.code_used || ''] = true; });
       var codeList = Object.keys(codes);
-      var sharedCode = (codeList.length === 1 && codeList[0]) ? codeList[0] : null; // only reuse a code every row shares
-      var k = 'evt:' + gk;
-      attendanceManualOptions[k] = { code_used: sharedCode, meeting_name: f.meeting_name || 'Event', meeting_date: f.meeting_date || '', event_type: f.event_type || 'Meeting', points: f.points || 1 };
-      optHtml += '<option value="'+ufaEsc(k)+'">'+ufaEsc(ufaPrettyDate(f.meeting_date||''))+' — '+ufaEsc(ufaMeetingName(f.meeting_name||'Event', f.event_type))+'</option>';
+      var sharedCode = (!g.collapse && codeList.length === 1 && codeList[0]) ? codeList[0] : null; // only reuse a code every row shares
+      entries.push({ k: 'evt:' + gk, cat: g.cat, opt: { code_used: sharedCode, meeting_name: f.meeting_name || 'Event', meeting_date: g.collapse ? '' : (f.meeting_date || ''), event_type: f.event_type || 'Meeting', points: f.points || 1, askDate: g.collapse } });
+    });
+    var optHtml = '<option value="">— Custom (fill in below) —</option>';
+    GROUP_ORDER.forEach(function(gname){
+      var list = entries.filter(function(e){ return e.cat === gname; });
+      if (!list.length) return;
+      list.forEach(function(e){ var dk = ufaDateKey(e.opt.meeting_date); e._dk = (dk === null || dk === undefined) ? -Infinity : dk; });
+      list.sort(function(x, y){ return y._dk - x._dk; });
+      optHtml += '<optgroup label="' + ufaEsc(gname) + '">' + list.map(function(e){
+        attendanceManualOptions[e.k] = e.opt;
+        var nm = ufaEsc(ufaMeetingName(e.opt.meeting_name, e.opt.event_type));
+        return '<option value="' + ufaEsc(e.k) + '">' + (e.opt.askDate || !e.opt.meeting_date ? '' : ufaEsc(ufaPrettyDate(e.opt.meeting_date)) + ' — ') + nm + '</option>';
+      }).join('') + '</optgroup>';
     });
     sessSelect.innerHTML = optHtml;
   }
@@ -9655,7 +9678,7 @@ function onManualAttSessionChange() {
   var s = attendanceManualOptions[document.getElementById('manual-att-session').value];
   if (!s) return; // "Custom" selected — leave fields as typed
   document.getElementById('manual-att-name').value = s.meeting_name || '';
-  document.getElementById('manual-att-date').value = ufaDateToInput(s.meeting_date);
+  document.getElementById('manual-att-date').value = s.askDate ? '' : ufaDateToInput(s.meeting_date);
   var typeSel = document.getElementById('manual-att-type');
   var evType = s.event_type || 'Meeting';
   // Any event type works: if the session's type isn't in the list yet, add it on the fly
@@ -9732,6 +9755,7 @@ async function addManualAttendance() {
   var type   = document.getElementById('manual-att-type').value;
   var points = parseFloat(document.getElementById('manual-att-points').value) || 1;
   var msg    = document.getElementById('manual-att-msg');
+  if (picked && picked.askDate && !date) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Pick the date this check-in happened.'; return; }
 
   if (!email) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Pick a member from the name suggestions first.'; return; }
   if (!name) { msg.style.display='block'; msg.style.color='#8b2e2e'; msg.textContent='Event name is required.'; return; }
@@ -19860,14 +19884,17 @@ async function portalSignup() {
   const selectedRole = document.getElementById('signup-role').value;
   const major = document.getElementById('signup-major').value.trim();
   const gradYear = document.getElementById('signup-grad-year').value;
+  const phone = document.getElementById('signup-phone').value.trim();
   const duesChecked = document.getElementById('signup-dues-check').checked;
   const err   = document.getElementById('signup-error');
 
-  if (!name || !email || !pw || !pw2 || !selectedRole || !major || !gradYear) { err.style.display="block"; err.textContent="Please fill in all fields."; return; }
+  if (!name || !email || !pw || !pw2 || !selectedRole || !major || !gradYear || !phone) { err.style.display="block"; err.textContent="Please fill in all fields."; return; }
   // Last name is required for new signups (existing one-name members are not affected).
   if (name.split(/\s+/).filter(function(w){ return /[A-Za-z]/.test(w); }).length < 2) { err.style.display="block"; err.textContent="Please enter your first and last name."; return; }
   if (!duesChecked) { err.style.display="block"; err.textContent="Please confirm you have paid your UFA dues before creating an account."; return; }
   if (!/^\d{4}$/.test(gradYear)) { err.style.display='block'; err.textContent='Graduation year must be exactly 4 digits.'; return; }
+  var phoneDigits = phone.replace(/\D/g, '');
+  if (phoneDigits.length < 10 || phoneDigits.length > 11 || (phoneDigits.length === 11 && phoneDigits.charAt(0) !== '1')) { err.style.display='block'; err.textContent='Please enter a valid 10-digit phone number.'; return; }
   if (pw.length < 6) { err.style.display="block"; err.textContent="Password must be at least 6 characters."; return; }
   if (pw !== pw2) { err.style.display="block"; err.textContent="Passwords do not match."; return; }
 
@@ -19876,14 +19903,20 @@ async function portalSignup() {
 
   const eid = document.getElementById('signup-eid').value.trim();
 
-  const { data, error } = await sb.auth.signUp({ email, password: pw, options: { data: { name, eid, role, major, grad_year: gradYear } } });
+  const { data, error } = await sb.auth.signUp({ email, password: pw, options: { data: { name, eid, role, major, grad_year: gradYear, phone } } });
   if (error) { let msg = "Something went wrong. Please try again."; if (error.message.includes("already registered") || error.message.includes("already exists")) msg = "An account with this email already exists. Try signing in instead."; else if (error.message.includes("invalid")) msg = "Please enter a valid UT email address."; else if (error.message.includes("Password")) msg = "Password must be at least 6 characters."; err.style.display="block"; err.textContent=msg; return; }
 
   // Insert into members table with status = pending
-  await sb.from('members').insert({
-    email, name, eid, role, major, grad_year: gradYear,
+  var memberRow = {
+    email, name, eid, role, major, grad_year: gradYear, phone,
     semester: 'Fall 2026', status: 'pending'
-  });
+  };
+  var memberIns = await sb.from('members').insert(memberRow);
+  if (memberIns.error && /phone/i.test(memberIns.error.message || '')) {
+    // The phone column has not been added in Supabase yet (see members-phone.sql). Never lose the signup over it.
+    delete memberRow.phone;
+    await sb.from('members').insert(memberRow);
+  }
 
   // Let the board know somebody is waiting, so the approval queue does not
   // sit unnoticed for a week. Never blocks signup.
@@ -23935,7 +23968,7 @@ document.addEventListener('click', function (e) {
     chevL:       '<path d="M15 18l-6-6 6-6"/>'
   };
   var LABEL = { overview: 'Overview', leaderboard: 'Leaderboard', events: 'Events', profile: 'Profile', recruiting: 'Recruiting',
-                mock: 'Mock Interview', board: 'Board Hours', learn: 'Ask & Learn', pitch: 'Fund & Pitches', admin: 'Admin' };
+                mock: 'Mock Interview', board: 'Board Hours', learn: 'Learn', pitch: 'Fund & Pitches', admin: 'Admin' };
   var SHORT = { mock: 'Mock', board: 'Board Hours', leaderboard: 'Leaderboard' };
   var GROUPS = [
     { label: 'Home',    tabs: ['overview', 'leaderboard', 'events', 'pitch'] },
@@ -24501,6 +24534,7 @@ function profileFillExtras() {
   set('profile-major', currentMember.major);
   set('profile-gradyear', currentMember.grad_year);
   set('profile-linkedin', currentMember.linkedin);
+  set('profile-phone', currentMember.phone);
   var av = document.getElementById('pf-av');
   if (av) {
     if (currentMember.avatar_url) { av.style.backgroundImage = 'url("' + currentMember.avatar_url + '")'; av.textContent = ''; }
@@ -24569,9 +24603,17 @@ async function saveProfileExtras() {
   var li = (document.getElementById('profile-linkedin').value || '').trim();
   if (li && !/^https?:\/\//i.test(li)) li = 'https://' + li;
   var gy = parseInt(document.getElementById('profile-gradyear').value, 10);
+  var ph = (document.getElementById('profile-phone').value || '').trim();
+  var phDigits = ph.replace(/\D/g, '');
+  if (ph && (phDigits.length < 10 || phDigits.length > 11)) { if (msg) { msg.style.display = 'block'; msg.style.color = '#8b2e2e'; msg.textContent = 'Please enter a valid 10-digit phone number.'; } return; }
   var data = { major: (document.getElementById('profile-major').value || '').trim() || null, grad_year: isNaN(gy) ? null : gy, linkedin: li || null };
   var matchEmail = (currentMember && currentMember.email) ? currentMember.email : currentUser.email;
-  var r = await sb.from('members').update(data).eq('email', matchEmail);
+  var r = await sb.from('members').update(Object.assign({ phone: ph || null }, data)).eq('email', matchEmail);
+  if (r.error && /phone/i.test(r.error.message || '')) {
+    // Phone column missing: still save everything else, and say what is needed.
+    r = await sb.from('members').update(data).eq('email', matchEmail);
+    if (!r.error && msg) { msg.style.display = 'block'; msg.style.color = '#8b2e2e'; msg.textContent = 'Saved, but the phone number could not be stored yet (members-phone.sql needs to be run in Supabase).'; }
+  } else if (!r.error) { data.phone = ph || null; }
   if (r.error) { if (msg) { msg.style.display = 'block'; msg.style.color = '#8b2e2e'; msg.textContent = 'Saved, but major, grad year and LinkedIn could not be stored yet (portal-upgrade.sql needs to be run).'; } return; }
   Object.assign(currentMember, data);
   document.getElementById('profile-linkedin').value = li;
