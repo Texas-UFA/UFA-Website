@@ -5394,15 +5394,17 @@ button[onclick="pubFlipbookNext()"]:hover {
               <div style="padding:16px 20px;border-bottom:1px solid rgba(46,74,46,0.1);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
                 <div>
                   <div style="font-size:14px;font-weight:600;color:#1C2B1C;">UFA Internship Tracker</div>
-                  <div style="font-size:12px;color:#6B7D6B;margin-top:2px;" id="internship-tracker-sub">Shared spreadsheet &#8212; track openings and add your applications</div>
+                  <div style="font-size:12px;color:#6B7D6B;margin-top:2px;" id="internship-tracker-sub">Live from the shared spreadsheet &#8212; add your own applications there</div>
                 </div>
                 <a href="https://docs.google.com/spreadsheets/d/1Uct8-VQKGCsDKCquW01Dxi0SLVUdbiD4lmuSp1NHEVA/edit?usp=sharing" target="_blank" rel="noopener noreferrer"
                    style="font-size:12px;font-weight:600;color:#fff;background:#1C2B1C;padding:8px 16px;border-radius:4px;text-decoration:none;white-space:nowrap;">Open in Google Sheets &#8594;</a>
               </div>
-              <div style="padding:4px;">
+              <div id="itk-wrap" style="padding:18px 20px 20px;">
+                <div id="itk-native"><div class="itk-note">Loading openings&hellip;</div></div>
+                <!-- Fallback only: shown if the sheet cannot be read directly. -->
                 <iframe id="internship-tracker-iframe" data-src="https://docs.google.com/spreadsheets/d/1Uct8-VQKGCsDKCquW01Dxi0SLVUdbiD4lmuSp1NHEVA/preview?gid=0&amp;rm=minimal"
                         title="UFA Internship Tracker" loading="lazy" frameborder="0"
-                        style="display:block;width:100%;height:640px;border:0;border-radius:6px;"></iframe>
+                        style="display:none;width:100%;height:640px;border:0;border-radius:6px;"></iframe>
               </div>
             </div>
           </div>
@@ -8003,9 +8005,128 @@ var currentResourceFilter = 'all';
    load before anyone visits that tab.
    ══════════════════════════════════════════════════════════════════ */
 
-function loadInternshipTracker() {
-  var frame = document.getElementById('internship-tracker-iframe');
-  if (frame && !frame.src && frame.dataset.src) frame.src = frame.dataset.src;
+var ITK_SHEET_ID = '1Uct8-VQKGCsDKCquW01Dxi0SLVUdbiD4lmuSp1NHEVA';
+var ITK_GID = '0';
+var itkRows = [], itkCols = [], itkState = { q: '', type: 'All', openOnly: true }, itkLoaded = false;
+
+/* Minimal CSV parser (handles quoted commas, quotes, and line breaks). */
+function itkParseCsv(text) {
+  var rows = [], row = [], cur = '', q = false;
+  for (var i = 0; i < text.length; i++) {
+    var c = text[i];
+    if (q) {
+      if (c === '"') { if (text[i + 1] === '"') { cur += '"'; i++; } else q = false; }
+      else cur += c;
+    } else if (c === '"') q = true;
+    else if (c === ',') { row.push(cur); cur = ''; }
+    else if (c === '\n' || c === '\r') { if (c === '\r' && text[i + 1] === '\n') i++; row.push(cur); rows.push(row); row = []; cur = ''; }
+    else cur += c;
+  }
+  if (cur !== '' || row.length) { row.push(cur); rows.push(row); }
+  return rows;
+}
+
+function itkColLetter(i) { var s = ''; i++; while (i > 0) { var m = (i - 1) % 26; s = String.fromCharCode(65 + m) + s; i = Math.floor((i - 1) / 26); } return s; }
+
+function itkInjectCss() {
+  if (document.getElementById('itk-css')) return;
+  var st = document.createElement('style'); st.id = 'itk-css';
+  st.textContent = `
+.itk-note{padding:26px 8px;text-align:center;color:#6B7D6B;font-size:14px;}
+.itk-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px;}
+.itk-search{flex:1 1 220px;min-width:180px;border:1.5px solid rgba(46,74,46,.2);border-radius:10px;padding:10px 14px;font:400 14px var(--font-body,sans-serif);outline:none;background:#fff;color:#1C2B1C;}
+.itk-search:focus{border-color:#3D6B3D;box-shadow:0 0 0 3px rgba(61,107,61,.13);}
+.itk-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;}
+.itk-chip{border:1px solid rgba(46,74,46,.2);background:#fff;color:#3A4A3A;border-radius:999px;padding:6px 13px;font:500 12.5px var(--font-body,sans-serif);cursor:pointer;}
+.itk-chip.on{background:#1C2B1C;color:#fff;border-color:#1C2B1C;}
+.itk-toggle{display:inline-flex;gap:7px;align-items:center;font-size:13px;color:#3A4A3A;cursor:pointer;white-space:nowrap;}
+.itk-count{font-size:12px;color:#6B7D6B;margin:8px 0 10px;}
+.itk-list{display:flex;flex-direction:column;gap:8px;}
+.itk-row{display:grid;grid-template-columns:minmax(0,2.3fr) minmax(0,1.1fr) minmax(0,.8fr) minmax(0,.7fr) minmax(0,.9fr) auto;gap:14px;align-items:center;border:1px solid rgba(46,74,46,.12);border-radius:12px;padding:13px 16px;background:#fff;}
+.itk-row.closed{background:#FAF8F3;}
+.itk-row.closed .itk-co,.itk-row.closed .itk-role{opacity:.6;}
+.itk-co{font:600 15px var(--font-body,sans-serif);color:#1C2B1C;}
+.itk-role{font-size:13px;color:#556655;margin-top:2px;}
+.itk-meta{font-size:13px;color:#3A4A3A;}
+.itk-meta small{display:block;font-size:11px;color:#8A988A;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;}
+.itk-pill{display:inline-block;border-radius:999px;padding:3px 10px;font:600 11.5px var(--font-body,sans-serif);background:#E8EFE6;color:#2E4A2E;}
+.itk-pill.open{background:#DDF0D8;color:#1F5A1F;}
+.itk-pill.closed{background:#ECEAE4;color:#7A7A70;}
+.itk-btn{font:600 12.5px var(--font-body,sans-serif);background:#1C2B1C;color:#fff;border-radius:8px;padding:8px 14px;text-decoration:none;white-space:nowrap;}
+.itk-btn.ghost{background:#fff;color:#1C2B1C;border:1px solid rgba(46,74,46,.25);}
+@media (max-width:760px){.itk-row{grid-template-columns:1fr 1fr;gap:10px 14px;}.itk-row>div:first-child{grid-column:1 / -1;}}
+`;
+  document.head.appendChild(st);
+}
+
+function itkDraw() {
+  var host = document.getElementById('itk-native');
+  if (!host) return;
+  var ix = function (name) { return itkCols.indexOf(name); };
+  var iCo = ix('Company'), iRole = ix('Role title'), iType = ix('Role Type'), iLoc = ix('Location'),
+      iCls = ix('Class'), iApp = ix('Application'), iClose = ix('Closing Date'), iStat = ix('Current status');
+  var types = ['All'];
+  itkRows.forEach(function (r) { var t = (r.v[iType] || '').trim(); if (t && types.indexOf(t) === -1) types.push(t); });
+  var q = itkState.q.trim().toLowerCase();
+  var shown = itkRows.filter(function (r) {
+    var open = /open/i.test(r.v[iStat] || '');
+    if (itkState.openOnly && !open) return false;
+    if (itkState.type !== 'All' && (r.v[iType] || '').trim() !== itkState.type) return false;
+    if (q && r.v.join(' ').toLowerCase().indexOf(q) === -1) return false;
+    return true;
+  });
+  shown.sort(function (a, b) {
+    var ao = /open/i.test(a.v[iStat] || '') ? 0 : 1, bo = /open/i.test(b.v[iStat] || '') ? 0 : 1;
+    return ao - bo || a.n - b.n;
+  });
+  var sheetUrl = 'https://docs.google.com/spreadsheets/d/' + ITK_SHEET_ID + '/edit?usp=sharing#gid=' + ITK_GID;
+  var html = '<div class="itk-bar"><input class="itk-search" type="search" placeholder="Search company, role, or location" value="' + ufaEsc(itkState.q) + '" oninput="itkSet(\'q\', this.value)" aria-label="Search internships">' +
+    '<label class="itk-toggle"><input type="checkbox" ' + (itkState.openOnly ? 'checked' : '') + ' onchange="itkSet(\'openOnly\', this.checked)"> Open roles only</label></div>' +
+    '<div class="itk-chips">' + types.map(function (t) {
+      return '<button type="button" class="itk-chip' + (t === itkState.type ? ' on' : '') + '" onclick="itkSet(\'type\', this.dataset.t)" data-t="' + ufaEsc(t) + '">' + ufaEsc(t) + '</button>';
+    }).join('') + '</div>' +
+    '<div class="itk-count">' + shown.length + ' role' + (shown.length === 1 ? '' : 's') + ' &middot; updates automatically from the shared sheet</div>';
+  if (!shown.length) html += '<div class="itk-note">No roles match. Try clearing a filter.</div>';
+  else html += '<div class="itk-list">' + shown.map(function (r) {
+    var open = /open/i.test(r.v[iStat] || '');
+    var appTxt = (r.v[iApp] || '').trim();
+    var link = /^https?:\/\//i.test(appTxt) ? appTxt : (sheetUrl + '&range=' + itkColLetter(iApp) + r.row);
+    var btn = '<a class="itk-btn' + (/^https?:\/\//i.test(appTxt) ? '' : ' ghost') + '" href="' + ufaEsc(link) + '" target="_blank" rel="noopener noreferrer">' +
+      (/^https?:\/\//i.test(appTxt) ? 'Apply' : (appTxt ? ufaEsc(appTxt) : 'View')) + ' &#8594;</a>';
+    return '<div class="itk-row' + (open ? '' : ' closed') + '">' +
+      '<div><div class="itk-co">' + ufaEsc(r.v[iCo] || '') + '</div><div class="itk-role">' + ufaEsc(r.v[iRole] || '') + '</div></div>' +
+      '<div><span class="itk-pill">' + ufaEsc(r.v[iType] || 'Other') + '</span></div>' +
+      '<div class="itk-meta"><small>Location</small>' + ufaEsc(r.v[iLoc] || '-') + '</div>' +
+      '<div class="itk-meta"><small>Class</small>' + ufaEsc(r.v[iCls] || '-') + '</div>' +
+      '<div class="itk-meta"><small>' + (open ? 'Closes' : 'Status') + '</small>' + (open ? ufaEsc(r.v[iClose] || 'Rolling') : '<span class="itk-pill closed">Closed</span>') + '</div>' +
+      '<div>' + btn + '</div></div>';
+  }).join('') + '</div>';
+  html += '<div style="margin-top:14px;font-size:12px;color:#6B7D6B;">Buttons that are not a direct link open the matching row in the sheet, where the original link lives.</div>';
+  var keep = document.activeElement && document.activeElement.classList.contains('itk-search');
+  host.innerHTML = html;
+  if (keep) { var el = host.querySelector('.itk-search'); el.focus(); el.setSelectionRange(el.value.length, el.value.length); }
+}
+function itkSet(k, v) { itkState[k] = v; itkDraw(); }
+
+async function loadInternshipTracker() {
+  if (itkLoaded) return;
+  itkInjectCss();
+  try {
+    var res = await fetch('https://docs.google.com/spreadsheets/d/' + ITK_SHEET_ID + '/gviz/tq?tqx=out:csv&gid=' + ITK_GID, { cache: 'no-store' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    var rows = itkParseCsv(await res.text());
+    if (!rows.length || rows[0].indexOf('Company') === -1) throw new Error('Unexpected sheet layout');
+    itkCols = rows[0].map(function (h) { return String(h).trim(); });
+    itkRows = rows.slice(1).map(function (v, i) { return { v: v, row: i + 2, n: i }; })
+      .filter(function (r) { return (r.v[itkCols.indexOf('Company')] || '').trim(); });
+    itkLoaded = true;
+    itkDraw();
+  } catch (e) {
+    console.warn('Internship tracker: falling back to the embedded sheet.', e);
+    var host = document.getElementById('itk-native'); if (host) host.style.display = 'none';
+    var frame = document.getElementById('internship-tracker-iframe');
+    if (frame) { frame.style.display = 'block'; if (!frame.src && frame.dataset.src) frame.src = frame.dataset.src; }
+  }
 }
 
 async function loadResources() {
@@ -22991,61 +23112,46 @@ var GUIDE = [
     ] }
   ] },
 
-  { id: 'equities', title: 'Equities Slide', sub: 'Indexes, sectors, movers, news and sentiment', heading: 'Equities & Market Sentiment',
-    layout: ['chart', 'chart', 'chart', 'chart', 'idx', 'idx', 'movers', 'movers', 'ind', 'ind', 'news', 'news'], cols: 6, boxes: [
-    { key: 'chart', n: 1, title: 'S&P Performance This Week', blurb: 'How the whole market moved', terms: [
+  { id: 'equities', title: 'Equities Slide', sub: 'Indexes, sectors, news and sentiment', heading: 'Equities & Market Sentiment',
+    boxes: [
+    { key: 'market', n: 1, title: 'The Market This Week', blurb: 'Indexes, the S&P, and market mood', terms: [
       ['S&P 500', 'An index of 500 of the largest US public companies. It is the most common stand-in for "the stock market."'],
       ['Index', 'A basket of stocks tracked as a single number. "The S&P is down 0.75%" means the basket as a whole fell 0.75%.'],
-      ['Percent change, not points', 'Slides show the percent change since the start of the week, which compares fairly across indexes. Raw point moves do not.'],
       ['YTD', 'Year to date: the change since January 1. "Up 43% YTD" means it has risen 43% so far this year.'],
-      ['Correction and bear market', 'A correction is a drop of 10% or more from a recent high. A bear market is 20% or more. A bull market is a long stretch of rising prices.', true]
-    ] },
-    { key: 'idx', n: 2, title: 'Equity Markets', blurb: 'The major indexes side by side', terms: [
+      ['Correction and bear market', 'A correction is a drop of 10% or more from a recent high. A bear market is 20% or more. A bull market is a long stretch of rising prices.', true],
       ['Dow Jones (DJIA)', 'An index of 30 large, well-known US companies. It is older and narrower than the S&P 500.'],
       ['Nasdaq', 'An index heavy on technology and growth companies, so tech\u2019s good or bad week shows up here first.'],
       ['Russell 2000', 'An index of about 2,000 smaller US companies ("small caps"). They tend to be more sensitive to borrowing costs and the economy.'],
       ['CRSP', 'An index covering nearly the whole US stock market, large and small companies together.'],
       ['Market cap', 'A company\u2019s total stock-market value: share price times number of shares. Large caps are the biggest companies.'],
-      ['Price-weighted vs. cap-weighted', 'The Dow adds up share prices, so high-priced stocks count for more. The S&P 500 and Nasdaq weight companies by total value, so giants like Nvidia matter most. That is one reason the Dow can rise while the Nasdaq falls.', true]
+      ['Price-weighted vs. cap-weighted', 'The Dow adds up share prices, so high-priced stocks count for more. The S&P 500 and Nasdaq weight companies by total value, so giants like Nvidia matter most. That is one reason the Dow can rise while the Nasdaq falls.', true],
+      ["Heatmap", "A color-coded map of the market: green tiles rose, red tiles fell, and bigger tiles are bigger companies. It shows at a glance which stocks and sectors moved."],
+      ["Fear & Greed Index", "A 0 to 100 score built from several market signals. Low numbers mean fear (investors selling and avoiding risk). High numbers mean greed (investors buying aggressively). Below 50 leans fearful."],
+      ["VIX", "Often called the \"fear gauge.\" It estimates how much the S&P 500 is expected to swing over the next 30 days. A rising VIX means more nervousness. As a rule of thumb, the teens are calm and 30+ means stress."],
+      ["Breadth", "Whether most stocks moved together or only a few did. A market led by a handful of giants can look healthy while most stocks fall.", true],
+      ["Contrarian investing", "Doing the opposite of the crowd: buying when fear is extreme and getting cautious when greed is extreme.", true]
     ] },
-    { key: "movers", n: 3, title: "Notable Equity Movers", blurb: "The week\u2019s biggest winners and losers", terms: [
-      ['Ticker', 'A short code for a stock, like AAPL for Apple or CRWD for CrowdStrike. Movers are listed by ticker.'],
-      ['Gainers and decliners', 'The stocks that rose or fell the most over the week, shown as percent change.'],
-      ['Catalyst', 'A specific event that triggers a big move: an earnings report, a product launch, a deal, an analyst downgrade.', true],
-      ["Earnings reaction", "A stock can fall on good profit if results or guidance fall short of what investors hoped. Moves of 15% or more in a day almost always have a clear catalyst."],
-      ["Valuation after a big run", "A stock that is up a lot may already reflect the good news, so the question becomes whether it can keep delivering.", true]
-    ] },
-    { key: 'ind', n: 4, title: 'Industry Performance', blurb: 'Which sectors led and lagged', terms: [
+    { key: 'sectors', n: 2, title: 'Sectors and Movers', blurb: 'Which industries and stocks led and lagged', terms: [
       ['Sector', 'A group of companies in the same kind of business. The market has 11 sectors, including Technology, Health Care, Financials, Energy, Utilities, Real Estate and Consumer Staples.'],
       ['Dividend', 'A cash payment a company makes to its shareholders out of profits.'],
-      ['Energy stocks and oil', 'Energy companies tend to rise when oil prices rise, since they earn more per barrel. Airlines and consumers are hurt by the same increase.'],
       ['Defensive vs. cyclical', 'Defensive sectors (health care, consumer staples, utilities) sell things people need in any economy, so they hold up in rough times. Cyclical sectors (consumer discretionary, industrials) rise and fall with the economy.', true],
       ['Rotation', 'Investors moving money from one kind of stock to another, such as out of tech and into health care or energy. "Rotating into defensive names" means they are getting more cautious.', true],
       ['Rate-sensitive sectors', 'Sectors hurt by higher borrowing costs, like utilities and real estate, because they carry a lot of debt and pay dividends that compete with bond yields.', true],
       ['Capital-intensive', 'Businesses that need lots of expensive equipment or infrastructure, like utilities, so higher borrowing costs hit them hard.', true],
       ['CapEx and free cash flow (FCF)', 'CapEx is money spent on long-term assets like data centers and equipment. FCF is the cash left after operating costs and CapEx. "Lower CapEx means better future FCF" means spending less leaves more cash for shareholders.', true],
       ['AI spending', 'Big tech companies are spending heavily on chips and data centers for AI. That lifts chipmakers\u2019 sales, while investors question whether the spending will pay off.', true],
-      ["Communication Services", "A sector that holds media and internet companies, such as Alphabet, Meta, and Netflix."],
       ["Health care and policy", "Insurers and hospital operators react to government policy, like what insurance covers and pays. Election results or new rules can move them more than the economy does.", true],
-      ["Oil producers and refiners", "Producers earn more when oil rises. Refiners buy crude and sell fuel, so they live off the gap between the two, and a sharp swing in oil can hurt them either way.", true]
+      ["Oil producers and refiners", "Producers earn more when oil rises. Refiners buy crude and sell fuel, so they live off the gap between the two, and a sharp swing in oil can hurt them either way.", true],
+      ['Catalyst', 'A specific event that triggers a big move: an earnings report, a product launch, a deal, an analyst downgrade.', true],
+      ["Earnings reaction", "A stock can fall on good profit if results or guidance fall short of what investors hoped. Moves of 15% or more in a day almost always have a clear catalyst."],
+      ["Valuation after a big run", "A stock that is up a lot may already reflect the good news, so the question becomes whether it can keep delivering.", true]
     ] },
-    { key: 'news', n: 5, title: 'Finance News', blurb: 'Deals, leadership changes, headlines', terms: [
+    { key: 'news', n: 3, title: 'Finance News', blurb: 'Deals, leadership changes, headlines', terms: [
       ['M&A', 'Mergers and acquisitions: companies combining, or one company buying another. Investment banks earn fees advising on these deals.'],
-      ['Acquire', 'To buy another company. The buyer is the acquirer and the company being bought is the target.'],
       ['Chairman vs. CEO', 'The chairman leads the board of directors. The CEO runs the company day to day. "Chairman emeritus" is an honorary title for a retired leader.'],
-      ['Surging Treasury yields', 'When yields reach multi-decade highs it reflects expectations for more rate hikes, sticky inflation and heavy bond supply. "Large corporate bond supply" means many companies selling bonds at once, which pushes prices down and yields up.', true],
-      ["AI selloff", "A sharp drop in AI-related stocks, often driven by fears that companies are spending too much on chips and data centers and may not earn it back.", true],
-      ["Board investigation", "When a company\u2019s board hires outside lawyers or committees to look into a leader or an event. It signals a serious governance issue.", true]
+      ['Surging Treasury yields', 'When yields reach multi-decade highs it reflects expectations for more rate hikes, sticky inflation and heavy bond supply. "Large corporate bond supply" means many companies selling bonds at once, which pushes prices down and yields up.', true]
     ] },
-    { key: "mood", n: 6, title: "Market Mood", blurb: "Heatmap, fear, and sentiment", terms: [
-      ["Heatmap", "A color-coded map of the market: green tiles rose, red tiles fell, and bigger tiles are bigger companies. It shows at a glance which stocks and sectors moved."],
-      ["Fear & Greed Index", "A 0 to 100 score built from several market signals. Low numbers mean fear (investors selling and avoiding risk). High numbers mean greed (investors buying aggressively). Below 50 leans fearful."],
-      ["VIX", "Often called the \"fear gauge.\" It estimates how much the S&P 500 is expected to swing over the next 30 days. A rising VIX means more nervousness. As a rule of thumb, the teens are calm and 30+ means stress."],
-      ["Sentiment", "The overall mood of investors, which can push prices beyond what the news alone would justify."],
-      ["Breadth", "Whether most stocks moved together or only a few did. A market led by a handful of giants can look healthy while most stocks fall.", true],
-      ["Contrarian investing", "Doing the opposite of the crowd: buying when fear is extreme and getting cautious when greed is extreme.", true]
-    ] },
-    { key: "comm", n: 7, title: "Commodities and Currencies", blurb: "Oil, gold, the dollar, and yields", terms: [
+    { key: 'comm', n: 4, title: 'Oil, Gold, and the Dollar', blurb: 'Commodities, currencies, and yields', terms: [
       ["Crude oil", "Unrefined oil, priced per barrel. Brent above $100 means oil is expensive, which lifts gas prices and costs for airlines and shippers."],
       ["Gold", "A \"safe haven\": investors buy it when they are nervous because it tends to hold its value. It pays no interest, so rising yields make it less attractive."],
       ["DXY (dollar index)", "The dollar measured against a basket of six major currencies, including the euro and yen. Up means a stronger dollar."],
@@ -23246,7 +23352,7 @@ function learnAskFromSearch() {
 .fx-slide-grid{display:grid;gap:10px;grid-template-columns:repeat(6,1fr);}
 .fx-slide-grid .fx-tile{grid-column:span 2;}
 .s-macro .fx-tile:nth-child(n+4){grid-column:span 3;}
-.s-equities .fx-tile:nth-child(-n+2),.s-equities .fx-tile:nth-child(n+6){grid-column:span 3;}
+.s-equities .fx-tile{grid-column:span 3;}
 .fx-tile{text-align:left;border-radius:14px;border:1.5px solid rgba(255,255,255,.14);background:rgba(255,255,255,.07);color:#fff;padding:13px 13px 15px;cursor:pointer;display:flex;flex-direction:column;align-items:flex-start;gap:8px;min-height:112px;font-family:inherit;transition:background .15s,border-color .15s,transform .05s;}
 .fx-tile:hover{background:rgba(255,255,255,.14);}
 .fx-tile.on{background:var(--fx-paper);color:var(--fx-ink);border-color:var(--fx-chalk);box-shadow:0 0 0 3px rgba(243,227,184,.4);}
