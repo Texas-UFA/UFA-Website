@@ -8042,19 +8042,21 @@ function itkInjectCss() {
 .itk-toggle{display:inline-flex;gap:7px;align-items:center;font-size:13px;color:#3A4A3A;cursor:pointer;white-space:nowrap;}
 .itk-count{font-size:12px;color:#6B7D6B;margin:8px 0 10px;}
 .itk-list{display:flex;flex-direction:column;gap:8px;}
-.itk-row{display:grid;grid-template-columns:minmax(0,2.3fr) minmax(0,1.1fr) minmax(0,.8fr) minmax(0,.7fr) minmax(0,.9fr) auto;gap:14px;align-items:center;border:1px solid rgba(46,74,46,.12);border-radius:12px;padding:13px 16px;background:#fff;}
+.itk-head,.itk-row{display:grid;grid-template-columns:minmax(0,1fr) 150px 110px 70px 100px 180px;gap:16px;align-items:center;}
+.itk-head{padding:0 16px 4px;font:600 11px var(--font-body,sans-serif);color:#8A988A;text-transform:uppercase;letter-spacing:.07em;}
+.itk-row{border:1px solid rgba(46,74,46,.12);border-radius:12px;padding:13px 16px;background:#fff;}
 .itk-row.closed{background:#FAF8F3;}
 .itk-row.closed .itk-co,.itk-row.closed .itk-role{opacity:.6;}
 .itk-co{font:600 15px var(--font-body,sans-serif);color:#1C2B1C;}
 .itk-role{font-size:13px;color:#556655;margin-top:2px;}
 .itk-meta{font-size:13px;color:#3A4A3A;}
-.itk-meta small{display:block;font-size:11px;color:#8A988A;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;}
+.itk-meta small{display:none;font-size:11px;color:#8A988A;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;}
 .itk-pill{display:inline-block;border-radius:999px;padding:3px 10px;font:600 11.5px var(--font-body,sans-serif);background:#E8EFE6;color:#2E4A2E;}
 .itk-pill.open{background:#DDF0D8;color:#1F5A1F;}
 .itk-pill.closed{background:#ECEAE4;color:#7A7A70;}
-.itk-btn{font:600 12.5px var(--font-body,sans-serif);background:#1C2B1C;color:#fff;border-radius:8px;padding:8px 14px;text-decoration:none;white-space:nowrap;}
+.itk-btn{display:block;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;box-sizing:border-box;width:100%;font:600 12.5px var(--font-body,sans-serif);background:#1C2B1C;color:#fff;border-radius:8px;padding:8px 14px;text-decoration:none;white-space:nowrap;}
 .itk-btn.ghost{background:#fff;color:#1C2B1C;border:1px solid rgba(46,74,46,.25);}
-@media (max-width:760px){.itk-row{grid-template-columns:1fr 1fr;gap:10px 14px;}.itk-row>div:first-child{grid-column:1 / -1;}}
+@media (max-width:860px){.itk-head{display:none;}.itk-row{grid-template-columns:1fr 1fr;gap:10px 14px;}.itk-row>div:first-child,.itk-row>div:last-child{grid-column:1 / -1;}.itk-meta small{display:block;}}
 `;
   document.head.appendChild(st);
 }
@@ -8087,12 +8089,12 @@ function itkDraw() {
     }).join('') + '</div>' +
     '<div class="itk-count">' + shown.length + ' role' + (shown.length === 1 ? '' : 's') + ' &middot; updates automatically from the shared sheet</div>';
   if (!shown.length) html += '<div class="itk-note">No roles match. Try clearing a filter.</div>';
-  else html += '<div class="itk-list">' + shown.map(function (r) {
+  else html += '<div class="itk-head"><div>Company and role</div><div>Type</div><div>Location</div><div>Class</div><div>Closes</div><div></div></div><div class="itk-list">' + shown.map(function (r) {
     var open = /open/i.test(r.v[iStat] || '');
     var appTxt = (r.v[iApp] || '').trim();
     var link = /^https?:\/\//i.test(appTxt) ? appTxt : (sheetUrl + '&range=' + itkColLetter(iApp) + r.row);
-    var btn = '<a class="itk-btn' + (/^https?:\/\//i.test(appTxt) ? '' : ' ghost') + '" href="' + ufaEsc(link) + '" target="_blank" rel="noopener noreferrer">' +
-      (/^https?:\/\//i.test(appTxt) ? 'Apply' : (appTxt ? ufaEsc(appTxt) : 'View')) + ' &#8594;</a>';
+    var btn = '<a class="itk-btn' + (/^https?:\/\//i.test(appTxt) ? '' : ' ghost') + '" href="' + ufaEsc(link) + '" title="' + ufaEsc(appTxt) + '" target="_blank" rel="noopener noreferrer">' +
+      (/^https?:\/\//i.test(appTxt) ? 'Apply' : /^email\b/i.test(appTxt) ? 'Email to apply' : /\.pdf$/i.test(appTxt) ? 'View posting' : (appTxt ? ufaEsc(appTxt) : 'View')) + ' &#8594;</a>';
     return '<div class="itk-row' + (open ? '' : ' closed') + '">' +
       '<div><div class="itk-co">' + ufaEsc(r.v[iCo] || '') + '</div><div class="itk-role">' + ufaEsc(r.v[iRole] || '') + '</div></div>' +
       '<div><span class="itk-pill">' + ufaEsc(r.v[iType] || 'Other') + '</span></div>' +
